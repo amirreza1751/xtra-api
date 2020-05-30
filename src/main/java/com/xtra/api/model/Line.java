@@ -1,14 +1,16 @@
 package com.xtra.api.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Line {
+public class Line extends User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
