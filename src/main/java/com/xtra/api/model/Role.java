@@ -13,6 +13,6 @@ public class Role {
     private String name;
     private String color;
 
-    @ManyToOne
+    @Enumerated(EnumType.STRING)
     private UserType userType;
 }

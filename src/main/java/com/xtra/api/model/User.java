@@ -15,6 +15,9 @@ public class User {
     private String _2FASec;
     private boolean isBanned;
 
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
+
     @ManyToOne
     private Role role;
 }

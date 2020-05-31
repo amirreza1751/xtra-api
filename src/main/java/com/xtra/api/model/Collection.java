@@ -14,4 +14,5 @@ public class Collection {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+
 }
