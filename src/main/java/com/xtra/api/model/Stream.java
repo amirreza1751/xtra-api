@@ -2,10 +2,8 @@ package com.xtra.api.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -18,7 +16,9 @@ public class Stream {
     private boolean streamAll;
     private boolean directSource;
     private boolean genTimestamps;
+    private String customFFMPEG;
 
-
+    @ManyToMany
+    private List<Server> servers;
 
 }

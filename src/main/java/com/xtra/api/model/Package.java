@@ -17,7 +17,7 @@ public class Package {
     private int credits;
     private Period duration;
 
-    @OneToMany
+    @ManyToMany
     private List<Collection> collections;
 
 }
