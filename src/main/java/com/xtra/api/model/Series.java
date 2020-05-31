@@ -3,21 +3,16 @@ package com.xtra.api.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.time.Period;
 import java.util.List;
 
 @Entity
 @Data
-public class Package {
+public class Series {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id ;
+    private Long id;
     private String name;
-    private boolean isTrial;
-    private int credits;
-    private Period duration;
 
     @OneToMany
-    private List<Collection> collections;
-
+    private List<Episode> episodes;
 }
