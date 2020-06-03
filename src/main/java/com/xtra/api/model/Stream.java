@@ -7,6 +7,7 @@ import java.util.List;
 
 @Entity
 @Data
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Stream {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

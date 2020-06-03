@@ -1,5 +1,6 @@
 package com.xtra.api.model;
 
+import com.sun.istack.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,12 +16,12 @@ public class Line extends User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private LocalDateTime expireDate;
-    private int maxConnections;
-    private boolean isReStreamer;
+    private int maxConnections = 1;
+    private boolean isReStreamer = false;
     private boolean isTrial;
-    private boolean isBlocked;
-    private boolean isAdminBlocked;
-    private boolean isIspLocked;
+    private boolean isBlocked = false;
+    private boolean isAdminBlocked = false;
+    private boolean isIspLocked = false;
     private boolean isStalker;
     private String notes;
 

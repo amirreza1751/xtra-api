@@ -4,6 +4,7 @@ import com.xtra.api.model.Line;
 import com.xtra.api.repository.LineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,8 +21,14 @@ public class LineController {
     }
 
     @GetMapping("/")
-    public List<Line> getAllLines(int start, int end){
+    public List<Line> getAllLines(int start, int end) {
         return lineRepository.findAll();
     }
+
+    @GetMapping("/{id}")
+    public Line getLine(@PathVariable Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new RuntimeException("Line not found!"));
+    }
+
 
 }
