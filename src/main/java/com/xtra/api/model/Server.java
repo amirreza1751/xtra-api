@@ -3,17 +3,17 @@ package com.xtra.api.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
-public class Permission {
+public class Server {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
     private String name;
+    private String ip;
 
-    private String pKey;
-
-    @Enumerated(EnumType.STRING)
-    private UserType userType;
+    @ManyToMany(mappedBy = "servers")
+    private List<Stream> streams;
 }

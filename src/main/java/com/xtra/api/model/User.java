@@ -5,6 +5,7 @@ import javax.persistence.*;
 
 @Entity
 @Data
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -13,7 +14,7 @@ public class User {
     private String password;
     private String email;
     private String _2FASec;
-    private boolean isBanned;
+    private boolean isBanned = false;
 
     @Enumerated(EnumType.STRING)
     private UserType userType;
