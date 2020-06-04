@@ -21,7 +21,7 @@ public class LineController {
     }
 
     @GetMapping("/")
-    public List<Line> getAllLines(int start, int end) {
+    public List<Line> getLines(int start, int end) {
         return lineRepository.findAll();
     }
 
