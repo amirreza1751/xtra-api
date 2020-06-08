@@ -9,16 +9,16 @@ import javax.persistence.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-    private String username;
-    private String password;
-    private String email;
-    private String _2FASec;
-    private boolean isBanned = false;
+    protected long id;
+    protected String username;
+    protected String password;
+    protected String email;
+    protected String _2FASec;
+    protected boolean isBanned = false;
 
     @Enumerated(EnumType.STRING)
-    private UserType userType;
+    protected UserType userType;
 
     @ManyToOne
-    private Role role;
+    protected Role role;
 }

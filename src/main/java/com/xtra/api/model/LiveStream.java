@@ -8,9 +8,6 @@ import javax.persistence.Entity;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Admin extends User {
-    private String firstName;
-    private String lastName;
-
+public class LiveStream extends Stream {
 
 }
