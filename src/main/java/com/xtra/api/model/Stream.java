@@ -13,11 +13,12 @@ public class Stream {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    private boolean readNative;
-    private boolean streamAll;
-    private boolean directSource;
-    private boolean genTimestamps;
-    private boolean rtmpOutput;
+    private boolean readNative = false;
+    private boolean streamAll = false;
+    private boolean directSource = false;
+    private boolean genTimestamps = false;
+    private boolean rtmpOutput = false;
+
     @ManyToOne
     private TranscodeProfile transcodeProfile;
     private String customFFMPEG;

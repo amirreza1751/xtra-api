@@ -30,6 +30,11 @@ public class ChannelController {
         return channelRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
     }
 
+    @PostMapping("/")
+    public Channel addChannel(@RequestBody Channel channel) {
+        return channelRepository.save(channel);
+    }
+
     @PatchMapping("/{id}")
     public Channel updateChannel(@PathVariable Long id, @RequestBody Channel channel) {
         if (channelRepository.findById(id).isEmpty()) {
