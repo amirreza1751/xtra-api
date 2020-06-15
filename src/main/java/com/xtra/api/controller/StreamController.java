@@ -1,7 +1,6 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.exceptions.EntityNotFound;
-import com.xtra.api.model.Line;
 import com.xtra.api.model.Stream;
 import com.xtra.api.repository.StreamRepository;
 import org.springframework.beans.factory.annotation.Autowired;

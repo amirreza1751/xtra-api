@@ -17,9 +17,15 @@ public class Stream {
     private boolean streamAll;
     private boolean directSource;
     private boolean genTimestamps;
+    private boolean rtmpOutput;
+    @ManyToOne
+    private TranscodeProfile transcodeProfile;
     private String customFFMPEG;
 
     @ManyToMany
     private List<Server> servers;
+
+    @OneToMany
+    private List<StreamInput> streamInputs;
 
 }
