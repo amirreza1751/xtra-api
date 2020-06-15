@@ -19,7 +19,7 @@ public class ChannelController {
         this.channelRepository = channelRepository;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Page<Channel> getChannels(@RequestParam(defaultValue = "0", name = "page_no") int page_no, @RequestParam(defaultValue = "25", name = "page_size") int page_size) {
         Pageable page = PageRequest.of(page_no, page_size);
         return channelRepository.findAll(page);

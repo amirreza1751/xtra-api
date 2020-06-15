@@ -21,7 +21,7 @@ public class LineController {
         this.lineRepository = lineRepository;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Page<Line> getLines(@RequestParam(defaultValue = "0", name = "page_no") int page_no, @RequestParam(defaultValue = "25", name = "page_size") int page_size) {
         Pageable page = PageRequest.of(page_no, page_size);
         return lineRepository.findAll(page);

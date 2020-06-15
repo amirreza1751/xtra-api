@@ -1,0 +1,190 @@
+openapi: 3.0.0
+info:
+  title: Xtra Main
+  version: '1.0'
+  description: xtra panel main api
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/lines/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        description: line id
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Line'
+        '404':
+          description: Line Not Found
+      operationId: get-lines-id
+      description: get a single line
+    delete:
+      summary: ''
+      operationId: delete-lines-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Line'
+        '404':
+          description: Line Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Line'
+      description: deletes a line
+    patch:
+      summary: ''
+      operationId: patch-lines-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Line'
+        '404':
+          description: Line Not Found
+      description: 'Update a certain line '
+  /lines:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Line'
+      operationId: get-lines
+      description: |-
+        get a number of lines based on query parameters
+        if no parameters are given the first 25 records are returned
+      parameters:
+        - schema:
+            type: number
+          in: query
+          name: page_no
+          description: the number of the page
+        - schema:
+            type: number
+          in: query
+          name: page_size
+          description: the number of elements in the page
+    parameters: []
+  /channels:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+      operationId: get-channels
+      description: |-
+        get a number of channels based on query parameters
+        if no parameters are given the first 25 records are returned
+      parameters:
+        - schema:
+            type: number
+          in: query
+          name: page_no
+          description: the number of the page
+        - schema:
+            type: number
+          in: query
+          name: page_size
+          description: the number of elements in the page
+    parameters: []
+  '/channels/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+        '404':
+          description: Line Not Found
+      operationId: get-channel-id
+      description: get a single channel by its ID
+    delete:
+      summary: ''
+      operationId: delete-channels-id
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: channel Not Found
+      description: deletes a channel by id
+    patch:
+      summary: ''
+      operationId: patch-channels-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+        '404':
+          description: Line Not Found
+      description: 'Update a certain channel specified by its ID '
+    post:
+      summary: ''
+      operationId: post-channels-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+      description: create a channel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+        description: channel fields
+components:
+  schemas:
+    Line:
+      title: Line
+      type: object
+      properties:
+        id:
+          type: string
+    Channel:
+      title: Channel
+      type: object
+      properties:
+        id:
+          type: string
