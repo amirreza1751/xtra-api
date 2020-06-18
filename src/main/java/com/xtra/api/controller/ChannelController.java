@@ -9,7 +9,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/channels")
 public class ChannelController {
@@ -26,14 +25,14 @@ public class ChannelController {
         return channelRepository.findAll(page);
     }
 
+    @PostMapping("")
+    public Channel addChannel(@RequestBody Channel channel) {
+        return channelRepository.save(channel);
+    }
+
     @GetMapping("/{id}")
     public Channel getChannelById(@PathVariable Long id) {
         return channelRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
-    }
-
-    @PostMapping("/")
-    public Channel addChannel(@RequestBody Channel channel) {
-        return channelRepository.save(channel);
     }
 
     @PutMapping("/{id}")

@@ -97,7 +97,59 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Channel'
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Channel'
+                  pageable:
+                    type: object
+                    properties:
+                      sort:
+                        type: object
+                        properties:
+                          sorted:
+                            type: boolean
+                          unsorted:
+                            type: boolean
+                          empty:
+                            type: boolean
+                      pageNumber:
+                        type: number
+                      pageSize:
+                        type: number
+                      offset:
+                        type: number
+                      paged:
+                        type: boolean
+                      unpaged:
+                        type: boolean
+                  totalPages:
+                    type: integer
+                  totalElements:
+                    type: number
+                  last:
+                    type: boolean
+                  first:
+                    type: boolean
+                  number:
+                    type: number
+                  sort:
+                    type: object
+                    properties:
+                      sorted:
+                        type: boolean
+                      unsorted:
+                        type: boolean
+                      empty:
+                        type: boolean
+                  numberOfElements:
+                    type: number
+                  size:
+                    type: number
+                  empty:
+                    type: boolean
       operationId: get-channels
       description: |-
         get a number of channels based on query parameters
@@ -114,6 +166,22 @@ paths:
           name: page_size
           description: the number of elements in the page
     parameters: []
+    post:
+      summary: ''
+      operationId: post-channels
+      responses:
+        '201':
+          description: Channel Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+      description: create a channel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
   '/channels/{id}':
     parameters:
       - schema:
@@ -157,23 +225,6 @@ paths:
         '404':
           description: Line Not Found
       description: 'Update a certain channel specified by its ID '
-    post:
-      summary: ''
-      operationId: post-channels-id
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Channel'
-      description: create a channel
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Channel'
-        description: channel fields
 components:
   schemas:
     Line:
