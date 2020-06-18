@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/channels")
 public class ChannelController {
@@ -35,7 +36,7 @@ public class ChannelController {
         return channelRepository.save(channel);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public Channel updateChannel(@PathVariable Long id, @RequestBody Channel channel) {
         if (channelRepository.findById(id).isEmpty()) {
             throw new EntityNotFound();
