@@ -234,8 +234,52 @@ components:
         id:
           type: string
     Channel:
+      type: object
       title: Channel
+      properties:
+        name:
+          type: string
+        stream_type:
+          type: string
+          enum:
+            - CHANNEL
+            - MOVIE
+            - EPISODE
+            - RADIO
+        icon:
+          type: string
+        read_native:
+          type: boolean
+        stream_all:
+          type: boolean
+        direct_source:
+          type: boolean
+        gen_timestamps:
+          type: boolean
+        rtmp_output:
+          type: boolean
+        stream_inputs:
+          type: array
+          items:
+            $ref: ''
+        servers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Server'
+        custom_ffmpeg:
+          type: string
+    StreamInput:
+      title: StreamInput
       type: object
       properties:
-        id:
+        url:
+          type: string
+      description: Input Class for Streams
+    Server:
+      title: Server
+      type: object
+      properties:
+        name:
+          type: string
+        ip:
           type: string
