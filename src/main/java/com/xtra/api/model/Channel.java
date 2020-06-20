@@ -11,6 +11,9 @@ import javax.persistence.Entity;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Channel extends Stream {
-    private String icon;
+    public Channel(){
+        setStreamType(StreamType.CHANNEL);
+    }
 
+    private String icon;
 }

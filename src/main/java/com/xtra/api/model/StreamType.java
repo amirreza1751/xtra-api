@@ -1,7 +1,7 @@
 package com.xtra.api.model;
 
 public enum StreamType {
-    LIVESTREAM,
+    CHANNEL,
     MOVIE,
     EPISODE
 }

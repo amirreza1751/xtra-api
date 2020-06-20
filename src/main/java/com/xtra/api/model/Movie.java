@@ -9,5 +9,7 @@ import javax.persistence.Entity;
 @Entity
 @Data
 public class Movie extends Stream {
-
+    public Movie() {
+        setStreamType(StreamType.MOVIE);
+    }
 }
