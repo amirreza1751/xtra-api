@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/channels")
 public class ChannelController {
@@ -26,7 +28,7 @@ public class ChannelController {
     }
 
     @PostMapping("")
-    public Channel addChannel(@RequestBody Channel channel) {
+    public Channel addChannel(@Valid @RequestBody Channel channel) {
         return channelRepository.save(channel);
     }
 
@@ -48,4 +50,5 @@ public class ChannelController {
     public void deleteStream(@PathVariable Long id) {
         channelRepository.deleteById(id);
     }
+
 }
