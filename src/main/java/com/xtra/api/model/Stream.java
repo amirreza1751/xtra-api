@@ -1,5 +1,8 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -9,6 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Stream {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,13 +27,20 @@ public class Stream {
     private boolean rtmpOutput = false;
 
     @ManyToOne
+    private Category category;
+
+    @ManyToOne
     private TranscodeProfile transcodeProfile;
     private String customFFMPEG;
 
     @ManyToMany(cascade = CascadeType.MERGE)
+    @JsonManagedReference
     private List<Server> servers;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<StreamInput> streamInputs;
+
+    @OneToOne
+    private StreamInput currentInput;
 
 }
