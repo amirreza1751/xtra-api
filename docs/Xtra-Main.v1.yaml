@@ -250,9 +250,30 @@ paths:
     get:
       summary: Your GET endpoint
       tags: []
-      responses: {}
+      responses:
+        '200':
+          description: Stream Started
+        '404':
+          description: channel not found
       operationId: get-channels-start-id
       description: start a channel by passing the id
+  '/channels/stop/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: channel stopped
+        '404':
+          description: channel not found
+      operationId: get-channels-stop-id
+      description: stop channel by passing the id
 components:
   schemas:
     Line:
