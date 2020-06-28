@@ -39,7 +39,7 @@ public class ChannelController {
 
     // Stream CRUD
     @GetMapping("")
-    public Page<Channel> getChannels(@RequestParam(defaultValue = "0", name = "page_no") int page_no, @RequestParam(defaultValue = "25", name = "page_size") int page_size
+    public Page<Channel> getChannels(@RequestParam(defaultValue = "0" ) int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
 
         Pageable page;
@@ -49,9 +49,9 @@ public class ChannelController {
                 order = Sort.Order.desc(sortBy);
             else
                 order = Sort.Order.asc(sortBy);
-            page = PageRequest.of(page_no, page_size, Sort.by(order));
+            page = PageRequest.of(pageNo, pageSize, Sort.by(order));
         } else {
-            page = PageRequest.of(page_no, page_size, Sort.by(Sort.Order.asc("id")));
+            page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc("id")));
         }
 
 

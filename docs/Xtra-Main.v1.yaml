@@ -158,13 +158,28 @@ paths:
         - schema:
             type: number
           in: query
-          name: page_no
+          name: pageNo
           description: the number of the page
         - schema:
             type: number
           in: query
-          name: page_size
+          name: pageSize
           description: the number of elements in the page
+        - schema:
+            type: string
+          in: query
+          name: search
+          description: text to search columns by
+        - schema:
+            type: string
+          in: query
+          name: sortBy
+          description: 'field to sort by '
+        - schema:
+            type: string
+          in: query
+          name: sortDir
+          description: 'sorting direction '
     parameters: []
     post:
       summary: ''
@@ -225,6 +240,19 @@ paths:
         '404':
           description: Line Not Found
       description: 'Update a certain channel specified by its ID '
+  '/channels/start/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      operationId: get-channels-start-id
+      description: start a channel by passing the id
 components:
   schemas:
     Line:
