@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.Optional;
+
+import static com.xtra.api.util.utilities.wrapSearchString;
 
 @RestController
 @RequestMapping("/channels")
@@ -39,7 +40,7 @@ public class ChannelController {
 
     // Stream CRUD
     @GetMapping("")
-    public Page<Channel> getChannels(@RequestParam(defaultValue = "0" ) int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public Page<Channel> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
 
         Pageable page;
@@ -58,11 +59,12 @@ public class ChannelController {
         if (search == null)
             return channelRepository.findAll(page);
         else {
+            search = wrapSearchString(search);
             Optional<Server> server = serverRepository.findByName(search);
             if (server.isPresent())
-                return channelRepository.findByNameOrCategoryNameOrCurrentInputUrlOrServersContains(search, search, search, server.get(), page);
+                return channelRepository.findByNameLikeOrCategoryNameLikeOrCurrentInputUrlLikeOrServersContains(search, search, search, server.get(), page);
             else
-                return channelRepository.findByNameOrCategoryNameOrCurrentInputUrl(search, search, search, page);
+                return channelRepository.findByNameLikeOrCategoryNameLikeOrCurrentInputUrlLike(search, search, search, page);
         }
 
     }

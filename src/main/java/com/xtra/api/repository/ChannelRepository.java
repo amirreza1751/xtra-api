@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface ChannelRepository extends JpaRepository<Channel, Long>, JpaSpecificationExecutor<Channel> {
-    Page<Channel> findByNameOrCategoryNameOrCurrentInputUrlOrServersContains(String name, String categoryName,String currentInputUrl, Server server, Pageable pageable);
-    Page<Channel> findByNameOrCategoryNameOrCurrentInputUrl(String name, String categoryName,String currentInputUrl, Pageable pageable);
+    Page<Channel> findByNameLikeOrCategoryNameLikeOrCurrentInputUrlLikeOrServersContains(String name, String categoryName,String currentInputUrl, Server server, Pageable pageable);
+    Page<Channel> findByNameLikeOrCategoryNameLikeOrCurrentInputUrlLike(String name, String categoryName,String currentInputUrl, Pageable pageable);
 
 }
