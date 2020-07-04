@@ -21,7 +21,7 @@ public class ApiApplication {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins(dashboardPath).allowedMethods("GET", "PUT", "POST", "DELETE");
+                registry.addMapping("/**").allowedMethods("GET", "PUT", "POST", "DELETE");
             }
         };
     }
