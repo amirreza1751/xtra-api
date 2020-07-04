@@ -34,7 +34,6 @@ public class Stream {
     private String customFFMPEG;
 
     @ManyToMany(cascade = CascadeType.MERGE)
-    @JsonManagedReference
     private List<Server> servers;
 
     @OneToMany(cascade = CascadeType.ALL)

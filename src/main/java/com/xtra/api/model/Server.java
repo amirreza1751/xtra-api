@@ -1,6 +1,7 @@
 package com.xtra.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -20,6 +21,6 @@ public class Server {
     private String ip;
 
     @ManyToMany(mappedBy = "servers")
-    @JsonBackReference
+    @JsonIgnore
     private List<Stream> streams;
 }

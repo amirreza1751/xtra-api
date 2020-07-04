@@ -81,12 +81,21 @@ public class ChannelController {
 
     @PutMapping("/{id}")
     public Channel updateChannel(@PathVariable Long id, @RequestBody Channel channel) {
-        Optional<Channel> oldChannel = channelRepository.findById(id);
-        if (oldChannel.isEmpty()) {
+        Optional<Channel> result = channelRepository.findById(id);
+        if (result.isEmpty()) {
             throw new EntityNotFound();
         }
-        oldChannel.get().setServers(channel.getServers());
-        return channelRepository.save(oldChannel.get());
+        Channel oldChannel = result.get();
+        oldChannel.setName(channel.getName());
+        oldChannel.setIcon(channel.getIcon());
+        oldChannel.setDirectSource(channel.isDirectSource());
+        oldChannel.setReadNative(channel.isReadNative());
+        oldChannel.setStreamAll(channel.isStreamAll());
+        oldChannel.setGenTimestamps(channel.isGenTimestamps());
+        oldChannel.setStreamInputs(channel.getStreamInputs());
+        oldChannel.setCurrentInput(channel.getCurrentInput());
+        oldChannel.setServers(channel.getServers());
+        return channelRepository.save(oldChannel);
     }
 
     @DeleteMapping("/{id}")
