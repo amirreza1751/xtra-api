@@ -79,8 +79,8 @@ public class ChannelController {
         return channelRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
     }
 
-    @PutMapping("/{id}")
-    public Channel updateChannel(@PathVariable Long id, @RequestBody Channel channel) {
+    @PutMapping(value = {"/{id}", "/{id}/{restart}"})
+    public Channel updateChannel(@PathVariable Long id, @RequestBody Channel channel, @PathVariable(required = false) boolean restart) {
         Optional<Channel> result = channelRepository.findById(id);
         if (result.isEmpty()) {
             throw new EntityNotFound();
@@ -95,6 +95,8 @@ public class ChannelController {
         oldChannel.setStreamInputs(channel.getStreamInputs());
         oldChannel.setCurrentInput(channel.getCurrentInput());
         oldChannel.setServers(channel.getServers());
+        if(restart)
+            new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/restart/" + channel.getId(), String.class);
         return channelRepository.save(oldChannel);
     }
 
@@ -109,6 +111,7 @@ public class ChannelController {
         Optional<Channel> channel = channelRepository.findById(id);
         if (channel.isPresent()) {
             Stream stream = channel.get();
+            stream.setCurrentInput(stream.getStreamInputs().get(0));
             var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/streams/start/", stream, String.class);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
         } else
@@ -120,7 +123,18 @@ public class ChannelController {
         Optional<Channel> channel = channelRepository.findById(id);
         if (channel.isPresent()) {
             Stream stream = channel.get();
-            var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/streams/stop/", stream, String.class);
+            var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/stop/" + stream.getId(), String.class);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
+        } else
+            throw new EntityNotFound();
+    }
+
+    @GetMapping("/restart/{id}")
+    public ResponseEntity<String> restartChannel(@PathVariable Long id) {
+        Optional<Channel> channel = channelRepository.findById(id);
+        if (channel.isPresent()) {
+            Stream stream = channel.get();
+            var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/restart/" + stream.getId(), String.class);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
         } else
             throw new EntityNotFound();

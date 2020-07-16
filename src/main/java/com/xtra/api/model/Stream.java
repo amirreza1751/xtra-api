@@ -1,12 +1,13 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
-
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,6 +20,7 @@ public class Stream {
     private Long id;
     @NotBlank(message = "Name is Required")
     private String name;
+    private String logo;
     private StreamType streamType;
     private boolean readNative = false;
     private boolean streamAll = false;
@@ -26,6 +28,9 @@ public class Stream {
     private boolean genTimestamps = false;
     private boolean rtmpOutput = false;
 
+    private String adminNotes;
+    private String resellerNotes;
+    private String userAgent;
     @ManyToOne
     private Category category;
 
@@ -41,5 +46,11 @@ public class Stream {
 
     @OneToOne
     private StreamInput currentInput;
+
+    //Timestamps
+    @CreationTimestamp
+    private LocalDateTime createdDate;
+    @UpdateTimestamp
+    private LocalDateTime updatedDate;
 
 }
