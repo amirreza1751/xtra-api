@@ -95,7 +95,7 @@ public class ChannelController {
         oldChannel.setStreamInputs(channel.getStreamInputs());
         oldChannel.setCurrentInput(channel.getCurrentInput());
         oldChannel.setServers(channel.getServers());
-        if(restart)
+        if (restart)
             new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/restart/" + channel.getId(), String.class);
         return channelRepository.save(oldChannel);
     }
@@ -112,7 +112,7 @@ public class ChannelController {
         if (channel.isPresent()) {
             Stream stream = channel.get();
             stream.setCurrentInput(stream.getStreamInputs().get(0));
-            var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/streams/start/", stream, String.class);
+            var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/start/" + id, String.class);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
         } else
             throw new EntityNotFound();
