@@ -28,9 +28,8 @@ public class Stream {
     private boolean genTimestamps = false;
     private boolean rtmpOutput = false;
 
-    private String adminNotes;
-    private String resellerNotes;
-    private String userAgent;
+    private String notes;
+
     @ManyToOne
     private Category category;
 

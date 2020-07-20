@@ -69,9 +69,13 @@ public class ChannelController {
 
     }
 
-    @PostMapping("")
-    public Channel addChannel(@Valid @RequestBody Channel channel) {
-        return channelRepository.save(channel);
+    @PostMapping(value = {"", "/{restart}"})
+    public Channel addChannel(@Valid @RequestBody Channel channel, @PathVariable(required = false) boolean restart) {
+        Channel ch = channelRepository.save(channel);
+        if (restart) {
+            var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/start/" + ch.getId(), String.class);
+        }
+        return ch;
     }
 
     @GetMapping("/{id}")
