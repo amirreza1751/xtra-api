@@ -17,8 +17,6 @@ public class Channel extends Stream {
         setStreamType(StreamType.CHANNEL);
     }
 
-    private String icon;
-
     @Override
     public void setStreamInputs(List<StreamInput> streamInputs) {
         super.setStreamInputs(streamInputs);

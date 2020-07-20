@@ -7,8 +7,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -27,8 +30,12 @@ public class Stream {
     private boolean directSource = false;
     private boolean genTimestamps = false;
     private boolean rtmpOutput = false;
-
     private String notes;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private Set<DayOfWeek> daysToRestart;
+    private LocalTime timeToRestart;
 
     @ManyToOne
     private Category category;
