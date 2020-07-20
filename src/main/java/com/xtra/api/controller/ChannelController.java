@@ -79,7 +79,7 @@ public class ChannelController {
         return channelRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
     }
 
-    @PutMapping(value = {"/{id}", "/{id}/{restart}"})
+    @PatchMapping(value = {"/{id}", "/{id}/{restart}"})
     public Channel updateChannel(@PathVariable Long id, @RequestBody Channel channel, @PathVariable(required = false) boolean restart) {
         Optional<Channel> result = channelRepository.findById(id);
         if (result.isEmpty()) {
