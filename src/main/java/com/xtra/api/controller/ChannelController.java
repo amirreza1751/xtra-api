@@ -91,7 +91,7 @@ public class ChannelController {
             throw new EntityNotFound();
         }
         Channel oldChannel = result.get();
-        copyProperties(channel,oldChannel,"id");
+        copyProperties(channel,oldChannel,"id","currentInput");
         if (restart)
             new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/restart/" + channel.getId(), String.class);
         return channelRepository.save(oldChannel);

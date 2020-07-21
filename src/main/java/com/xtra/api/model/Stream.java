@@ -50,7 +50,7 @@ public class Stream {
     @OneToMany(cascade = CascadeType.ALL)
     private List<StreamInput> streamInputs;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     private StreamInput currentInput;
 
     //Timestamps
