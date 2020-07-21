@@ -21,7 +21,6 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 import static com.xtra.api.util.utilities.wrapSearchString;
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 @RestController
 @RequestMapping("/channels")
@@ -91,7 +90,14 @@ public class ChannelController {
             throw new EntityNotFound();
         }
         Channel oldChannel = result.get();
-        copyProperties(channel,oldChannel);
+        oldChannel.setName(channel.getName());
+        oldChannel.setLogo(channel.getLogo());
+        oldChannel.setDirectSource(channel.isDirectSource());
+        oldChannel.setReadNative(channel.isReadNative());
+        oldChannel.setStreamAll(channel.isStreamAll());
+        oldChannel.setGenTimestamps(channel.isGenTimestamps());
+        oldChannel.setStreamInputs(channel.getStreamInputs());
+        oldChannel.setServers(channel.getServers());
         if (restart)
             new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/restart/" + channel.getId(), String.class);
         return channelRepository.save(oldChannel);
