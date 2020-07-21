@@ -13,7 +13,7 @@ public class ApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(ApiApplication.class, args);
     }
-    @Value("${dashboard.path}")
+//    @Value("${dashboard.path}")
     private String dashboardPath;
 
     @Bean
@@ -21,7 +21,7 @@ public class ApiApplication {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedMethods("GET", "PUT", "POST", "DELETE");
+                registry.addMapping("/**").allowedMethods("GET", "PATCH", "POST", "DELETE");
             }
         };
     }
