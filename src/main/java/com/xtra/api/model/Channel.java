@@ -22,5 +22,7 @@ public class Channel extends Stream {
         super.setStreamInputs(streamInputs);
         if (!streamInputs.isEmpty())
             setCurrentInput(streamInputs.get(0));
+        else
+            setCurrentInput(null);
     }
 }
