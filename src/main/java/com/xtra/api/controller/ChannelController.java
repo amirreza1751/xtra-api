@@ -63,9 +63,9 @@ public class ChannelController {
             search = wrapSearchString(search);
             Optional<Server> server = serverRepository.findByName(search);
             if (server.isPresent())
-                return channelRepository.findByNameLikeOrCategoryNameLikeOrCurrentInputUrlLikeOrServersContains(search, search, search, server.get(), page);
+                return channelRepository.findByNameLikeOrCategoryNameLikeOrStreamInfoCurrentInputLikeOrServersContains(search, search, search, server.get(), page);
             else
-                return channelRepository.findByNameLikeOrCategoryNameLikeOrCurrentInputUrlLike(search, search, search, page);
+                return channelRepository.findByNameLikeOrCategoryNameLikeOrStreamInfoCurrentInputLike(search, search, search, page);
         }
 
     }
@@ -108,7 +108,6 @@ public class ChannelController {
         Optional<Channel> channel = channelRepository.findById(id);
         if (channel.isPresent()) {
             Stream stream = channel.get();
-            stream.setCurrentInput(stream.getStreamInputs().get(0));
             var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/start/" + id, String.class);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
         } else

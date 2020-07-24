@@ -16,13 +16,4 @@ public class Channel extends Stream {
     public Channel() {
         setStreamType(StreamType.CHANNEL);
     }
-
-    @Override
-    public void setStreamInputs(List<StreamInput> streamInputs) {
-        super.setStreamInputs(streamInputs);
-        if (!streamInputs.isEmpty())
-            setCurrentInput(streamInputs.get(0));
-        else
-            setCurrentInput(null);
-    }
 }

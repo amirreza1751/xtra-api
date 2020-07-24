@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.DayOfWeek;
@@ -30,12 +31,16 @@ public class Stream {
     private boolean directSource = false;
     private boolean genTimestamps = false;
     private boolean rtmpOutput = false;
+    private String userAgent;
     private String notes;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private Set<DayOfWeek> daysToRestart;
     private LocalTime timeToRestart;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private StreamInfo streamInfo;
 
     @ManyToOne
     private Category category;
@@ -50,8 +55,6 @@ public class Stream {
     @OneToMany(cascade = CascadeType.ALL)
     private List<StreamInput> streamInputs;
 
-    @OneToOne(orphanRemoval = true)
-    private StreamInput currentInput;
 
     //Timestamps
     @CreationTimestamp
