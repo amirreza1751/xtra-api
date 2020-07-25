@@ -39,8 +39,11 @@ public class Stream {
     private Set<DayOfWeek> daysToRestart;
     private LocalTime timeToRestart;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "stream", cascade = CascadeType.ALL)
     private StreamInfo streamInfo;
+
+    @OneToOne(mappedBy = "stream", cascade = CascadeType.ALL)
+    private ProgressInfo progressInfo;
 
     @ManyToOne
     private Category category;

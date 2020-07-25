@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Data
 public class StreamInfo {
     @Id
-    private Long id;
+    private Long streamId;
     private String uptime;
     private String currentInput;
     private String resolution;
@@ -16,7 +16,7 @@ public class StreamInfo {
     private String audioCodec;
 
     @OneToOne
-    @JoinColumn(name = "stream_id", referencedColumnName = "id")
+    @MapsId
     private Stream stream;
 
     public StreamInfo() {

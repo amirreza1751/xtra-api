@@ -1,5 +1,6 @@
 package com.xtra.api.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.ProgressInfo;
@@ -14,9 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.io.InputStream;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -63,14 +63,27 @@ public class StreamController {
 
     @PostMapping("/updateStreamInfo")
     @Transactional
-    public void updateStreamInfo(@RequestBody Map<String, Object> infos) {
+    public void updateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos) {
         ObjectMapper mapper = new ObjectMapper();
-        List<StreamInfo> streamInfos = (List<StreamInfo>) infos.get("streamInfoList");
-        List<ProgressInfo> progressInfos = (List<ProgressInfo>) infos.get("progressInfoList");
-        List<Stream> streams = streamRepository.findAllById(streamInfos.stream().mapToLong((StreamInfo::getId)).boxed().collect(Collectors.toList()));
+        List<StreamInfo> streamInfos = mapper.convertValue(infos.get("streamInfoList"), new TypeReference<>() {
+        });
+        List<ProgressInfo> progressInfos = mapper.convertValue(infos.get("progressInfoList"), new TypeReference<>() {
+        });
+        List<Stream> streams = streamRepository.findAllById(streamInfos.stream().mapToLong((StreamInfo::getStreamId)).boxed().collect(Collectors.toList()));
 
-        for (StreamInfo info : streamInfos) {
-            streamInfoRepository.save(info);
+        for (Stream stream : streams) {
+            Optional<StreamInfo> streamInfo = streamInfos.stream().filter(info -> info.getStreamId().equals(stream.getId())).findAny();
+            if (streamInfo.isPresent()) {
+                streamInfo.get().setStream(stream);
+                stream.setStreamInfo(streamInfo.get());
+            }
+            Optional<ProgressInfo> progressInfo = progressInfos.stream().filter(info -> info.getStreamId().equals(stream.getId())).findAny();
+            if (progressInfo.isPresent()) {
+                progressInfo.get().setStream(stream);
+                stream.setProgressInfo(progressInfo.get());
+            }
+
+            streamRepository.save(stream);
         }
 
     }
