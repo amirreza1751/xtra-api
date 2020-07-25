@@ -1,5 +1,6 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -18,6 +19,7 @@ public class ProgressInfo {
 
     @OneToOne
     @MapsId
+    @JsonBackReference
     private Stream stream;
 
     public ProgressInfo() {

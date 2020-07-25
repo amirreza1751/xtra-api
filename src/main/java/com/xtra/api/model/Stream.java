@@ -1,5 +1,6 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class Stream {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     @NotBlank(message = "Name is Required")
     private String name;
     private String logo;
@@ -39,9 +41,11 @@ public class Stream {
     private Set<DayOfWeek> daysToRestart;
     private LocalTime timeToRestart;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "stream", cascade = CascadeType.ALL)
     private StreamInfo streamInfo;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "stream", cascade = CascadeType.ALL)
     private ProgressInfo progressInfo;
 

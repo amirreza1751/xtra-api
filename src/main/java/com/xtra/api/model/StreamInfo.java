@@ -1,5 +1,6 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -17,6 +18,7 @@ public class StreamInfo {
 
     @OneToOne
     @MapsId
+    @JsonBackReference
     private Stream stream;
 
     public StreamInfo() {
