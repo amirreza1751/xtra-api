@@ -24,4 +24,9 @@ public class StreamInfo {
     public StreamInfo() {
     }
 
+    public StreamInfo(Stream stream) {
+        this.stream = stream;
+    }
 }
+
+

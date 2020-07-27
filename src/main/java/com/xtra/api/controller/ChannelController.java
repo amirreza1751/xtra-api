@@ -1,9 +1,7 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.exceptions.EntityNotFound;
-import com.xtra.api.model.Channel;
-import com.xtra.api.model.Server;
-import com.xtra.api.model.Stream;
+import com.xtra.api.model.*;
 import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +105,6 @@ public class ChannelController {
     public ResponseEntity<String> startChannel(@PathVariable Long id) {
         Optional<Channel> channel = channelRepository.findById(id);
         if (channel.isPresent()) {
-            Stream stream = channel.get();
             var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/start/" + id, String.class);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
         } else
@@ -116,10 +113,13 @@ public class ChannelController {
 
     @GetMapping("/stop/{id}")
     public ResponseEntity<String> stopChannel(@PathVariable Long id) {
-        Optional<Channel> channel = channelRepository.findById(id);
-        if (channel.isPresent()) {
-            Stream stream = channel.get();
-            var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/stop/" + stream.getId(), String.class);
+        Optional<Channel> channelById = channelRepository.findById(id);
+        if (channelById.isPresent()) {
+            Channel channel = channelById.get();
+            var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/stop/" + channel.getId(), String.class);
+            channel.setProgressInfo(null);
+            channel.setStreamInfo(null);
+            channelRepository.save(channel);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
         } else
             throw new EntityNotFound();

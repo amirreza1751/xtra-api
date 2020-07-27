@@ -26,7 +26,7 @@ public class ProgressInfo {
 
     }
 
-    public ProgressInfo(Long streamId) {
-        this.streamId = streamId;
+    public ProgressInfo(Stream stream) {
+        this.stream = stream;
     }
 }

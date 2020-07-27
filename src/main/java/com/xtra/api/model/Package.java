@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class Package {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id ;
     private String name;
     private boolean isTrial;

@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
-
+import org.hibernate.annotations.Parameter;
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -21,10 +21,17 @@ import java.util.Set;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Stream {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stream_seq")
+    @GenericGenerator(
+            name = "stream_seq",
+            strategy = "enhanced-sequence",
+            parameters = {
+                    @Parameter(name = "prefer_sequence_per_entity", value = "true"),
+                    @Parameter(name = "increment_size", value = "1") })
     private Long id;
 
-    @NotBlank(message = "Name is Required")
+    //@NotNull
+    //@Size(min = 5, message = "The Name must be at least 5 characters")
     private String name;
     private String logo;
     private StreamType streamType;
