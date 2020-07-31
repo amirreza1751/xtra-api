@@ -46,7 +46,7 @@ public class MovieController {
             return movieRepository.findAll(page);
         else {
             search = wrapSearchString(search);
-            return movieRepository.findByNameLikeOrPlotLikeOrCastLikeOrDirectorLikeOrGenresLikeOrCountryLike(search, search, search, search, search, search, page);
+            return movieRepository.findByNameLikeOrInfoPlotLikeOrInfoCastLikeOrInfoDirectorLikeOrInfoGenresLikeOrInfoCountryLike(search, search, search, search, search, search, page);
         }
 
     }

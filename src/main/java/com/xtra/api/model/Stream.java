@@ -9,6 +9,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Parameter;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -30,8 +32,9 @@ public class Stream {
                     @Parameter(name = "increment_size", value = "1") })
     private Long id;
 
-    //@NotNull
-    //@Size(min = 5, message = "The Name must be at least 5 characters")
+    @NotNull
+    @Size(min = 5, message = "The Name must be at least 5 characters")
+    @Column(unique = true)
     private String name;
     private String logo;
     private StreamType streamType;
@@ -67,7 +70,7 @@ public class Stream {
     private List<Server> servers;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private List<StreamInput> streamInputs;
+    private Set<StreamInput> streamInputs;
 
 
     //Timestamps
