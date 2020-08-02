@@ -22,7 +22,7 @@ public class VodController {
     }
 
     @PostMapping("/{id}")
-    public Vod setEncodingStatus(@PathVariable Long id, @RequestParam EncodingStatus encodingStatus) {
+    public Vod setEncodingStatus(@PathVariable Long id, @RequestBody EncodingStatus encodingStatus) {
         Vod vod = vodRepository.findById(id).orElseThrow(() -> new RuntimeException("Vod not found!"));
         vod.setEncodeStatus(encodingStatus);
         vodRepository.save(vod);

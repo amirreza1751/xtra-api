@@ -8,6 +8,8 @@ import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -31,9 +33,9 @@ public class Vod {
     @Enumerated(EnumType.STRING)
     private EncodingStatus encodeStatus;
 
-    @OneToMany
-    private Set<Subtitle> subtitles;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Subtitle> subtitles = new ArrayList<>();
 
-    @OneToMany
-    private Set<Audio> audios;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Audio> audios = new ArrayList<>();
 }

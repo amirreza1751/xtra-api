@@ -2,6 +2,7 @@ package com.xtra.api.controller;
 
 import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.Movie;
+import com.xtra.api.model.Subtitle;
 import com.xtra.api.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,7 +12,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.xtra.api.util.utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -75,5 +79,15 @@ public class MovieController {
     @DeleteMapping("/{id}")
     public void deleteMovie(@PathVariable Long id) {
         movieRepository.deleteById(id);
+    }
+
+    @PostMapping("set_subtitle/{id}")
+    public List<Subtitle> setSubtitles(@PathVariable Long id, @RequestBody List<Subtitle> subtitles) {
+        Movie movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found"));
+        if (subtitles.size() == 0)
+            throw new RuntimeException("provide at least one subtitle");
+        movie.setSubtitles(subtitles);
+        movieRepository.save(movie);
+        return movie.getSubtitles();
     }
 }
