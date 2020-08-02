@@ -29,7 +29,7 @@ public class Vod {
     private String location;
 
     @Enumerated(EnumType.STRING)
-    private EncodeStatus encodeStatus;
+    private EncodingStatus encodeStatus;
 
     @OneToMany
     private Set<Subtitle> subtitles;

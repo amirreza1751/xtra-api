@@ -1,11 +1,10 @@
 package com.xtra.api.controller;
 
+import com.xtra.api.model.EncodingStatus;
 import com.xtra.api.model.Vod;
 import com.xtra.api.repository.VodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class VodController {
@@ -22,5 +21,12 @@ public class VodController {
         return vodRepository.findById(id).orElseThrow(() -> new RuntimeException("Vod not found!"));
     }
 
+    @PostMapping("/{id}")
+    public Vod setEncodingStatus(@PathVariable Long id, @RequestParam EncodingStatus encodingStatus) {
+        Vod vod = vodRepository.findById(id).orElseThrow(() -> new RuntimeException("Vod not found!"));
+        vod.setEncodeStatus(encodingStatus);
+        vodRepository.save(vod);
+        return vod;
+    }
 
 }
