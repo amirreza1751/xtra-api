@@ -27,7 +27,9 @@ public class Vod {
     @NotBlank
     private String name;
     private String location;
-    private boolean encoded;
+
+    @Enumerated(EnumType.STRING)
+    private EncodeStatus encodeStatus;
 
     @OneToMany
     private Set<Subtitle> subtitles;
