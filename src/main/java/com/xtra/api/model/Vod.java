@@ -27,6 +27,7 @@ public class Vod {
     @NotBlank
     private String name;
     private String location;
+    private boolean encoded;
 
     @OneToMany
     private Set<Subtitle> subtitles;
