@@ -1,6 +1,7 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.exceptions.EntityNotFound;
+import com.xtra.api.model.Audio;
 import com.xtra.api.model.Movie;
 import com.xtra.api.model.Subtitle;
 import com.xtra.api.repository.MovieRepository;
@@ -81,7 +82,7 @@ public class MovieController {
         movieRepository.deleteById(id);
     }
 
-    @PostMapping("set_subtitle/{id}")
+    @PostMapping("set_subtitles/{id}")
     public List<Subtitle> setSubtitles(@PathVariable Long id, @RequestBody List<Subtitle> subtitles) {
         Movie movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found"));
         if (subtitles.size() == 0)
@@ -89,5 +90,15 @@ public class MovieController {
         movie.setSubtitles(subtitles);
         movieRepository.save(movie);
         return movie.getSubtitles();
+    }
+
+    @PostMapping("set_audios/{id}")
+    public List<Audio> setAudios(@PathVariable Long id, @RequestBody List<Audio> audios) {
+        Movie movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found"));
+        if (audios.size() == 0)
+            throw new RuntimeException("provide at least one audio");
+        movie.setAudios(audios);
+        movieRepository.save(movie);
+        return movie.getAudios();
     }
 }
