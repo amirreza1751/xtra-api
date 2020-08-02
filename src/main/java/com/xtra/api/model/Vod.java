@@ -6,11 +6,9 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Entity
 @Data
@@ -25,7 +23,14 @@ public class Vod {
                     @Parameter(name = "prefer_sequence_per_entity", value = "true"),
                     @Parameter(name = "increment_size", value = "1") })
     private Long id;
+
     @NotBlank
     private String name;
-    private String link;
+    private String location;
+
+    @OneToMany
+    private Set<Subtitle> subtitles;
+
+    @OneToMany
+    private Set<Audio> audios;
 }
