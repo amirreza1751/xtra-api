@@ -18,16 +18,16 @@ public class MovieInfo {
     private Long id;
 
     @URL
-    private String posterURL;
+    private String poster_path;
     @URL
-    private String backdropURL;
+    private String backdrop_path;
     private String plot;
     private String cast;
     private String director;
     private String genres;
-    private LocalDate releaseDate;
+    private LocalDate release_date;
     private int runtime;
-    private String youtubeTrailer;
+    private String youtube_trailer;
     private float rating;
     private String country;
 }
