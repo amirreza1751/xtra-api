@@ -7,15 +7,13 @@ import com.xtra.api.model.Subtitle;
 import com.xtra.api.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
+import static com.xtra.api.util.utilities.getSortingPageable;
 import static com.xtra.api.util.utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -33,17 +31,7 @@ public class MovieController {
     @GetMapping("")
     public Page<Movie> getMovies(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        Pageable page;
-        Sort.Order order;
-        if (sortBy != null && !sortBy.equals("")) {
-            if (sortDir != null && sortDir.equalsIgnoreCase("desc"))
-                order = Sort.Order.desc(sortBy);
-            else
-                order = Sort.Order.asc(sortBy);
-            page = PageRequest.of(pageNo, pageSize, Sort.by(order));
-        } else {
-            page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc("id")));
-        }
+        var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
 
         if (search == null)
             return movieRepository.findAll(page);

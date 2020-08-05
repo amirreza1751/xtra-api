@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+import static com.xtra.api.util.utilities.getSortingPageable;
 import static com.xtra.api.util.utilities.wrapSearchString;
 
 @RestController
@@ -28,23 +29,13 @@ public class LineController {
     @GetMapping("")
     public Page<Line> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        Pageable page;
-        Sort.Order order;
-        if (sortBy != null) {
-            if (sortDir != null && sortDir.equalsIgnoreCase("desc"))
-                order = Sort.Order.desc(sortBy);
-            else
-                order = Sort.Order.asc(sortBy);
-            page = PageRequest.of(pageNo, pageSize, Sort.by(order));
-        } else {
-            page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc("id")));
-        }
+        var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
 
         if (search == null)
             return lineRepository.findAll(page);
         else {
             search = wrapSearchString(search);
-            return lineRepository.findByUsernameLikeOrNotesLike(search,search, page);
+            return lineRepository.findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(search, search, search, page);
         }
     }
 

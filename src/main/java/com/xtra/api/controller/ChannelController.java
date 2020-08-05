@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.validation.Valid;
 import java.util.Optional;
 
+import static com.xtra.api.util.utilities.getSortingPageable;
 import static com.xtra.api.util.utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -42,18 +43,7 @@ public class ChannelController {
     public Page<Channel> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
 
-        Pageable page;
-        Sort.Order order;
-        if (sortBy != null) {
-            if (sortDir != null && sortDir.equalsIgnoreCase("desc"))
-                order = Sort.Order.desc(sortBy);
-            else
-                order = Sort.Order.asc(sortBy);
-            page = PageRequest.of(pageNo, pageSize, Sort.by(order));
-        } else {
-            page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc("id")));
-        }
-
+        var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
 
         if (search == null)
             return channelRepository.findAll(page);
@@ -89,7 +79,7 @@ public class ChannelController {
             throw new EntityNotFound();
         }
         Channel oldChannel = result.get();
-        copyProperties(channel,oldChannel,"id","currentInput");
+        copyProperties(channel, oldChannel, "id", "currentInput");
         if (restart)
             new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/restart/" + channel.getId(), String.class);
         return channelRepository.save(oldChannel);

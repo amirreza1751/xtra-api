@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LineRepository extends JpaRepository<Line, Long> {
-    Page<Line> findByUsernameLikeOrNotesLike(String username,String notes, Pageable pageable);
+    Page<Line> findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(String username, String adminNotes, String resellerNotes, Pageable pageable);
 }
