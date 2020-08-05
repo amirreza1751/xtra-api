@@ -90,4 +90,15 @@ public class LineController {
         lineRepository.save(l);
     }
 
+    @GetMapping("/ban/{id}")
+    public void banLine(@PathVariable Long id, @RequestParam(defaultValue = "true") boolean banned) {
+        Optional<Line> line = lineRepository.findById(id);
+        if (line.isEmpty()) {
+            throw new EntityNotFound();
+        }
+        Line l = line.get();
+        l.setBanned(banned);
+        lineRepository.save(l);
+    }
+
 }
