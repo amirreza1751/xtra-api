@@ -7,9 +7,6 @@ import com.xtra.api.repository.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +15,8 @@ import org.springframework.web.client.RestTemplate;
 import javax.validation.Valid;
 import java.util.Optional;
 
-import static com.xtra.api.util.utilities.getSortingPageable;
-import static com.xtra.api.util.utilities.wrapSearchString;
+import static com.xtra.api.util.Utilities.getSortingPageable;
+import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @RestController

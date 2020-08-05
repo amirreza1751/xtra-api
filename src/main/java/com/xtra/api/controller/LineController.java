@@ -2,22 +2,16 @@ package com.xtra.api.controller;
 
 import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.Line;
-import com.xtra.api.model.Server;
 import com.xtra.api.repository.LineRepository;
-import net.bytebuddy.utility.RandomString;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Optional;
 
-import static com.xtra.api.util.utilities.*;
+import static com.xtra.api.util.Utilities.*;
 
 @RestController
 @RequestMapping("/lines")

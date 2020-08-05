@@ -13,8 +13,8 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-import static com.xtra.api.util.utilities.getSortingPageable;
-import static com.xtra.api.util.utilities.wrapSearchString;
+import static com.xtra.api.util.Utilities.getSortingPageable;
+import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @RestController
