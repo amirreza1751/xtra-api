@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @EqualsAndHashCode(callSuper = true)
@@ -22,12 +23,18 @@ public class Line extends User {
     private boolean isAdminBlocked = false;
     private boolean isIspLocked = false;
     private boolean isStalker;
-    private String notes;
+    private String adminNotes;
+    private String resellerNotes;
+
+    @Enumerated(EnumType.STRING)
+    @ElementCollection
+    private List<StreamProtocol> allowedOutputs;
 
     @ManyToOne
     private User referrer;
+
     @ManyToOne
-    private User reseller;
+    private User owner;
 
 
 }
