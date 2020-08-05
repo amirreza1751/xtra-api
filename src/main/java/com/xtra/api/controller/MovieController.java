@@ -35,7 +35,7 @@ public class MovieController {
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         Pageable page;
         Sort.Order order;
-        if (sortBy != null) {
+        if (sortBy != null && !sortBy.equals("")) {
             if (sortDir != null && sortDir.equalsIgnoreCase("desc"))
                 order = Sort.Order.desc(sortBy);
             else
