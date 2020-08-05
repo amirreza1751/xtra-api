@@ -4,17 +4,20 @@ import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.Server;
 import com.xtra.api.repository.LineRepository;
+import net.bytebuddy.utility.RandomString;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
-import static com.xtra.api.util.utilities.getSortingPageable;
-import static com.xtra.api.util.utilities.wrapSearchString;
+import static com.xtra.api.util.utilities.*;
 
 @RestController
 @RequestMapping("/lines")
@@ -45,7 +48,26 @@ public class LineController {
     }
 
     @PostMapping("/")
-    public Line addLine(@RequestBody Line line) {
+    public Line addLine(@RequestBody @Valid Line line) {
+        if (StringUtils.isEmpty(line.getUsername())) {
+            var isUnique = false;
+            var username = "";
+            while (!isUnique) {
+                username = generateRandomString();
+                if (lineRepository.findByUsername(username).isEmpty()) {
+                    isUnique = true;
+                }
+            }
+            line.setUsername(username);
+        } else {
+            if (lineRepository.findByUsername(line.getUsername()).isPresent())
+                throw new RuntimeException("username already exists");
+        }
+
+        if (StringUtils.isEmpty(line.getPassword())) {
+            var password = generateRandomString();
+            line.setPassword(password);
+        }
         return lineRepository.save(line);
     }
 

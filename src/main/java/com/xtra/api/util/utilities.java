@@ -1,5 +1,7 @@
 package com.xtra.api.util;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,5 +24,13 @@ public class utilities {
             page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc("id")));
         }
         return page;
+    }
+
+    public static String generateRandomString() {
+        String characters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        characters += characters.toLowerCase();
+        characters += "23456789";
+        var length = RandomUtils.nextInt(5, 10);
+        return RandomStringUtils.random(length, characters);
     }
 }

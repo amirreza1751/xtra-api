@@ -1,7 +1,12 @@
 package com.xtra.api.model;
 import lombok.Data;
+import org.hibernate.validator.constraints.CompositionType;
+import org.hibernate.validator.constraints.ConstraintComposition;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Data
@@ -10,8 +15,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     protected long id;
+
+    @Column(unique = true)
     protected String username;
+
     protected String password;
+
+    @Email(message = "Email should be valid")
+    @NotNull
     protected String email;
     protected String _2FASec;
     protected boolean isBanned = false;
