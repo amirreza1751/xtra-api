@@ -96,16 +96,4 @@ public class LineController {
         lineRepository.save(l);
     }
 
-    @GetMapping("/admin_block/{id}")
-    public void adminBlockLine(@PathVariable Long id, @RequestParam(defaultValue = "true") boolean blocked) {
-        Optional<Line> line = lineRepository.findById(id);
-        if (line.isEmpty()) {
-            throw new EntityNotFound();
-        }
-        Line l = line.get();
-        l.setAdminBlocked(blocked);
-        lineRepository.save(l);
-    }
-
-
 }
