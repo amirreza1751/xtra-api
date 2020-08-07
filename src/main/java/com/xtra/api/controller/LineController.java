@@ -2,7 +2,9 @@ package com.xtra.api.controller;
 
 import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.Line;
+import com.xtra.api.model.LineStatus;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
@@ -17,10 +19,12 @@ import static com.xtra.api.util.Utilities.*;
 @RequestMapping("/lines")
 public class LineController {
     LineRepository lineRepository;
+    LineService lineService;
 
     @Autowired
-    public LineController(LineRepository lineRepository) {
+    public LineController(LineRepository lineRepository, LineService lineService) {
         this.lineRepository = lineRepository;
+        this.lineService = lineService;
     }
 
     @GetMapping("")
@@ -99,6 +103,11 @@ public class LineController {
         Line l = line.get();
         l.setBanned(banned);
         lineRepository.save(l);
+    }
+
+    @GetMapping("/authorize/{line_token}/{stream_token}")
+    public LineStatus authorizeLine(@PathVariable String line_token, @PathVariable String stream_token) {
+        return lineService.isLineEligibleForPlaying(line_token, stream_token);
     }
 
 }

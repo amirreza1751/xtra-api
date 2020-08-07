@@ -15,8 +15,11 @@ import java.util.List;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Line extends User {
+    private String lineToken;
     private LocalDateTime expireDate;
+    private boolean neverExpire = false;
     private int maxConnections = 1;
+    private int currentConnections = 0;
     private boolean isReStreamer = false;
     private boolean isTrial;
     private boolean isBlocked = false;

@@ -11,4 +11,6 @@ public interface LineRepository extends JpaRepository<Line, Long> {
     Page<Line> findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(String username, String adminNotes, String resellerNotes, Pageable pageable);
 
     Optional<Line> findByUsername(String username);
+
+    Optional<Line> findByLineToken(String lineToken);
 }

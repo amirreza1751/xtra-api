@@ -27,9 +27,9 @@ public class Utilities {
     }
 
     public static String generateRandomString() {
-        String characters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        String characters = "ABCDEFGHJKMNPQRSTUVWXYZ";
         characters += characters.toLowerCase();
-        characters += "23456789";
+        characters += "123456789";
         var length = RandomUtils.nextInt(5, 10);
         return RandomStringUtils.random(length, characters);
     }

@@ -38,6 +38,7 @@ public class Stream {
     private String name;
     private String logo;
     private StreamType streamType;
+    private String streamToken;
     private boolean readNative = false;
     private boolean streamAll = false;
     private boolean directSource = false;
