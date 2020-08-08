@@ -1,5 +1,7 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -14,6 +16,9 @@ import java.util.List;
 @Entity
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "username")
 public class Line extends User {
     private String lineToken;
     private LocalDateTime expireDate;
@@ -37,6 +42,5 @@ public class Line extends User {
 
     @ManyToOne
     private User owner;
-
 
 }
