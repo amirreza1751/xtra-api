@@ -87,4 +87,10 @@ public class StreamController {
         }
 
     }
+
+    @GetMapping("/get_id/{stream_token}")
+    public Long getStreamIdByToken(@PathVariable("stream_token") String streamToken) {
+        var streamByToken = streamRepository.getByStreamToken(streamToken);
+        return streamByToken.map(Stream::getId).orElse(null);
+    }
 }

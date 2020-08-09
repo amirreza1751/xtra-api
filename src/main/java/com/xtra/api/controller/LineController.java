@@ -105,9 +105,15 @@ public class LineController {
         lineRepository.save(l);
     }
 
-    @GetMapping("/authorize/{line_token}/{stream_token}")
+    @GetMapping("/stream_auth/{line_token}/{stream_token}")
     public LineStatus authorizeLine(@PathVariable String line_token, @PathVariable String stream_token) {
         return lineService.isLineEligibleForPlaying(line_token, stream_token);
+    }
+
+    @GetMapping("/get_id/{line_token}")
+    public Long getLineByToken(@PathVariable("line_token") String lineToken) {
+        var lineByToken = lineRepository.findByLineToken(lineToken);
+        return lineByToken.map(Line::getId).orElse(null);
     }
 
 }
