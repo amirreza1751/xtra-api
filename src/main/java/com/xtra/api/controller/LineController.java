@@ -70,7 +70,7 @@ public class LineController {
     }
 
     @PatchMapping("/{id}")
-    public Line updateLine(@PathVariable Long id, @RequestBody Line line) {
+    public Line updateLine(@PathVariable Long id, @RequestBody @Valid Line line) {
         if (lineRepository.findById(id).isEmpty()) {
             throw new EntityNotFound();
         }

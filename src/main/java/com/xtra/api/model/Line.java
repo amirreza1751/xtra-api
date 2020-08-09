@@ -37,10 +37,10 @@ public class Line extends User {
     @ElementCollection
     private List<StreamProtocol> allowedOutputs;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private User referrer;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private User owner;
 
 }
