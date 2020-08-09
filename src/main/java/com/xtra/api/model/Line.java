@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -42,5 +43,12 @@ public class Line extends User {
 
     @ManyToOne(cascade = CascadeType.ALL)
     private User owner;
+
+    @OneToMany(mappedBy = "line")
+    private List<LineActivity> activities;
+
+    public int getCurrentConnections(){
+        return activities.size();
+    }
 
 }
