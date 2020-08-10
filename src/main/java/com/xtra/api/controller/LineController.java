@@ -55,7 +55,7 @@ public class LineController {
         return lineRepository.findById(id).orElseThrow(() -> new RuntimeException("Line not found!"));
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public Line addLine(@RequestBody @Valid Line line) {
         if (StringUtils.isEmpty(line.getUsername())) {
             var isUnique = false;
