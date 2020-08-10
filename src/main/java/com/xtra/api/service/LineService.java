@@ -4,7 +4,7 @@ import com.xtra.api.model.LineStatus;
 import com.xtra.api.repository.LineRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Service
 public class LineService {
@@ -22,7 +22,7 @@ public class LineService {
                 return LineStatus.BANNED;
             } else if (line.isBlocked()) {
                 return LineStatus.BLOCKED;
-            } else if (!line.isNeverExpire() && line.getExpireDate().isBefore(LocalDateTime.now())) {
+            } else if (!line.isNeverExpire() && !line.getExpireDate().isAfter(LocalDate.now())) {
                 return LineStatus.EXPIRED;
             } else if (line.getMaxConnections() == 0 || line.getMaxConnections() == line.getCurrentConnections()) {
                 return LineStatus.MAX_CONNECTION_REACHED;

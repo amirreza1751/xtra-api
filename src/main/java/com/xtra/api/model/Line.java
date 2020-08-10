@@ -6,10 +6,9 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import java.util.List;
         property = "username")
 public class Line extends User {
     private String lineToken;
-    private LocalDateTime expireDate;
+    private LocalDate expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;
     private int currentConnections = 0;
