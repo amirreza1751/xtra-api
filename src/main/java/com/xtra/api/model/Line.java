@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import java.util.List;
         property = "username")
 public class Line extends User {
     private String lineToken;
-    private LocalDate expireDate;
+    private LocalDateTime expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;
     private int currentConnections = 0;
