@@ -153,4 +153,13 @@ public class LineController {
 
         }
     }
+
+    @PostMapping("/deleteLineActivities")
+    @Transactional
+    public void deleteLineActivities(@RequestBody List<LineActivity> lineActivities) {
+        for (var activity : lineActivities) {
+            var existingActivity = lineActivityRepository.findByLineIdAndUserIp(activity.getLineId(), activity.getUserIp());
+            existingActivity.ifPresent(lineActivity -> lineActivityRepository.delete(lineActivity));
+        }
+    }
 }
