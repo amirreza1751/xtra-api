@@ -10,6 +10,7 @@ import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -45,9 +46,9 @@ public class Line extends User {
     private User owner;
 
     @OneToMany(mappedBy = "line")
-    private List<LineActivity> activities;
+    private List<LineActivity> activities = new ArrayList<>();
 
-    public int getCurrentConnections(){
+    public int getCurrentConnections() {
         return activities.size();
     }
 
