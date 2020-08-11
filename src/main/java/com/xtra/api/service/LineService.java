@@ -25,7 +25,7 @@ public class LineService {
                 return LineStatus.BLOCKED;
             } else if (!line.isNeverExpire() && line.getExpireDate().isBefore(LocalDateTime.now())) {
                 return LineStatus.EXPIRED;
-            } else if (line.getMaxConnections() == 0 || line.getMaxConnections() == line.getCurrentConnections()) {
+            } else if (line.getMaxConnections() == 0 || line.getMaxConnections() < line.getCurrentConnections()) {
                 return LineStatus.MAX_CONNECTION_REACHED;
             } else if (false) {//@todo check access to stream
                 return LineStatus.NO_ACCESS_TO_STREAM;

@@ -9,9 +9,12 @@ import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -28,6 +31,10 @@ public class LineController {
     StreamRepository streamRepository;
     LineService lineService;
     LineActivityRepository lineActivityRepository;
+    @Value("${core.apiPath}")
+    private String corePath;
+    @Value("${core.apiPort}")
+    private String corePort;
 
     @Autowired
     public LineController(LineRepository lineRepository, LineService lineService, LineActivityRepository lineActivityRepository, StreamRepository streamRepository) {
@@ -113,6 +120,14 @@ public class LineController {
         Line l = line.get();
         l.setBanned(banned);
         lineRepository.save(l);
+    }
+
+    @GetMapping("/kill_connections/{id}")
+    public ResponseEntity<String> killLineConnections(@PathVariable Long id) {
+        if (lineRepository.findById(id).isPresent()) {
+            var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/lines/kill_connections/" + id, Boolean.class);
+        }
+        return ResponseEntity.ok().body("");
     }
 
     @GetMapping("/stream_auth/{line_token}/{stream_token}")
