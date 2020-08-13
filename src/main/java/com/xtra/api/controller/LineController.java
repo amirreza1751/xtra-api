@@ -68,7 +68,7 @@ public class LineController {
             var isUnique = false;
             var username = "";
             while (!isUnique) {
-                username = generateRandomString();
+                username = generateRandomString(5, 10, true);
                 if (lineRepository.findByUsername(username).isEmpty()) {
                     isUnique = true;
                 }
@@ -80,9 +80,17 @@ public class LineController {
         }
 
         if (StringUtils.isEmpty(line.getPassword())) {
-            var password = generateRandomString();
+            var password = generateRandomString(5, 10, true);
             line.setPassword(password);
         }
+
+        String token;
+        do {
+            token = generateRandomString(8, 12, false);
+        }
+        while (lineRepository.findByLineToken(token).isPresent());
+
+        line.setLineToken(token);
         return lineRepository.save(line);
     }
 

@@ -4,6 +4,7 @@ import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.*;
 import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.ServerRepository;
+import com.xtra.api.repository.StreamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -15,8 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.validation.Valid;
 import java.util.Optional;
 
-import static com.xtra.api.util.Utilities.getSortingPageable;
-import static com.xtra.api.util.Utilities.wrapSearchString;
+import static com.xtra.api.util.Utilities.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @RestController
@@ -24,15 +24,18 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public class ChannelController {
     ChannelRepository channelRepository;
     ServerRepository serverRepository;
+    StreamRepository streamRepository;
+
     @Value("${core.apiPath}")
     private String corePath;
     @Value("${core.apiPort}")
     private String corePort;
 
     @Autowired
-    public ChannelController(ChannelRepository channelRepository, ServerRepository serverRepository) {
+    public ChannelController(ChannelRepository channelRepository, ServerRepository serverRepository, StreamRepository streamRepository) {
         this.channelRepository = channelRepository;
         this.serverRepository = serverRepository;
+        this.streamRepository = streamRepository;
     }
 
     // Stream CRUD
@@ -57,10 +60,16 @@ public class ChannelController {
 
     @PostMapping(value = {"", "/{restart}"})
     public Channel addChannel(@Valid @RequestBody Channel channel, @PathVariable(required = false) boolean restart) {
+        String token;
+        do {
+            token = generateRandomString(8, 12, false);
+        } while (streamRepository.getByStreamToken(token).isPresent());
+        channel.setStreamToken(token);
         Channel ch = channelRepository.save(channel);
         if (restart) {
             var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/start/" + ch.getId(), String.class);
         }
+
         return ch;
     }
 

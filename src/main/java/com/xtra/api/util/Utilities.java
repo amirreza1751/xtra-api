@@ -26,11 +26,18 @@ public class Utilities {
         return page;
     }
 
-    public static String generateRandomString() {
+    public static String generateRandomString(int minSize, int maxSize, boolean useReadableCharacters) {
         String characters = "ABCDEFGHJKMNPQRSTUVWXYZ";
+        if (useReadableCharacters) {
+            characters = characters.replace('I', '\0');
+            characters = characters.replace('O', '\0');
+        }
         characters += characters.toLowerCase();
         characters += "123456789";
-        var length = RandomUtils.nextInt(5, 10);
+        if (useReadableCharacters) {
+            characters = characters.replace('0', '\0');
+        }
+        var length = RandomUtils.nextInt(minSize, maxSize);
         return RandomStringUtils.random(length, characters);
     }
 }
