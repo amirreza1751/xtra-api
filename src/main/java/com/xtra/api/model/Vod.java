@@ -17,13 +17,13 @@ import java.util.Set;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Vod {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "movie_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movie_seq")
     @GenericGenerator(
             name = "movie_seq",
             strategy = "enhanced-sequence",
             parameters = {
                     @Parameter(name = "prefer_sequence_per_entity", value = "true"),
-                    @Parameter(name = "increment_size", value = "1") })
+                    @Parameter(name = "increment_size", value = "1")})
     private Long id;
 
     @NotBlank

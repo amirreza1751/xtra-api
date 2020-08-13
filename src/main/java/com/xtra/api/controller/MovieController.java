@@ -6,8 +6,10 @@ import com.xtra.api.model.Movie;
 import com.xtra.api.model.Subtitle;
 import com.xtra.api.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -21,6 +23,10 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @RequestMapping("/movies")
 public class MovieController {
     private final MovieRepository movieRepository;
+    @Value("${core.apiPath}")
+    private String corePath;
+    @Value("${core.apiPort}")
+    private String corePort;
 
     @Autowired
     public MovieController(MovieRepository movieRepository) {
@@ -42,9 +48,24 @@ public class MovieController {
 
     }
 
-    @PostMapping("")
-    public Movie addMovie(@Valid @RequestBody Movie movie) {
-        return movieRepository.save(movie);
+    @PostMapping("/{encode}")
+    public Movie addMovie(@Valid @RequestBody Movie movie, @PathVariable(required = false) boolean encode) {
+        var savedMovie = movieRepository.save(movie);
+
+        if (encode) {
+            RestTemplate restTemplate = new RestTemplate();
+            var result = restTemplate.postForObject(corePath + ":" + corePort + "/vod/encode/", savedMovie, String.class);
+            savedMovie.setLocation(result);
+            movieRepository.save(savedMovie);
+        }
+        return savedMovie;
+    }
+
+    @GetMapping("/encode/{id}")
+    public Movie encodeMovie(@PathVariable Long id) {
+        var movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("movie not found"));
+        var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", movie, String.class);
+        return movie;
     }
 
     @GetMapping("/{id}")
@@ -74,6 +95,7 @@ public class MovieController {
         if (subtitles.size() == 0)
             throw new RuntimeException("provide at least one subtitle");
         movie.setSubtitles(subtitles);
+        var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/set_subtitles/", movie, String.class);
         movieRepository.save(movie);
         return movie.getSubtitles();
     }
@@ -84,6 +106,7 @@ public class MovieController {
         if (audios.size() == 0)
             throw new RuntimeException("provide at least one audio");
         movie.setAudios(audios);
+        var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/set_audios/", movie, String.class);
         movieRepository.save(movie);
         return movie.getAudios();
     }
