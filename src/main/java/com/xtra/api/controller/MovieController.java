@@ -48,7 +48,7 @@ public class MovieController {
 
     }
 
-    @PostMapping("/{encode}")
+    @PostMapping(value = {"", "/{encode}"})
     public Movie addMovie(@Valid @RequestBody Movie movie, @PathVariable(required = false) boolean encode) {
         var savedMovie = movieRepository.save(movie);
 
