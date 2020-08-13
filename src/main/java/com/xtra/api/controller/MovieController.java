@@ -65,6 +65,8 @@ public class MovieController {
     public Movie encodeMovie(@PathVariable Long id) {
         var movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("movie not found"));
         var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", movie, String.class);
+        movie.setLocation(result);
+        movieRepository.save(movie);
         return movie;
     }
 
@@ -96,6 +98,7 @@ public class MovieController {
             throw new RuntimeException("provide at least one subtitle");
         movie.setSubtitles(subtitles);
         var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/set_subtitles/", movie, String.class);
+        movie.setLocation(result);
         movieRepository.save(movie);
         return movie.getSubtitles();
     }
@@ -107,6 +110,7 @@ public class MovieController {
             throw new RuntimeException("provide at least one audio");
         movie.setAudios(audios);
         var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/set_audios/", movie, String.class);
+        movie.setLocation(result);
         movieRepository.save(movie);
         return movie.getAudios();
     }
