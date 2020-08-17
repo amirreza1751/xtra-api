@@ -4,6 +4,7 @@ import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.Audio;
 import com.xtra.api.model.Movie;
 import com.xtra.api.model.Subtitle;
+import com.xtra.api.model.Vod;
 import com.xtra.api.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +16,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-import static com.xtra.api.util.Utilities.getSortingPageable;
-import static com.xtra.api.util.Utilities.wrapSearchString;
+import static com.xtra.api.util.Utilities.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @RestController
@@ -50,6 +50,13 @@ public class MovieController {
 
     @PostMapping(value = {"", "/{encode}"})
     public Movie addMovie(@Valid @RequestBody Movie movie, @PathVariable(required = false) boolean encode) {
+        String token;
+        do {
+            token = generateRandomString(8, 12, false);
+
+        } while (movieRepository.findByToken(token).isPresent());
+        movie.setToken(token);
+
         var savedMovie = movieRepository.save(movie);
 
         if (encode) {
@@ -89,6 +96,12 @@ public class MovieController {
     @DeleteMapping("/{id}")
     public void deleteMovie(@PathVariable Long id) {
         movieRepository.deleteById(id);
+    }
+
+    @GetMapping("get_id/{vod_token}")
+    public Long getVodIdByToken(@PathVariable("vod_token") String vodToken) {
+        var movie = movieRepository.findByToken(vodToken);
+        return movie.map(Vod::getId).orElse(null);
     }
 
     @PostMapping("set_subtitles/{id}")

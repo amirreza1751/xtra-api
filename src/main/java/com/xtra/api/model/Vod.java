@@ -29,6 +29,7 @@ public class Vod {
     @NotBlank
     private String name;
     private String location;
+    private String token;
 
     @Enumerated(EnumType.STRING)
     private EncodingStatus encodeStatus;
