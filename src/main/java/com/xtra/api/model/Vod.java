@@ -39,4 +39,8 @@ public class Vod {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Audio> audios = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private MediaInfo mediaInfo;
+
 }

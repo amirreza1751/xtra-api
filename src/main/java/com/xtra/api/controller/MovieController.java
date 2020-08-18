@@ -1,10 +1,7 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.exceptions.EntityNotFound;
-import com.xtra.api.model.Audio;
-import com.xtra.api.model.Movie;
-import com.xtra.api.model.Subtitle;
-import com.xtra.api.model.Vod;
+import com.xtra.api.model.*;
 import com.xtra.api.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,15 +54,18 @@ public class MovieController {
         } while (movieRepository.findByToken(token).isPresent());
         movie.setToken(token);
 
-        var savedMovie = movieRepository.save(movie);
+        RestTemplate restTemplate = new RestTemplate();
 
         if (encode) {
-            RestTemplate restTemplate = new RestTemplate();
-            var result = restTemplate.postForObject(corePath + ":" + corePort + "/vod/encode/", savedMovie, String.class);
-            savedMovie.setLocation(result);
-            movieRepository.save(savedMovie);
+            var result = restTemplate.postForObject(corePath + ":" + corePort + "/vod/encode/", movie, String.class);
+            movie.setLocation(result);
+            movieRepository.save(movie);
         }
-        return savedMovie;
+        var result = restTemplate.postForObject(corePath + ":" + corePort + "/vod/info/", movie, MediaInfo.class);
+
+        movie.setMediaInfo(result);
+
+        return movieRepository.save(movie);
     }
 
     @GetMapping("/encode/{id}")
@@ -73,6 +73,8 @@ public class MovieController {
         var movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("movie not found"));
         var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", movie, String.class);
         movie.setLocation(result);
+        var info = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/info/", movie, MediaInfo.class);
+        movie.setMediaInfo(info);
         movieRepository.save(movie);
         return movie;
     }
