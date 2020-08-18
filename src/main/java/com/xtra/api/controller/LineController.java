@@ -139,8 +139,13 @@ public class LineController {
     }
 
     @GetMapping("/stream_auth/{line_token}/{stream_token}")
-    public LineStatus authorizeLine(@PathVariable String line_token, @PathVariable String stream_token) {
+    public LineStatus authorizeLineForStream(@PathVariable String line_token, @PathVariable String stream_token) {
         return lineService.isLineEligibleForPlaying(line_token, stream_token);
+    }
+
+    @GetMapping("/vod_auth/{line_token}/{vod_token}")
+    public LineStatus authorizeLineForVod(@PathVariable("line_token") String lineToken, @PathVariable("vod_token") String vodToken) {
+        return lineService.isLineEligibleForPlaying(lineToken, vodToken);
     }
 
     @GetMapping("/get_id/{line_token}")
