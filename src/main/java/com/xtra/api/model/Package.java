@@ -3,6 +3,7 @@ package com.xtra.api.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.Duration;
 import java.time.Period;
 import java.util.List;
 
