@@ -35,6 +35,11 @@ public class Line extends User {
     private String adminNotes;
     private String resellerNotes;
 
+    private boolean isMag;
+    private boolean isEnigma;
+    private boolean isMinistraPortal;
+    private String mac;
+
     @Enumerated(EnumType.STRING)
     @ElementCollection
     private List<StreamProtocol> allowedOutputs;
