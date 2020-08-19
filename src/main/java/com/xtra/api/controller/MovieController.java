@@ -73,9 +73,8 @@ public class MovieController {
         var movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("movie not found"));
         var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", movie, String.class);
         movie.setLocation(result);
-//        movieRepository.save(movie);
-//        var info = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/info/", movie, MediaInfo.class);
-//        movie.setMediaInfo(info);
+        var info = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/info/", movie, MediaInfo.class);
+        movie.setMediaInfo(info);
         movieRepository.save(movie);
         return movie;
     }
