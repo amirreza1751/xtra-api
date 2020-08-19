@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.springframework.beans.BeanUtils.copyProperties;
+
 @RestController
 @RequestMapping("/streams")
 public class StreamController {
@@ -72,15 +74,23 @@ public class StreamController {
         List<Stream> streams = streamRepository.findAllById(streamInfos.stream().mapToLong((StreamInfo::getStreamId)).boxed().collect(Collectors.toList()));
 
         for (Stream stream : streams) {
-            Optional<StreamInfo> streamInfo = streamInfos.stream().filter(info -> info.getStreamId().equals(stream.getId())).findAny();
+            var streamInfo = streamInfos.stream().filter((info) -> info.getStreamId().equals(stream.getId())).findAny();
             if (streamInfo.isPresent()) {
-                streamInfo.get().setStream(stream);
-                stream.setStreamInfo(streamInfo.get());
+                StreamInfo newInfo = streamInfo.get();
+                StreamInfo infoEntity;
+                infoEntity = stream.getStreamInfo() != null ? stream.getStreamInfo() : new StreamInfo();
+                copyProperties(newInfo, infoEntity, "id");
+                stream.setStreamInfo(infoEntity);
             }
-            Optional<ProgressInfo> progressInfo = progressInfos.stream().filter(info -> info.getStreamId().equals(stream.getId())).findAny();
+
+
+            var progressInfo = progressInfos.stream().filter((info) -> info.getStreamId().equals(stream.getId())).findAny();
             if (progressInfo.isPresent()) {
-                progressInfo.get().setStream(stream);
-                stream.setProgressInfo(progressInfo.get());
+                ProgressInfo newInfo = progressInfo.get();
+                ProgressInfo infoEntity;
+                infoEntity = stream.getProgressInfo() != null ? stream.getProgressInfo() : new ProgressInfo();
+                copyProperties(newInfo, infoEntity, "id");
+                stream.setProgressInfo(infoEntity);
             }
 
             streamRepository.save(stream);

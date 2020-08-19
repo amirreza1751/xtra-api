@@ -2,9 +2,7 @@ package com.xtra.api.controller;
 
 import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.*;
-import com.xtra.api.repository.ChannelRepository;
-import com.xtra.api.repository.ServerRepository;
-import com.xtra.api.repository.StreamRepository;
+import com.xtra.api.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -25,6 +23,8 @@ public class ChannelController {
     ChannelRepository channelRepository;
     ServerRepository serverRepository;
     StreamRepository streamRepository;
+    ProgressInfoRepository progressInfoRepository;
+    StreamInfoRepository streamInfoRepository;
 
     @Value("${core.apiPath}")
     private String corePath;
@@ -32,10 +32,12 @@ public class ChannelController {
     private String corePort;
 
     @Autowired
-    public ChannelController(ChannelRepository channelRepository, ServerRepository serverRepository, StreamRepository streamRepository) {
+    public ChannelController(ChannelRepository channelRepository, ServerRepository serverRepository, StreamRepository streamRepository, ProgressInfoRepository progressInfoRepository, StreamInfoRepository streamInfoRepository) {
         this.channelRepository = channelRepository;
         this.serverRepository = serverRepository;
         this.streamRepository = streamRepository;
+        this.progressInfoRepository = progressInfoRepository;
+        this.streamInfoRepository = streamInfoRepository;
     }
 
     // Stream CRUD
@@ -113,9 +115,11 @@ public class ChannelController {
         if (channelById.isPresent()) {
             Channel channel = channelById.get();
             var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/stop/" + channel.getId(), String.class);
-            channel.setProgressInfo(null);
             channel.setStreamInfo(null);
+            channel.setProgressInfo(null);
             channelRepository.save(channel);
+            //progressInfoRepository.delete(channel.getProgressInfo());
+            //streamInfoRepository.delete(channel.getStreamInfo());
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
         } else
             throw new EntityNotFound();

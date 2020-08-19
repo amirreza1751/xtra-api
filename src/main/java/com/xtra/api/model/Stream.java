@@ -53,11 +53,11 @@ public class Stream {
     private LocalTime timeToRestart;
 
     @JsonManagedReference
-    @OneToOne(mappedBy = "stream", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private StreamInfo streamInfo;
 
     @JsonManagedReference
-    @OneToOne(mappedBy = "stream", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ProgressInfo progressInfo;
 
     @ManyToOne

@@ -12,17 +12,21 @@ import javax.persistence.*;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class StreamInfo {
     @Id
-    private Long streamId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String uptime;
     private String currentInput;
     private String resolution;
     private String videoCodec;
     private String audioCodec;
 
-    @OneToOne
-    @MapsId
+    @OneToOne(mappedBy = "streamInfo")
     @JsonBackReference
     private Stream stream;
+
+    @Column(name = "stream_id")
+    private Long streamId;
 
     public StreamInfo() {
     }
