@@ -2,6 +2,10 @@ package com.xtra.api.controller;
 
 import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.*;
+import com.xtra.api.repository.ChannelRepository;
+import com.xtra.api.repository.ServerRepository;
+import com.xtra.api.repository.StreamRepository;
+import com.xtra.api.service.ChannelService;
 import com.xtra.api.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.function.EntityResponse;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -20,6 +25,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @RestController
 @RequestMapping("/channels")
 public class ChannelController {
+    ChannelService channelService;
     ChannelRepository channelRepository;
     ServerRepository serverRepository;
     StreamRepository streamRepository;
@@ -32,47 +38,26 @@ public class ChannelController {
     private String corePort;
 
     @Autowired
-    public ChannelController(ChannelRepository channelRepository, ServerRepository serverRepository, StreamRepository streamRepository, ProgressInfoRepository progressInfoRepository, StreamInfoRepository streamInfoRepository) {
+    public ChannelController(ChannelRepository channelRepository, ServerRepository serverRepository, StreamRepository streamRepository, ChannelService channelService) {
         this.channelRepository = channelRepository;
         this.serverRepository = serverRepository;
         this.streamRepository = streamRepository;
         this.progressInfoRepository = progressInfoRepository;
         this.streamInfoRepository = streamInfoRepository;
+        this.channelService = channelService;
     }
 
     // Stream CRUD
     @GetMapping("")
-    public Page<Channel> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<Channel>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-
-        var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
-
-        if (search == null)
-            return channelRepository.findAll(page);
-        else {
-            search = wrapSearchString(search);
-            Optional<Server> server = serverRepository.findByName(search);
-            if (server.isPresent())
-                return channelRepository.findByNameLikeOrCategoryNameLikeOrStreamInfoCurrentInputLikeOrServersContains(search, search, search, server.get(), page);
-            else
-                return channelRepository.findByNameLikeOrCategoryNameLikeOrStreamInfoCurrentInputLike(search, search, search, page);
-        }
-
+        var result = channelService.getChannels(pageNo, pageSize, search, sortBy, sortDir);
+        return ResponseEntity.ok().body(result);
     }
 
     @PostMapping(value = {"", "/{restart}"})
-    public Channel addChannel(@Valid @RequestBody Channel channel, @PathVariable(required = false) boolean restart) {
-        String token;
-        do {
-            token = generateRandomString(8, 12, false);
-        } while (streamRepository.getByStreamToken(token).isPresent());
-        channel.setStreamToken(token);
-        Channel ch = channelRepository.save(channel);
-        if (restart) {
-            var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/start/" + ch.getId(), String.class);
-        }
-
-        return ch;
+    public ResponseEntity<Channel> addChannel(@Valid @RequestBody Channel channel, @PathVariable(required = false) boolean restart) {
+        return ResponseEntity.ok(channelService.addChannel(channel, restart));
     }
 
     @GetMapping("/{id}")
@@ -118,8 +103,6 @@ public class ChannelController {
             channel.setStreamInfo(null);
             channel.setProgressInfo(null);
             channelRepository.save(channel);
-            //progressInfoRepository.delete(channel.getProgressInfo());
-            //streamInfoRepository.delete(channel.getStreamInfo());
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
         } else
             throw new EntityNotFound();
