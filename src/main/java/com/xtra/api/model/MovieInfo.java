@@ -6,10 +6,7 @@ import lombok.Data;
 import lombok.Generated;
 import org.hibernate.validator.constraints.URL;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -24,6 +21,8 @@ public class MovieInfo {
     private String posterPath;
     @URL
     private String backdropPath;
+
+    @Column(columnDefinition = "TEXT")
     private String plot;
     private String cast;
     private String director;
