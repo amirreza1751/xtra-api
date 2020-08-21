@@ -32,7 +32,7 @@ public class Vod {
     private String token;
 
     @Enumerated(EnumType.STRING)
-    private EncodingStatus encodeStatus;
+    private EncodeStatus encodeStatus;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Subtitle> subtitles = new ArrayList<>();

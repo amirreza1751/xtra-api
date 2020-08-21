@@ -1,6 +1,6 @@
 package com.xtra.api.model;
 
-public enum EncodedStatus {
+public enum EncodeStatus {
     ENCODED,
     ENCODING,
     ENCODING_FAILED,
