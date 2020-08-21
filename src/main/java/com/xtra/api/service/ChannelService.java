@@ -1,26 +1,27 @@
 package com.xtra.api.service;
 
+import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.Channel;
 import com.xtra.api.model.Server;
+import com.xtra.api.model.Stream;
 import com.xtra.api.repository.ChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
 import static com.xtra.api.util.Utilities.*;
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 public class ChannelService {
     private final ChannelRepository channelRepository;
     private final ServerService serverService;
-    @Value("${core.apiPath}")
-    private String corePath;
-    @Value("${core.apiPort}")
-    private String corePort;
 
     @Autowired
     public ChannelService(ChannelRepository channelRepository, ServerService serverService) {
@@ -54,13 +55,63 @@ public class ChannelService {
         channel.setStreamToken(token);
         Channel ch = channelRepository.save(channel);
         if (restart) {
-            restartChannel(ch.getId());
+            serverService.sendRestartRequest(ch.getId());
         }
         return ch;
     }
 
-    private void restartChannel(Long channelId) {
-        var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/start/" + channelId, String.class);
+    public Optional<Channel> findById(Long id) {
+        return channelRepository.findById(id);
     }
 
+
+
+    public Optional<Channel> update(Long id, Channel channel, boolean restart) {
+        var result = channelRepository.findById(id);
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+        Channel oldChannel = result.get();
+        copyProperties(channel, oldChannel, "id", "currentInput");
+        if (restart)
+            serverService.sendRestartRequest(id);
+        return Optional.of(channelRepository.save(oldChannel));
+    }
+
+    public void deleteById(Long id) {
+        // @todo add exception handling
+        channelRepository.deleteById(id);
+    }
+
+    public boolean start(long id) {
+        Optional<Channel> channel = channelRepository.findById(id);
+        if (channel.isPresent()) {
+            return serverService.sendStartRequest(id);
+        } else
+            throw new EntityNotFound();
+    }
+
+    public boolean stop(Long id) {
+        Optional<Channel> channelById = channelRepository.findById(id);
+        if (channelById.isPresent()) {
+            Channel channel = channelById.get();
+            if (!serverService.sendStopRequest(channel.getId()))
+                return false;
+            channel.setStreamInfo(null);
+            channel.setProgressInfo(null);
+            channelRepository.save(channel);
+            return true;
+        } else
+            throw new EntityNotFound();
+    }
+
+    public boolean restart(Long id) {
+        Optional<Channel> channelById = channelRepository.findById(id);
+        if (channelById.isPresent()) {
+            Channel channel = channelById.get();
+            serverService.sendRestartRequest(channel.getId());
+            return true;
+        } else
+            throw new EntityNotFound();
+    }
 }
