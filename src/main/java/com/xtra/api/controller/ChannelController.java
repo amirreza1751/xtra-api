@@ -37,7 +37,7 @@ public class ChannelController {
     public ResponseEntity<Page<Channel>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         var result = channelService.getChannels(pageNo, pageSize, search, sortBy, sortDir);
-        return ResponseEntity.ok().body(result);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping(value = {"", "/{restart}"})
@@ -47,19 +47,19 @@ public class ChannelController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Channel> getChannelById(@PathVariable Long id) {
-        var channel = channelService.findById(id);
+        var channel = channelService.getChannel(id);
         return channel.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PatchMapping(value = {"/{id}", "/{id}/{restart}"})
     public ResponseEntity<Channel> updateChannel(@PathVariable Long id, @RequestBody Channel channel, @PathVariable(required = false) boolean restart) {
-        var result = channelService.update(id, channel, restart);
+        var result = channelService.Channel(id, channel, restart);
         return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteChannel(@PathVariable Long id) {
-        channelService.deleteById(id);
+        channelService.deleteChannel(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

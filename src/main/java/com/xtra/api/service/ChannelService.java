@@ -3,15 +3,10 @@ package com.xtra.api.service;
 import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.Channel;
 import com.xtra.api.model.Server;
-import com.xtra.api.model.Stream;
 import com.xtra.api.repository.ChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -60,13 +55,12 @@ public class ChannelService {
         return ch;
     }
 
-    public Optional<Channel> findById(Long id) {
+    public Optional<Channel> getChannel(Long id) {
         return channelRepository.findById(id);
     }
 
 
-
-    public Optional<Channel> update(Long id, Channel channel, boolean restart) {
+    public Optional<Channel> Channel(Long id, Channel channel, boolean restart) {
         var result = channelRepository.findById(id);
         if (result.isEmpty()) {
             return Optional.empty();
@@ -78,7 +72,7 @@ public class ChannelService {
         return Optional.of(channelRepository.save(oldChannel));
     }
 
-    public void deleteById(Long id) {
+    public void deleteChannel(Long id) {
         // @todo add exception handling
         channelRepository.deleteById(id);
     }

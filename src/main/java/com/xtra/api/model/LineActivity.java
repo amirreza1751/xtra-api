@@ -9,28 +9,32 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@IdClass(LineActivityId.class)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LineActivity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @ManyToOne
     private Line line;
+
+    @Id
     @Column(name = "line_id", insertable = false, updatable = false)
     private Long lineId;
 
     @ManyToOne
     private Stream stream;
+
+    @Id
     @Column(name = "stream_id", insertable = false, updatable = false)
     private Long streamId;
+
+    @Id
+    private String userIp;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime lastRead;
 
     private boolean hlsEnded;
-    private String userIp;
     private String userAgent;
     private String isp;
     private String country;
