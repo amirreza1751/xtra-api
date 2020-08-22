@@ -2,8 +2,6 @@ package com.xtra.api.service;
 
 import com.xtra.api.exceptions.EntityNotFound;
 import com.xtra.api.model.Line;
-import com.xtra.api.model.LineActivity;
-import com.xtra.api.model.LineActivityId;
 import com.xtra.api.model.LineStatus;
 import com.xtra.api.repository.LineRepository;
 import org.springframework.data.domain.Page;
@@ -11,23 +9,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static com.xtra.api.util.Utilities.*;
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 public class LineService {
     private final LineRepository lineRepository;
-    private final LineActivityService lineActivityService;
-    private final StreamService streamService;
     private final ServerService serverService;
 
-    public LineService(LineRepository lineRepository, LineActivityService lineActivityService, StreamService streamService, ServerService serverService) {
+    public LineService(LineRepository lineRepository, ServerService serverService) {
         this.lineRepository = lineRepository;
-        this.lineActivityService = lineActivityService;
-        this.streamService = streamService;
         this.serverService = serverService;
     }
 
