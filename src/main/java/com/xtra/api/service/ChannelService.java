@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -40,7 +41,7 @@ public class ChannelService {
         }
     }
 
-    public Channel addChannel(Channel channel, boolean restart) {
+    public Channel addChannel(Channel channel, boolean start) {
 
         String token;
         do {
@@ -48,9 +49,10 @@ public class ChannelService {
         } while (channelRepository.existsChannelByStreamToken(token));
 
         channel.setStreamToken(token);
+        channel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
         Channel ch = channelRepository.save(channel);
-        if (restart) {
-            serverService.sendRestartRequest(ch.getId());
+        if (start) {
+            serverService.sendStartRequest(ch.getId());
         }
         return ch;
     }
@@ -60,13 +62,14 @@ public class ChannelService {
     }
 
 
-    public Optional<Channel> Channel(Long id, Channel channel, boolean restart) {
+    public Optional<Channel> updateChannel(Long id, Channel channel, boolean restart) {
         var result = channelRepository.findById(id);
         if (result.isEmpty()) {
             return Optional.empty();
         }
         Channel oldChannel = result.get();
         copyProperties(channel, oldChannel, "id", "currentInput");
+        channel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
         if (restart)
             serverService.sendRestartRequest(id);
         return Optional.of(channelRepository.save(oldChannel));

@@ -5,7 +5,6 @@ import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +18,6 @@ public class ChannelController {
     ChannelService channelService;
     ChannelRepository channelRepository;
     ServerRepository serverRepository;
-
-    @Value("${core.apiPath}")
-    private String corePath;
-    @Value("${core.apiPort}")
-    private String corePort;
 
     @Autowired
     public ChannelController(ChannelRepository channelRepository, ServerRepository serverRepository, ChannelService channelService) {
@@ -40,9 +34,9 @@ public class ChannelController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping(value = {"", "/{restart}"})
-    public ResponseEntity<Channel> addChannel(@Valid @RequestBody Channel channel, @PathVariable(required = false) boolean restart) {
-        return ResponseEntity.ok(channelService.addChannel(channel, restart));
+    @PostMapping(value = {"", "/{start}"})
+    public ResponseEntity<Channel> addChannel(@Valid @RequestBody Channel channel, @PathVariable(required = false) boolean start) {
+        return ResponseEntity.ok(channelService.addChannel(channel, start));
     }
 
     @GetMapping("/{id}")
@@ -53,7 +47,7 @@ public class ChannelController {
 
     @PatchMapping(value = {"/{id}", "/{id}/{restart}"})
     public ResponseEntity<Channel> updateChannel(@PathVariable Long id, @RequestBody Channel channel, @PathVariable(required = false) boolean restart) {
-        var result = channelService.Channel(id, channel, restart);
+        var result = channelService.updateChannel(id, channel, restart);
         return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

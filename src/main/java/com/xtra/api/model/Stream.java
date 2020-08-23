@@ -71,7 +71,7 @@ public class Stream {
     private List<Server> servers;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private Set<StreamInput> streamInputs;
+    private List<StreamInput> streamInputs;
 
 
     //Timestamps

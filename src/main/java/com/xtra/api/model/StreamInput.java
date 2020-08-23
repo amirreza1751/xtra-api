@@ -11,7 +11,7 @@ import javax.persistence.Id;
 @Data
 public class StreamInput {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String url;
 }
