@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Parameter;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -29,7 +30,7 @@ public class Stream {
             strategy = "enhanced-sequence",
             parameters = {
                     @Parameter(name = "prefer_sequence_per_entity", value = "true"),
-                    @Parameter(name = "increment_size", value = "1") })
+                    @Parameter(name = "increment_size", value = "1")})
     private Long id;
 
     @NotNull
@@ -73,6 +74,14 @@ public class Stream {
     @OneToMany(cascade = CascadeType.ALL)
     private List<StreamInput> streamInputs;
 
+    @OneToMany(mappedBy = "stream")
+    private List<LineActivity> lineActivities;
+
+    private int currentConnections = 0;
+
+    public int getCurrentConnections() {
+        return lineActivities.size();
+    }
 
     //Timestamps
     @CreationTimestamp
