@@ -68,7 +68,7 @@ public class ChannelService {
             return Optional.empty();
         }
         Channel oldChannel = result.get();
-        copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections");
+        copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "lineActivities");
         channel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
         if (restart)
             serverService.sendRestartRequest(id);

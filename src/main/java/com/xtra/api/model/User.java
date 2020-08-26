@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;
 
     @Column(unique = true)

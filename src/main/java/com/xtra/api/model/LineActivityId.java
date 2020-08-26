@@ -10,4 +10,7 @@ public class LineActivityId implements Serializable {
     private Long streamId;
     private String userIp;
 
+    public LineActivityId() {
+
+    }
 }

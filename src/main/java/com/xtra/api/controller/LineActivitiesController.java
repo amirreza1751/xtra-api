@@ -20,13 +20,19 @@ public class LineActivitiesController {
         this.lineActivityService = lineActivityService;
     }
 
-    @PutMapping("line_activities")
-    public ResponseEntity<?> updateLineActivities(@RequestBody List<LineActivity> lineActivities) {
-        lineActivityService.updateLineActivities(lineActivities);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    @PutMapping("/batch")
+    public ResponseEntity<?> batchCreateOrUpdateActivities(@RequestBody List<LineActivity> lineActivities) {
+        lineActivityService.batchCreateOrUpdate(lineActivities);
+        return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("line_activities/{activityId}")
+    @DeleteMapping("/batch")
+    public ResponseEntity<?> batchDeleteActivities(@RequestBody List<LineActivity> lineActivities) {
+        lineActivityService.batchDelete(lineActivities);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{activityId}")
     public ResponseEntity<?> deleteLineActivity(@PathVariable LineActivityId activityId) {
         lineActivityService.deleteLineActivity(activityId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

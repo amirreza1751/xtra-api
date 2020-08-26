@@ -15,6 +15,7 @@ import javax.validation.constraints.Size;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -24,13 +25,7 @@ import java.util.Set;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Stream {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stream_seq")
-    @GenericGenerator(
-            name = "stream_seq",
-            strategy = "enhanced-sequence",
-            parameters = {
-                    @Parameter(name = "prefer_sequence_per_entity", value = "true"),
-                    @Parameter(name = "increment_size", value = "1")})
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
@@ -75,7 +70,7 @@ public class Stream {
     private List<StreamInput> streamInputs;
 
     @OneToMany(mappedBy = "stream")
-    private List<LineActivity> lineActivities;
+    private List<LineActivity> lineActivities = new ArrayList<>();
 
     private int currentConnections = 0;
 
