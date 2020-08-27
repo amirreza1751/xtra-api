@@ -14,16 +14,18 @@ import java.time.LocalDateTime;
 public class LineActivity {
 
     @ManyToOne
+    @Id
+    @MapsId
     private Line line;
 
-    @Id
     @Column(name = "line_id", insertable = false, updatable = false)
     private Long lineId;
 
     @ManyToOne
+    @Id
+    @MapsId
     private Stream stream;
 
-    @Id
     @Column(name = "stream_id", insertable = false, updatable = false)
     private Long streamId;
 
