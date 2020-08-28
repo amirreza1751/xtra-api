@@ -19,15 +19,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    StreamRepository streamRepository;
     LineService lineService;
-    LineActivityRepository lineActivityRepository;
 
     @Autowired
-    public LineController(LineService lineService, LineActivityRepository lineActivityRepository, StreamRepository streamRepository) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
-        this.lineActivityRepository = lineActivityRepository;
-        this.streamRepository = streamRepository;
     }
 
     @GetMapping("")
