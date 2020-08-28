@@ -32,8 +32,8 @@ public class LineActivitiesController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{activityId}")
-    public ResponseEntity<?> deleteLineActivity(@PathVariable LineActivityId activityId) {
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteLineActivity(@RequestBody LineActivityId activityId) {
         lineActivityService.deleteLineActivity(activityId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
