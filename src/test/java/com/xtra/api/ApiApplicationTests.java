@@ -13,7 +13,6 @@ class ApiApplicationTests {
 	private LineController lineController;
 	@Test
 	void contextLoads() {
-
 	}
 
 }

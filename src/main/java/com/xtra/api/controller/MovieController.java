@@ -1,133 +1,73 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.exceptions.EntityNotFound;
-import com.xtra.api.model.*;
-import com.xtra.api.repository.MovieRepository;
+import com.xtra.api.model.Audio;
+import com.xtra.api.model.Movie;
+import com.xtra.api.model.Subtitle;
+import com.xtra.api.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
-
-import static com.xtra.api.util.Utilities.*;
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 @RestController
 @RequestMapping("/movies")
 public class MovieController {
-    private final MovieRepository movieRepository;
-    @Value("${core.apiPath}")
-    private String corePath;
-    @Value("${core.apiPort}")
-    private String corePort;
+
+    private final MovieService movieService;
 
     @Autowired
-    public MovieController(MovieRepository movieRepository) {
-        this.movieRepository = movieRepository;
+    public MovieController(MovieService movieService) {
+        this.movieService = movieService;
     }
-
 
     @GetMapping("")
-    public Page<Movie> getMovies(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<Movie>> getAll(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
-
-        if (search == null)
-            return movieRepository.findAll(page);
-        else {
-            search = wrapSearchString(search);
-            return movieRepository.findByNameLikeOrInfoPlotLikeOrInfoCastLikeOrInfoDirectorLikeOrInfoGenresLikeOrInfoCountryLike(search, search, search, search, search, search, page);
-        }
-
-    }
-
-    @PostMapping(value = {"", "/{encode}"})
-    public Movie addMovie(@Valid @RequestBody Movie movie, @PathVariable(required = false) boolean encode) {
-        String token;
-        do {
-            token = generateRandomString(8, 12, false);
-
-        } while (movieRepository.findByToken(token).isPresent());
-        movie.setToken(token);
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        if (encode) {
-            var result = restTemplate.postForObject(corePath + ":" + corePort + "/vod/encode/", movie, String.class);
-            movie.setLocation(result);
-            movieRepository.save(movie);
-        }
-        var result = restTemplate.postForObject(corePath + ":" + corePort + "/vod/info/", movie, MediaInfo.class);
-
-        movie.setMediaInfo(result);
-
-        return movieRepository.save(movie);
-    }
-
-    @GetMapping("/encode/{id}")
-    public Movie encodeMovie(@PathVariable Long id) {
-        var movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("movie not found"));
-        var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", movie, String.class);
-        movie.setLocation(result);
-        var info = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/info/", movie, MediaInfo.class);
-        movie.setMediaInfo(info);
-        movieRepository.save(movie);
-        return movie;
+        return ResponseEntity.ok(movieService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/{id}")
-    public Movie getMovieById(@PathVariable Long id) {
-        return movieRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+    public ResponseEntity<Movie> getMovie(@PathVariable Long id) {
+        return ResponseEntity.ok(movieService.getByIdOrFail(id));
     }
 
-    @PatchMapping("/{id}")
-    public Movie updateMovie(@PathVariable Long id, @RequestBody Movie movie) {
-        Optional<Movie> result = movieRepository.findById(id);
-        if (result.isEmpty()) {
-            throw new EntityNotFound();
-        }
-        Movie oldMovie = result.get();
-        copyProperties(movie, oldMovie, "id");
-        return movieRepository.save(oldMovie);
+    @PostMapping(value = {"", "/{encode}"})
+    public ResponseEntity<Movie> addMovie(@RequestBody Movie movie, @PathVariable(required = false) boolean encode) {
+        return ResponseEntity.ok(movieService.add(movie, encode));
+    }
+
+    @PatchMapping(value = {"/{id}", "{id}/{encode}"})
+    public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @RequestBody Movie movie, @PathVariable(required = false) boolean encode) {
+        return ResponseEntity.ok(movieService.updateOrFail(id, movie, encode));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteMovie(@PathVariable Long id) {
-        movieRepository.deleteById(id);
+    public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
+        movieService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("get_id/{vod_token}")
-    public Long getVodIdByToken(@PathVariable("vod_token") String vodToken) {
-        var movie = movieRepository.findByToken(vodToken);
-        return movie.map(Vod::getId).orElse(null);
+    @GetMapping("/token/{vod_token}/id")
+    public ResponseEntity<Long> getVodIdByToken(@PathVariable("vod_token") String vodToken) {
+        return ResponseEntity.ok(movieService.getByToken(vodToken));
     }
 
-    @PostMapping("set_subtitles/{id}")
-    public List<Subtitle> setSubtitles(@PathVariable Long id, @RequestBody List<Subtitle> subtitles) {
-        Movie movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found"));
-        if (subtitles.size() == 0)
-            throw new RuntimeException("provide at least one subtitle");
-        movie.setSubtitles(subtitles);
-        var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/set_subtitles/", movie, String.class);
-        movie.setLocation(result);
-        movieRepository.save(movie);
-        return movie.getSubtitles();
+    @GetMapping("/encode/{id}")
+    public ResponseEntity<Movie> encodeMovie(@PathVariable Long id) {
+        return ResponseEntity.ok(movieService.encode(id));
     }
 
-    @PostMapping("set_audios/{id}")
-    public List<Audio> setAudios(@PathVariable Long id, @RequestBody List<Audio> audios) {
-        Movie movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Movie not found"));
-        if (audios.size() == 0)
-            throw new RuntimeException("provide at least one audio");
-        movie.setAudios(audios);
-        var result = new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/set_audios/", movie, String.class);
-        movie.setLocation(result);
-        movieRepository.save(movie);
-        return movie.getAudios();
+    @PatchMapping("/{id}/subtitles")
+    public ResponseEntity<List<Subtitle>> updateSubtitles(@PathVariable Long id, @RequestBody List<Subtitle> subtitles) {
+        return ResponseEntity.ok(movieService.updateSubtitles(id, subtitles));
+    }
+
+    @PatchMapping("{id}/audios")
+    public ResponseEntity<List<Audio>> updateAudios(@PathVariable Long id, @RequestBody List<Audio> audios) {
+        return ResponseEntity.ok(movieService.updateAudios(id, audios));
     }
 
 
