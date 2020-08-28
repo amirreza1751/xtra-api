@@ -3,7 +3,6 @@ package com.xtra.api.service;
 import com.xtra.api.model.LineActivity;
 import com.xtra.api.model.LineActivityId;
 import com.xtra.api.repository.LineActivityRepository;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,43 +25,43 @@ public class LineActivityService {
     }
 
     public void deleteLineActivity(LineActivityId activityId) {
-        lineActivityRepository.deleteByLineIdAndUserIpAndStreamId(activityId.getLineId(), activityId.getUserIp(), activityId.getStreamId());
+        lineActivityRepository.deleteById(activityId);
     }
 
     //@Transactional
     public void batchCreateOrUpdate(List<LineActivity> lineActivities) {
         for (var activity : lineActivities) {
             //@todo find out how null values get passed
-            if (activity.getLineId() == null || activity.getStreamId() == null || StringUtils.isEmpty(activity.getUserIp()))
-                continue;
-
-            var existingActivity = lineActivityRepository.findByLineIdAndUserIpAndStreamId(activity.getLineId(), activity.getUserIp(), activity.getStreamId());
+            var existingActivity = lineActivityRepository.findById(activity.getId());
             if (existingActivity.isEmpty()) {
-                System.out.println("new activity");
-
-                var lineById = lineService.findById(activity.getLineId());
+                var lineById = lineService.findById(activity.getId().getLineId());
                 if (lineById.isEmpty())
                     continue;
                 activity.setLine(lineById.get());
+                var streamById = streamService.findById(activity.getId().getStreamId());
+                if (streamById.isEmpty())
+                    continue;
+                activity.setStream(streamById.get());
+                lineActivityRepository.save(activity);
+
             } else {
                 var oldActivity = existingActivity.get();
-                System.out.println("old activity");
-                copyProperties(oldActivity, activity, "id", "user", "stream");
+                copyProperties(activity, oldActivity, "id", "line", "stream");
+                var streamById = streamService.findById(activity.getId().getStreamId());
+                if (streamById.isEmpty())
+                    continue;
+                activity.setStream(streamById.get());
+                lineActivityRepository.save(oldActivity);
+
             }
 
-            var streamById = streamService.findById(activity.getStreamId());
-            if (streamById.isEmpty())
-                continue;
-            activity.setStream(streamById.get());
-
-            lineActivityRepository.save(activity);
         }
     }
 
     @Transactional
     public void batchDelete(List<LineActivity> lineActivities) {
         for (var activity : lineActivities) {
-            lineActivityRepository.deleteByLineIdAndUserIpAndStreamId(activity.getLineId(), activity.getUserIp(), activity.getStreamId());
+            lineActivityRepository.deleteById(activity.getId());
         }
     }
 }

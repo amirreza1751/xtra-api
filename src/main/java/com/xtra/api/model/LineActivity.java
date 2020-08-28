@@ -1,36 +1,35 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
-@IdClass(LineActivityId.class)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LineActivity {
 
+    @EmbeddedId
+    private LineActivityId id = new LineActivityId();
+
     @ManyToOne
-    @Id
-    @MapsId
+    @JsonBackReference("line_id")
+    @MapsId("lineId")
     private Line line;
 
-    @Column(name = "line_id", insertable = false, updatable = false)
-    private Long lineId;
 
     @ManyToOne
-    @Id
-    @MapsId
+    @JsonBackReference("stream_id")
+    @MapsId("streamId")
     private Stream stream;
 
-    @Column(name = "stream_id", insertable = false, updatable = false)
-    private Long streamId;
-
-    @Id
-    private String userIp;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;

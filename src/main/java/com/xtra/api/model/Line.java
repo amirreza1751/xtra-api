@@ -1,27 +1,33 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "username")
-public class Line extends User {
+public class Line {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true)
+    protected String username;
+    protected String password;
     private String lineToken;
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
@@ -30,6 +36,7 @@ public class Line extends User {
     private boolean isReStreamer = false;
     private boolean isTrial;
     private boolean isBlocked = false;
+    private boolean isBanned = false;
     private boolean isIspLocked = false;
     private boolean isStalker;
     private String adminNotes;
@@ -51,6 +58,7 @@ public class Line extends User {
     private User owner;
 
     @OneToMany(mappedBy = "line")
+    @JsonManagedReference("line_id")
     private List<LineActivity> activities = new ArrayList<>();
 
     public int getCurrentConnections() {

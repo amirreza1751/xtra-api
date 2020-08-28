@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -70,6 +68,7 @@ public class Stream {
     private List<StreamInput> streamInputs;
 
     @OneToMany(mappedBy = "stream")
+    @JsonManagedReference("stream_id")
     private List<LineActivity> lineActivities = new ArrayList<>();
 
     private int currentConnections = 0;

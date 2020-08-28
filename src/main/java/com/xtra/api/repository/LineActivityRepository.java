@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface LineActivityRepository extends JpaRepository<LineActivity, LineActivityId> {
-    Optional<LineActivity> findByLineIdAndUserIpAndStreamId(Long lineId, String userIp, Long streamId);
+    Optional<LineActivity> findById(LineActivityId id);
 
-    void deleteByLineIdAndUserIpAndStreamId(Long lineId, String userIp, Long streamId);
+    void deleteById(LineActivityId id);
 
 }
