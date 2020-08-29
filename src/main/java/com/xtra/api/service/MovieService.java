@@ -15,7 +15,7 @@ import java.util.List;
 import static com.xtra.api.util.Utilities.generateRandomString;
 
 @Service
-public class MovieService extends CrudService<Movie, Long> {
+public class MovieService extends CrudService<Movie, Long, MovieRepository> {
 
     private final ServerService serverService;
 
@@ -27,14 +27,14 @@ public class MovieService extends CrudService<Movie, Long> {
 
     @Override
     public Page<Movie> findWithSearch(Pageable pageable, String search) {
-        return ((MovieRepository) repository).findByNameLikeOrInfoPlotLikeOrInfoCastLikeOrInfoDirectorLikeOrInfoGenresLikeOrInfoCountryLike(search, search, search, search, search, search, pageable);
+        return repository.findByNameLikeOrInfoPlotLikeOrInfoCastLikeOrInfoDirectorLikeOrInfoGenresLikeOrInfoCountryLike(search, search, search, search, search, search, pageable);
     }
 
     public Movie add(Movie movie, boolean encode) {
         String token;
         do {
             token = generateRandomString(8, 12, false);
-        } while (((MovieRepository) repository).findByToken(token).isPresent());
+        } while (repository.findByToken(token).isPresent());
         movie.setToken(token);
 
         if (encode) {
@@ -78,7 +78,7 @@ public class MovieService extends CrudService<Movie, Long> {
     }
 
     public Long getByToken(String vodToken) {
-        var movie = ((MovieRepository) repository).findByToken(vodToken);
+        var movie = repository.findByToken(vodToken);
         return movie.map(Vod::getId).orElse(null);
     }
 

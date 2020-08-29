@@ -8,6 +8,7 @@ import com.xtra.api.model.Stream;
 import com.xtra.api.model.StreamInfo;
 import com.xtra.api.repository.StreamInfoRepository;
 import com.xtra.api.repository.StreamRepository;
+import com.xtra.api.service.StreamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public class StreamController {
     StreamRepository streamRepository;
     StreamInfoRepository streamInfoRepository;
+    StreamService streamService;
 
     @Autowired
     public StreamController(StreamRepository repository, StreamInfoRepository streamInfoRepository) {
@@ -34,9 +36,9 @@ public class StreamController {
     }
 
     @GetMapping("/")
-    public Page<Stream> getStreams(@RequestParam(defaultValue = "0", name = "page_no") int page_no, @RequestParam(defaultValue = "25", name = "page_size") int page_size) {
-        Pageable page = PageRequest.of(page_no, page_size);
-        return streamRepository.findAll(page);
+    public Page<Stream> getStreams(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+            , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+        return streamService.getAll(search, pageNo, pageSize, sortBy, sortDir);
     }
 
     @GetMapping("/{id}")

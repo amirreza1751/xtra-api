@@ -24,6 +24,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-configuration-processor'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.4.5'
 	compile 'commons-beanutils:commons-beanutils:1.9.4'
 	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
 	implementation 'org.mariadb.jdbc:mariadb-java-client'

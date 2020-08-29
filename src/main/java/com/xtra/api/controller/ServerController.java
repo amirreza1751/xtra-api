@@ -1,34 +1,44 @@
 package com.xtra.api.controller;
 
+import com.xtra.api.model.File;
 import com.xtra.api.model.Server;
 import com.xtra.api.repository.ServerRepository;
+import com.xtra.api.service.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/servers")
 public class ServerController {
-    ServerRepository serverRepository;
+    ServerService serverService;
 
     @Autowired
-    public ServerController(ServerRepository serverRepository) {
-        this.serverRepository = serverRepository;
+    public ServerController(ServerService serverService) {
+        this.serverService = serverService;
     }
 
     @GetMapping("")
-    public Page<Server> getServers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<Server>> getServers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        Pageable page = PageRequest.of(pageNo, pageSize);
-        return serverRepository.findAll(page);
+        return ResponseEntity.ok(serverService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @PostMapping("")
     public Server addServer(@Valid @RequestBody Server server) {
-        return serverRepository.save(server);
+        return serverService.add(server);
+    }
+
+    @GetMapping("{id}/files")
+    public List<File> getFileList(@PathVariable Long id, @RequestParam String path) {
+        return serverService.getFiles(id, path);
     }
 }

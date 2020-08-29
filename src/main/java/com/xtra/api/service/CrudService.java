@@ -10,10 +10,10 @@ import org.springframework.data.domain.Pageable;
 import static com.xtra.api.util.Utilities.getSortingPageable;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
-public abstract class CrudService<T, ID> {
-    protected final JpaRepository<T, ID> repository;
+public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>> {
+    protected final Repository repository;
 
-    protected CrudService(JpaRepository<T, ID> repository) {
+    protected CrudService(Repository repository) {
         this.repository = repository;
     }
 

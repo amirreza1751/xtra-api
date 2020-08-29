@@ -1,20 +1,43 @@
 package com.xtra.api.service;
 
+import com.xtra.api.model.File;
 import com.xtra.api.model.MediaInfo;
 import com.xtra.api.model.Movie;
 import com.xtra.api.model.Server;
+import com.xtra.api.repository.ServerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ServerService {
+public class ServerService extends CrudService<Server, Long, ServerRepository> {
     @Value("${core.apiPath}")
     private String corePath;
     @Value("${core.apiPort}")
     private String corePort;
+
+    @Autowired
+    protected ServerService(ServerRepository repository) {
+        super(repository);
+    }
+
+    public List<File> getFiles(Long id, String path) {
+        List<File> result = null;
+        try {
+            result = new RestTemplate().getForObject(corePath + ":" + corePort + "/file/list_files?path=" + path, List.class);
+        } catch (HttpClientErrorException exception) {
+            System.out.println(exception.getMessage());
+        }
+        return result;
+    }
 
     public boolean sendStartRequest(Long channelId) {
         var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/start/" + channelId, String.class);
@@ -48,5 +71,11 @@ public class ServerService {
 
     public String SetAudioRequest(Movie movie) {
         return new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/set_audios/", movie, String.class);
+    }
+
+
+    @Override
+    protected Page<Server> findWithSearch(Pageable page, String search) {
+        return null;
     }
 }
