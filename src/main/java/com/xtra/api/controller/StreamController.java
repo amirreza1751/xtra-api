@@ -2,7 +2,7 @@ package com.xtra.api.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.xtra.api.exceptions.EntityNotFound;
+import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.ProgressInfo;
 import com.xtra.api.model.Stream;
 import com.xtra.api.model.StreamInfo;
@@ -11,12 +11,9 @@ import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.service.StreamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,7 +51,7 @@ public class StreamController {
     @PatchMapping("/{id}")
     public Stream updateStream(@PathVariable Long id, @RequestBody Stream Stream) {
         if (streamRepository.findById(id).isEmpty()) {
-            throw new EntityNotFound();
+            throw new EntityNotFoundException();
         }
         Stream.setId(id);
         return streamRepository.save(Stream);

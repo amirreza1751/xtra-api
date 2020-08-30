@@ -12,7 +12,7 @@ import java.util.Optional;
 public class StreamService extends CrudService<Stream, Long, StreamRepository> {
 
     public StreamService(StreamRepository streamRepository) {
-        super(streamRepository);
+        super(streamRepository, Stream.class);
     }
 
     public Optional<Stream> findById(Long streamId) {

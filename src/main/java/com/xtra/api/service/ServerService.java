@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -26,7 +25,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
 
     @Autowired
     protected ServerService(ServerRepository repository) {
-        super(repository);
+        super(repository, Server.class);
     }
 
     public List<File> getFiles(Long id, String path) {

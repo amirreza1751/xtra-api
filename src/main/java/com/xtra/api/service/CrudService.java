@@ -1,6 +1,6 @@
 package com.xtra.api.service;
 
-import com.xtra.api.exceptions.EntityNotFound;
+import com.xtra.api.exceptions.EntityNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,14 +12,16 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>> {
     protected final Repository repository;
+    protected final Class<T> aClass;
 
-    protected CrudService(Repository repository) {
+    protected CrudService(Repository repository, Class<T> aClass) {
         this.repository = repository;
+        this.aClass = aClass;
     }
 
     public T getByIdOrFail(ID id) {
         var result = repository.findById(id);
-        return result.orElseThrow(EntityNotFound::new);
+        return result.orElseThrow(() -> new EntityNotFoundException(aClass.getName(), id.toString()));
     }
 
     protected abstract Page<T> findWithSearch(Pageable page, String search);
@@ -38,15 +40,16 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
 
     public T updateOrFail(ID id, T newObject) {
         var result = repository.findById(id);
-        T oldObject = result.orElseThrow(EntityNotFound::new);
+        T oldObject = result.orElseThrow(() -> new EntityNotFoundException(aClass.getName(), id.toString()));
         copyProperties(newObject, oldObject, "id");
         return repository.save(oldObject);
     }
 
     public void delete(ID id) {
         if (!repository.existsById(id))
-            throw new EntityNotFound();
+            throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
         repository.deleteById(id);
     }
+
 
 }

@@ -1,6 +1,6 @@
 package com.xtra.api.service;
 
-import com.xtra.api.exceptions.EntityNotFound;
+import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.Channel;
 import com.xtra.api.model.Server;
 import com.xtra.api.repository.ChannelRepository;
@@ -85,7 +85,7 @@ public class ChannelService {
         if (channel.isPresent()) {
             return serverService.sendStartRequest(id);
         } else
-            throw new EntityNotFound();
+            throw new EntityNotFoundException();
     }
 
     public boolean stop(Long id) {
@@ -99,7 +99,7 @@ public class ChannelService {
             channelRepository.save(channel);
             return true;
         } else
-            throw new EntityNotFound();
+            throw new EntityNotFoundException();
     }
 
     public boolean restart(Long id) {
@@ -109,6 +109,6 @@ public class ChannelService {
             serverService.sendRestartRequest(channel.getId());
             return true;
         } else
-            throw new EntityNotFound();
+            throw new EntityNotFoundException();
     }
 }

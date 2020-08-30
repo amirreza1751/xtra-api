@@ -21,7 +21,7 @@ public class MovieService extends CrudService<Movie, Long, MovieRepository> {
 
     @Autowired
     protected MovieService(MovieRepository repository, ServerService serverService) {
-        super(repository);
+        super(repository, Movie.class);
         this.serverService = serverService;
     }
 

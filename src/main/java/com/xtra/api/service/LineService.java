@@ -1,6 +1,6 @@
 package com.xtra.api.service;
 
-import com.xtra.api.exceptions.EntityNotFound;
+import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineStatus;
 import com.xtra.api.repository.LineRepository;
@@ -26,7 +26,7 @@ public class LineService {
     private Line getLineIfExists(Long id) {
         var lineById = lineRepository.findById(id);
         if (lineById.isEmpty()) {
-            throw new EntityNotFound();
+            throw new EntityNotFoundException();
         }
         return lineById.get();
     }
@@ -34,7 +34,7 @@ public class LineService {
     private Line getLineIfExists(String token) {
         var lineById = lineRepository.findByLineToken(token);
         if (lineById.isEmpty()) {
-            throw new EntityNotFound();
+            throw new EntityNotFoundException();
         }
         return lineById.get();
     }
@@ -43,7 +43,7 @@ public class LineService {
         if (lineRepository.existsLineById(id))
             return true;
         else
-            throw new EntityNotFound();
+            throw new EntityNotFoundException();
     }
 
 
@@ -112,7 +112,7 @@ public class LineService {
 
     public Line updateLine(Long id, Line line) {
         if (!lineExists(id))
-            throw new EntityNotFound();
+            throw new EntityNotFoundException();
         line.setId(id);
         //@todo partial update
         return lineRepository.save(line);
