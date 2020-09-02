@@ -57,7 +57,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     public Optional<Server> findByName(String search) {
-        return null;
+        return repository.findByName(search);
     }
 
     public String sendEncodeRequest(Movie movie) {
