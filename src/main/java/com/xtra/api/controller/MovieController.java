@@ -26,12 +26,12 @@ public class MovieController {
     @GetMapping("")
     public ResponseEntity<Page<Movie>> getAll(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(movieService.getAll(search, pageNo, pageSize, sortBy, sortDir));
+        return ResponseEntity.ok(movieService.findAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Movie> getMovie(@PathVariable Long id) {
-        return ResponseEntity.ok(movieService.getByIdOrFail(id));
+        return ResponseEntity.ok(movieService.findByIdOrFail(id));
     }
 
     @PostMapping(value = {"", "/{encode}"})

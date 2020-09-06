@@ -30,7 +30,7 @@ public class ChannelController {
     @GetMapping("")
     public ResponseEntity<Page<Channel>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        var result = channelService.getChannels(pageNo, pageSize, search, sortBy, sortDir);
+        var result = channelService.findAll(search, pageNo, pageSize, sortBy, sortDir);
         return ResponseEntity.ok(result);
     }
 
@@ -41,8 +41,7 @@ public class ChannelController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Channel> getChannelById(@PathVariable Long id) {
-        var channel = channelService.getChannel(id);
-        return channel.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(channelService.findByIdOrFail(id));
     }
 
     @PatchMapping(value = {"/{id}", "/{id}/{restart}"})
@@ -53,7 +52,7 @@ public class ChannelController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteChannel(@PathVariable Long id) {
-        channelService.deleteChannel(id);
+        channelService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

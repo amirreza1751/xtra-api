@@ -2,16 +2,11 @@ package com.xtra.api.controller;
 
 import com.xtra.api.model.File;
 import com.xtra.api.model.Server;
-import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.service.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -29,7 +24,7 @@ public class ServerController {
     @GetMapping("")
     public ResponseEntity<Page<Server>> getServers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(serverService.getAll(search, pageNo, pageSize, sortBy, sortDir));
+        return ResponseEntity.ok(serverService.findAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @PostMapping("")

@@ -5,6 +5,7 @@ import com.xtra.api.model.Line;
 import com.xtra.api.model.LineStatus;
 import com.xtra.api.repository.LineRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -14,27 +15,20 @@ import java.util.Optional;
 import static com.xtra.api.util.Utilities.*;
 
 @Service
-public class LineService {
+public class LineService extends CrudService<Line, Long, LineRepository> {
     private final LineRepository lineRepository;
     private final ServerService serverService;
 
     public LineService(LineRepository lineRepository, ServerService serverService) {
+        super(lineRepository, Line.class);
         this.lineRepository = lineRepository;
         this.serverService = serverService;
     }
 
-    private Line getLineIfExists(Long id) {
-        var lineById = lineRepository.findById(id);
-        if (lineById.isEmpty()) {
-            throw new EntityNotFoundException();
-        }
-        return lineById.get();
-    }
-
-    private Line getLineIfExists(String token) {
+    private Line findByTokenOrFail(String token) {
         var lineById = lineRepository.findByLineToken(token);
         if (lineById.isEmpty()) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(aClass.getSimpleName(), token);
         }
         return lineById.get();
     }
@@ -43,7 +37,7 @@ public class LineService {
         if (lineRepository.existsLineById(id))
             return true;
         else
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
     }
 
 
@@ -68,18 +62,8 @@ public class LineService {
             return LineStatus.NOT_FOUND;
     }
 
-    public Page<Line> getLines(int pageNo, int pageSize, String search, String sortBy, String sortDir) {
-        var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
-
-        if (search == null)
-            return lineRepository.findAll(page);
-        else {
-            search = wrapSearchString(search);
-            return lineRepository.findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(search, search, search, page);
-        }
-    }
-
-    public Line addLine(Line line) {
+    @Override
+    public Line add(Line line) {
         if (StringUtils.isEmpty(line.getUsername())) {
             var isUnique = false;
             var username = "";
@@ -110,45 +94,17 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public Line updateLine(Long id, Line line) {
-        if (!lineExists(id))
-            throw new EntityNotFoundException();
-        line.setId(id);
-        //@todo partial update
-        return lineRepository.save(line);
-    }
-
-    public Line getLine(Long id) {
-        return getLineIfExists(id);
-    }
-
-    public void deleteLine(Long id) {
-        lineRepository.deleteById(id);
-    }
-
-    public void blockLine(Long id) {
-        Line line = getLineIfExists(id);
-        line.setBlocked(true);
+    public void updateLineBlock(Long id, boolean blocked) {
+        Line line = findByIdOrFail(id);
+        line.setBlocked(blocked);
         killAllConnections(id);
         lineRepository.save(line);
     }
 
-    public void unblockLine(Long id) {
-        Line line = getLineIfExists(id);
-        line.setBlocked(false);
-        lineRepository.save(line);
-    }
-
-    public void banLine(Long id) {
-        Line line = getLineIfExists(id);
-        line.setBanned(true);
+    public void updateLineBan(Long id, boolean banned) {
+        Line line = findByIdOrFail(id);
+        line.setBanned(banned);
         killAllConnections(id);
-        lineRepository.save(line);
-    }
-
-    public void unbanLine(Long id) {
-        Line line = getLineIfExists(id);
-        line.setBanned(false);
         lineRepository.save(line);
     }
 
@@ -160,10 +116,15 @@ public class LineService {
 
 
     public Long getLineIdByToken(String lineToken) {
-        return getLineIfExists(lineToken).getId();
+        return findByTokenOrFail(lineToken).getId();
     }
 
     public Optional<Line> findById(Long lineId) {
         return lineRepository.findById(lineId);
+    }
+
+    @Override
+    protected Page<Line> findWithSearch(Pageable page, String search) {
+        return lineRepository.findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(search, search, search, page);
     }
 }

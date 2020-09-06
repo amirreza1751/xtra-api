@@ -29,52 +29,39 @@ public class LineController {
     @GetMapping("")
     public ResponseEntity<Page<Line>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                                @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        var result = lineService.getLines(pageNo, pageSize, search, sortBy, sortDir);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(lineService.findAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/{id}")
-    public Line getLine(@PathVariable Long id) {
-        return lineService.getLine(id);
+    public ResponseEntity<Line> getLine(@PathVariable Long id) {
+        return ResponseEntity.ok(lineService.findByIdOrFail(id));
     }
 
     @PostMapping("")
     public ResponseEntity<Line> addLine(@RequestBody @Valid Line line) {
-        return ResponseEntity.ok(lineService.addLine(line));
+        return ResponseEntity.ok(lineService.add(line));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Line> updateLine(@PathVariable Long id, @RequestBody @Valid Line line) {
-        return ResponseEntity.ok(lineService.updateLine(id, line));
+        return ResponseEntity.ok(lineService.updateOrFail(id, line));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteLine(@PathVariable Long id) {
-        lineService.deleteLine(id);
+        lineService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/{id}/block")
-    public ResponseEntity<?> blockLine(@PathVariable Long id) {
-        lineService.blockLine(id);
+    @PatchMapping("/{id}/block/{blocked}")
+    public ResponseEntity<?> setLineBlocked(@PathVariable Long id, @PathVariable boolean blocked) {
+        lineService.updateLineBlock(id, blocked);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/{id}/unblock")
-    public ResponseEntity<?> unblockLine(@PathVariable Long id) {
-        lineService.unblockLine(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @GetMapping("/{id}/ban")
-    public ResponseEntity<?> banLine(@PathVariable Long id) {
-        lineService.banLine(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @GetMapping("/{id}/unban")
-    public ResponseEntity<?> unbanLine(@PathVariable Long id) {
-        lineService.unbanLine(id);
+    @PatchMapping("/{id}/ban/{banned}")
+    public ResponseEntity<?> setLineBanned(@PathVariable Long id, @PathVariable boolean banned) {
+        lineService.updateLineBan(id, banned);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

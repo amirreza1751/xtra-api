@@ -19,14 +19,14 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
         this.aClass = aClass;
     }
 
-    public T getByIdOrFail(ID id) {
+    public T findByIdOrFail(ID id) {
         var result = repository.findById(id);
         return result.orElseThrow(() -> new EntityNotFoundException(aClass.getName(), id.toString()));
     }
 
     protected abstract Page<T> findWithSearch(Pageable page, String search);
 
-    public Page<T> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+    public Page<T> findAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
         if (StringUtils.isEmpty(search))
             return repository.findAll(page);

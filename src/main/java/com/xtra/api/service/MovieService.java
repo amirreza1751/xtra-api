@@ -50,7 +50,7 @@ public class MovieService extends CrudService<Movie, Long, MovieRepository> {
         if (subtitles.size() == 0)
             throw new RuntimeException("provide at least one subtitle");
 
-        Movie movie = getByIdOrFail(id);
+        Movie movie = findByIdOrFail(id);
         movie.setSubtitles(subtitles);
         repository.save(movie);
         return movie.getSubtitles();
@@ -60,7 +60,7 @@ public class MovieService extends CrudService<Movie, Long, MovieRepository> {
         if (audios.size() == 0)
             throw new RuntimeException("provide at least one audio");
 
-        Movie movie = getByIdOrFail(id);
+        Movie movie = findByIdOrFail(id);
         movie.setAudios(audios);
         var result = serverService.SetAudioRequest(movie);
         movie.setLocation(result);
@@ -69,7 +69,7 @@ public class MovieService extends CrudService<Movie, Long, MovieRepository> {
     }
 
     public Movie encode(Long id) {
-        var movie = getByIdOrFail(id);
+        var movie = findByIdOrFail(id);
         var result = serverService.sendEncodeRequest(movie);
         movie.setLocation(result);
         var info = serverService.getMediaInfo(movie);
