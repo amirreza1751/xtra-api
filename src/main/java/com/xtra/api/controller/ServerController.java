@@ -28,12 +28,12 @@ public class ServerController {
     }
 
     @PostMapping("")
-    public Server addServer(@Valid @RequestBody Server server) {
-        return serverService.add(server);
+    public ResponseEntity<Server> addServer(@Valid @RequestBody Server server) {
+        return ResponseEntity.ok(serverService.add(server));
     }
 
     @GetMapping("{id}/files")
-    public List<File> getFileList(@PathVariable Long id, @RequestParam String path) {
-        return serverService.getFiles(id, path);
+    public ResponseEntity<List<File>> getFileList(@PathVariable Long id, @RequestParam String path) {
+        return ResponseEntity.ok(serverService.getFiles(id, path));
     }
 }

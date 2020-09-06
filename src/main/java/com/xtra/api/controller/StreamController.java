@@ -30,8 +30,8 @@ public class StreamController {
     }
 
     @GetMapping("/{id}")
-    public Stream getStream(@PathVariable Long id) {
-        return streamService.findByIdOrFail(id);
+    public ResponseEntity<Stream> getStream(@PathVariable Long id) {
+        return ResponseEntity.ok(streamService.findByIdOrFail(id));
     }
 
     @PostMapping("/")

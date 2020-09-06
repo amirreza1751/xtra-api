@@ -16,13 +16,9 @@ import javax.validation.Valid;
 @RequestMapping("/channels")
 public class ChannelController {
     ChannelService channelService;
-    ChannelRepository channelRepository;
-    ServerRepository serverRepository;
 
     @Autowired
-    public ChannelController(ChannelRepository channelRepository, ServerRepository serverRepository, ChannelService channelService) {
-        this.channelRepository = channelRepository;
-        this.serverRepository = serverRepository;
+    public ChannelController(ChannelService channelService) {
         this.channelService = channelService;
     }
 
