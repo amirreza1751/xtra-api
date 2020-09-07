@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.util.LinkedHashMap;
 
 @RestController
 @RequestMapping("/channels")
@@ -72,5 +74,16 @@ public class ChannelController {
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
+    @PostMapping("/stream_info/batch")
+    public ResponseEntity<?> batchUpdateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos) {
+        channelService.infoBatchUpdate(infos);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/get_id/{stream_token}")
+    public ResponseEntity<Long> getStreamIdByToken(@PathVariable("stream_token") String streamToken) {
+        return ResponseEntity.ok(channelService.findIdByToken(streamToken));
     }
 }

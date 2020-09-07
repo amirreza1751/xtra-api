@@ -20,7 +20,7 @@ public class LineActivitiesController {
         this.lineActivityService = lineActivityService;
     }
 
-    @PutMapping("/batch")
+    @PostMapping("/batch")
     public ResponseEntity<?> batchCreateOrUpdateActivities(@RequestBody List<LineActivity> lineActivities) {
         lineActivityService.batchCreateOrUpdate(lineActivities);
         return ResponseEntity.ok().build();
