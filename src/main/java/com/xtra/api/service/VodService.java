@@ -2,28 +2,17 @@ package com.xtra.api.service;
 
 import com.xtra.api.model.EncodeStatus;
 import com.xtra.api.model.Vod;
-import com.xtra.api.repository.VodRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Service
-public class VodService extends CrudService<Vod,Long, VodRepository> {
+public abstract class VodService<T extends Vod, Long, R extends JpaRepository<T, Long>> extends CrudService<T, Long, R> {
 
-    @Autowired
-    protected VodService(VodRepository vodRepository) {
-        super(vodRepository, Vod.class);
-    }
-
-    @Override
-    protected Page<Vod> findWithSearch(Pageable page, String search) {
-        return null;
+    protected VodService(R repository, Class<T> aClass) {
+        super(repository, aClass);
     }
 
     public void setEncodeStatus(Long id, EncodeStatus encodeStatus) {
-        Vod vod = findByIdOrFail(id);
-        vod.setEncodeStatus(encodeStatus);
-        repository.save(vod);
+        T t = findByIdOrFail(id);
+        t.setEncodeStatus(encodeStatus);
+        repository.save(t);
     }
 }

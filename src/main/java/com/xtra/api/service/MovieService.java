@@ -15,7 +15,7 @@ import java.util.List;
 import static com.xtra.api.util.Utilities.generateRandomString;
 
 @Service
-public class MovieService extends CrudService<Movie, Long, MovieRepository> {
+public class MovieService extends VodService<Movie, Long, MovieRepository> {
 
     private final ServerService serverService;
 

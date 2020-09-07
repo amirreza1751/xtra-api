@@ -1,6 +1,5 @@
 package com.xtra.api.service;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.Channel;
 import com.xtra.api.model.Server;
 import com.xtra.api.repository.ChannelRepository;
@@ -16,12 +15,12 @@ import static com.xtra.api.util.Utilities.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
-public class ChannelService extends CrudService<Channel, Long, ChannelRepository> {
+public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final ServerService serverService;
 
     @Autowired
     public ChannelService(ChannelRepository repository, ServerService serverService) {
-        super(repository, Channel.class);
+        super(repository, Channel.class, serverService);
         this.serverService = serverService;
     }
 
@@ -54,39 +53,6 @@ public class ChannelService extends CrudService<Channel, Long, ChannelRepository
         if (restart)
             serverService.sendRestartRequest(id);
         return Optional.of(repository.save(oldChannel));
-    }
-
-
-    public boolean start(long id) {
-        Optional<Channel> channel = repository.findById(id);
-        if (channel.isPresent()) {
-            return serverService.sendStartRequest(id);
-        } else
-            throw new EntityNotFoundException();
-    }
-
-    public boolean stop(Long id) {
-        Optional<Channel> channelById = repository.findById(id);
-        if (channelById.isPresent()) {
-            Channel channel = channelById.get();
-            if (!serverService.sendStopRequest(channel.getId()))
-                return false;
-            channel.setStreamInfo(null);
-            channel.setProgressInfo(null);
-            repository.save(channel);
-            return true;
-        } else
-            throw new EntityNotFoundException();
-    }
-
-    public boolean restart(Long id) {
-        Optional<Channel> channelById = repository.findById(id);
-        if (channelById.isPresent()) {
-            Channel channel = channelById.get();
-            serverService.sendRestartRequest(channel.getId());
-            return true;
-        } else
-            throw new EntityNotFoundException();
     }
 
     @Override

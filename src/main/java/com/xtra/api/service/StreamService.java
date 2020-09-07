@@ -7,9 +7,6 @@ import com.xtra.api.model.ProgressInfo;
 import com.xtra.api.model.Stream;
 import com.xtra.api.model.StreamInfo;
 import com.xtra.api.repository.StreamRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,29 +15,26 @@ import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
-@Service
-public class StreamService extends CrudService<Stream, Long, StreamRepository> {
+public abstract class StreamService<S extends Stream, R extends StreamRepository<S>> extends CrudService<S, Long, R> {
+    private final ServerService serverService;
 
-    public StreamService(StreamRepository streamRepository) {
-        super(streamRepository, Stream.class);
+    protected StreamService(R repository, Class<S> aClass, ServerService serverService) {
+        super(repository, aClass);
+        this.serverService = serverService;
     }
 
-    public Optional<Stream> findById(Long streamId) {
-        return repository.findById(streamId);
+    public Optional<S> findById(Long id) {
+        return repository.findById(id);
     }
 
-    public Stream findByToken(String token) {
+    public Stream findByTokenOrFail(String token) {
         return repository.getByStreamToken(token).orElseThrow(() -> new EntityNotFoundException("Stream", token));
     }
 
     public Long findIdByToken(String token) {
-        return findByToken(token).getId();
+        return findByTokenOrFail(token).getId();
     }
 
-    @Override
-    protected Page<Stream> findWithSearch(Pageable page, String search) {
-        return null;
-    }
 
     public void infoBatchUpdate(LinkedHashMap<String, Object> infos) {
         ObjectMapper mapper = new ObjectMapper();
@@ -48,9 +42,9 @@ public class StreamService extends CrudService<Stream, Long, StreamRepository> {
         });
         List<ProgressInfo> progressInfos = mapper.convertValue(infos.get("progressInfoList"), new TypeReference<>() {
         });
-        List<Stream> streams = repository.findAllById(streamInfos.stream().mapToLong((StreamInfo::getStreamId)).boxed().collect(Collectors.toList()));
+        List<S> streams = repository.findAllById(streamInfos.stream().map(StreamInfo::getStreamId).collect(Collectors.toList()));
 
-        for (Stream stream : streams) {
+        for (S stream : streams) {
             var streamInfo = streamInfos.stream().filter((info) -> info.getStreamId().equals(stream.getId())).findAny();
             if (streamInfo.isPresent()) {
                 StreamInfo newInfo = streamInfo.get();
@@ -72,5 +66,37 @@ public class StreamService extends CrudService<Stream, Long, StreamRepository> {
 
             repository.save(stream);
         }
+    }
+
+    public boolean startOrFail(Long id) {
+        Optional<S> channel = repository.findById(id);
+        if (channel.isPresent()) {
+            return serverService.sendStartRequest(id);
+        } else
+            throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
+    }
+
+    public boolean stopOrFail(Long id) {
+        Optional<S> streamById = repository.findById(id);
+        if (streamById.isPresent()) {
+            S stream = streamById.get();
+            if (!serverService.sendStopRequest(stream.getId()))
+                return false;
+            stream.setStreamInfo(null);
+            stream.setProgressInfo(null);
+            repository.save(stream);
+            return true;
+        } else
+            throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
+    }
+
+    public boolean restartOrFail(Long id) {
+        Optional<S> streamById = repository.findById(id);
+        if (streamById.isPresent()) {
+            S stream = streamById.get();
+            serverService.sendRestartRequest(stream.getId());
+            return true;
+        } else
+            throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
     }
 }

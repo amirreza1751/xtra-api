@@ -2,6 +2,7 @@ package com.xtra.api.service;
 
 import com.xtra.api.model.LineActivity;
 import com.xtra.api.model.LineActivityId;
+import com.xtra.api.model.Stream;
 import com.xtra.api.repository.LineActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class LineActivityService {
                 var streamById = streamService.findById(activity.getId().getStreamId());
                 if (streamById.isEmpty())
                     continue;
-                activity.setStream(streamById.get());
+                activity.setStream((Stream) streamById.get());
                 lineActivityRepository.save(activity);
 
             } else {
@@ -50,7 +51,7 @@ public class LineActivityService {
                 var streamById = streamService.findById(activity.getId().getStreamId());
                 if (streamById.isEmpty())
                     continue;
-                activity.setStream(streamById.get());
+                activity.setStream((Stream) streamById.get());
                 lineActivityRepository.save(oldActivity);
 
             }

@@ -20,11 +20,6 @@ public class VodController {
     }
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Vod> getVod(@PathVariable Long id) {
-        return ResponseEntity.ok(vodService.findByIdOrFail(id));
-    }
-
     @PatchMapping("/{id}/encode_status")
     public ResponseEntity<?> setEncodeStatus(@PathVariable Long id, @RequestBody EncodeStatus encodeStatus) {
         vodService.setEncodeStatus(id, encodeStatus);

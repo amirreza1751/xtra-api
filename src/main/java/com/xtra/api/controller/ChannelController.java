@@ -1,8 +1,6 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.model.Channel;
-import com.xtra.api.repository.ChannelRepository;
-import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,14 +53,14 @@ public class ChannelController {
     // Stream Operations
     @GetMapping("/start/{id}")
     public ResponseEntity<String> startChannel(@PathVariable Long id) {
-        if (channelService.start(id))
+        if (channelService.startOrFail(id))
             return ResponseEntity.ok().build();
         else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @GetMapping("/stop/{id}")
     public ResponseEntity<?> stopChannel(@PathVariable Long id) {
-        if (channelService.stop(id))
+        if (channelService.stopOrFail(id))
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -70,7 +68,7 @@ public class ChannelController {
 
     @GetMapping("/restart/{id}")
     public ResponseEntity<String> restartChannel(@PathVariable Long id) {
-        if (channelService.restart(id))
+        if (channelService.restartOrFail(id))
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

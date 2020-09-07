@@ -10,8 +10,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.Optional;
 
-public interface ChannelRepository extends JpaRepository<Channel, Long>, JpaSpecificationExecutor<Channel> {
-    Optional<Channel> getByStreamToken(String streamToken);
+public interface ChannelRepository extends StreamRepository<Channel> {
 
     boolean existsChannelByStreamToken(String streamToken);
 
