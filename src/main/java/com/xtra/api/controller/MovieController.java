@@ -55,7 +55,7 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getByToken(vodToken));
     }
 
-    @GetMapping("/encode/{id}")
+    @GetMapping("/{id}/encode")
     public ResponseEntity<Movie> encodeMovie(@PathVariable Long id) {
         return ResponseEntity.ok(movieService.encode(id));
     }

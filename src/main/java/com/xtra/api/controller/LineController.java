@@ -65,7 +65,7 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/kill_connections/{id}")
+    @GetMapping("/{id}/kill_connections")
     public ResponseEntity<String> killLineConnections(@PathVariable Long id) {
         lineService.killAllConnections(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
