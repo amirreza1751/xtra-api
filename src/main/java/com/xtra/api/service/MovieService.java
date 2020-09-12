@@ -15,7 +15,7 @@ import java.util.List;
 import static com.xtra.api.util.Utilities.generateRandomString;
 
 @Service
-public class MovieService extends VodService<Movie, Long, MovieRepository> {
+public class MovieService extends VodService<Movie,MovieRepository> {
 
     private final ServerService serverService;
 
@@ -38,11 +38,8 @@ public class MovieService extends VodService<Movie, Long, MovieRepository> {
         movie.setToken(token);
 
         if (encode) {
-            var location = serverService.sendEncodeRequest(movie);
-            movie.setLocation(location);
+            serverService.sendEncodeRequest(movie);
         }
-        var result = serverService.getMediaInfo(movie);
-        movie.setMediaInfo(result);
         return super.add(movie);
     }
 
@@ -70,10 +67,7 @@ public class MovieService extends VodService<Movie, Long, MovieRepository> {
 
     public Movie encode(Long id) {
         var movie = findByIdOrFail(id);
-        var result = serverService.sendEncodeRequest(movie);
-        movie.setLocation(result);
-        var info = serverService.getMediaInfo(movie);
-        movie.setMediaInfo(info);
+        serverService.sendEncodeRequest(movie);
         return repository.save(movie);
     }
 
@@ -88,4 +82,5 @@ public class MovieService extends VodService<Movie, Long, MovieRepository> {
             encode(id);
         return updatedMovie;
     }
+
 }

@@ -60,8 +60,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return repository.findByName(search);
     }
 
-    public String sendEncodeRequest(Movie movie) {
-        return new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", movie, String.class);
+    public void sendEncodeRequest(Movie movie) {
+        new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", movie, String.class);
     }
 
     public MediaInfo getMediaInfo(Movie movie) {

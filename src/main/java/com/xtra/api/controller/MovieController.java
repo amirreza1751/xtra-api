@@ -1,8 +1,6 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.model.Audio;
-import com.xtra.api.model.Movie;
-import com.xtra.api.model.Subtitle;
+import com.xtra.api.model.*;
 import com.xtra.api.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/movies")
@@ -70,5 +69,16 @@ public class MovieController {
         return ResponseEntity.ok(movieService.updateAudios(id, audios));
     }
 
+    @PatchMapping("/{id}/encode_status")
+    public ResponseEntity<?> setEncodeStatus(@PathVariable Long id, @RequestBody Map<String, String> encodeResult) {
+        movieService.updateEncodeStatus(id, encodeResult);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PatchMapping("/{id}/media_info")
+    public ResponseEntity<?> setMediaInfo(@PathVariable Long id, @RequestBody MediaInfo mediaInfo) {
+        movieService.updateMediaInfo(id, mediaInfo);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 
 }

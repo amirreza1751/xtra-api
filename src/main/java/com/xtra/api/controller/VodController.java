@@ -12,18 +12,5 @@ import org.springframework.web.servlet.function.EntityResponse;
 
 @RestController
 public class VodController {
-    VodService vodService;
-
-    @Autowired
-    public VodController(VodService vodService) {
-        this.vodService = vodService;
-    }
-
-
-    @PatchMapping("/{id}/encode_status")
-    public ResponseEntity<?> setEncodeStatus(@PathVariable Long id, @RequestBody EncodeStatus encodeStatus) {
-        vodService.setEncodeStatus(id, encodeStatus);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
 
 }
