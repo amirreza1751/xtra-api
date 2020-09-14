@@ -45,7 +45,7 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
         return repository.save(oldObject);
     }
 
-    public void delete(ID id) {
+    public void deleteOrFail(ID id) {
         if (!repository.existsById(id))
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
         repository.deleteById(id);

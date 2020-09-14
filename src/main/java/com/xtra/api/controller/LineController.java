@@ -1,11 +1,7 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.model.Line;
-import com.xtra.api.model.LineActivity;
-import com.xtra.api.model.LineActivityId;
 import com.xtra.api.model.LineStatus;
-import com.xtra.api.repository.LineActivityRepository;
-import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
@@ -49,7 +44,7 @@ public class LineController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteLine(@PathVariable Long id) {
-        lineService.delete(id);
+        lineService.deleteOrFail(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

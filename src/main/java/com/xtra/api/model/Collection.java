@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class Collection {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToMany(mappedBy = "collections")
