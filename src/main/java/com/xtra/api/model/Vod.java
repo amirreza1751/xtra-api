@@ -28,6 +28,9 @@ public class Vod {
     @Enumerated(EnumType.STRING)
     private EncodeStatus encodeStatus;
 
+    @ManyToMany
+    private List<Collection> collections;
+
     @OneToMany(cascade = CascadeType.ALL)
     private List<Subtitle> subtitles = new ArrayList<>();
 

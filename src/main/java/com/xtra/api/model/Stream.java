@@ -57,6 +57,9 @@ public class Stream {
     @ManyToOne
     private Category category;
 
+    @ManyToMany
+    private List<Collection> collections;
+
     @ManyToOne
     private TranscodeProfile transcodeProfile;
     private String customFFMPEG;

@@ -14,4 +14,10 @@ public class Collection {
 
     @ManyToMany(mappedBy = "collections")
     private List<Package> packages;
+
+    @ManyToMany(mappedBy = "collections")
+    private List<Channel> channels;
+
+    @ManyToMany(mappedBy = "collections")
+    private List<Movie> movies;
 }
