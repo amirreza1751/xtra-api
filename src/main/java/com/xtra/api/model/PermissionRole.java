@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 public class PermissionRole {
     @EmbeddedId
-    private PermissionRoleId id = new PermissionRoleId() ;
+    private PermissionRoleId id;
 
     @ManyToOne
     @MapsId("permissionId")
@@ -20,12 +20,4 @@ public class PermissionRole {
     Role role;
 
     private String value;
-
-    @Data
-    @Embeddable
-    private static class PermissionRoleId implements Serializable{
-        private static final long serialVersionUID = 1L;
-        private Long permissionId;
-        private Long roleId;
-    }
 }

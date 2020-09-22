@@ -1,26 +1,22 @@
-package com.xtra.api.model;
+package com.xtra.api.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.xtra.api.model.PermissionRole;
+import com.xtra.api.model.UserType;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 
-@Entity
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class RoleDTO {
+    private long id;
     private String name;
     private String color;
 
-    @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @OneToMany(mappedBy = "role")
-    private List<PermissionRole> permissionAssignments;
-
+    private Map<String,String> permissions;
 }

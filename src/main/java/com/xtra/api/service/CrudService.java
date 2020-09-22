@@ -3,11 +3,12 @@ package com.xtra.api.service;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.domain.Pageable;
 
-import static com.xtra.api.util.Utilities.getSortingPageable;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>> {
@@ -17,6 +18,10 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
     protected CrudService(Repository repository, Class<T> aClass) {
         this.repository = repository;
         this.aClass = aClass;
+    }
+
+    public boolean existsById(ID id){
+        return repository.existsById(id);
     }
 
     public T findByIdOrFail(ID id) {
@@ -51,5 +56,19 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
         repository.deleteById(id);
     }
 
+    protected Pageable getSortingPageable(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Pageable page;
+        Sort.Order order;
+        if (sortBy != null && !sortBy.equals("")) {
+            if (sortDir != null && sortDir.equalsIgnoreCase("desc"))
+                order = Sort.Order.desc(sortBy);
+            else
+                order = Sort.Order.asc(sortBy);
+            page = PageRequest.of(pageNo, pageSize, Sort.by(order));
+        } else {
+            page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc("id")));
+        }
+        return page;
+    }
 
 }

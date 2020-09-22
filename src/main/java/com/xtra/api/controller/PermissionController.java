@@ -28,25 +28,10 @@ public class PermissionController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("")
-    public ResponseEntity<Permission> addPermission(@Valid @RequestBody Permission permission) {
-        return ResponseEntity.ok(permissionService.add(permission));
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<Permission> getPermissionById(@PathVariable Long id) {
+    public ResponseEntity<Permission> getPermissionById(@PathVariable String id) {
         return ResponseEntity.ok(permissionService.findByIdOrFail(id));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<Permission> updatePermission(@PathVariable Long id, @RequestBody Permission permission) {
-        var result = permissionService.updateOrFail(id, permission);
-        return ResponseEntity.ok(result);
-    }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePermission(@PathVariable Long id) {
-        permissionService.deleteOrFail(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
 }

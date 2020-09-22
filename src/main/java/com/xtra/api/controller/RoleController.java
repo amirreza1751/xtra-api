@@ -1,7 +1,9 @@
 package com.xtra.api.controller;
 
+import com.xtra.api.dto.RoleDTO;
 import com.xtra.api.model.Role;
 import com.xtra.api.service.RoleService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -48,4 +50,6 @@ public class RoleController {
         roleService.deleteOrFail(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+
 }
