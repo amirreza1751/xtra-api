@@ -16,6 +16,10 @@ public class Reseller extends User {
     private String notes;
     private String lang;
 
+    public Reseller() {
+        setUserType(UserType.RESELLER);
+    }
+
     @ManyToOne
     private Reseller owner;
 }

@@ -12,4 +12,7 @@ public class Admin extends User {
     private String firstName;
     private String lastName;
 
+    public Admin() {
+        setUserType(UserType.ADMIN);
+    }
 }
