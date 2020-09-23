@@ -25,7 +25,7 @@ public class Permission {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @JsonIgnore
+    @JsonManagedReference("permission_id")
     @OneToMany(mappedBy = "permission", cascade = CascadeType.ALL)
     private List<PermissionRole> permissionAssignments = new ArrayList<>();
 

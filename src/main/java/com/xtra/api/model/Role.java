@@ -21,7 +21,7 @@ public class Role {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @JsonManagedReference
+    @JsonManagedReference("role_id")
     @OneToMany(mappedBy = "role")
     private List<PermissionRole> permissionAssignments;
 
