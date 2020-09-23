@@ -39,10 +39,20 @@ public class RoleService extends CrudService<Role, Long, RoleRepository> {
 //
 //    }
 
+
+    public Role add(RoleDTO roleDTO) {
+        return super.add(convertToEntity(roleDTO));
+    }
+
+    public Role updateOrFail(Long id, RoleDTO roleDTO) {
+        roleDTO.setId(id);
+        return super.updateOrFail(id, convertToEntity(roleDTO));
+    }
+
     protected Role convertToEntity(RoleDTO roleDTO) {
         Role role = modelMapper.map(roleDTO, Role.class);
 
-        if (role.getId() == null) {
+        if (role.getId() == null || role.getId() == 0) {
             role.setId(add(role).getId());
         }
         Long roleId = role.getId();
@@ -56,6 +66,13 @@ public class RoleService extends CrudService<Role, Long, RoleRepository> {
             PermissionRole permissionAssign = new PermissionRole();
             permissionAssign.setId(new PermissionRoleId(roleId, key));
             permissionAssign.setValue(roleDTO.getPermissions().get(key));
+
+            var per = permissionService.findByIdOrFail(key);
+            permissionAssign.setPermission(per);
+            permissionAssign.setRole(role);
+            per.addPermissionAssignment(permissionAssign);
+            permissionService.updateOrFail(per.getPKey(), per);
+
             permissionRoleService.add(permissionAssign);
             permissionAssignments.add(permissionAssign);
         }

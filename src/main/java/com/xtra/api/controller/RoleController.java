@@ -30,8 +30,8 @@ public class RoleController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Role> addRole(@Valid @RequestBody Role role) {
-        return ResponseEntity.ok(roleService.add(role));
+    public ResponseEntity<Role> addRole(@Valid @RequestBody RoleDTO roleDto) {
+        return ResponseEntity.ok(roleService.add(roleDto));
     }
 
     @GetMapping("/{id}")
@@ -40,8 +40,8 @@ public class RoleController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Role> updateRole(@PathVariable Long id, @RequestBody Role role) {
-        var result = roleService.updateOrFail(id, role);
+    public ResponseEntity<Role> updateRole(@PathVariable Long id, @RequestBody RoleDTO roleDTO) {
+        var result = roleService.updateOrFail(id, roleDTO);
         return ResponseEntity.ok(result);
     }
 
