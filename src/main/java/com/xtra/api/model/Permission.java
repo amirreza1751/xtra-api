@@ -1,5 +1,7 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -23,7 +25,7 @@ public class Permission {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(mappedBy = "permission", cascade = CascadeType.ALL)
     private List<PermissionRole> permissionAssignments = new ArrayList<>();
 

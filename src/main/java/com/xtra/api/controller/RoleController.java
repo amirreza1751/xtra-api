@@ -1,6 +1,6 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.dto.RoleDTO;
+import com.xtra.api.projection.RoleDTO;
 import com.xtra.api.facade.RoleFacade;
 import com.xtra.api.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;

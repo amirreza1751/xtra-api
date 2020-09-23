@@ -1,6 +1,6 @@
 package com.xtra.api.facade;
 
-import com.xtra.api.dto.RoleDTO;
+import com.xtra.api.projection.RoleDTO;
 import com.xtra.api.model.PermissionRole;
 import com.xtra.api.model.PermissionRoleId;
 import com.xtra.api.model.Role;

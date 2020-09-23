@@ -1,12 +1,10 @@
-package com.xtra.api.dto;
+package com.xtra.api.projection;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.PermissionRole;
 import com.xtra.api.model.UserType;
 import lombok.Data;
 
-import java.util.List;
 import java.util.Map;
 
 @Data
