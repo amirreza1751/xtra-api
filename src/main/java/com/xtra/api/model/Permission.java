@@ -18,6 +18,7 @@ public class Permission {
     @Id
     private String pKey;
     private String name;
+    private boolean isNumeric;
 
     @Enumerated(EnumType.STRING)
     private UserType userType;
