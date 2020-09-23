@@ -44,6 +44,7 @@ public class RoleController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<RoleDTO> updateRole(@PathVariable Long id, @RequestBody RoleDTO roleDTO) {
+        roleDTO.setId(id);
         var result = roleService.updateOrFail(id, roleFacade.convertToEntity(roleDTO));
         return ResponseEntity.ok(roleFacade.convertToDto(result));
     }
