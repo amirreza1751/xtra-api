@@ -57,10 +57,6 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     @Override
     protected Page<Channel> findWithSearch(Pageable page, String search) {
-        Optional<Server> server = serverService.findByName(search);
-        if (server.isPresent())
-            return repository.findByNameLikeOrCategoryNameLikeOrStreamInfoCurrentInputLikeOrServersContains(search, search, search, server.get(), page);
-        else
             return repository.findByNameLikeOrCategoryNameLikeOrStreamInfoCurrentInputLike(search, search, search, page);
     }
 }
