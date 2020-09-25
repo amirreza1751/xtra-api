@@ -7,6 +7,8 @@ import com.xtra.api.model.Role;
 import com.xtra.api.service.PermissionRoleService;
 import com.xtra.api.service.PermissionService;
 import com.xtra.api.service.RoleService;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,18 +40,18 @@ public class RoleFacade {
             role.setId(roleService.add(role).getId());
         }
         Long roleId = role.getId();
-        Set<String> keys = roleDTO.getPermissions().keySet();
+        Set<String> keys = roleDTO.getPermissions().stream().map(permission -> permission[0]).collect(Collectors.toSet());
         if (!permissionService.existsAllByKeys(keys)) {
-            throw new RuntimeException("at least of one the keys are wrong");
+            throw new RuntimeException("at least of one the permission keys are not found");
         }
         ArrayList<PermissionRole> permissionAssignments = new ArrayList<>();
 
-        for (String key : keys) {
+        for (String[] p : roleDTO.getPermissions()) {
             PermissionRole permissionAssign = new PermissionRole();
-            permissionAssign.setId(new PermissionRoleId(roleId, key));
-            permissionAssign.setValue(roleDTO.getPermissions().get(key));
+            permissionAssign.setId(new PermissionRoleId(roleId, p[0]));
+            permissionAssign.setValue(p[1]);
 
-            var per = permissionService.findByIdOrFail(key);
+            var per = permissionService.findByIdOrFail(p[0]);
             permissionAssign.setPermission(per);
             permissionAssign.setRole(role);
             per.addPermissionAssignment(permissionAssign);
@@ -64,10 +66,7 @@ public class RoleFacade {
 
     public RoleDTO convertToDto(Role role) {
         RoleDTO roleDTO = modelMapper.map(role, RoleDTO.class);
-        Map<String, String> permissions = role.getPermissionAssignments().stream().collect(Collectors.toMap(
-                e -> e.getPermission().getPKey(),
-                PermissionRole::getValue
-        ));
+        Set<String[]> permissions = role.getPermissionAssignments().stream().map(e -> new String[]{e.getId().getPermissionId(), e.getValue()}).collect(Collectors.toSet());
         roleDTO.setPermissions(permissions);
         return roleDTO;
     }

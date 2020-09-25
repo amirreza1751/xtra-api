@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.UserType;
 import lombok.Data;
 
-import java.util.Map;
+import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -16,5 +16,5 @@ public class RoleDTO {
 
     private UserType userType;
 
-    private Map<String,String> permissions;
+    private Set<String[]> permissions;
 }
