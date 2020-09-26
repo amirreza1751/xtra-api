@@ -18,14 +18,16 @@ import java.util.Optional;
 
 @Service
 public class ServerService extends CrudService<Server, Long, ServerRepository> {
+    private final ServerRepository serverRepository;
     @Value("${core.apiPath}")
     private String corePath;
     @Value("${core.apiPort}")
     private String corePort;
 
     @Autowired
-    protected ServerService(ServerRepository repository) {
+    protected ServerService(ServerRepository repository, ServerRepository serverRepository) {
         super(repository, Server.class);
+        this.serverRepository = serverRepository;
     }
 
     public List<File> getFiles(Long id, String path) {
@@ -76,5 +78,9 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     @Override
     protected Page<Server> findWithSearch(Pageable page, String search) {
         return null;
+    }
+
+    public boolean existsAllByIdIn(Long[] ids){
+        return serverRepository.existsAllByIdIn(ids);
     }
 }

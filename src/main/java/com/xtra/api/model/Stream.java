@@ -66,6 +66,7 @@ public class Stream {
     private String customFFMPEG;
 
     @JsonIgnore
+    @JsonManagedReference("stream_server")
     @OneToMany(mappedBy = "stream", cascade = CascadeType.ALL)
     private List<StreamServer> streamServers = new ArrayList<>();
 

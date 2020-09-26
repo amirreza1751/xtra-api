@@ -21,7 +21,12 @@ public class Server {
     private String domainName;
     private String ip;
 
-    @JsonManagedReference
+
     @OneToMany(mappedBy = "server")
+    @JsonManagedReference("server_id")
     private List<StreamServer> streamServers;
+
+    public void addStreamServer(StreamServer streamServer){
+        streamServers.add(streamServer);
+    }
 }

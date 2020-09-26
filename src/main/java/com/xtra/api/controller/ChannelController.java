@@ -1,7 +1,9 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.model.Channel;
+import com.xtra.api.model.Stream;
 import com.xtra.api.service.ChannelService;
+import com.xtra.api.service.StreamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -15,10 +17,12 @@ import java.util.LinkedHashMap;
 @RequestMapping("/channels")
 public class ChannelController {
     ChannelService channelService;
+    StreamService streamService;
 
     @Autowired
-    public ChannelController(ChannelService channelService) {
+    public ChannelController(ChannelService channelService, StreamService streamService) {
         this.channelService = channelService;
+        this.streamService = streamService;
     }
 
     // Stream CRUD
@@ -84,5 +88,20 @@ public class ChannelController {
     @GetMapping("/get_id/{stream_token}")
     public ResponseEntity<Long> getStreamIdByToken(@PathVariable("stream_token") String streamToken) {
         return ResponseEntity.ok(channelService.findIdByToken(streamToken));
+    }
+
+    static class ChannelAndServerIds {
+        public Channel channel;
+        public Long[] serverIds;
+        public ChannelAndServerIds(){}
+        public ChannelAndServerIds(Channel channel , Long[] serverIds){
+            this.channel = channel;
+            this.serverIds = serverIds;
+        }
+    }
+
+    @PostMapping(value = {"customized-insert", "customized-insert/{start}"})
+    public ResponseEntity<Channel> add(@RequestBody ChannelAndServerIds channelAndServerIds, @PathVariable(required = false) boolean start) {
+        return ResponseEntity.ok(channelService.add( channelAndServerIds.channel, channelAndServerIds.serverIds, start));
     }
 }
