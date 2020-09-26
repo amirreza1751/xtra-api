@@ -2,12 +2,17 @@ package com.xtra.api.service;
 
 import com.xtra.api.model.Channel;
 import com.xtra.api.model.Server;
+import com.xtra.api.model.StreamServer;
+import com.xtra.api.model.StreamServerId;
 import com.xtra.api.repository.ChannelRepository;
+import com.xtra.api.repository.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,10 +62,31 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     @Override
     protected Page<Channel> findWithSearch(Pageable page, String search) {
-        Optional<Server> server = serverService.findByName(search);
-        if (server.isPresent())
-            return repository.findByNameLikeOrCategoryNameLikeOrStreamInfoCurrentInputLikeOrServersContains(search, search, search, server.get(), page);
-        else
             return repository.findByNameLikeOrCategoryNameLikeOrStreamInfoCurrentInputLike(search, search, search, page);
+    }
+
+    public Channel add(Channel channel, Long[] serverIds, boolean start){
+        Channel ch = this.addChannel(channel, start);
+        Long streamId = channel.getId();
+        if(!serverService.existsAllByIdIn(serverIds)){
+            throw new RuntimeException("at least of one the ids are wrong");
+        }
+        ArrayList<StreamServer> streamServers = new ArrayList<>();
+        for (Long serverId : serverIds){
+            StreamServer streamServer = new StreamServer();
+            streamServer.setId(new StreamServerId(streamId, serverId));
+
+            var server = serverService.findByIdOrFail(serverId);
+            streamServer.setServer(server);
+            streamServer.setStream(channel);
+            server.addStreamServer(streamServer);
+
+            streamServers.add(streamServer);
+            channel.setStreamServers(streamServers);
+            ch = repository.save(channel);
+            serverService.updateOrFail(server.getId(), server);
+
+        }
+        return ch;
     }
 }

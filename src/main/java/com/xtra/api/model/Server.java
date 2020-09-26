@@ -2,6 +2,7 @@ package com.xtra.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -20,7 +21,12 @@ public class Server {
     private String domainName;
     private String ip;
 
-    @ManyToMany(mappedBy = "servers")
-    @JsonIgnore
-    private List<Stream> streams;
+
+    @OneToMany(mappedBy = "server")
+    @JsonManagedReference("server_id")
+    private List<StreamServer> streamServers;
+
+    public void addStreamServer(StreamServer streamServer){
+        streamServers.add(streamServer);
+    }
 }

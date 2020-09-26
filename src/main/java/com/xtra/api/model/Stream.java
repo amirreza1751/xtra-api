@@ -1,5 +1,6 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -64,8 +65,10 @@ public class Stream {
     private TranscodeProfile transcodeProfile;
     private String customFFMPEG;
 
-    @ManyToMany(cascade = CascadeType.MERGE)
-    private List<Server> servers;
+    @JsonIgnore
+    @JsonManagedReference("stream_server")
+    @OneToMany(mappedBy = "stream", cascade = CascadeType.ALL)
+    private List<StreamServer> streamServers = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<StreamInput> streamInputs;

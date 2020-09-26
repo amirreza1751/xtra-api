@@ -33,4 +33,5 @@ public class StreamController {
     public ResponseEntity<Long> getStreamIdByToken(@PathVariable("stream_token") String streamToken) {
         return ResponseEntity.ok(streamService.findIdByToken(streamToken));
     }
+
 }
