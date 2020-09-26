@@ -85,7 +85,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
             channel.setStreamServers(streamServers);
             ch = repository.save(channel);
             serverService.updateOrFail(server.getId(), server);
-
+            //@todo start channels on selected servers if it is needed.
         }
         return ch;
     }
