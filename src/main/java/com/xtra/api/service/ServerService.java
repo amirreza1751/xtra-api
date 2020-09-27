@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,7 +81,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return null;
     }
 
-    public boolean existsAllByIdIn(Long[] ids){
+    public boolean existsAllByIdIn(ArrayList<Long> ids){
         return serverRepository.existsAllByIdIn(ids);
     }
 }

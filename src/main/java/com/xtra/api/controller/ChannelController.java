@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 @RestController
@@ -92,9 +93,9 @@ public class ChannelController {
 
     static class ChannelAndServerIds {
         public Channel channel;
-        public Long[] serverIds;
+        public ArrayList<Long> serverIds;
         public ChannelAndServerIds(){}
-        public ChannelAndServerIds(Channel channel , Long[] serverIds){
+        public ChannelAndServerIds(Channel channel , ArrayList<Long> serverIds){
             this.channel = channel;
             this.serverIds = serverIds;
         }

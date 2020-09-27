@@ -65,7 +65,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
             return repository.findByNameLikeOrCategoryNameLikeOrStreamInfoCurrentInputLike(search, search, search, page);
     }
 
-    public Channel add(Channel channel, Long[] serverIds, boolean start){
+    public Channel add(Channel channel, ArrayList<Long> serverIds, boolean start){
         Channel ch = this.addChannel(channel, start);
         Long streamId = channel.getId();
         if(!serverService.existsAllByIdIn(serverIds)){
