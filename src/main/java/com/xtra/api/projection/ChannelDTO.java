@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -30,5 +31,5 @@ public class ChannelDTO {
     private LocalTime timeToRestart;
     private String customFFMPEG;
 
-
+    private List<Long> serverIds;
 }
