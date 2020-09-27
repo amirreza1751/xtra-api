@@ -89,4 +89,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         }
         return ch;
     }
+
+    public void updateServersList(Long channel_id, Long[] serverIds){
+
+    }
 }

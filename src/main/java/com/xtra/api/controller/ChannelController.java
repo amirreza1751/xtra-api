@@ -104,4 +104,9 @@ public class ChannelController {
     public ResponseEntity<Channel> add(@RequestBody ChannelAndServerIds channelAndServerIds, @PathVariable(required = false) boolean start) {
         return ResponseEntity.ok(channelService.add( channelAndServerIds.channel, channelAndServerIds.serverIds, start));
     }
+
+    @PostMapping("/{channel_id}/update-servers-list")
+    public void updateServersList(@PathVariable Long channel_id, @RequestBody Long[] serverIds){
+        channelService.updateServersList(channel_id, serverIds);
+    }
 }
