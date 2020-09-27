@@ -91,6 +91,23 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
     public void updateServersList(Long channel_id, Long[] serverIds){
-
+//        var result = repository.findById(channel_id);
+//        if (result.isEmpty()) {
+////            return Optional.empty();
+//        }
+//        Channel channel = result.get();
+//        ArrayList<StreamServer> streamServers = new ArrayList<>();
+//        for(Long serverId : serverIds){
+//            StreamServer streamServer = new StreamServer();
+//            streamServer.setId(new StreamServerId(streamId, serverId));
+//
+//            var server = serverService.findByIdOrFail(serverId);
+//            streamServer.setServer(server);
+//            streamServer.setStream(channel);
+//            server.addStreamServer(streamServer);
+//
+//            streamServers.add(streamServer);
+//            channel.setStreamServers(streamServers);
+//        }
     }
 }
