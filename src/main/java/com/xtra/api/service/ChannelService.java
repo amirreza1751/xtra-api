@@ -68,9 +68,9 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     public Channel add(Channel channel, ArrayList<Long> serverIds, boolean start){
         Channel ch = this.addChannel(channel, start);
         Long streamId = channel.getId();
-        if(!serverService.existsAllByIdIn(serverIds)){
-            throw new RuntimeException("at least of one the ids are wrong");
-        }
+//        if(!serverService.existsAllByIdIn(serverIds)){
+//            throw new RuntimeException("at least of one the ids are wrong");
+//        }
         ArrayList<StreamServer> streamServers = new ArrayList<>();
         for (Long serverId : serverIds){
             StreamServer streamServer = new StreamServer();

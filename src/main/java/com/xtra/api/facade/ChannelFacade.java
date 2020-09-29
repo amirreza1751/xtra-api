@@ -2,6 +2,8 @@ package com.xtra.api.facade;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xtra.api.model.Channel;
+import com.xtra.api.model.StreamServer;
+import com.xtra.api.model.StreamServerId;
 import com.xtra.api.projection.ChannelDTO;
 import com.xtra.api.service.*;
 import org.modelmapper.ModelMapper;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,19 +31,37 @@ public class ChannelFacade {
 
     public Channel convertToEntity(ChannelDTO channelDTO) {
         Channel channel = modelMapper.map(channelDTO, Channel.class);
-        if (channel.getId() == null || channel.getId() == 0) {
-            channel.setId(channelService.add(channel).getId());
+        if (channel.getId() != null) {
+
+            ArrayList<Long> serverIds = channelDTO.getStream_servers();
+            Long channelId = channel.getId();
+            ArrayList<StreamServer> streamServers = new ArrayList<>();
+
+            if (!serverService.existsAllByIdIn(serverIds)) {
+                throw new RuntimeException("at least of one the server ids are not found");
+            }
+
+            for (Long serverId : serverIds) {
+                StreamServer streamServer = new StreamServer();
+                streamServer.setId(new StreamServerId(channelId, serverId));
+
+                var server = serverService.findByIdOrFail(serverId);
+                streamServer.setServer(server);
+                streamServer.setStream(channel);
+                server.addStreamServer(streamServer);
+
+                streamServers.add(streamServer);
+                serverService.updateOrFail(server.getId(), server);
+
+            }
+            channel.setStreamServers(streamServers);
         }
-        Long channelId = channel.getId();
-        ArrayList<Long> serverIds = channelDTO.getServerIds();
-        if (!serverService.existsAllByIdIn(serverIds)) {
-            throw new RuntimeException("at least of one the permission keys are not found");
-        }
-        return null;
+        return channel;
     }
 
     public ChannelDTO convertToDto(Channel channel) {
-
-        return null;
+        ChannelDTO channelDTO = modelMapper.map(channel, ChannelDTO.class);
+        channelDTO.setStream_servers(channel.getStreamServers().stream().map(e -> e.getServer().getId()).collect(Collectors.toCollection(ArrayList::new)));
+        return channelDTO;
     }
 }

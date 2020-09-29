@@ -1,7 +1,8 @@
 package com.xtra.api.controller;
 
+import com.xtra.api.facade.ChannelFacade;
 import com.xtra.api.model.Channel;
-import com.xtra.api.model.Stream;
+import com.xtra.api.projection.ChannelDTO;
 import com.xtra.api.service.ChannelService;
 import com.xtra.api.service.StreamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,17 +14,21 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/channels")
 public class ChannelController {
     ChannelService channelService;
     StreamService streamService;
+    private final ChannelFacade channelFacade;
 
     @Autowired
-    public ChannelController(ChannelService channelService, StreamService streamService) {
+    public ChannelController(ChannelService channelService, StreamService streamService, ChannelFacade channelFacade) {
         this.channelService = channelService;
         this.streamService = streamService;
+        this.channelFacade = channelFacade;
     }
 
     // Stream CRUD
@@ -34,10 +39,10 @@ public class ChannelController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping(value = {"", "/{start}"})
-    public ResponseEntity<Channel> addChannel(@Valid @RequestBody Channel channel, @PathVariable(required = false) boolean start) {
-        return ResponseEntity.ok(channelService.addChannel(channel, start));
-    }
+//    @PostMapping(value = {"", "/{start}"})
+//    public ResponseEntity<Channel> addChannel(@Valid @RequestBody Channel channel, @PathVariable(required = false) boolean start) {
+//        return ResponseEntity.ok(channelService.addChannel(channel, start));
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Channel> getChannelById(@PathVariable Long id) {
@@ -110,4 +115,5 @@ public class ChannelController {
     public void updateServersList(@PathVariable Long channel_id, @RequestBody Long[] serverIds){
         channelService.updateServersList(channel_id, serverIds);
     }
+
 }
