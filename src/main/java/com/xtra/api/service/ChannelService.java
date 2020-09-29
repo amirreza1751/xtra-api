@@ -65,12 +65,12 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
             return repository.findByNameLikeOrCategoryNameLikeOrStreamInfoCurrentInputLike(search, search, search, page);
     }
 
-    public Channel add(Channel channel, Long[] serverIds, boolean start){
+    public Channel add(Channel channel, ArrayList<Long> serverIds, boolean start){
         Channel ch = this.addChannel(channel, start);
         Long streamId = channel.getId();
-        if(!serverService.existsAllByIdIn(serverIds)){
-            throw new RuntimeException("at least of one the ids are wrong");
-        }
+//        if(!serverService.existsAllByIdIn(serverIds)){
+//            throw new RuntimeException("at least of one the ids are wrong");
+//        }
         ArrayList<StreamServer> streamServers = new ArrayList<>();
         for (Long serverId : serverIds){
             StreamServer streamServer = new StreamServer();
@@ -85,8 +85,29 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
             channel.setStreamServers(streamServers);
             ch = repository.save(channel);
             serverService.updateOrFail(server.getId(), server);
-
+            //@todo start channels on selected servers if it is needed.
         }
         return ch;
+    }
+
+    public void updateServersList(Long channel_id, Long[] serverIds){
+//        var result = repository.findById(channel_id);
+//        if (result.isEmpty()) {
+////            return Optional.empty();
+//        }
+//        Channel channel = result.get();
+//        ArrayList<StreamServer> streamServers = new ArrayList<>();
+//        for(Long serverId : serverIds){
+//            StreamServer streamServer = new StreamServer();
+//            streamServer.setId(new StreamServerId(streamId, serverId));
+//
+//            var server = serverService.findByIdOrFail(serverId);
+//            streamServer.setServer(server);
+//            streamServer.setStream(channel);
+//            server.addStreamServer(streamServer);
+//
+//            streamServers.add(streamServer);
+//            channel.setStreamServers(streamServers);
+//        }
     }
 }
