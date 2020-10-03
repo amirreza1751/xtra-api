@@ -17,6 +17,12 @@ public class Package {
     private boolean isTrial;
     private int credits;
     private Period duration;
+    private int maxConnections;
+    private boolean canRestream;
+
+    @Enumerated(EnumType.STRING)
+    @ElementCollection
+    private List<StreamProtocol> allowedOutputs;
 
     @ManyToMany
     private List<Collection> collections;
