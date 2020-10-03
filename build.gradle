@@ -4,7 +4,6 @@ plugins {
 	id 'java'
 }
 
-
 group = 'com.xtra'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
@@ -12,12 +11,6 @@ sourceCompatibility = '11'
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
-	}
-}
-
-dependencyManagement {
-	imports {
-		mavenBom "org.keycloak.bom:keycloak-adapter-bom:11.0.2"
 	}
 }
 
@@ -33,7 +26,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-configuration-processor'
 	implementation 'org.mariadb.jdbc:mariadb-java-client'
 	implementation 'org.springdoc:springdoc-openapi-ui:1.4.5'
-	compile group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: '11.0.2'
 	compile group: 'io.vavr', name: 'vavr', version: '0.9.0'
 	compile 'commons-beanutils:commons-beanutils:1.9.4'
 	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
