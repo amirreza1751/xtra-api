@@ -11,13 +11,21 @@ public class Collection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String name;
 
     @ManyToMany(mappedBy = "collections")
     private List<Package> packages;
 
-    @ManyToMany(mappedBy = "collections")
+
+    @ManyToMany
     private List<Channel> channels;
 
-    @ManyToMany(mappedBy = "collections")
+    @ManyToMany
     private List<Movie> movies;
+
+    @ManyToMany
+    private List<Series> series;
+
+    @ManyToMany
+    private List<Radio> radios;
 }

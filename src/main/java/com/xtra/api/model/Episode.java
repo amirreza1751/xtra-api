@@ -11,8 +11,6 @@ import javax.persistence.Id;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Episode extends Stream {
-    public Episode(){
-        setStreamType(StreamType.EPISODE);
-    }
+public class Episode extends Vod {
+
 }

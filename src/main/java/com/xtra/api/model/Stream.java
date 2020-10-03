@@ -58,7 +58,7 @@ public class Stream {
     @ManyToOne
     private Category category;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "stream")
     private List<Collection> collections;
 
     @ManyToOne

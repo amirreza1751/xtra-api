@@ -15,4 +15,7 @@ public class Series {
 
     @OneToMany
     private List<Episode> episodes;
+
+    @ManyToMany(mappedBy = "series")
+    private List<Collection> collections;
 }

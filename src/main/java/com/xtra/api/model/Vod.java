@@ -28,7 +28,7 @@ public class Vod {
     @Enumerated(EnumType.STRING)
     private EncodeStatus encodeStatus;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "vod")
     private List<Collection> collections;
 
     @OneToMany(cascade = CascadeType.ALL)
