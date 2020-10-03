@@ -12,8 +12,6 @@ public class ApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(ApiApplication.class, args);
     }
-//    @Value("${dashboard.path}")
-    private String dashboardPath;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
