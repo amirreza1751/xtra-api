@@ -1,18 +1,17 @@
 package com.xtra.api.service;
 
+import com.xtra.api.facade.ChannelFacade;
 import com.xtra.api.model.Channel;
-import com.xtra.api.model.Server;
 import com.xtra.api.model.StreamServer;
 import com.xtra.api.model.StreamServerId;
+import com.xtra.api.projection.ChannelDTO;
 import com.xtra.api.repository.ChannelRepository;
-import com.xtra.api.repository.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -67,10 +66,10 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     public Channel add(Channel channel, ArrayList<Long> serverIds, boolean start){
         Channel ch = this.addChannel(channel, start);
-        Long streamId = channel.getId();
-//        if(!serverService.existsAllByIdIn(serverIds)){
-//            throw new RuntimeException("at least of one the ids are wrong");
-//        }
+        Long streamId = ch.getId();
+        if(!serverService.existsAllByIdIn(serverIds)){
+            throw new RuntimeException("at least of one the ids are wrong");
+        }
         ArrayList<StreamServer> streamServers = new ArrayList<>();
         for (Long serverId : serverIds){
             StreamServer streamServer = new StreamServer();
@@ -91,23 +90,6 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
     public void updateServersList(Long channel_id, Long[] serverIds){
-//        var result = repository.findById(channel_id);
-//        if (result.isEmpty()) {
-////            return Optional.empty();
-//        }
-//        Channel channel = result.get();
-//        ArrayList<StreamServer> streamServers = new ArrayList<>();
-//        for(Long serverId : serverIds){
-//            StreamServer streamServer = new StreamServer();
-//            streamServer.setId(new StreamServerId(streamId, serverId));
-//
-//            var server = serverService.findByIdOrFail(serverId);
-//            streamServer.setServer(server);
-//            streamServer.setStream(channel);
-//            server.addStreamServer(streamServer);
-//
-//            streamServers.add(streamServer);
-//            channel.setStreamServers(streamServers);
-//        }
+        //@todo uodate servers list
     }
 }

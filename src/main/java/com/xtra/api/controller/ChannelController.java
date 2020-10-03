@@ -39,10 +39,10 @@ public class ChannelController {
         return ResponseEntity.ok(result);
     }
 
-//    @PostMapping(value = {"", "/{start}"})
-//    public ResponseEntity<Channel> addChannel(@Valid @RequestBody Channel channel, @PathVariable(required = false) boolean start) {
-//        return ResponseEntity.ok(channelService.addChannel(channel, start));
-//    }
+    @PostMapping(value = {"", "/{start}"})
+    public ResponseEntity<Channel> addChannel(@Valid @RequestBody ChannelDTO channelDTO, @PathVariable(required = false) boolean start) {
+        return ResponseEntity.ok(channelService.add(channelFacade.convertToEntity(channelDTO), channelDTO.getStream_servers(), start));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Channel> getChannelById(@PathVariable Long id) {
@@ -96,20 +96,6 @@ public class ChannelController {
         return ResponseEntity.ok(channelService.findIdByToken(streamToken));
     }
 
-    static class ChannelAndServerIds {
-        public Channel channel;
-        public ArrayList<Long> serverIds;
-        public ChannelAndServerIds(){}
-        public ChannelAndServerIds(Channel channel , ArrayList<Long> serverIds){
-            this.channel = channel;
-            this.serverIds = serverIds;
-        }
-    }
-
-    @PostMapping(value = {"customized-insert", "customized-insert/{start}"})
-    public ResponseEntity<Channel> add(@RequestBody ChannelAndServerIds channelAndServerIds, @PathVariable(required = false) boolean start) {
-        return ResponseEntity.ok(channelService.add( channelAndServerIds.channel, channelAndServerIds.serverIds, start));
-    }
 
     @PostMapping("/{channel_id}/update-servers-list")
     public void updateServersList(@PathVariable Long channel_id, @RequestBody Long[] serverIds){
