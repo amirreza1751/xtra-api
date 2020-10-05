@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -15,6 +17,12 @@ public class Reseller extends User {
     private String resellerDns;
     private String notes;
     private String lang;
+
+    @OneToMany(mappedBy = "owner")
+    private List<DownloadList> customDownloadLists;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Collection> customCollections;
 
     public Reseller() {
         setUserType(UserType.RESELLER);

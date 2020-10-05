@@ -13,6 +13,10 @@ public class Collection {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private boolean isDefaultColl;
+
+    @ManyToOne
+    private Reseller owner;
 
     @Enumerated(EnumType.STRING)
     private CollectionType type;

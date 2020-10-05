@@ -1,6 +1,5 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
@@ -13,7 +12,10 @@ public class DownloadList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private boolean isDefault;
+    private boolean defaultList;
+
+    @ManyToOne
+    private Reseller owner;
 
     @JsonManagedReference("dl")
     @OneToMany(mappedBy = "collection")
