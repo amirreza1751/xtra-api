@@ -13,6 +13,7 @@ import java.util.List;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CollectionDto {
+    private Long id;
     private String name;
     private List<Channel> channels;
     private List<Movie> movies;

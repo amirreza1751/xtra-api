@@ -1,5 +1,6 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,6 +13,13 @@ public class Collection {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    private CollectionType type;
+
+    @JsonManagedReference("collection")
+    @OneToMany(mappedBy = "downloadList")
+    private List<DownloadListCollection> collectionsAssign;
 
     @ManyToMany(mappedBy = "collections")
     private List<Package> packages;

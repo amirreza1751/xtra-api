@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -13,6 +14,9 @@ import java.util.List;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Channel extends Stream {
+    @ManyToMany(mappedBy = "channels")
+    private List<Collection> collections;
+
     public Channel() {
         setStreamType(StreamType.CHANNEL);
     }
