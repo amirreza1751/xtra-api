@@ -85,4 +85,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     public boolean existsAllByIdIn(ArrayList<Long> ids){
         return serverRepository.existsAllByIdIn(ids);
     }
+
+    public String sendPlayRequest(String stream_token, String line_token, Server server){
+        return new RestTemplate().getForObject("http://" + server.getIp() + "/streams?line_token" + line_token + "&stream_token=" + stream_token, String.class);
+    }
 }

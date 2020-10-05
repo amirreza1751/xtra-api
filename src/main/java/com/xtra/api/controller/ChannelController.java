@@ -102,4 +102,10 @@ public class ChannelController {
         channelService.updateServersList(channel_id, serverIds);
     }
 
+    //Play a Channel
+    @GetMapping("/play/{stream_token}/{line_token}")
+    public ResponseEntity<String> playChannel(@PathVariable String stream_token, @PathVariable String line_token){
+        return ResponseEntity.ok(channelService.playChannel(stream_token, line_token));
+    }
+
 }

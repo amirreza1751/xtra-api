@@ -1,10 +1,9 @@
 package com.xtra.api.service;
 
-import com.xtra.api.facade.ChannelFacade;
 import com.xtra.api.model.Channel;
+import com.xtra.api.model.Server;
 import com.xtra.api.model.StreamServer;
 import com.xtra.api.model.StreamServerId;
-import com.xtra.api.projection.ChannelDTO;
 import com.xtra.api.repository.ChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,11 +20,14 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @Service
 public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final ServerService serverService;
+    private final LoadBalancingService loadBalancingService;
+
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService) {
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService) {
         super(repository, Channel.class, serverService);
         this.serverService = serverService;
+        this.loadBalancingService = loadBalancingService;
     }
 
 
@@ -91,5 +93,10 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     public void updateServersList(Long channel_id, Long[] serverIds){
         //@todo uodate servers list
+    }
+
+    public String playChannel(String stream_token, String line_token){
+        Server server  = loadBalancingService.findBestServer(stream_token);
+        return serverService.sendPlayRequest(stream_token, line_token, server);
     }
 }
