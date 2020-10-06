@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DownloadListService extends CrudService<DownloadList, Long, DownloadListRepository> {
 
@@ -18,7 +20,11 @@ public class DownloadListService extends CrudService<DownloadList, Long, Downloa
         return null;
     }
 
-    public DownloadList getDefaultDownloadList(){
-        return repository.findBySystemDefaultTrue().orElseThrow(()->new RuntimeException("default downloadList not found"));
+    public DownloadList getDefaultDownloadList() {
+        return repository.findBySystemDefaultTrue().orElseThrow(() -> new RuntimeException("default downloadList not found"));
+    }
+
+    public List<DownloadList> getDownloadListsByUserId(Long userId) {
+        return repository.findAllByOwnerId(userId);
     }
 }
