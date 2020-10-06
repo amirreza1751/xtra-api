@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ChannelDTO {
+public class ChannelDto {
 
     private Long id;
     private String name;

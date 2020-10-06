@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class RoleDTO {
+public class RoleDto {
     private long id;
     private String name;
     private String color;

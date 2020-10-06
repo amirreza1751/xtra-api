@@ -1,20 +1,17 @@
 package com.xtra.api.facade;
 
-import com.xtra.api.projection.RoleDTO;
+import com.xtra.api.projection.RoleDto;
 import com.xtra.api.model.PermissionRole;
 import com.xtra.api.model.PermissionRoleId;
 import com.xtra.api.model.Role;
 import com.xtra.api.service.PermissionRoleService;
 import com.xtra.api.service.PermissionService;
 import com.xtra.api.service.RoleService;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +30,7 @@ public class RoleFacade {
         this.permissionRoleService = permissionRoleService;
     }
 
-    public Role convertToEntity(RoleDTO roleDTO) {
+    public Role convertToEntity(RoleDto roleDTO) {
         Role role = modelMapper.map(roleDTO, Role.class);
 
         if (role.getId() == null || role.getId() == 0) {
@@ -64,8 +61,8 @@ public class RoleFacade {
         return role;
     }
 
-    public RoleDTO convertToDto(Role role) {
-        RoleDTO roleDTO = modelMapper.map(role, RoleDTO.class);
+    public RoleDto convertToDto(Role role) {
+        RoleDto roleDTO = modelMapper.map(role, RoleDto.class);
         Set<String[]> permissions = role.getPermissionAssignments().stream().map(e -> new String[]{e.getId().getPermissionId(), e.getValue()}).collect(Collectors.toSet());
         roleDTO.setPermissions(permissions);
         return roleDTO;

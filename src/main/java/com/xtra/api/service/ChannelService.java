@@ -1,10 +1,8 @@
 package com.xtra.api.service;
 
-import com.xtra.api.facade.ChannelFacade;
 import com.xtra.api.model.Channel;
 import com.xtra.api.model.StreamServer;
 import com.xtra.api.model.StreamServerId;
-import com.xtra.api.projection.ChannelDTO;
 import com.xtra.api.repository.ChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

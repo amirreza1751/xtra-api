@@ -1,5 +1,6 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ public class Series {
     @OneToMany
     private List<Episode> episodes;
 
+    @JsonBackReference("series")
     @ManyToMany(mappedBy = "series")
     private List<Collection> collections;
 }

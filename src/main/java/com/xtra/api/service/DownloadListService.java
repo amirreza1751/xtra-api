@@ -19,6 +19,6 @@ public class DownloadListService extends CrudService<DownloadList, Long, Downloa
     }
 
     public DownloadList getDefaultDownloadList(){
-        return repository.findByDefaultList(true).orElseThrow(()->new RuntimeException("default downloadList not found"));
+        return repository.findBySystemDefaultTrue().orElseThrow(()->new RuntimeException("default downloadList not found"));
     }
 }

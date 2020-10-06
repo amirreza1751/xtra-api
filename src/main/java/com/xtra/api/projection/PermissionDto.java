@@ -7,7 +7,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 @Data
-public class PermissionDTO {
+public class PermissionDto {
     private String pKey;
     private String name;
     private boolean isNumeric;

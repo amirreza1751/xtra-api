@@ -12,7 +12,7 @@ public class DownloadList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private boolean defaultList;
+    private boolean systemDefault;
 
     @ManyToOne
     private Reseller owner;

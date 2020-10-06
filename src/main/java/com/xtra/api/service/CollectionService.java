@@ -19,4 +19,11 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
     protected Page<Collection> findWithSearch(Pageable page, String search) {
         return null;
     }
+
+    //admin only
+    @Override
+    public Collection add(Collection coll) {
+        coll.setSystemDefault(true);
+        return super.add(coll);
+    }
 }

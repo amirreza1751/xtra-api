@@ -2,10 +2,7 @@ package com.xtra.api.projection;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.Channel;
-import com.xtra.api.model.Movie;
-import com.xtra.api.model.Radio;
-import com.xtra.api.model.Series;
+import com.xtra.api.model.*;
 import lombok.Data;
 
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.List;
 public class CollectionDto {
     private Long id;
     private String name;
+    private CollectionType type;
     private List<Channel> channels;
     private List<Movie> movies;
     private List<Series> series;

@@ -2,7 +2,7 @@ package com.xtra.api.controller;
 
 import com.xtra.api.facade.ChannelFacade;
 import com.xtra.api.model.Channel;
-import com.xtra.api.projection.ChannelDTO;
+import com.xtra.api.projection.ChannelDto;
 import com.xtra.api.service.ChannelService;
 import com.xtra.api.service.StreamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/channels")
@@ -40,7 +37,7 @@ public class ChannelController {
     }
 
     @PostMapping(value = {"", "/{start}"})
-    public ResponseEntity<Channel> addChannel(@Valid @RequestBody ChannelDTO channelDTO, @PathVariable(required = false) boolean start) {
+    public ResponseEntity<Channel> addChannel(@Valid @RequestBody ChannelDto channelDTO, @PathVariable(required = false) boolean start) {
         return ResponseEntity.ok(channelService.add(channelFacade.convertToEntity(channelDTO), channelDTO.getStream_servers(), start));
     }
 
