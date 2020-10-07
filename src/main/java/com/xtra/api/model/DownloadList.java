@@ -18,7 +18,7 @@ public class DownloadList {
     private Reseller owner;
 
     @JsonManagedReference("dl")
-    @OneToMany(mappedBy = "collection",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "downloadList",cascade = CascadeType.ALL)
     List<DownloadListCollection> collectionsAssign;
 
 }

@@ -56,7 +56,7 @@ public class DownloadListController {
     }
 
     @PostMapping("")
-    public ResponseEntity<DownloadListDto> addDownloadList(@RequestBody @Valid DownloadListDto downloadListDto) {
+    public ResponseEntity<DownloadListDto> addDownloadList(@RequestBody DownloadListDto downloadListDto) {
         var entity = mapper.convertToEntity(downloadListDto);
         var result = dlService.add(entity);
         dlService.saveRelationship(result, rMapper.convertAllToEntity(downloadListDto.getCollections()));

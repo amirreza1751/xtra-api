@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Collection {
     @Id
@@ -24,8 +27,8 @@ public class Collection {
     @Enumerated(EnumType.STRING)
     private CollectionType type;
 
-    @JsonManagedReference("collection")
-    @OneToMany(mappedBy = "downloadList")
+    @JsonManagedReference("dlc")
+    @OneToMany(mappedBy = "collection")
     private List<DownloadListCollection> downloadListCollections;
 
     @ManyToMany(mappedBy = "collections")

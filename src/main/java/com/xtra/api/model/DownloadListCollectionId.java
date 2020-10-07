@@ -1,11 +1,13 @@
 package com.xtra.api.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
 @Embeddable
 public class DownloadListCollectionId implements Serializable {
     private Long downloadListId;
