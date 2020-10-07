@@ -17,7 +17,7 @@ public class Series {
     @OneToMany
     private List<Episode> episodes;
 
-    @JsonBackReference("series")
+    //@JsonBackReference("series")
     @ManyToMany(mappedBy = "series")
     private List<Collection> collections;
 }

@@ -1,61 +1,76 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.model.DownloadList;
-import com.xtra.api.model.Line;
+import com.xtra.api.facade.DownloadListFacade;
+import com.xtra.api.mapper.DlCollectionMapper;
+import com.xtra.api.mapper.DownloadListMapper;
+import com.xtra.api.projection.DownloadListDto;
 import com.xtra.api.service.DownloadListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("download_lists")
 public class DownloadListController {
-    private final DownloadListService downloadListService;
+    private final DownloadListService dlService;
+    private final DownloadListFacade facade;
+    private final DownloadListMapper mapper;
+    private final DlCollectionMapper rMapper;
 
     @Autowired
-    public DownloadListController(DownloadListService downloadListService) {
-        this.downloadListService = downloadListService;
+    public DownloadListController(DownloadListService downloadListService, DownloadListFacade downloadListFacade, DownloadListMapper mapper, DlCollectionMapper rMapper) {
+        this.dlService = downloadListService;
+        this.facade = downloadListFacade;
+        this.mapper = mapper;
+        this.rMapper = rMapper;
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<DownloadList>> getDownloadLists(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                               @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(downloadListService.findAll(search, pageNo, pageSize, sortBy, sortDir));
+    public ResponseEntity<Page<DownloadListDto>> getDownloadLists(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                                                  @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+        var result = dlService.findAll(search, pageNo, pageSize, sortBy, sortDir);
+        return ResponseEntity.ok(new PageImpl<>(result.stream().map(facade::convertToDto).collect(Collectors.toList())));
     }
 
     @GetMapping("/default")
-    public DownloadList getSystemDefaultDownloadList(){
-        return downloadListService.getDefaultDownloadList();
+    public DownloadListDto getSystemDefaultDownloadList() {
+        return facade.convertToDto(dlService.getDefaultDownloadList());
     }
 
-    @GetMapping("")
-    public List<DownloadList> getDownloadListsByUserId(Long userId){
-        return downloadListService.getDownloadListsByUserId(userId);
+    @GetMapping("/user/{userId}")
+    public List<DownloadListDto> getDownloadListsByUserId(@PathVariable Long userId) {
+        return dlService.getDownloadListsByUserId(userId).stream().map(facade::convertToDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DownloadList> getDownloadList(@PathVariable Long id) {
-        return ResponseEntity.ok(downloadListService.findByIdOrFail(id));
+    public ResponseEntity<DownloadListDto> getDownloadList(@PathVariable Long id) {
+        var res = dlService.findByIdOrFail(id);
+        return ResponseEntity.ok(mapper.convertToDto(res));
     }
 
     @PostMapping("")
-    public ResponseEntity<DownloadList> addDownloadList(@RequestBody @Valid DownloadList downloadList) {
-        return ResponseEntity.ok(downloadListService.add(downloadList));
+    public ResponseEntity<DownloadListDto> addDownloadList(@RequestBody @Valid DownloadListDto downloadListDto) {
+        var entity = mapper.convertToEntity(downloadListDto);
+        var result = dlService.add(entity);
+        dlService.saveRelationship(result, rMapper.convertAllToEntity(downloadListDto.getCollections()));
+        return ResponseEntity.ok(mapper.convertToDto(result));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<DownloadList> updateDownloadList(@PathVariable Long id, @RequestBody @Valid DownloadList downloadList) {
-        return ResponseEntity.ok(downloadListService.updateOrFail(id, downloadList));
+    public ResponseEntity<DownloadListDto> updateDownloadList(@PathVariable Long id, @RequestBody @Valid DownloadListDto downloadListDto) {
+        return ResponseEntity.ok(facade.convertToDto(dlService.updateOrFail(id, facade.convertToEntity(downloadListDto))));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteDownloadList(@PathVariable Long id) {
-        downloadListService.deleteOrFail(id);
+        dlService.deleteOrFail(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

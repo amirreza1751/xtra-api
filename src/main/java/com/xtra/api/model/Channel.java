@@ -1,6 +1,7 @@
 package com.xtra.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -16,7 +17,8 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Channel extends Stream {
 
-    @JsonBackReference("channels")
+    //@JsonBackReference("channels")
+    @JsonIgnore
     @ManyToMany(mappedBy = "channels")
     private List<Collection> collections;
 

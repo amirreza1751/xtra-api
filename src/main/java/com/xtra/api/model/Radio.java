@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class Radio extends Stream {
 
-    @JsonBackReference("radios")
+    //@JsonBackReference("radios")
     @ManyToMany(mappedBy = "radios")
     private List<Collection> collections;
 }

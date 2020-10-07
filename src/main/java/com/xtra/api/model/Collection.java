@@ -32,19 +32,19 @@ public class Collection {
     private List<Package> packages;
 
 
-    @JsonManagedReference("channels")
+    //@JsonManagedReference("channels")
     @ManyToMany
     private List<Channel> channels;
 
-    @JsonManagedReference("movies")
+    //@JsonManagedReference("movies")
     @ManyToMany
     private List<Movie> movies;
 
-    @JsonManagedReference("series")
+    //@JsonManagedReference("series")
     @ManyToMany
     private List<Series> series;
 
-    @JsonManagedReference("radios")
+    //@JsonManagedReference("radios")
     @ManyToMany
     private List<Radio> radios;
 }

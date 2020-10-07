@@ -17,7 +17,7 @@ public class Movie extends Vod {
     @OneToOne(cascade = CascadeType.ALL)
     private MovieInfo info;
 
-    @JsonBackReference("movies")
+    //@JsonBackReference("movies")
     @ManyToMany(mappedBy = "movies")
     private List<Collection> collections;
 }

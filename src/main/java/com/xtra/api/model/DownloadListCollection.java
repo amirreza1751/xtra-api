@@ -3,8 +3,10 @@ package com.xtra.api.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 
 @Entity
 @Data
@@ -24,17 +26,7 @@ public class DownloadListCollection {
     private DownloadList downloadList;
 
     private boolean isEnabled;
-
-    @Data
-    @Embeddable
-    public class DownloadListCollectionId implements Serializable {
-        private Long downloadListId;
-        private Long collectionId;
-
-        public DownloadListCollectionId() {
-
-        }
-    }
+    
 }
 
 

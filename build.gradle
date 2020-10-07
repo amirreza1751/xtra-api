@@ -24,14 +24,16 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-configuration-processor'
+	implementation 'org.springframework.boot:spring-boot-devtools'
 	implementation 'org.mariadb.jdbc:mariadb-java-client'
+	implementation 'org.projectlombok:lombok'
 	implementation 'org.springdoc:springdoc-openapi-ui:1.4.5'
-	compile group: 'io.vavr', name: 'vavr', version: '0.9.0'
-	compile 'commons-beanutils:commons-beanutils:1.9.4'
-	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
-	compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation 'org.apache.commons:commons-lang3:3.11'
+	implementation 'org.modelmapper:modelmapper:2.3.8'
+	implementation 'org.mapstruct:mapstruct:1.4.0.Final'
+
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.0.Final'
+
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
