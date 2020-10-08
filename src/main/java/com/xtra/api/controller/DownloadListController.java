@@ -1,7 +1,6 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.facade.DownloadListFacade;
-import com.xtra.api.mapper.DlCollectionMapper;
 import com.xtra.api.mapper.DownloadListMapper;
 import com.xtra.api.projection.DownloadListDto;
 import com.xtra.api.service.DownloadListService;
@@ -22,14 +21,12 @@ public class DownloadListController {
     private final DownloadListService dlService;
     private final DownloadListFacade facade;
     private final DownloadListMapper mapper;
-    private final DlCollectionMapper rMapper;
 
     @Autowired
-    public DownloadListController(DownloadListService downloadListService, DownloadListFacade downloadListFacade, DownloadListMapper mapper, DlCollectionMapper rMapper) {
+    public DownloadListController(DownloadListService downloadListService, DownloadListFacade downloadListFacade, DownloadListMapper mapper) {
         this.dlService = downloadListService;
         this.facade = downloadListFacade;
         this.mapper = mapper;
-        this.rMapper = rMapper;
     }
 
     @GetMapping("")
@@ -58,14 +55,14 @@ public class DownloadListController {
     @PostMapping("")
     public ResponseEntity<DownloadListDto> addDownloadList(@RequestBody DownloadListDto downloadListDto) {
         var entity = mapper.convertToEntity(downloadListDto);
-        var result = dlService.add(entity);
-        dlService.saveRelationship(result, rMapper.convertAllToEntity(downloadListDto.getCollections()));
-        return ResponseEntity.ok(mapper.convertToDto(result));
+        entity = dlService.add(entity);
+        dlService.saveWithRelations(entity, mapper.convertRelationListToEntity(downloadListDto.getCollections()));
+        return ResponseEntity.ok(mapper.convertToDto(entity));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<DownloadListDto> updateDownloadList(@PathVariable Long id, @RequestBody @Valid DownloadListDto downloadListDto) {
-        return ResponseEntity.ok(facade.convertToDto(dlService.updateOrFail(id, facade.convertToEntity(downloadListDto))));
+        return ResponseEntity.ok(mapper.convertToDto(dlService.updateOrFail(id, mapper.convertToEntityWithRelations(downloadListDto))));
     }
 
     @DeleteMapping("/{id}")

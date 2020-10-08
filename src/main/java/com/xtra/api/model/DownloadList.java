@@ -1,14 +1,15 @@
 package com.xtra.api.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
-import org.springframework.core.annotation.Order;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class DownloadList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

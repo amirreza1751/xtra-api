@@ -44,8 +44,7 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
     }
 
     public T updateOrFail(ID id, T newObject) {
-        var result = repository.findById(id);
-        T oldObject = result.orElseThrow(() -> new EntityNotFoundException(aClass.getName(), id.toString()));
+        T oldObject = findByIdOrFail(id);
         copyProperties(newObject, oldObject, "id");
         return repository.save(oldObject);
     }
