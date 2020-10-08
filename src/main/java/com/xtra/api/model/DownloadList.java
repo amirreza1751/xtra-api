@@ -2,6 +2,7 @@ package com.xtra.api.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
+import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,7 +19,8 @@ public class DownloadList {
     private Reseller owner;
 
     @JsonManagedReference("dl")
-    @OneToMany(mappedBy = "downloadList",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "downloadList", cascade = CascadeType.ALL)
+    @OrderBy("order ASC")
     List<DownloadListCollection> collectionsAssign;
 
 }

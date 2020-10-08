@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -29,6 +26,8 @@ public class DownloadListCollection {
     private DownloadList downloadList;
 
     private boolean isEnabled;
+    @Column(name = "`order`")
+    private int order;
     
 }
 

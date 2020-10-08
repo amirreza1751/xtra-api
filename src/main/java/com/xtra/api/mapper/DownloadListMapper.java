@@ -22,4 +22,5 @@ public abstract class DownloadListMapper {
     @Mapping(target = "id", source = "dlCollection.collection.id")
     @Mapping(target = "name", source = "dlCollection.collection.name")
     abstract DlCollectionDto convertToEntity(DownloadListCollection dlCollection);
+
 }

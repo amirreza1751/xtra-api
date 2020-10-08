@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,12 +38,14 @@ public class DownloadListService extends CrudService<DownloadList, Long, Downloa
         if (downloadList == null) {
             throw new RuntimeException("downloadList is null");
         }
+        AtomicInteger counter = new AtomicInteger(0);
         var relations = dlCollections.stream().peek(dlc -> {
             var id = dlc.getId();
             id.setDownloadListId(downloadList.getId());
             dlc.setId(id);
             dlc.setCollection(collectionService.findByIdOrFail(id.getCollectionId()));
             dlc.setDownloadList(downloadList);
+            dlc.setOrder(counter.addAndGet(1));
         }).collect(Collectors.toList());
         downloadList.setCollectionsAssign(relations);
         repository.save(downloadList);
