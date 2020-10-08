@@ -42,8 +42,8 @@ public class DownloadListService extends CrudService<DownloadList, Long, Downloa
 
     @Override
     public DownloadList updateOrFail(Long id, DownloadList downloadList) {
-        dlcRepository.deleteAllByIdIn(downloadList.getCollectionsAssign().stream().map(DownloadListCollection::getId).collect(Collectors.toList()));
         var existing = findByIdOrFail(id);
+        dlcRepository.deleteAll(existing.getCollectionsAssign());
         copyProperties(downloadList, existing, "id", "collectionsAssign");
         int i = 0;
         for (var collAssign : downloadList.getCollectionsAssign()) {
