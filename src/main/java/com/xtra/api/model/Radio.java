@@ -13,7 +13,13 @@ import java.util.List;
 @Data
 public class Radio extends Stream {
 
-    //@JsonBackReference("radios")
     @ManyToMany(mappedBy = "radios")
     private List<Collection> collections;
+
+    public Radio() {
+    }
+
+    public Radio(Long id) {
+        setId(id);
+    }
 }

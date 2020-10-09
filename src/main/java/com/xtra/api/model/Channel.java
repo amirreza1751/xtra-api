@@ -17,12 +17,16 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Channel extends Stream {
 
-    //@JsonBackReference("channels")
     @JsonIgnore
     @ManyToMany(mappedBy = "channels")
     private List<Collection> collections;
 
     public Channel() {
         setStreamType(StreamType.CHANNEL);
+    }
+
+    public Channel(Long id){
+        this();
+        setId(id);
     }
 }

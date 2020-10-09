@@ -13,8 +13,8 @@ public class CollectionDto {
     private Long id;
     private String name;
     private CollectionType type;
-    private List<Channel> channels;
-    private List<Movie> movies;
-    private List<Series> series;
-    private List<Radio> radios;
+    private List<Long> channels;
+    private List<Long> movies;
+    private List<Long> series;
+    private List<Long> radios;
 }

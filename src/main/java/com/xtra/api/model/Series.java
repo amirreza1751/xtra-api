@@ -9,6 +9,7 @@ import java.util.List;
 @Entity
 @Data
 public class Series {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,4 +21,12 @@ public class Series {
     //@JsonBackReference("series")
     @ManyToMany(mappedBy = "series")
     private List<Collection> collections;
+
+    public Series() {
+
+    }
+
+    public Series(Long id) {
+        this.id = id;
+    }
 }

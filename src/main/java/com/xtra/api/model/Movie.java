@@ -1,6 +1,5 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,10 +13,17 @@ import java.util.List;
 @Entity
 @Data
 public class Movie extends Vod {
+
     @OneToOne(cascade = CascadeType.ALL)
     private MovieInfo info;
 
-    //@JsonBackReference("movies")
     @ManyToMany(mappedBy = "movies")
     private List<Collection> collections;
+
+    public Movie() {
+    }
+
+    public Movie(Long id) {
+        setId(id);
+    }
 }

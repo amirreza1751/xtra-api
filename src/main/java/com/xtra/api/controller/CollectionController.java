@@ -1,44 +1,50 @@
 package com.xtra.api.controller;
 
+import com.xtra.api.mapper.CollectionMapper;
 import com.xtra.api.model.Collection;
+import com.xtra.api.projection.CollectionDto;
 import com.xtra.api.service.CollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/collections")
 public class CollectionController {
     private final CollectionService collectionService;
+    private final CollectionMapper collectionMapper;
 
     @Autowired
-    public CollectionController(CollectionService collectionService) {
+    public CollectionController(CollectionService collectionService, CollectionMapper collectionMapper) {
         this.collectionService = collectionService;
+        this.collectionMapper = collectionMapper;
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<Collection>> getCollections(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                                           @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(collectionService.findAll(search, pageNo, pageSize, sortBy, sortDir));
+    public ResponseEntity<Page<CollectionDto>> getCollections(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                                              @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+        return ResponseEntity.ok(new PageImpl<>(collectionService.findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(collectionMapper::convertToDto).collect(Collectors.toList())));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Collection> getCollection(@PathVariable Long id) {
-        return ResponseEntity.ok(collectionService.findByIdOrFail(id));
+    public ResponseEntity<CollectionDto> getCollection(@PathVariable Long id) {
+        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.findByIdOrFail(id)));
     }
 
     @PostMapping("")
-    public ResponseEntity<Collection> addCollection(@RequestBody @Valid Collection collection) {
-        return ResponseEntity.ok(collectionService.add(collection));
+    public ResponseEntity<CollectionDto> addCollection(@RequestBody CollectionDto collectionDto) {
+        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.add(collectionMapper.convertToEntity(collectionDto))));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Collection> updateCollection(@PathVariable Long id, @RequestBody @Valid Collection collection) {
-        return ResponseEntity.ok(collectionService.updateOrFail(id, collection));
+    public ResponseEntity<CollectionDto> updateCollection(@PathVariable Long id, @RequestBody @Valid Collection collection) {
+        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.updateOrFail(id, collection)));
     }
 
     @DeleteMapping("/{id}")
