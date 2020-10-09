@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CollectionSimpleDto {
+public class CollectionSimplifiedDto {
     private Long id;
     private String name;
     private CollectionType type;

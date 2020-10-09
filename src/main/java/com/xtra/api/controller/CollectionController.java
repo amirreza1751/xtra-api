@@ -3,7 +3,7 @@ package com.xtra.api.controller;
 import com.xtra.api.mapper.CollectionMapper;
 import com.xtra.api.model.Collection;
 import com.xtra.api.projection.CollectionDto;
-import com.xtra.api.projection.CollectionSimpleDto;
+import com.xtra.api.projection.CollectionSimplifiedDto;
 import com.xtra.api.service.CollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,8 +28,8 @@ public class CollectionController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<CollectionSimpleDto>> getCollections(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                                                    @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+    public ResponseEntity<Page<CollectionSimplifiedDto>> getCollections(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                                                        @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(new PageImpl<>(collectionService.findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(collectionMapper::convertToSimpleDto).collect(Collectors.toList())));
     }
 
