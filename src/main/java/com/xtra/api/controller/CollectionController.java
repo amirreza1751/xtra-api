@@ -3,6 +3,7 @@ package com.xtra.api.controller;
 import com.xtra.api.mapper.CollectionMapper;
 import com.xtra.api.model.Collection;
 import com.xtra.api.projection.CollectionDto;
+import com.xtra.api.projection.CollectionInsertDto;
 import com.xtra.api.projection.CollectionSimplifiedDto;
 import com.xtra.api.service.CollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +40,8 @@ public class CollectionController {
     }
 
     @PostMapping("")
-    public ResponseEntity<CollectionDto> addCollection(@RequestBody CollectionDto collectionDto) {
-        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.add(collectionMapper.convertToEntity(collectionDto))));
+    public ResponseEntity<CollectionDto> addCollection(@RequestBody CollectionInsertDto collectionInsertDto) {
+        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.add(collectionMapper.convertToEntity(collectionInsertDto))));
     }
 
     @PatchMapping("/{id}")

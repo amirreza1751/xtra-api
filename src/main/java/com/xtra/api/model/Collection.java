@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -32,22 +33,21 @@ public class Collection {
     private List<DownloadListCollection> downloadListCollections;
 
     @ManyToMany(mappedBy = "collections")
-    private List<Package> packages;
-
+    private Set<Package> packages;
 
     //@JsonManagedReference("channels")
-    @ManyToMany
-    private List<Channel> channels;
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    private Set<Channel> channels;
 
     //@JsonManagedReference("movies")
-    @ManyToMany
-    private List<Movie> movies;
+    @ManyToMany(cascade = CascadeType.MERGE)
+    private Set<Movie> movies;
 
     //@JsonManagedReference("series")
-    @ManyToMany
-    private List<Series> series;
+    @ManyToMany(cascade = CascadeType.MERGE)
+    private Set<Series> series;
 
     //@JsonManagedReference("radios")
-    @ManyToMany
-    private List<Radio> radios;
+    @ManyToMany(cascade = CascadeType.MERGE)
+    private Set<Radio> radios;
 }
