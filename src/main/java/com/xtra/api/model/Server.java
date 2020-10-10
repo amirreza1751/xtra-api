@@ -20,7 +20,8 @@ public class Server {
     private String name;
     private String domainName;
     private String ip;
-
+    private String corePort;
+    private String nginxPort;
 
     @OneToMany(mappedBy = "server")
     @JsonManagedReference("server_id")

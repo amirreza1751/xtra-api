@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -95,8 +96,9 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         //@todo uodate servers list
     }
 
-    public String playChannel(String stream_token, String line_token){
-        Server server  = loadBalancingService.findBestServer(stream_token);
+    public String playChannel(String stream_token, String line_token, HttpServletRequest request){
+        ArrayList<Server> servers  = loadBalancingService.findAvailableServers(stream_token);
+        Server server  = loadBalancingService.findLeastConnServer(servers);
         return serverService.sendPlayRequest(stream_token, line_token, server);
     }
 }

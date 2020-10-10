@@ -65,4 +65,5 @@ public class LineActivityService {
             lineActivityRepository.deleteById(activity.getId());
         }
     }
+
 }

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -104,8 +105,8 @@ public class ChannelController {
 
     //Play a Channel
     @GetMapping("/play/{stream_token}/{line_token}")
-    public ResponseEntity<String> playChannel(@PathVariable String stream_token, @PathVariable String line_token){
-        return ResponseEntity.ok(channelService.playChannel(stream_token, line_token));
+    public ResponseEntity<String> playChannel(@PathVariable String stream_token, @PathVariable String line_token, HttpServletRequest request){
+        return ResponseEntity.ok(channelService.playChannel(stream_token, line_token, request));
     }
 
 }
