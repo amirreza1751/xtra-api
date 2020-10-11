@@ -36,4 +36,9 @@ public class ServerController {
     public ResponseEntity<List<File>> getFileList(@PathVariable Long id, @RequestParam String path) {
         return ResponseEntity.ok(serverService.getFiles(id, path));
     }
+
+//    @GetMapping("")
+//    public ResponseEntity<List<File>> getFileList(@PathVariable Long id, @RequestParam String path) {
+//        return ResponseEntity.ok(serverService.getFiles(id, path));
+//    }
 }

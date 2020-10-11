@@ -1,9 +1,7 @@
 package com.xtra.api.service;
 
-import com.xtra.api.model.File;
-import com.xtra.api.model.MediaInfo;
-import com.xtra.api.model.Movie;
-import com.xtra.api.model.Server;
+import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.model.*;
 import com.xtra.api.repository.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,5 +86,13 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
 
     public String sendPlayRequest(String stream_token, String line_token, Server server){
         return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams?line_token" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
+    }
+
+    public Resource getMemoryUsage(Long serverId){
+        Optional<Server> srv = serverRepository.findById(serverId);
+        if (srv.isPresent()){
+            var server = srv.get();
+            return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/resources/memory/", Resource.class);
+        } else throw new EntityNotFoundException(aClass.getSimpleName(), serverId.toString());
     }
 }
