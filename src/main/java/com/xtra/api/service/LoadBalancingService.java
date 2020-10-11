@@ -22,18 +22,14 @@ public class LoadBalancingService {
     public ArrayList<Server> findAvailableServers(String stream_token) {
         Stream stream = (Stream) streamRepository.getByStreamToken(stream_token).get();
         ArrayList<Server> result = new ArrayList<>();
-        stream.getStreamServers().forEach(streamServer -> {
-            result.add(streamServer.getServer());
-        });
+        stream.getStreamServers().forEach(streamServer -> result.add(streamServer.getServer()));
         return result;
     }
 
-    private ArrayList<Integer> connections = new ArrayList<>();
+    private final ArrayList<Integer> connections = new ArrayList<>();
 
     public Server findLeastConnServer(ArrayList<Server> servers) {
-        servers.forEach(server -> {
-            connections.add(lineActivityRepository.countAllByIdServerId(server.getId()));
-        });
+        servers.forEach(server -> connections.add(lineActivityRepository.countAllByIdServerId(server.getId())));
          return servers.get(connections.indexOf(Collections.min(connections)));
     }
 }

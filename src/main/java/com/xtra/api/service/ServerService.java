@@ -87,6 +87,6 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     public String sendPlayRequest(String stream_token, String line_token, Server server){
-        return new RestTemplate().getForObject("http://" + server.getIp() + "/streams?line_token" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
+        return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams?line_token" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
     }
 }
