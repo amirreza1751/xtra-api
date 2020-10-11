@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.*;
@@ -32,7 +34,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
 
-    public Channel addChannel(Channel channel, boolean start) {
+    public Channel addChannel(Channel channel) {
 
         String token;
         do {
@@ -42,9 +44,9 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         channel.setStreamToken(token);
         channel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
         Channel ch = repository.save(channel);
-        if (start) {
-            serverService.sendStartRequest(ch.getId());
-        }
+//        if (start) {
+//            serverService.sendStartRequest(ch.getId());
+//        }
         return ch;
     }
 
@@ -68,7 +70,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
     public Channel add(Channel channel, ArrayList<Long> serverIds, boolean start){
-        Channel ch = this.addChannel(channel, start);
+        Channel ch = this.addChannel(channel);
         Long streamId = ch.getId();
         if(!serverService.existsAllByIdIn(serverIds)){
             throw new RuntimeException("at least of one the ids are wrong");
@@ -87,8 +89,12 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
             channel.setStreamServers(streamServers);
             ch = repository.save(channel);
             serverService.updateOrFail(server.getId(), server);
-            //@todo start channels on selected servers if it is needed.
 
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            Channel finalCh = ch;
+            executor.execute(() -> {
+                this.startOrFail(finalCh.getId(), server);
+            });
         }
         return ch;
     }

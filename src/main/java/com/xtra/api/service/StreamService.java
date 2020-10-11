@@ -68,10 +68,10 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
         }
     }
 
-    public boolean startOrFail(Long id) {
+    public boolean startOrFail(Long id, Server server) {
         Optional<S> channel = repository.findById(id);
         if (channel.isPresent()) {
-            return serverService.sendStartRequest(id);
+            return serverService.sendStartRequest(id, server);
         } else
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
     }

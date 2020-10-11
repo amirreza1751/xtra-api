@@ -63,12 +63,12 @@ public class ChannelController {
     }
 
     // Stream Operations
-    @GetMapping("/start/{id}")
-    public ResponseEntity<String> startChannel(@PathVariable Long id) {
-        if (channelService.startOrFail(id))
-            return ResponseEntity.ok().build();
-        else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
+//    @GetMapping("/start/{id}")
+//    public ResponseEntity<String> startChannel(@PathVariable Long id) {
+//        if (channelService.startOrFail(id))
+//            return ResponseEntity.ok().build();
+//        else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//    }
 
     @GetMapping("/stop/{id}")
     public ResponseEntity<?> stopChannel(@PathVariable Long id) {
