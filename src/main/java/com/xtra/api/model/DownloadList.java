@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -20,8 +21,8 @@ public class DownloadList {
     private Reseller owner;
 
     @JsonManagedReference("dl")
-    @OneToMany(mappedBy = "downloadList", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "downloadList", cascade = {CascadeType.PERSIST,CascadeType.REFRESH})
     @OrderBy("order ASC")
-    List<DownloadListCollection> collectionsAssign;
+    Set<DownloadListCollection> collectionsAssign;
 
 }

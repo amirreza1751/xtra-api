@@ -12,7 +12,7 @@ import java.util.List;
 public class Package {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id ;
+    private Long id;
     private String name;
     private boolean isTrial;
     private int credits;
@@ -24,7 +24,7 @@ public class Package {
     @ElementCollection
     private List<StreamProtocol> allowedOutputs;
 
-    @ManyToMany
-    private List<Collection> collections;
+    @OneToOne
+    private DownloadList defaultDownloadList;
 
 }

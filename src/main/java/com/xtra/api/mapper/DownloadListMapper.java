@@ -27,13 +27,13 @@ public abstract class DownloadListMapper {
 
     @AfterMapping
     public void afterConvertToEntity(final DownloadListDto downloadListDto, @MappingTarget final DownloadList downloadList) {
-        if (downloadList.getCollectionsAssign().isEmpty())
+        if (downloadList.getCollectionsAssign() == null)
             return;
         var res = downloadList.getCollectionsAssign().stream().peek(dlc -> {
             var id = dlc.getId();
             id.setDownloadListId(downloadListDto.getId());
             dlc.setId(id);
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toSet());
         downloadList.setCollectionsAssign(res);
     }
 
@@ -46,5 +46,5 @@ public abstract class DownloadListMapper {
     @Mapping(source = "dlCollection.collection.id", target = "id")
     @Mapping(source = "dlCollection.collection.name", target = "name")
     abstract DlCollectionDto convertToEntity(DownloadListCollection dlCollection);
-    
+
 }

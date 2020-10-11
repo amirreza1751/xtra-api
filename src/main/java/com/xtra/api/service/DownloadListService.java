@@ -70,7 +70,7 @@ public class DownloadListService extends CrudService<DownloadList, Long, Downloa
             dlc.setCollection(collectionService.findByIdOrFail(id.getCollectionId()));
             dlc.setDownloadList(downloadList);
             dlc.setOrder(counter.addAndGet(1));
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toSet());
         downloadList.setCollectionsAssign(relations);
         repository.save(downloadList);
     }

@@ -21,9 +21,6 @@ public class Reseller extends User {
     @OneToMany(mappedBy = "owner")
     private List<DownloadList> customDownloadLists;
 
-    @OneToMany(mappedBy = "owner")
-    private List<Collection> customCollections;
-
     public Reseller() {
         setUserType(UserType.RESELLER);
     }

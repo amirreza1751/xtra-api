@@ -31,6 +31,7 @@ dependencies {
 	implementation 'org.apache.commons:commons-lang3:3.11'
 	implementation 'org.modelmapper:modelmapper:2.3.8'
 	implementation 'org.mapstruct:mapstruct:1.4.0.Final'
+	implementation("com.google.guava:guava:29.0-jre")
 
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.0.Final'
 

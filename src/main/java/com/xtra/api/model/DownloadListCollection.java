@@ -2,12 +2,15 @@ package com.xtra.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class DownloadListCollection {
 
     @EmbeddedId
@@ -25,11 +28,9 @@ public class DownloadListCollection {
     @ToString.Exclude
     private DownloadList downloadList;
 
-    private boolean isEnabled;
-
     @Column(name = "`order`")
     private int order;
-    
+
 }
 
 

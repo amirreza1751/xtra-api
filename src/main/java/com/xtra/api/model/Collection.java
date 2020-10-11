@@ -30,7 +30,7 @@ public class Collection {
 
     @JsonManagedReference("dlc")
     @OneToMany(mappedBy = "collection")
-    private List<DownloadListCollection> downloadListCollections;
+    private Set<DownloadListCollection> downloadListCollections;
 
     @ManyToMany(mappedBy = "collections")
     private Set<Package> packages;
