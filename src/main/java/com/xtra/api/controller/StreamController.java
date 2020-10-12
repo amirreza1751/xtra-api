@@ -3,8 +3,6 @@ package com.xtra.api.controller;
 import com.xtra.api.model.Stream;
 import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.service.StreamService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import java.util.*;
 
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 
 public class StreamController {

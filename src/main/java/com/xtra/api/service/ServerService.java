@@ -1,9 +1,7 @@
 package com.xtra.api.service;
 
-import com.xtra.api.model.File;
-import com.xtra.api.model.MediaInfo;
-import com.xtra.api.model.Movie;
-import com.xtra.api.model.Server;
+import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.model.*;
 import com.xtra.api.repository.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,8 +40,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return result;
     }
 
-    public boolean sendStartRequest(Long channelId) {
-        var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/start/" + channelId, String.class);
+    public boolean sendStartRequest(Long channelId, Server server) {
+        var result = new RestTemplate().getForObject("http://"+ server.getIp() + ":" + server.getCorePort() + "/streams/start/" + channelId, String.class);
         return true;
     }
 
@@ -84,5 +82,17 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
 
     public boolean existsAllByIdIn(ArrayList<Long> ids){
         return serverRepository.existsAllByIdIn(ids);
+    }
+
+    public String sendPlayRequest(String stream_token, String line_token, Server server){
+        return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams?line_token" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
+    }
+
+    public Resource getResourceUsage(Long serverId){
+        Optional<Server> srv = serverRepository.findById(serverId);
+        if (srv.isPresent()){
+            var server = srv.get();
+            return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/", Resource.class);
+        } else throw new EntityNotFoundException(aClass.getSimpleName(), serverId.toString());
     }
 }

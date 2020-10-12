@@ -13,6 +13,7 @@ import java.io.Serializable;
 public class LineActivityId implements Serializable {
     private Long lineId;
     private Long streamId;
+    private Long serverId;
     private String userIp;
 
     public LineActivityId() {

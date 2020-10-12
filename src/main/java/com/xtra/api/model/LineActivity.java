@@ -24,12 +24,15 @@ public class LineActivity {
     @MapsId("lineId")
     private Line line;
 
-
     @ManyToOne
     @JsonBackReference("stream_id")
     @MapsId("streamId")
     private Stream stream;
 
+    @ManyToOne
+    @JsonBackReference("server_id")
+    @MapsId("serverId")
+    private Server server;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
