@@ -1,6 +1,7 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.model.File;
+import com.xtra.api.model.Resource;
 import com.xtra.api.model.Server;
 import com.xtra.api.service.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,8 @@ public class ServerController {
         return ResponseEntity.ok(serverService.getFiles(id, path));
     }
 
-//    @GetMapping("")
-//    public ResponseEntity<List<File>> getFileList(@PathVariable Long id, @RequestParam String path) {
-//        return ResponseEntity.ok(serverService.getFiles(id, path));
-//    }
+    @GetMapping("{id}/memory")
+    public ResponseEntity<Resource> getMemoryUsage(@PathVariable Long id) {
+        return ResponseEntity.ok(serverService.getMemoryUsage(id));
+    }
 }
