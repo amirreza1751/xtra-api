@@ -38,8 +38,8 @@ public class ServerController {
         return ResponseEntity.ok(serverService.getFiles(id, path));
     }
 
-    @GetMapping("{id}/memory")
+    @GetMapping("{id}/resources")
     public ResponseEntity<Resource> getMemoryUsage(@PathVariable Long id) {
-        return ResponseEntity.ok(serverService.getMemoryUsage(id));
+        return ResponseEntity.ok(serverService.getResourceUsage(id));
     }
 }
