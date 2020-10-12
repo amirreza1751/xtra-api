@@ -92,8 +92,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         Optional<Server> srv = serverRepository.findById(serverId);
         if (srv.isPresent()){
             var server = srv.get();
-//            return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/", Resource.class);
-            return new RestTemplate().getForObject("http://" + "127.0.0.1" + ":" + 8081 + "/servers/resources/", Resource.class);
+            return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/", Resource.class);
         } else throw new EntityNotFoundException(aClass.getSimpleName(), serverId.toString());
     }
 }
