@@ -17,6 +17,9 @@ public class DownloadList {
     private Long id;
     private boolean systemDefault;
 
+    @OneToMany(mappedBy = "defaultDownloadList")
+    private List<Line> lines;
+
     @ManyToOne
     private Reseller owner;
 

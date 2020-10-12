@@ -20,10 +20,4 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
         return null;
     }
 
-    //admin only
-    @Override
-    public Collection add(Collection coll) {
-        coll.setSystemDefault(true);
-        return super.add(coll);
-    }
 }

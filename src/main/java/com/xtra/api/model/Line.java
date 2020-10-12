@@ -1,6 +1,5 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -56,6 +55,9 @@ public class Line {
 
     @ManyToOne(cascade = CascadeType.ALL)
     private User owner;
+
+    @ManyToOne
+    private DownloadList defaultDownloadList;
 
     @OneToMany(mappedBy = "line")
     @JsonManagedReference("line_id")

@@ -20,10 +20,6 @@ public class Collection {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private boolean isSystemDefault;
-
-    @ManyToOne
-    private Reseller owner;
 
     @Enumerated(EnumType.STRING)
     private CollectionType type;
@@ -31,9 +27,6 @@ public class Collection {
     @JsonManagedReference("dlc")
     @OneToMany(mappedBy = "collection")
     private Set<DownloadListCollection> downloadListCollections;
-
-    @ManyToMany(mappedBy = "collections")
-    private Set<Package> packages;
 
     //@JsonManagedReference("channels")
     @ManyToMany(cascade = {CascadeType.MERGE})
