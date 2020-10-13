@@ -34,7 +34,7 @@ public class LineController {
 
     @PostMapping("")
     public ResponseEntity<Line> addLine(@RequestBody @Valid Line line) {
-        return ResponseEntity.ok(lineService.add(line));
+        return ResponseEntity.ok(lineService.insert(line));
     }
 
     @PatchMapping("/{id}")

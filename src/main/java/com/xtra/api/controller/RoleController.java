@@ -33,7 +33,7 @@ public class RoleController {
 
     @PostMapping("")
     public ResponseEntity<RoleDto> addRole(@RequestBody RoleDto roleDto) {
-        return ResponseEntity.ok(roleFacade.convertToDto(roleService.add(roleFacade.convertToEntity(roleDto))));
+        return ResponseEntity.ok(roleFacade.convertToDto(roleService.insert(roleFacade.convertToEntity(roleDto))));
     }
 
     @GetMapping("/{id}")

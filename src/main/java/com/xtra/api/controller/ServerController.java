@@ -30,7 +30,7 @@ public class ServerController {
 
     @PostMapping("")
     public ResponseEntity<Server> addServer(@Valid @RequestBody Server server) {
-        return ResponseEntity.ok(serverService.add(server));
+        return ResponseEntity.ok(serverService.insert(server));
     }
 
     @GetMapping("{id}/files")

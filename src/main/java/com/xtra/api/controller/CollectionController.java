@@ -41,7 +41,7 @@ public class CollectionController {
 
     @PostMapping("")
     public ResponseEntity<CollectionDto> addCollection(@RequestBody CollectionInsertDto collectionInsertDto) {
-        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.add(collectionMapper.convertToEntity(collectionInsertDto))));
+        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.insert(collectionMapper.convertToEntity(collectionInsertDto))));
     }
 
     @PatchMapping("/{id}")

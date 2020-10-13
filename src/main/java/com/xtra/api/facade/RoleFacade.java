@@ -34,7 +34,7 @@ public class RoleFacade {
         Role role = modelMapper.map(roleDTO, Role.class);
 
         if (role.getId() == null || role.getId() == 0) {
-            role.setId(roleService.add(role).getId());
+            role.setId(roleService.insert(role).getId());
         }
         Long roleId = role.getId();
         Set<String> keys = roleDTO.getPermissions().stream().map(permission -> permission[0]).collect(Collectors.toSet());
@@ -54,7 +54,7 @@ public class RoleFacade {
             per.addPermissionAssignment(permissionAssign);
             permissionService.updateOrFail(per.getPKey(), per);
 
-            permissionRoleService.add(permissionAssign);
+            permissionRoleService.insert(permissionAssign);
             permissionAssignments.add(permissionAssign);
         }
         role.setPermissionAssignments(permissionAssignments);

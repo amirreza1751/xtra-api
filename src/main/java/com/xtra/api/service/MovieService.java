@@ -40,7 +40,7 @@ public class MovieService extends VodService<Movie,MovieRepository> {
         if (encode) {
             serverService.sendEncodeRequest(movie);
         }
-        return super.add(movie);
+        return super.insert(movie);
     }
 
     public List<Subtitle> updateSubtitles(Long id, List<Subtitle> subtitles) {
