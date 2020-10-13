@@ -6,6 +6,7 @@ import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.*;
 import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.repository.StreamRepository;
+import org.checkerframework.checker.nullness.Opt;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -68,8 +69,9 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
         }
     }
 
-    public boolean startOrFail(Long id, Server server) {
+    public boolean startOrFail(Long id, Long serverId) {
         Optional<S> channel = repository.findById(id);
+        Server server = serverService.findByIdOrFail(serverId);
         if (channel.isPresent()) {
             return serverService.sendStartRequest(id, server);
         } else
