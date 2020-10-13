@@ -1,5 +1,7 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -20,6 +22,7 @@ public class DownloadList {
     @OneToMany(mappedBy = "defaultDownloadList")
     private List<Line> lines;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "defaultDownloadList")
     private Set<Package> packages;
 
