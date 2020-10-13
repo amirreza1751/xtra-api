@@ -68,15 +68,15 @@ public class ChannelController {
     }
 
     @GetMapping("/stop/{id}")
-    public ResponseEntity<?> stopChannel(@PathVariable Long id) {
-        if (channelService.stopOrFail(id))
+    public ResponseEntity<?> stopChannel(@PathVariable Long id, @RequestParam Long serverId) {
+        if (channelService.stopOrFail(id, serverId))
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @GetMapping("/restart/{id}")
-    public ResponseEntity<String> restartChannel(@PathVariable Long id) {
+    public ResponseEntity<String> restartChannel(@PathVariable Long id, @RequestParam Long serverId) {
         if (channelService.restartOrFail(id))
             return ResponseEntity.ok().build();
         else

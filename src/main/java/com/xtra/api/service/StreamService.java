@@ -78,11 +78,12 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
     }
 
-    public boolean stopOrFail(Long id) {
+    public boolean stopOrFail(Long id, Long serverId) {
         Optional<S> streamById = repository.findById(id);
+        Server server = serverService.findByIdOrFail(serverId);
         if (streamById.isPresent()) {
             S stream = streamById.get();
-            if (!serverService.sendStopRequest(stream.getId()))
+            if (!serverService.sendStopRequest(stream.getId(), server))
                 return false;
             stream.setStreamInfo(null);
             stream.setProgressInfo(null);
