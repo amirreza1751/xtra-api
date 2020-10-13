@@ -18,4 +18,9 @@ public class DownloadListCollectionId implements Serializable {
     public DownloadListCollectionId() {
 
     }
+
+    public DownloadListCollectionId(Long downloadListId, Long collectionId) {
+        this.downloadListId = downloadListId;
+        this.collectionId = collectionId;
+    }
 }

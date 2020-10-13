@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DownloadListRepository extends JpaRepository<DownloadList, Long> {
-    Optional<DownloadList> findBySystemDefaultTrue();
 
     List<DownloadList> findAllByOwnerId(Long ownerId);
 }

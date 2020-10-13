@@ -24,7 +24,7 @@ public class Package {
     @ElementCollection
     private List<StreamProtocol> allowedOutputs;
 
-    @OneToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private DownloadList defaultDownloadList;
 
 }

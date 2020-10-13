@@ -9,10 +9,9 @@ import java.util.List;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class DownloadListDto {
+public class DownloadListView {
     private Long id;
-    private boolean systemDefault;
-    private Reseller owner;
+    private String name;
 
     private List<DlCollectionDto> collections;
 }

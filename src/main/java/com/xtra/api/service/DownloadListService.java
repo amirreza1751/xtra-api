@@ -1,30 +1,32 @@
 package com.xtra.api.service;
 
+import com.google.common.collect.Sets;
+import com.xtra.api.mapper.DownloadListMapper;
 import com.xtra.api.model.DownloadList;
-import com.xtra.api.model.DownloadListCollection;
+import com.xtra.api.projection.DownloadListView;
 import com.xtra.api.repository.DownloadListCollectionRepository;
 import com.xtra.api.repository.DownloadListRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import static org.springframework.beans.BeanUtils.copyProperties;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 public class DownloadListService extends CrudService<DownloadList, Long, DownloadListRepository> {
 
     private final CollectionService collectionService;
-    private final DownloadListCollectionRepository dlcRepository;
+    private final DownloadListMapper mapper;
 
-    protected DownloadListService(DownloadListRepository repository, CollectionService collectionService, DownloadListCollectionRepository dlcRepository) {
+    protected DownloadListService(DownloadListRepository repository, CollectionService collectionService, DownloadListCollectionRepository dlcRepository, DownloadListMapper mapper) {
         super(repository, DownloadList.class);
         this.collectionService = collectionService;
-        this.dlcRepository = dlcRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -32,46 +34,48 @@ public class DownloadListService extends CrudService<DownloadList, Long, Downloa
         return null;
     }
 
-    public DownloadList getDefaultDownloadList() {
-        return repository.findBySystemDefaultTrue().orElseThrow(() -> new RuntimeException("default downloadList not found"));
-    }
 
     public List<DownloadList> getDownloadListsByUserId(Long userId) {
         return repository.findAllByOwnerId(userId);
     }
 
-    @Override
-    public DownloadList updateOrFail(Long id, DownloadList downloadList) {
-        var existing = findByIdOrFail(id);
-        dlcRepository.deleteAll(existing.getCollectionsAssign());
-        copyProperties(downloadList, existing, "id", "collectionsAssign");
-        int i = 0;
-        for (var collAssign : downloadList.getCollectionsAssign()) {
-            var relationId = collAssign.getId();
-            relationId.setDownloadListId(id);
-            collAssign.setId(relationId);
-            collAssign.setCollection(collectionService.findByIdOrFail(relationId.getCollectionId()));
-            collAssign.setDownloadList(existing);
-            collAssign.setOrder(i++);
-            existing.getCollectionsAssign().add(collAssign);
-        }
-        return repository.save(existing);
+    public DownloadListView getViewById(Long id) {
+        return mapper.convertToDto(super.findByIdOrFail(id));
     }
 
-    public void saveWithRelations(DownloadList downloadList, List<DownloadListCollection> dlCollections) {
-        if (downloadList == null) {
-            throw new RuntimeException("downloadList is null");
-        }
-        AtomicInteger counter = new AtomicInteger(0);
-        var relations = dlCollections.stream().peek(dlc -> {
-            var id = dlc.getId();
-            id.setDownloadListId(downloadList.getId());
-            dlc.setId(id);
-            dlc.setCollection(collectionService.findByIdOrFail(id.getCollectionId()));
-            dlc.setDownloadList(downloadList);
-            dlc.setOrder(counter.addAndGet(1));
-        }).collect(Collectors.toSet());
-        downloadList.setCollectionsAssign(relations);
-        repository.save(downloadList);
+
+    public Page<DownloadListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+        var result = super.findAll(search, pageNo, pageSize, sortBy, sortDir);
+        return new PageImpl<>(result.stream().map(mapper::convertToDto).collect(Collectors.toList()));
     }
+
+    @Transactional
+    public DownloadListView updateOrFail(Long id, DownloadListView downloadListView) {
+        downloadListView.setId(id);
+        DownloadList downloadList = mapper.convertToEntityWithRelations(downloadListView);
+        var existing = findByIdOrFail(id);
+        existing.setName(downloadList.getName());
+
+        var obsoleteRelations = Sets.difference(existing.getCollectionsAssign(), downloadList.getCollectionsAssign()).immutableCopy();
+        existing.getCollectionsAssign().removeAll(obsoleteRelations);
+
+        var newRelations = Sets.difference(downloadList.getCollectionsAssign(), existing.getCollectionsAssign()).immutableCopy();
+        for (var dlc : newRelations) {
+            dlc.setDownloadList(existing);
+            dlc.setCollection(collectionService.findByIdOrFail(dlc.getId().getCollectionId()));
+            existing.getCollectionsAssign().add(dlc);
+        }
+        return mapper.convertToDto(repository.save(existing));
+    }
+
+
+    public DownloadListView save(DownloadListView downloadListView) {
+        DownloadList downloadList = mapper.convertToEntityWithRelations(downloadListView);
+        downloadList.setCollectionsAssign(downloadList.getCollectionsAssign().stream().peek(dlc -> {
+            dlc.setCollection(collectionService.findByIdOrFail(dlc.getId().getCollectionId()));
+            dlc.setDownloadList(downloadList);
+        }).collect(toSet()));
+        return mapper.convertToDto(super.add(downloadList));
+    }
+
 }

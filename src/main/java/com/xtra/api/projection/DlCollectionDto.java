@@ -9,5 +9,9 @@ import lombok.Data;
 public class DlCollectionDto {
     private Long id;
     private String name;
-    private boolean isEnabled;
+
+    public DlCollectionDto(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
