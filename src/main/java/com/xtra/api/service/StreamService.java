@@ -70,9 +70,13 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     }
 
     public boolean startOrFail(Long id, Long serverId) {
-        Optional<S> channel = repository.findById(id);
-        Server server = serverService.findByIdOrFail(serverId);
-        if (channel.isPresent()) {
+        Optional<S> ch = repository.findById(id);
+        if (ch.isPresent()) {
+            S channel = ch.get();
+            if (!channel.getStreamServers().contains(new StreamServer(new StreamServerId(id, serverId)))){
+                throw new EntityNotFoundException(aClass.getSimpleName(), serverId.toString());
+            }
+            Server server = serverService.findByIdOrFail(serverId);
             return serverService.sendStartRequest(id, server);
         } else
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
@@ -80,9 +84,12 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
 
     public boolean stopOrFail(Long id, Long serverId) {
         Optional<S> streamById = repository.findById(id);
-        Server server = serverService.findByIdOrFail(serverId);
         if (streamById.isPresent()) {
             S stream = streamById.get();
+            if (!stream.getStreamServers().contains(new StreamServer(new StreamServerId(id, serverId)))){
+                throw new EntityNotFoundException(aClass.getSimpleName(), serverId.toString());
+            }
+            Server server = serverService.findByIdOrFail(serverId);
             if (!serverService.sendStopRequest(stream.getId(), server))
                 return false;
             stream.setStreamInfo(null);
@@ -93,10 +100,14 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
     }
 
-    public boolean restartOrFail(Long id) {
+    public boolean restartOrFail(Long id, Long serverId) {
         Optional<S> streamById = repository.findById(id);
         if (streamById.isPresent()) {
             S stream = streamById.get();
+            if (!stream.getStreamServers().contains(new StreamServer(new StreamServerId(id, serverId)))){
+                throw new EntityNotFoundException(aClass.getSimpleName(), serverId.toString());
+            }
+            Server server = serverService.findByIdOrFail(serverId);
             serverService.sendRestartRequest(stream.getId());
             return true;
         } else

@@ -27,4 +27,10 @@ public class StreamServer {
 
     @OneToOne
     ProgressInfo progressInfo;
+
+    public StreamServer() {
+    }
+    public StreamServer(StreamServerId id){
+        this.id = id;
+    }
 }

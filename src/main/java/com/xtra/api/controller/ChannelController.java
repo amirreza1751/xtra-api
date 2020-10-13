@@ -77,7 +77,7 @@ public class ChannelController {
 
     @GetMapping("/restart/{id}")
     public ResponseEntity<String> restartChannel(@PathVariable Long id, @RequestParam Long serverId) {
-        if (channelService.restartOrFail(id))
+        if (channelService.restartOrFail(id, serverId))
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
