@@ -55,8 +55,10 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         Channel oldChannel = result.get();
         copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "lineActivities");
         channel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
-        if (restart)
-            serverService.sendRestartRequest(id);
+        if (restart) {
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            channel.getStreamServers().forEach(streamServer -> executor.execute(() -> this.restartOrFail(oldChannel.getId(), streamServer.getId().getServerId())));
+        }
         return Optional.of(repository.save(oldChannel));
     }
 

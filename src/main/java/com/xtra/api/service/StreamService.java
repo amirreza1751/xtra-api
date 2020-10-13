@@ -108,7 +108,7 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
                 throw new EntityNotFoundException(aClass.getSimpleName(), serverId.toString());
             }
             Server server = serverService.findByIdOrFail(serverId);
-            serverService.sendRestartRequest(stream.getId());
+            serverService.sendRestartRequest(stream.getId(), server);
             return true;
         } else
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
