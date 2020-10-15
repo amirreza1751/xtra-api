@@ -30,17 +30,10 @@ public class Collection {
 
     //@JsonManagedReference("channels")
     @ManyToMany(cascade = {CascadeType.MERGE})
-    private Set<Channel> channels;
-
-    //@JsonManagedReference("movies")
-    @ManyToMany(cascade = CascadeType.MERGE)
-    private Set<Movie> movies;
+    private Set<Stream> streams;
 
     //@JsonManagedReference("series")
     @ManyToMany(cascade = CascadeType.MERGE)
-    private Set<Series> series;
+    private Set<Vod> vods;
 
-    //@JsonManagedReference("radios")
-    @ManyToMany(cascade = CascadeType.MERGE)
-    private Set<Radio> radios;
 }

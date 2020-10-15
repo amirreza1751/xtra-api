@@ -24,4 +24,11 @@ public class Vod {
     private String name;
     private String token;
 
+    public Vod(Long id) {
+        this.id = id;
+    }
+
+    public Vod() {
+
+    }
 }

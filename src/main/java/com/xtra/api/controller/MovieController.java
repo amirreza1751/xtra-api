@@ -59,25 +59,25 @@ public class MovieController {
         return ResponseEntity.ok(movieService.encode(id));
     }
 
-    @PatchMapping("/{id}/subtitles")
-    public ResponseEntity<List<Subtitle>> updateSubtitles(@PathVariable Long id, @RequestBody List<Subtitle> subtitles) {
-        return ResponseEntity.ok(movieService.updateSubtitles(id, subtitles));
+    @PatchMapping("/{id}/videos/{vidId}/subtitles")
+    public ResponseEntity<List<Subtitle>> updateSubtitles(@PathVariable Long id, @PathVariable Long vidId, @RequestBody List<Subtitle> subtitles) {
+        return ResponseEntity.ok(movieService.updateSubtitles(id, vidId, subtitles));
     }
 
-    @PatchMapping("{id}/audios")
-    public ResponseEntity<List<Audio>> updateAudios(@PathVariable Long id, @RequestBody List<Audio> audios) {
-        return ResponseEntity.ok(movieService.updateAudios(id, audios));
+    @PatchMapping("{id}/videos/{vidId}/audios")
+    public ResponseEntity<List<Audio>> updateAudios(@PathVariable Long id, @PathVariable Long vidId, @RequestBody List<Audio> audios) {
+        return ResponseEntity.ok(movieService.updateAudios(id, vidId, audios));
     }
 
-    @PatchMapping("/{id}/encode_status")
-    public ResponseEntity<?> setEncodeStatus(@PathVariable Long id, @RequestBody Map<String, String> encodeResult) {
-        movieService.updateEncodeStatus(id, encodeResult);
+    @PatchMapping("/{id}/videos/{vidId}/encode_status")
+    public ResponseEntity<?> setEncodeStatus(@PathVariable Long id, @PathVariable Long vidId, @RequestBody Map<String, String> encodeResult) {
+        movieService.updateEncodeStatus(id, vidId, encodeResult);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PatchMapping("/{id}/media_info")
-    public ResponseEntity<?> setMediaInfo(@PathVariable Long id, @RequestBody VideoInfo mediaInfo) {
-        movieService.updateMediaInfo(id, mediaInfo);
+    @PatchMapping("/{id}/videos/{vidId}/media_info")
+    public ResponseEntity<?> setMediaInfo(@PathVariable Long id, @PathVariable Long vidId, @RequestBody VideoInfo mediaInfo) {
+        movieService.updateMediaInfo(id, vidId, mediaInfo);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

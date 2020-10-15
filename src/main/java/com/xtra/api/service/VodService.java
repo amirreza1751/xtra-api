@@ -13,16 +13,4 @@ public abstract class VodService<T extends Vod, R extends JpaRepository<T, Long>
         super(repository, aClass);
     }
 
-    public void updateEncodeStatus(Long id, Map<String, String> encodeStatus) {
-        T t = findByIdOrFail(id);
-        t.setEncodeStatus(EncodeStatus.valueOf(encodeStatus.get("encodeStatus")));
-        t.setLocation(encodeStatus.get("location"));
-        repository.save(t);
-    }
-
-    public void updateMediaInfo(Long id, VideoInfo mediaInfo) {
-        T t = findByIdOrFail(id);
-        t.setMediaInfo(mediaInfo);
-        repository.save(t);
-    }
 }

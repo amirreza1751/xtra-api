@@ -18,8 +18,6 @@ public class Movie extends Vod {
     @OneToMany
     private Set<Video> videos;
 
-    @ManyToMany(mappedBy = "movies")
-    private List<Collection> collections;
 
     public Movie() {
     }

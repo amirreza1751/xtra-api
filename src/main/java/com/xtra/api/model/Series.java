@@ -18,10 +18,6 @@ public class Series extends Vod {
 
     @OneToMany
     private List<Season> seasons;
-
-    @ManyToMany(mappedBy = "series")
-    private List<Collection> collections;
-
     public Series() {
 
     }

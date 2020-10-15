@@ -76,6 +76,7 @@ public class Stream {
 
     private int currentConnections = 0;
 
+
     public int getCurrentConnections() {
         return lineActivities.size();
     }
@@ -86,4 +87,11 @@ public class Stream {
     @UpdateTimestamp
     private LocalDateTime updatedDate;
 
+    public Stream(Long id) {
+        this.id = id;
+    }
+
+    public Stream() {
+
+    }
 }
