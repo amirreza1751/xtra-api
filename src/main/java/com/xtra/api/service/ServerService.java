@@ -88,11 +88,11 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams?line_token" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
     }
 
-    public Resource getResourceUsage(Long serverId){
+    public Resource getResourceUsage(Long serverId, String interfaceName){
         Optional<Server> srv = serverRepository.findById(serverId);
         if (srv.isPresent()){
             var server = srv.get();
-            return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/", Resource.class);
+            return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/?interfaceName=" + interfaceName, Resource.class);
         } else throw new EntityNotFoundException(aClass.getSimpleName(), serverId.toString());
     }
 
