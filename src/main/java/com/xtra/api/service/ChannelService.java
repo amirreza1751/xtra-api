@@ -43,11 +43,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
         channel.setStreamToken(token);
         channel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
-        Channel ch = repository.save(channel);
-//        if (start) {
-//            serverService.sendStartRequest(ch.getId());
-//        }
-        return ch;
+        return repository.save(channel);
     }
 
 
@@ -59,8 +55,10 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         Channel oldChannel = result.get();
         copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "lineActivities");
         channel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
-        if (restart)
-            serverService.sendRestartRequest(id);
+        if (restart) {
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            channel.getStreamServers().forEach(streamServer -> executor.execute(() -> this.restartOrFail(oldChannel.getId(), streamServer.getId().getServerId())));
+        }
         return Optional.of(repository.save(oldChannel));
     }
 
@@ -90,11 +88,11 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
             ch = repository.save(channel);
             serverService.updateOrFail(server.getId(), server);
 
-            ExecutorService executor = Executors.newFixedThreadPool(2);
-            Channel finalCh = ch;
-            executor.execute(() -> {
-                this.startOrFail(finalCh.getId(), server);
-            });
+            if (start){
+                ExecutorService executor = Executors.newFixedThreadPool(2);
+                Channel finalCh = ch;
+                executor.execute(() -> this.startOrFail(finalCh.getId(), serverId));
+            }
         }
         return ch;
     }

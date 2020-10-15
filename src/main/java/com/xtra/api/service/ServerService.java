@@ -45,12 +45,12 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return true;
     }
 
-    public void sendRestartRequest(Long channelId) {
-        new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/restart/" + channelId, String.class);
+    public void sendRestartRequest(Long channelId, Server server) {
+        new RestTemplate().getForObject("http://"+ server.getIp() + ":" + server.getCorePort()+ "/streams/restart/" + channelId, String.class);
     }
 
-    public boolean sendStopRequest(Long channelId) {
-        var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/streams/stop/" + channelId, String.class);
+    public boolean sendStopRequest(Long channelId, Server server) {
+        var result = new RestTemplate().getForObject("http://"+ server.getIp() + ":" + server.getCorePort() + "/streams/stop/" + channelId, String.class);
         return true;
     }
 
@@ -88,11 +88,12 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams?line_token" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
     }
 
-    public Resource getResourceUsage(Long serverId){
+    public Resource getResourceUsage(Long serverId, String interfaceName){
         Optional<Server> srv = serverRepository.findById(serverId);
         if (srv.isPresent()){
             var server = srv.get();
-            return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/", Resource.class);
+            return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/?interfaceName=" + interfaceName, Resource.class);
         } else throw new EntityNotFoundException(aClass.getSimpleName(), serverId.toString());
     }
+
 }

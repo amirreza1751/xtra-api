@@ -30,4 +30,9 @@ public class Server {
     public void addStreamServer(StreamServer streamServer){
         streamServers.add(streamServer);
     }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

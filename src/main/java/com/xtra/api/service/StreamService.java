@@ -6,6 +6,8 @@ import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.*;
 import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.repository.StreamRepository;
+import com.xtra.api.repository.StreamServerRepository;
+import org.checkerframework.checker.nullness.Opt;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -68,19 +70,28 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
         }
     }
 
-    public boolean startOrFail(Long id, Server server) {
-        Optional<S> channel = repository.findById(id);
-        if (channel.isPresent()) {
+    public boolean startOrFail(Long id, Long serverId) {
+        Optional<S> ch = repository.findById(id);
+        if (ch.isPresent()) {
+            S channel = ch.get();
+            if (!channel.getStreamServers().contains(new StreamServer(new StreamServerId(id, serverId)))){
+                throw new EntityNotFoundException(StreamServer.class.getSimpleName(), new StreamServerId(id, serverId).toString());
+            }
+            Server server = serverService.findByIdOrFail(serverId);
             return serverService.sendStartRequest(id, server);
         } else
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
     }
 
-    public boolean stopOrFail(Long id) {
+    public boolean stopOrFail(Long id, Long serverId) {
         Optional<S> streamById = repository.findById(id);
         if (streamById.isPresent()) {
             S stream = streamById.get();
-            if (!serverService.sendStopRequest(stream.getId()))
+            if (!stream.getStreamServers().contains(new StreamServer(new StreamServerId(id, serverId)))){
+                throw new EntityNotFoundException(Server.class.getSimpleName(), serverId.toString());
+            }
+            Server server = serverService.findByIdOrFail(serverId);
+            if (!serverService.sendStopRequest(stream.getId(), server))
                 return false;
             stream.setStreamInfo(null);
             stream.setProgressInfo(null);
@@ -90,11 +101,15 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
     }
 
-    public boolean restartOrFail(Long id) {
+    public boolean restartOrFail(Long id, Long serverId) {
         Optional<S> streamById = repository.findById(id);
         if (streamById.isPresent()) {
             S stream = streamById.get();
-            serverService.sendRestartRequest(stream.getId());
+            if (!stream.getStreamServers().contains(new StreamServer(new StreamServerId(id, serverId)))){
+                throw new EntityNotFoundException(Server.class.getSimpleName(), serverId.toString());
+            }
+            Server server = serverService.findByIdOrFail(serverId);
+            serverService.sendRestartRequest(stream.getId(), server);
             return true;
         } else
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
