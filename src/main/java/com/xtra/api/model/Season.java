@@ -1,21 +1,22 @@
 package com.xtra.api.model;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
-public class Episode{
+public class Season {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int episodeNumber;
-    private String summary;
+
+    private int seasonNumber;
+    private int NoOfEpisodes;
+    private LocalDate airDate;
 
     @OneToMany
-    private Set<Video> videos;
+    private List<Episode> episodes;
 }

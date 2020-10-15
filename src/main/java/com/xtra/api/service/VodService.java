@@ -1,8 +1,7 @@
 package com.xtra.api.service;
 
 import com.xtra.api.model.EncodeStatus;
-import com.xtra.api.model.MediaInfo;
-import com.xtra.api.model.Movie;
+import com.xtra.api.model.VideoInfo;
 import com.xtra.api.model.Vod;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -21,7 +20,7 @@ public abstract class VodService<T extends Vod, R extends JpaRepository<T, Long>
         repository.save(t);
     }
 
-    public void updateMediaInfo(Long id, MediaInfo mediaInfo) {
+    public void updateMediaInfo(Long id, VideoInfo mediaInfo) {
         T t = findByIdOrFail(id);
         t.setMediaInfo(mediaInfo);
         repository.save(t);

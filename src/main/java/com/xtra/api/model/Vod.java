@@ -22,19 +22,6 @@ public class Vod {
 
     @NotBlank
     private String name;
-    private String location;
     private String token;
-
-    @Enumerated(EnumType.STRING)
-    private EncodeStatus encodeStatus;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Subtitle> subtitles = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Audio> audios = new ArrayList<>();
-
-    @OneToOne(cascade = CascadeType.ALL)
-    private MediaInfo mediaInfo;
 
 }

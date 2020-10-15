@@ -76,7 +76,7 @@ public class MovieController {
     }
 
     @PatchMapping("/{id}/media_info")
-    public ResponseEntity<?> setMediaInfo(@PathVariable Long id, @RequestBody MediaInfo mediaInfo) {
+    public ResponseEntity<?> setMediaInfo(@PathVariable Long id, @RequestBody VideoInfo mediaInfo) {
         movieService.updateMediaInfo(id, mediaInfo);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

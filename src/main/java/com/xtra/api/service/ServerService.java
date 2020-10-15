@@ -14,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class ServerService extends CrudService<Server, Long, ServerRepository> {
@@ -66,8 +65,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", movie, String.class);
     }
 
-    public MediaInfo getMediaInfo(Movie movie) {
-        return new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/info/", movie, MediaInfo.class);
+    public VideoInfo getMediaInfo(Movie movie) {
+        return new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/info/", movie, VideoInfo.class);
     }
 
     public String SetAudioRequest(Movie movie) {

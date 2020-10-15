@@ -1,14 +1,15 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Series {
+public class Series extends Vod {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,9 +17,8 @@ public class Series {
     private String name;
 
     @OneToMany
-    private List<Episode> episodes;
+    private List<Season> seasons;
 
-    //@JsonBackReference("series")
     @ManyToMany(mappedBy = "series")
     private List<Collection> collections;
 
