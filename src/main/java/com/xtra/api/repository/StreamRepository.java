@@ -10,4 +10,6 @@ public interface StreamRepository<T extends Stream> extends JpaRepository<T, Lon
     Optional<T> getByStreamToken(String streamToken);
 
     boolean existsByStreamToken(String streamToken);
+
+    boolean existsByName(String name);
 }

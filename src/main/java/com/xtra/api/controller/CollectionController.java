@@ -45,7 +45,7 @@ public class CollectionController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CollectionDto> updateCollection(@PathVariable Long id, @RequestBody @Valid Collection collection) {
+    public ResponseEntity<CollectionDto> updateCollection(@PathVariable Long id, @RequestBody CollectionInsertDto collection) {
         return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.updateOrFail(id, collection)));
     }
 
