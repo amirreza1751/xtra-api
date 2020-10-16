@@ -27,4 +27,22 @@ public class StreamServer {
 
     @OneToOne
     ProgressInfo progressInfo;
+
+    public StreamServer() {
+    }
+    public StreamServer(StreamServerId id){
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof StreamServer))
+            return false;
+        StreamServer streamServer = (StreamServer) obj;
+        return streamServer.id.getServerId().equals(this.id.getServerId()) && streamServer.id.getStreamId().equals(this.id.getStreamId());
+    }
+
+
 }

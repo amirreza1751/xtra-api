@@ -39,7 +39,7 @@ public class ServerController {
     }
 
     @GetMapping("{id}/resources")
-    public ResponseEntity<Resource> getMemoryUsage(@PathVariable Long id) {
-        return ResponseEntity.ok(serverService.getResourceUsage(id));
+    public ResponseEntity<Resource> getMemoryUsage(@PathVariable Long id, @RequestParam String interfaceName) {
+        return ResponseEntity.ok(serverService.getResourceUsage(id, interfaceName));
     }
 }
