@@ -71,6 +71,10 @@ public class Stream {
     @OneToMany(mappedBy = "stream", cascade = CascadeType.ALL)
     private List<StreamServer> streamServers = new ArrayList<>();
 
+
+//    @OneToMany(mappedBy = "stream")
+//    private Set<CollectionStream> collectionAssign;
+
     @OneToMany(cascade = CascadeType.ALL)
     private List<StreamInput> streamInputs;
 

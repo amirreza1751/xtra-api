@@ -29,23 +29,24 @@ public class Collection {
     @OneToMany(mappedBy = "collection")
     private Set<DownloadListCollection> downloadListCollections;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    private Set<Stream> streams;
+    @OrderBy("order ASC")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "collection")
+    private Set<CollectionStream> streams;
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private Set<Vod> vods;
 
-    public void addStream(Stream stream) {
+    public void addStream(CollectionStream stream) {
         if (streams == null) streams = new HashSet<>();
         streams.add(stream);
     }
 
-    public void removeStream(Stream stream) {
+    public void removeStream(CollectionStream stream) {
         if (streams == null) return;
         streams.remove(stream);
     }
 
-    public void removeStreams(java.util.Collection<Stream> streams) {
+    public void removeStreams(java.util.Collection<CollectionStream> streams) {
         if (streams == null) return;
         this.streams.removeAll(streams);
     }

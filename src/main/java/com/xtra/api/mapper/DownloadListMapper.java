@@ -52,6 +52,9 @@ public abstract class DownloadListMapper {
     public abstract DownloadListView convertToDto(DownloadList downloadList);
 
     public List<DlCollectionDto> convertAllToDto(Set<DownloadListCollection> downloadListCollections) {
+        if (downloadListCollections == null)
+            return new ArrayList<>();
+        
         List<DownloadListCollection> dlcList = new ArrayList<>(downloadListCollections);
         dlcList.sort(Comparator.comparingInt(DownloadListCollection::getOrder));
 

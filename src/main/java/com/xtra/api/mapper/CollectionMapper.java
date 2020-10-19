@@ -6,6 +6,9 @@ import com.xtra.api.projection.CollectionInsertDto;
 import com.xtra.api.projection.CollectionSimplifiedDto;
 import org.mapstruct.Mapper;
 
+import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
+
 import static java.util.stream.Collectors.toSet;
 
 @Mapper(componentModel = "spring")
@@ -46,6 +49,7 @@ public abstract class CollectionMapper {
         collection.setName(input.getName());
         collection.setType(input.getType());
 
+        int i;
         switch (collection.getType()) {
             case SERIES:
                 collection.setVods(input.getSeries() != null ? input.getSeries().stream().map(Series::new).collect(toSet()) : null);
@@ -54,10 +58,22 @@ public abstract class CollectionMapper {
                 collection.setVods(input.getMovies() != null ? input.getMovies().stream().map(Movie::new).collect(toSet()) : null);
                 break;
             case RADIO:
-                collection.setStreams(input.getRadios() != null ? input.getRadios().stream().map(Radio::new).collect(toSet()) : null);
+                i = 0;
+                for (var id : input.getRadios()) {
+                    CollectionStream collectionStream = new CollectionStream(new CollectionStreamId(input.getId(), id));
+                    collectionStream.setOrder(i++);
+                    collectionStream.setCollection(collection);
+                    collection.addStream(collectionStream);
+                }
                 break;
             case CHANNEL:
-                collection.setStreams(input.getChannels() != null ? input.getChannels().stream().map(Channel::new).collect(toSet()) : null);
+                i = 0;
+                for (var id : input.getChannels()) {
+                    CollectionStream collectionStream = new CollectionStream(new CollectionStreamId(input.getId(), id));
+                    collectionStream.setOrder(i++);
+                    collectionStream.setCollection(collection);
+                    collection.addStream(collectionStream);
+                }
                 break;
         }
         return collection;
@@ -80,11 +96,11 @@ public abstract class CollectionMapper {
                 collectionDto.setMovies(movies);
                 break;
             case RADIO:
-                var radios = collection.getStreams() != null ? collection.getStreams().stream().map(stream -> new MediaPair<>(stream.getId(), stream.getName())).collect(toSet()) : null;
+                var radios = collection.getStreams() != null ? collection.getStreams().stream().map(stream -> new MediaPair<>(stream.getStream().getId(), stream.getStream().getName())).collect(Collectors.toCollection(LinkedHashSet::new)) : null;
                 collectionDto.setRadios(radios);
                 break;
             case CHANNEL:
-                var channels = collection.getStreams() != null ? collection.getStreams().stream().map(stream -> new MediaPair<>(stream.getId(), stream.getName())).collect(toSet()) : null;
+                var channels = collection.getStreams() != null ? collection.getStreams().stream().map(stream -> new MediaPair<>(stream.getStream().getId(), stream.getStream().getName())).collect(Collectors.toCollection(LinkedHashSet::new)) : null;
                 collectionDto.setChannels(channels);
                 break;
         }
