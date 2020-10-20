@@ -1,14 +1,36 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
+import javax.persistence.*;
+import java.util.List;
 
+@Entity
 @Data
 public class Resource {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    private double cpuMaxFreq;
+    @ElementCollection
+    private List<Double> cpuCurrentFreq;
 
-    private Cpu cpu;
-    private Memory memory;
-    private NetworkInterface networkInterface;
+    private double memoryTotal;
+    private double memoryAvailable;
+
+    private String networkName;
+    private Long networkBytesSent;
+    private Long networkBytesRecv;
+
+    private int connections;
+
+//    @OneToOne(mappedBy = "resource")
+//    @JsonBackReference("resource_id")
+    @JsonManagedReference("server_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    private Server server;
 
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -22,17 +23,20 @@ public class Server {
     private String ip;
     private String corePort;
     private String nginxPort;
+    private String interfaceName;
 
     @OneToMany(mappedBy = "server")
     @JsonManagedReference("server_id")
+    @ToString.Exclude
     private List<StreamServer> streamServers;
 
     public void addStreamServer(StreamServer streamServer){
         streamServers.add(streamServer);
     }
 
-    @Override
-    public String toString() {
-        return this.name;
-    }
+//    @JsonManagedReference("resource_id")
+//    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "server")
+    @JsonBackReference("server_id")
+    private Resource resource;
 }

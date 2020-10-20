@@ -42,4 +42,14 @@ public class ServerController {
     public ResponseEntity<Resource> getMemoryUsage(@PathVariable Long id, @RequestParam String interfaceName) {
         return ResponseEntity.ok(serverService.getResourceUsage(id, interfaceName));
     }
+
+    @GetMapping("details")
+    public ResponseEntity<List<Server>> details() {
+        return ResponseEntity.ok(serverService.details());
+    }
+
+    @GetMapping("get-res/{id}")
+    public ResponseEntity<Resource> getRes(@PathVariable Long id) {
+        return ResponseEntity.ok(serverService.getRes(id));
+    }
 }
