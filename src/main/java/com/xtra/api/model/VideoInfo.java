@@ -13,7 +13,7 @@ import java.time.Duration;
 @Data
 @Entity
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class MediaInfo {
+public class VideoInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

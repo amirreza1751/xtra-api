@@ -39,7 +39,7 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
             return findWithSearch(page, search);
     }
 
-    public T add(T object) {
+    public T insert(T object) {
         return repository.save(object);
     }
 

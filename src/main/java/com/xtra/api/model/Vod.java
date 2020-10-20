@@ -2,7 +2,10 @@ package com.xtra.api.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.google.common.base.Objects;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -13,8 +16,10 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Vod {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,19 +27,26 @@ public class Vod {
 
     @NotBlank
     private String name;
-    private String location;
     private String token;
 
-    @Enumerated(EnumType.STRING)
-    private EncodeStatus encodeStatus;
+    public Vod(Long id) {
+        this.id = id;
+    }
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Subtitle> subtitles = new ArrayList<>();
+    public Vod() {
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Audio> audios = new ArrayList<>();
+    }
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private MediaInfo mediaInfo;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vod vod = (Vod) o;
+        return Objects.equal(id, vod.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

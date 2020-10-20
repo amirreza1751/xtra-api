@@ -1,6 +1,7 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.model.Package;
+import com.xtra.api.projection.PackageView;
 import com.xtra.api.service.PackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,24 +22,24 @@ public class PackageController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<Package>> getPackages(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+    public ResponseEntity<Page<PackageView>> getPackages(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                                @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(packageService.findAll(search, pageNo, pageSize, sortBy, sortDir));
+        return ResponseEntity.ok(packageService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Package> getPackage(@PathVariable Long id) {
-        return ResponseEntity.ok(packageService.findByIdOrFail(id));
+    public ResponseEntity<PackageView> getPackage(@PathVariable Long id) {
+        return ResponseEntity.ok(packageService.getViewById(id));
     }
 
     @PostMapping("")
-    public ResponseEntity<Package> addPackage(@RequestBody @Valid Package _package) {
+    public ResponseEntity<PackageView> addPackage(@RequestBody @Valid Package _package) {
         return ResponseEntity.ok(packageService.add(_package));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Package> updatePackage(@PathVariable Long id, @RequestBody @Valid Package _package) {
-        return ResponseEntity.ok(packageService.updateOrFail(id, _package));
+    public ResponseEntity<PackageView> updatePackage(@PathVariable Long id, @RequestBody @Valid Package _package) {
+        return ResponseEntity.ok(packageService.save(id, _package));
     }
 
     @DeleteMapping("/{id}")

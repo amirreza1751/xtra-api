@@ -63,7 +63,7 @@ public class LineService extends CrudService<Line, Long, LineRepository> {
     }
 
     @Override
-    public Line add(Line line) {
+    public Line insert(Line line) {
         if (StringUtils.isEmpty(line.getUsername())) {
             var isUnique = false;
             var username = "";

@@ -5,70 +5,90 @@ import com.xtra.api.projection.CollectionDto;
 import com.xtra.api.projection.CollectionInsertDto;
 import com.xtra.api.projection.CollectionSimplifiedDto;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
-import java.util.List;
-import java.util.Set;
-
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Mapper(componentModel = "spring")
 public abstract class CollectionMapper {
+
     /*collection simple display*/
 
-    @Mapping(target = "channels", expression = "java( collection.getChannels().size() )")
-    @Mapping(target = "movies", expression = "java( collection.getMovies().size() )")
-    @Mapping(target = "series", expression = "java( collection.getSeries().size() )")
-    @Mapping(target = "radios", expression = "java( collection.getRadios().size() )")
-    public abstract CollectionSimplifiedDto convertToSimpleDto(Collection collection);
+    public CollectionSimplifiedDto convertToSimpleDto(Collection collection) {
+        CollectionSimplifiedDto collectionSimplifiedDto = new CollectionSimplifiedDto();
+
+        collectionSimplifiedDto.setId(collection.getId());
+        collectionSimplifiedDto.setName(collection.getName());
+        collectionSimplifiedDto.setType(collection.getType());
+
+        switch (collection.getType()) {
+            case SERIES:
+                collectionSimplifiedDto.setSeries(collection.getVods().size());
+                break;
+            case MOVIE:
+                collectionSimplifiedDto.setMovies(collection.getVods().size());
+                break;
+            case RADIO:
+                collectionSimplifiedDto.setRadios(collection.getStreams().size());
+                break;
+            case CHANNEL:
+                collectionSimplifiedDto.setChannels(collection.getStreams().size());
+
+                break;
+        }
+        return collectionSimplifiedDto;
+    }
 
     /*collection for insert*/
 
-    public abstract Collection convertToEntity(CollectionInsertDto collectionInsertDto);
+    public Collection convertToEntity(CollectionInsertDto input) {
+        Collection collection = new Collection();
+        collection.setId(input.getId());
+        collection.setName(input.getName());
+        collection.setType(input.getType());
 
-    /*collection with details*/
-
-    Set<Channel> convertIdsToChannels(List<Long> ids) {
-        return ids != null ? ids.stream().map(Channel::new).collect(toSet()) : null;
+        switch (collection.getType()) {
+            case SERIES:
+                collection.setVods(input.getSeries() != null ? input.getSeries().stream().map(Series::new).collect(toSet()) : null);
+                break;
+            case MOVIE:
+                collection.setVods(input.getMovies() != null ? input.getMovies().stream().map(Movie::new).collect(toSet()) : null);
+                break;
+            case RADIO:
+                collection.setStreams(input.getRadios() != null ? input.getRadios().stream().map(Radio::new).collect(toSet()) : null);
+                break;
+            case CHANNEL:
+                collection.setStreams(input.getChannels() != null ? input.getChannels().stream().map(Channel::new).collect(toSet()) : null);
+                break;
+        }
+        return collection;
     }
 
-    Set<Movie> convertIdsToMovies(List<Long> ids) {
 
-        return ids != null ? ids.stream().map(Movie::new).collect(toSet()) : null;
+    public CollectionDto convertToDto(Collection collection) {
+        CollectionDto collectionDto = new CollectionDto();
+        collectionDto.setId(collection.getId());
+        collectionDto.setName(collection.getName());
+        collectionDto.setType(collection.getType());
+
+        switch (collection.getType()) {
+            case SERIES:
+                var series = collection.getVods() != null ? collection.getVods().stream().map(vod -> new MediaPair<>(vod.getId(), vod.getName())).collect(toSet()) : null;
+                collectionDto.setSeries(series);
+                break;
+            case MOVIE:
+                var movies = collection.getVods() != null ? collection.getVods().stream().map(vod -> new MediaPair<>(vod.getId(), vod.getName())).collect(toSet()) : null;
+                collectionDto.setMovies(movies);
+                break;
+            case RADIO:
+                var radios = collection.getStreams() != null ? collection.getStreams().stream().map(stream -> new MediaPair<>(stream.getId(), stream.getName())).collect(toSet()) : null;
+                collectionDto.setRadios(radios);
+                break;
+            case CHANNEL:
+                var channels = collection.getStreams() != null ? collection.getStreams().stream().map(stream -> new MediaPair<>(stream.getId(), stream.getName())).collect(toSet()) : null;
+                collectionDto.setChannels(channels);
+                break;
+        }
+        return collectionDto;
     }
 
-    Set<Series> convertIdsToSeries(List<Long> ids) {
-        return ids != null ? ids.stream().map(Series::new).collect(toSet()) : null;
-    }
-
-    Set<Radio> convertIdsToRadios(List<Long> ids) {
-        return ids != null ? ids.stream().map(Radio::new).collect(toSet()) : null;
-    }
-
-    public abstract CollectionDto convertToDto(Collection collection);
-
-    List<MediaPair<Long, String>> convertChannelsToIds(Set<Channel> channels) {
-        if (channels == null)
-            return null;
-        return channels.stream().map(channel -> new MediaPair<>(channel.getId(), channel.getName())).collect(toList());
-    }
-
-    List<MediaPair<Long, String>> convertMoviesToIds(Set<Movie> movies) {
-        if (movies == null)
-            return null;
-        return movies.stream().map(movie -> new MediaPair<>(movie.getId(), movie.getName())).collect(toList());
-    }
-
-    List<MediaPair<Long, String>> convertSeriesToIds(Set<Series> seriesList) {
-        if (seriesList == null)
-            return null;
-        return seriesList.stream().map(series -> new MediaPair<>(series.getId(), series.getName())).collect(toList());
-    }
-
-    List<MediaPair<Long, String>> convertRadiosToIds(Set<Radio> radios) {
-        if (radios == null)
-            return null;
-        return radios.stream().map(radio -> new MediaPair<>(radio.getId(), radio.getName())).collect(toList());
-    }
 }

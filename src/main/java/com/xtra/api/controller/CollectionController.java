@@ -41,11 +41,11 @@ public class CollectionController {
 
     @PostMapping("")
     public ResponseEntity<CollectionDto> addCollection(@RequestBody CollectionInsertDto collectionInsertDto) {
-        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.add(collectionMapper.convertToEntity(collectionInsertDto))));
+        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.insert(collectionMapper.convertToEntity(collectionInsertDto))));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CollectionDto> updateCollection(@PathVariable Long id, @RequestBody @Valid Collection collection) {
+    public ResponseEntity<CollectionDto> updateCollection(@PathVariable Long id, @RequestBody CollectionInsertDto collection) {
         return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.updateOrFail(id, collection)));
     }
 

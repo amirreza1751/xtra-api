@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.google.common.base.Objects;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -19,7 +22,8 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Stream {
@@ -76,6 +80,7 @@ public class Stream {
 
     private int currentConnections = 0;
 
+
     public int getCurrentConnections() {
         return lineActivities.size();
     }
@@ -86,4 +91,24 @@ public class Stream {
     @UpdateTimestamp
     private LocalDateTime updatedDate;
 
+    public Stream(Long id) {
+        this.id = id;
+    }
+
+    public Stream() {
+
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Stream stream = (Stream) o;
+        return Objects.equal(id, stream.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

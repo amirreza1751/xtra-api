@@ -4,7 +4,6 @@ import com.google.common.collect.Sets;
 import com.xtra.api.mapper.DownloadListMapper;
 import com.xtra.api.model.DownloadList;
 import com.xtra.api.projection.DownloadListView;
-import com.xtra.api.repository.DownloadListCollectionRepository;
 import com.xtra.api.repository.DownloadListRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,7 +22,7 @@ public class DownloadListService extends CrudService<DownloadList, Long, Downloa
     private final CollectionService collectionService;
     private final DownloadListMapper mapper;
 
-    protected DownloadListService(DownloadListRepository repository, CollectionService collectionService, DownloadListCollectionRepository dlcRepository, DownloadListMapper mapper) {
+    protected DownloadListService(DownloadListRepository repository, CollectionService collectionService, DownloadListMapper mapper) {
         super(repository, DownloadList.class);
         this.collectionService = collectionService;
         this.mapper = mapper;
@@ -75,7 +74,7 @@ public class DownloadListService extends CrudService<DownloadList, Long, Downloa
             dlc.setCollection(collectionService.findByIdOrFail(dlc.getId().getCollectionId()));
             dlc.setDownloadList(downloadList);
         }).collect(toSet()));
-        return mapper.convertToDto(super.add(downloadList));
+        return mapper.convertToDto(super.insert(downloadList));
     }
 
 }
