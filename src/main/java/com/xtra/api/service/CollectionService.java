@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -41,7 +43,7 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
 
     @Override
     public Collection insert(Collection collection) {
-        collection.setStreams(collection.getStreams().parallelStream().map(collectionStream -> {
+        collection.setStreams(collection.getStreams().stream().map(collectionStream -> {
             collectionStream.setStream(streamService.findByIdOrFail(collectionStream.getId().getStreamId()));
             return collectionStream;
         }).collect(Collectors.toSet()));
@@ -58,9 +60,24 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
         if (newColl.getStreams() != null) {
             var obsoleteStreams = Sets.difference(oldColl.getStreams(), newColl.getStreams()).immutableCopy();
             oldColl.removeStreams(obsoleteStreams);
-            var newStreams = Sets.difference(newColl.getStreams(), oldColl.getStreams()).immutableCopy();
-            for (var stream : newStreams) {
-                oldColl.addStream(findRelationByIdOrFail(stream.getId()));
+            var unchangedStreams = oldColl.getStreams();
+
+            oldColl.getStreams().clear();
+            for (var stream : newColl.getStreams()) {
+                if (!unchangedStreams.contains(stream)) {
+                    CollectionStream cs = new CollectionStream(stream.getId());
+                    cs.setCollection(oldColl);
+                    cs.setStream(streamService.findByIdOrFail(stream.getId().getStreamId()));
+                    cs.setOrder(stream.getOrder());
+                    oldColl.addStream(cs);
+                } else {
+                    for (var cs : unchangedStreams) {
+                        if (cs.getId().equals(stream.getId())) {
+                            cs.setOrder(stream.getOrder());
+                            oldColl.addStream(cs);
+                        }
+                    }
+                }
             }
         }
 
@@ -76,7 +93,7 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
         return repository.save(oldColl);
     }
 
-    private CollectionStream findRelationByIdOrFail(CollectionStreamId id) {
-        return csRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("collection-stream", id.toString()));
+    private Optional<CollectionStream> findRelationById(CollectionStreamId id) {
+        return csRepository.findById(id);
     }
 }

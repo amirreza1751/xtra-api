@@ -30,7 +30,7 @@ public class Collection {
     private Set<DownloadListCollection> downloadListCollections;
 
     @OrderBy("order ASC")
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "collection")
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)
     private Set<CollectionStream> streams;
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
