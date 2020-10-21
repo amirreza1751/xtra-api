@@ -1,10 +1,9 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.facade.ChannelFacade;
+import com.xtra.api.mapper.ChannelMapper;
 import com.xtra.api.model.Channel;
-import com.xtra.api.projection.ChannelDto;
+import com.xtra.api.projection.ChannelView;
 import com.xtra.api.service.ChannelService;
-import com.xtra.api.service.StreamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,15 +17,13 @@ import java.util.LinkedHashMap;
 @RestController
 @RequestMapping("/channels")
 public class ChannelController {
-    ChannelService channelService;
-    StreamService streamService;
-    private final ChannelFacade channelFacade;
+    private final ChannelService channelService;
+    private final ChannelMapper channelMapper;
 
     @Autowired
-    public ChannelController(ChannelService channelService, StreamService streamService, ChannelFacade channelFacade) {
+    public ChannelController(ChannelService channelService, ChannelMapper channelMapper) {
         this.channelService = channelService;
-        this.streamService = streamService;
-        this.channelFacade = channelFacade;
+        this.channelMapper = channelMapper;
     }
 
     // Stream CRUD
@@ -38,13 +35,13 @@ public class ChannelController {
     }
 
     @PostMapping(value = {"", "/{start}"})
-    public ResponseEntity<Channel> addChannel(@Valid @RequestBody ChannelDto channelDTO, @PathVariable(required = false) boolean start) {
-        return ResponseEntity.ok(channelService.add(channelFacade.convertToEntity(channelDTO), channelDTO.getStream_servers(), start));
+    public ResponseEntity<ChannelView> addChannel(@Valid @RequestBody ChannelView channelView, @PathVariable(required = false) boolean start) {
+        return ResponseEntity.ok(channelMapper.convertToDto(channelService.add(channelMapper.convertToEntity(channelView), channelView.getServers(), channelView.getCollections(), start)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Channel> getChannelById(@PathVariable Long id) {
-        return ResponseEntity.ok(channelService.findByIdOrFail(id));
+    public ResponseEntity<ChannelView> getChannelById(@PathVariable Long id) {
+        return ResponseEntity.ok(channelMapper.convertToDto(channelService.findByIdOrFail(id)));
     }
 
     @PatchMapping(value = {"/{id}", "/{id}/{restart}"})
@@ -85,7 +82,7 @@ public class ChannelController {
 
     @PostMapping("/stream_info/batch")
     public ResponseEntity<?> batchUpdateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos) {
-        channelService.infoBatchUpdate(infos);
+        //channelService.infoBatchUpdate(infos);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -96,13 +93,13 @@ public class ChannelController {
 
 
     @PostMapping("/{channel_id}/update-servers-list")
-    public void updateServersList(@PathVariable Long channel_id, @RequestBody Long[] serverIds){
+    public void updateServersList(@PathVariable Long channel_id, @RequestBody Long[] serverIds) {
         channelService.updateServersList(channel_id, serverIds);
     }
 
     //Play a Channel
     @GetMapping("/play/{stream_token}/{line_token}")
-    public ResponseEntity<String> playChannel(@PathVariable String stream_token, @PathVariable String line_token, HttpServletRequest request){
+    public ResponseEntity<String> playChannel(@PathVariable String stream_token, @PathVariable String line_token, HttpServletRequest request) {
         return ResponseEntity.ok(channelService.playChannel(stream_token, line_token, request));
     }
 

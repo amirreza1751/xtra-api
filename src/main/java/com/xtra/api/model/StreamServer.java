@@ -21,7 +21,6 @@ public class StreamServer {
     @MapsId("serverId")
     Server server;
 
-
     @OneToOne
     StreamInfo streamInfo;
 
@@ -30,7 +29,8 @@ public class StreamServer {
 
     public StreamServer() {
     }
-    public StreamServer(StreamServerId id){
+
+    public StreamServer(StreamServerId id) {
         this.id = id;
     }
 

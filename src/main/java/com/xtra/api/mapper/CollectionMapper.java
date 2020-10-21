@@ -9,8 +9,6 @@ import org.mapstruct.Mapper;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toSet;
-
 @Mapper(componentModel = "spring")
 public abstract class CollectionMapper {
 

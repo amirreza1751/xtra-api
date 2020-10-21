@@ -5,6 +5,7 @@ import com.xtra.api.model.*;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.ResourceRepository;
 import com.xtra.api.repository.ServerRepository;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -14,11 +15,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -92,7 +95,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return null;
     }
 
-    public boolean existsAllByIdIn(ArrayList<Long> ids) {
+    public boolean existsAllByIdIn(Set<Long> ids) {
         return serverRepository.existsAllByIdIn(ids);
     }
 
@@ -119,7 +122,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     public List<Server> details() {
         return serverRepository.findAll();
     }
-    public Resource getRes(Long serverId){
+
+    public Resource getRes(Long serverId) {
         return resourceRepository.findByServerId(serverId).get();
     }
 
@@ -127,21 +131,25 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     public void updateServersDetails() {
         List<Server> servers = serverRepository.findAll();
         servers.forEach(server -> {
-            Resource r = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/?interfaceName=" + server.getInterfaceName(), Resource.class);
-            if (r != null) {
-                Resource resource = resourceRepository.findByServerId(server.getId()).orElseGet(Resource::new);
-                copyProperties(r, resource, "id", "server");
-                resource.setServer(server);
-                resource.setConnections(this.getServerConnectionsCount(server.getId()));
-                resourceRepository.save(resource);
-                System.out.println("test");
-            } else
-                throw new RuntimeException("Error in fetching resource");
+            try {
+                Resource r = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/?interfaceName=" + server.getInterfaceName(), Resource.class);
+                if (r != null) {
+                    Resource resource = resourceRepository.findByServerId(server.getId()).orElseGet(Resource::new);
+                    copyProperties(r, resource, "id", "server");
+                    resource.setServer(server);
+                    resource.setConnections(this.getServerConnectionsCount(server.getId()));
+                    resourceRepository.save(resource);
+                    System.out.println("test");
+                } else
+                    throw new RuntimeException("Error in fetching resource");
+            } catch (RestClientException e) {
+                System.out.println(e.getMostSpecificCause().getMessage());
+            }
         });
     }
 
-    public int getServerConnectionsCount(Long serverId){
-        if (this.existsById(serverId)){
+    public int getServerConnectionsCount(Long serverId) {
+        if (this.existsById(serverId)) {
             return lineActivityRepository.countAllByIdServerId(serverId);
         } else throw new RuntimeException("Server Not Found.");
     }

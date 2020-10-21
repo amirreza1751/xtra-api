@@ -38,7 +38,7 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     }
 
 
-    public void infoBatchUpdate(LinkedHashMap<String, Object> infos) {
+    /*public void infoBatchUpdate(LinkedHashMap<String, Object> infos) {
         ObjectMapper mapper = new ObjectMapper();
         List<StreamInfo> streamInfos = mapper.convertValue(infos.get("streamInfoList"), new TypeReference<>() {
         });
@@ -68,7 +68,7 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
 
             repository.save(stream);
         }
-    }
+    }*/
 
     public boolean startOrFail(Long id, Long serverId) {
         Optional<S> ch = repository.findById(id);
@@ -93,8 +93,8 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
             Server server = serverService.findByIdOrFail(serverId);
             if (!serverService.sendStopRequest(stream.getId(), server))
                 return false;
-            stream.setStreamInfo(null);
-            stream.setProgressInfo(null);
+//            stream.setStreamInfo(null);
+//            stream.setProgressInfo(null);
             repository.save(stream);
             return true;
         } else

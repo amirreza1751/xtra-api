@@ -1,10 +1,9 @@
 package com.xtra.api.service;
 
-import com.xtra.api.model.Channel;
-import com.xtra.api.model.Server;
-import com.xtra.api.model.StreamServer;
-import com.xtra.api.model.StreamServerId;
+import com.xtra.api.model.*;
 import com.xtra.api.repository.ChannelRepository;
+import com.xtra.api.repository.CollectionRepository;
+import com.xtra.api.repository.CollectionStreamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -24,13 +24,17 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final ServerService serverService;
     private final LoadBalancingService loadBalancingService;
+    private final CollectionStreamRepository collectionStreamRepository;
+    private final CollectionRepository collectionRepository;
 
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService) {
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, CollectionStreamRepository collectionStreamRepository, CollectionRepository collectionRepository) {
         super(repository, Channel.class, serverService);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
+        this.collectionStreamRepository = collectionStreamRepository;
+        this.collectionRepository = collectionRepository;
     }
 
 
@@ -64,46 +68,66 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     @Override
     protected Page<Channel> findWithSearch(Pageable page, String search) {
-            return repository.findByNameLikeOrCategoryNameLikeOrStreamInfoCurrentInputLike(search, search, search, page);
+        return repository.findByNameLikeOrCategoryNameLike(search, search, search, page);
     }
 
-    public Channel add(Channel channel, ArrayList<Long> serverIds, boolean start){
+    public Channel add(Channel channel, Set<Long> serverIds, Set<Long> collectionIds, boolean start) {
         Channel ch = this.addChannel(channel);
-        Long streamId = ch.getId();
-        if(!serverService.existsAllByIdIn(serverIds)){
-            throw new RuntimeException("at least of one the ids are wrong");
-        }
-        ArrayList<StreamServer> streamServers = new ArrayList<>();
-        for (Long serverId : serverIds){
-            StreamServer streamServer = new StreamServer();
-            streamServer.setId(new StreamServerId(streamId, serverId));
-
-            var server = serverService.findByIdOrFail(serverId);
-            streamServer.setServer(server);
-            streamServer.setStream(channel);
-            server.addStreamServer(streamServer);
-
-            streamServers.add(streamServer);
-            channel.setStreamServers(streamServers);
-            ch = repository.save(channel);
-            serverService.updateOrFail(server.getId(), server);
-
-            if (start){
-                ExecutorService executor = Executors.newFixedThreadPool(2);
-                Channel finalCh = ch;
-                executor.execute(() -> this.startOrFail(finalCh.getId(), serverId));
+        if (collectionIds != null) {
+            for (var id : collectionIds) {
+                var existing = collectionStreamRepository.findById(new CollectionStreamId(id, ch.getId()));
+                if (existing.isEmpty()) {
+                    var collection = new CollectionStream(new CollectionStreamId(id, ch.getId()));
+                    var orderCount = collectionStreamRepository.countAllByIdCollectionId(id);
+                    collection.setOrder(orderCount + 1);
+                    collection.setStream(ch);
+                    var col = collectionRepository.findById(id);
+                    if (col.isPresent()) {
+                        collection.setCollection(col.get());
+                        col.get().addStream(collection);
+                        collectionRepository.save(col.get());
+                    }
+                }
             }
         }
+        Long streamId = ch.getId();
+        if (!serverService.existsAllByIdIn(serverIds)) {
+            throw new RuntimeException("at least of one the ids are wrong");
+        }
+        if (serverIds != null) {
+            ArrayList<StreamServer> streamServers = new ArrayList<>();
+            for (Long serverId : serverIds) {
+                StreamServer streamServer = new StreamServer();
+                streamServer.setId(new StreamServerId(streamId, serverId));
+
+                var server = serverService.findByIdOrFail(serverId);
+                streamServer.setServer(server);
+                streamServer.setStream(channel);
+                server.addStreamServer(streamServer);
+
+                streamServers.add(streamServer);
+                channel.setStreamServers(streamServers);
+                ch = repository.save(channel);
+                serverService.updateOrFail(server.getId(), server);
+
+                if (start) {
+                    ExecutorService executor = Executors.newFixedThreadPool(2);
+                    Channel finalCh = ch;
+                    executor.execute(() -> this.startOrFail(finalCh.getId(), serverId));
+                }
+            }
+        }
+
         return ch;
     }
 
-    public void updateServersList(Long channel_id, Long[] serverIds){
-        //@todo uodate servers list
+    public void updateServersList(Long channel_id, Long[] serverIds) {
+        //@todo update servers list
     }
 
-    public String playChannel(String stream_token, String line_token, HttpServletRequest request){
-        ArrayList<Server> servers  = loadBalancingService.findAvailableServers(stream_token);
-        Server server  = loadBalancingService.findLeastConnServer(servers);
+    public String playChannel(String stream_token, String line_token, HttpServletRequest request) {
+        ArrayList<Server> servers = loadBalancingService.findAvailableServers(stream_token);
+        Server server = loadBalancingService.findLeastConnServer(servers);
         return serverService.sendPlayRequest(stream_token, line_token, server);
     }
 }

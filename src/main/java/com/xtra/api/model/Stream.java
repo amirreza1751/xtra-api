@@ -18,6 +18,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -65,7 +66,7 @@ public class Stream {
 
 
     @OneToMany(mappedBy = "stream")
-    private Set<CollectionStream> collectionAssign;
+    private Set<CollectionStream> collectionAssigns;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<StreamInput> streamInputs;
@@ -106,5 +107,10 @@ public class Stream {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public void addCollection(CollectionStream collectionStream) {
+        if (collectionAssigns == null) collectionAssigns = new HashSet<>();
+        collectionAssigns.add(collectionStream);
     }
 }

@@ -22,7 +22,7 @@ public class StreamController {
     @PatchMapping("/stream_info/batch")
     @Transactional
     public ResponseEntity<?> batchUpdateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos) {
-        streamService.infoBatchUpdate(infos);
+        //streamService.infoBatchUpdate(infos);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
