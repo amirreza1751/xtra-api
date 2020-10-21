@@ -30,11 +30,12 @@ public class Collection {
     private Set<DownloadListCollection> downloadListCollections;
 
     @OrderBy("order ASC")
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)
     private Set<CollectionStream> streams;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    private Set<Vod> vods;
+    @OrderBy("order ASC")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)
+    private Set<CollectionVod> vods;
 
     public void addStream(CollectionStream stream) {
         if (streams == null) streams = new HashSet<>();
@@ -51,17 +52,17 @@ public class Collection {
         this.streams.removeAll(streams);
     }
 
-    public void addVod(Vod vod) {
+    public void addVod(CollectionVod vod) {
         if (vods == null) vods = new HashSet<>();
         vods.add(vod);
     }
 
-    public void removeVod(Vod vod) {
+    public void removeVod(CollectionVod vod) {
         if (vods == null) return;
         vods.remove(vod);
     }
 
-    public void removeVods(java.util.Collection<Vod> vods) {
+    public void removeVods(java.util.Collection<CollectionVod> vods) {
         if (vods == null) return;
         this.vods.removeAll(vods);
     }

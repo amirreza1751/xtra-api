@@ -43,12 +43,20 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
 
     @Override
     public Collection insert(Collection collection) {
-        collection.setStreams(collection.getStreams().stream().map(collectionStream -> {
-            collectionStream.setStream(streamService.findByIdOrFail(collectionStream.getId().getStreamId()));
-            return collectionStream;
-        }).collect(Collectors.toSet()));
+        if (collection.getStreams() != null) {
+            collection.setStreams(collection.getStreams().stream().map(collectionStream -> {
+                collectionStream.setStream(streamService.findByIdOrFail(collectionStream.getId().getStreamId()));
+                return collectionStream;
+            }).collect(Collectors.toSet()));
+        }
 
-        //todo vod
+        if (collection.getVods() != null) {
+            collection.setVods(collection.getVods().stream().map(collectionVod -> {
+                collectionVod.setVod(vodService.findByIdOrFail(collectionVod.getId().getVodId()));
+                return collectionVod;
+            }).collect(Collectors.toSet()));
+        }
+
         return super.insert(collection);
     }
 
@@ -84,9 +92,24 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
         if (newColl.getVods() != null) {
             var obsoleteVods = Sets.difference(oldColl.getVods(), newColl.getVods()).immutableCopy();
             oldColl.removeVods(obsoleteVods);
-            var newVods = Sets.difference(newColl.getVods(), oldColl.getVods()).immutableCopy();
-            for (var vod : newVods) {
-                oldColl.addVod(vodService.findByIdOrFail(vod.getId()));
+            var unchangedVods = oldColl.getVods();
+
+            oldColl.getVods().clear();
+            for (var vod : newColl.getVods()) {
+                if (!unchangedVods.contains(vod)) {
+                    CollectionVod cs = new CollectionVod(vod.getId());
+                    cs.setCollection(oldColl);
+                    cs.setVod(vodService.findByIdOrFail(vod.getId().getVodId()));
+                    cs.setOrder(vod.getOrder());
+                    oldColl.addVod(cs);
+                } else {
+                    for (var cs : unchangedVods) {
+                        if (cs.getId().equals(vod.getId())) {
+                            cs.setOrder(vod.getOrder());
+                            oldColl.addVod(cs);
+                        }
+                    }
+                }
             }
         }
 

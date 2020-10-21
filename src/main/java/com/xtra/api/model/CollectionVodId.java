@@ -12,29 +12,29 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-public class CollectionStreamId implements Serializable {
+public class CollectionVodId implements Serializable {
     private Long collectionId;
-    private Long streamId;
+    private Long vodId;
 
-    public CollectionStreamId(Long collectionId, Long streamId) {
+    public CollectionVodId(Long collectionId, Long vodId) {
         this.collectionId = collectionId;
-        this.streamId = streamId;
+        this.vodId = vodId;
     }
 
-    public CollectionStreamId() {
+    public CollectionVodId() {
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CollectionStreamId that = (CollectionStreamId) o;
-        return Objects.equals(collectionId, that.collectionId) &&
-                Objects.equals(streamId, that.streamId);
+        CollectionVodId that = (CollectionVodId) o;
+        return collectionId.equals(that.collectionId) &&
+                vodId.equals(that.vodId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(collectionId, streamId);
+        return Objects.hash(collectionId, vodId);
     }
 }

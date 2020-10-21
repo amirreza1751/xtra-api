@@ -52,10 +52,22 @@ public abstract class CollectionMapper {
         int i;
         switch (collection.getType()) {
             case SERIES:
-                collection.setVods(input.getSeries() != null ? input.getSeries().stream().map(Series::new).collect(toSet()) : null);
+                i = 0;
+                for (var id : input.getSeries()) {
+                    CollectionVod collectionVod = new CollectionVod(new CollectionVodId(input.getId(), id));
+                    collectionVod.setOrder(i++);
+                    collectionVod.setCollection(collection);
+                    collection.addVod(collectionVod);
+                }
                 break;
             case MOVIE:
-                collection.setVods(input.getMovies() != null ? input.getMovies().stream().map(Movie::new).collect(toSet()) : null);
+                i = 0;
+                for (var id : input.getMovies()) {
+                    CollectionVod collectionVod = new CollectionVod(new CollectionVodId(input.getId(), id));
+                    collectionVod.setOrder(i++);
+                    collectionVod.setCollection(collection);
+                    collection.addVod(collectionVod);
+                }
                 break;
             case RADIO:
                 i = 0;
@@ -88,11 +100,11 @@ public abstract class CollectionMapper {
 
         switch (collection.getType()) {
             case SERIES:
-                var series = collection.getVods() != null ? collection.getVods().stream().map(vod -> new MediaPair<>(vod.getId(), vod.getName())).collect(toSet()) : null;
+                var series = collection.getVods() != null ? collection.getVods().stream().map(vod -> new MediaPair<>(vod.getVod().getId(), vod.getVod().getName())).collect(Collectors.toCollection(LinkedHashSet::new)) : null;
                 collectionDto.setSeries(series);
                 break;
             case MOVIE:
-                var movies = collection.getVods() != null ? collection.getVods().stream().map(vod -> new MediaPair<>(vod.getId(), vod.getName())).collect(toSet()) : null;
+                var movies = collection.getVods() != null ? collection.getVods().stream().map(vod -> new MediaPair<>(vod.getVod().getId(), vod.getVod().getName())).collect(Collectors.toCollection(LinkedHashSet::new)) : null;
                 collectionDto.setMovies(movies);
                 break;
             case RADIO:
