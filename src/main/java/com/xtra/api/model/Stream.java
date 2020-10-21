@@ -51,14 +51,6 @@ public class Stream {
     private Set<DayOfWeek> daysToRestart;
     private LocalTime timeToRestart;
 
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private StreamInfo streamInfo;
-
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private ProgressInfo progressInfo;
-
     @ManyToOne
     private Category category;
 
@@ -72,8 +64,8 @@ public class Stream {
     private List<StreamServer> streamServers = new ArrayList<>();
 
 
-//    @OneToMany(mappedBy = "stream")
-//    private Set<CollectionStream> collectionAssign;
+    @OneToMany(mappedBy = "stream")
+    private Set<CollectionStream> collectionAssign;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<StreamInput> streamInputs;
