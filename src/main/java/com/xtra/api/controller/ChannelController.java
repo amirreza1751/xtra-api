@@ -6,6 +6,7 @@ import com.xtra.api.projection.ChannelView;
 import com.xtra.api.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/channels")
@@ -28,10 +30,10 @@ public class ChannelController {
 
     // Stream CRUD
     @GetMapping("")
-    public ResponseEntity<Page<Channel>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<ChannelView>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         var result = channelService.findAll(search, pageNo, pageSize, sortBy, sortDir);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(new PageImpl<>(result.stream().map(channelMapper::convertToDto).collect(Collectors.toList())));
     }
 
     @PostMapping(value = {"", "/{start}"})
