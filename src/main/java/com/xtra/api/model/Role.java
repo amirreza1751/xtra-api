@@ -23,7 +23,7 @@ public class Role {
     private UserType type;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "role", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "role", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<PermissionRole> permissions;
 
     public void addPermission(PermissionRole permissionRole) {
