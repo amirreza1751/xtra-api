@@ -35,7 +35,7 @@ public class LineActivityService {
         lineActivityRepository.deleteById(activityId);
     }
 
-    //@Transactional
+//    @Transactional
     public void batchCreateOrUpdate(List<LineActivity> lineActivities, HttpServletRequest request) {
         for (var activity : lineActivities) {
             //@todo find out how null values get passed
@@ -58,11 +58,22 @@ public class LineActivityService {
 
             } else {
                 var oldActivity = existingActivity.get();
-                copyProperties(activity, oldActivity, "id", "line", "stream");
+                copyProperties(activity, oldActivity, "id", "line", "stream", "server");
                 var streamById = streamService.findById(activity.getId().getStreamId());
                 if (streamById.isEmpty())
                     continue;
                 activity.setStream((Stream) streamById.get());
+
+                var lineById = lineService.findById(activity.getId().getLineId());
+                if (lineById.isEmpty())
+                    continue;
+                activity.setLine(lineById.get());
+
+                var serverById = serverService.findByIp(request.getRemoteAddr());
+                if (serverById.isEmpty())
+                    continue;
+                activity.setServer(serverById.get());
+
                 lineActivityRepository.save(oldActivity);
 
             }

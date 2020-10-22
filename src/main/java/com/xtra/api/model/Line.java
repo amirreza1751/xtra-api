@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -61,6 +62,7 @@ public class Line {
 
     @OneToMany(mappedBy = "line")
     @JsonManagedReference("line_id")
+    @ToString.Exclude
     private List<LineActivity> activities = new ArrayList<>();
 
     public int getCurrentConnections() {
