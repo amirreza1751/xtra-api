@@ -1,6 +1,7 @@
 package com.xtra.api.service;
 
 import com.xtra.api.model.Permission;
+import com.xtra.api.model.PermissionId;
 import com.xtra.api.model.UserType;
 import com.xtra.api.repository.PermissionRepository;
 import org.springframework.data.domain.Page;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class PermissionService extends CrudService<Permission, String, PermissionRepository> {
+public class PermissionService extends CrudService<Permission, PermissionId, PermissionRepository> {
 
     protected PermissionService(PermissionRepository repository) {
         super(repository, Permission.class);
@@ -40,14 +41,10 @@ public class PermissionService extends CrudService<Permission, String, Permissio
         return page;
     }
 
-    public boolean existsAllByKeys(Set<String> keys) {
-        return repository.existsAllBypKeyIn(keys);
-    }
-
     public List<Permission> getPermissions(UserType userType) {
         if (userType == null)
             return repository.findAll();
         else
-            return repository.findAllByUserType(userType);
+            return repository.findAllByIdUserType(userType);
     }
 }

@@ -1,13 +1,15 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.facade.PermissionFacade;
-import com.xtra.api.model.Permission;
+import com.xtra.api.mapper.PermissionMapper;
 import com.xtra.api.model.UserType;
-import com.xtra.api.projection.PermissionDto;
+import com.xtra.api.projection.PermissionView;
 import com.xtra.api.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,23 +18,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/permissions")
 public class PermissionController {
     private final PermissionService permissionService;
-    private final PermissionFacade permissionFacade;
+    private final PermissionMapper permissionMapper;
 
     @Autowired
-    public PermissionController(PermissionService permissionService, PermissionFacade permissionFacade) {
+    public PermissionController(PermissionService permissionService, PermissionMapper permissionMapper) {
         this.permissionService = permissionService;
-        this.permissionFacade = permissionFacade;
+        this.permissionMapper = permissionMapper;
     }
 
     @GetMapping("")
-    public ResponseEntity<List<PermissionDto>> getPermissions(@RequestParam(value = "user_type", required = false) UserType userType) {
+    public ResponseEntity<List<PermissionView>> getPermissions(@RequestParam(value = "user_type", required = false) UserType userType) {
         var result = permissionService.getPermissions(userType);
-        return ResponseEntity.ok(result.stream().map(permissionFacade::convertToDTO).collect(Collectors.toList()));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Permission> getPermissionById(@PathVariable String id) {
-        return ResponseEntity.ok(permissionService.findByIdOrFail(id));
+        return ResponseEntity.ok(result.stream().map(permissionMapper::convertToDto).collect(Collectors.toList()));
     }
 
 
