@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -25,4 +26,8 @@ public class Role {
     @OneToMany(mappedBy = "role", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Set<PermissionRole> permissions;
 
+    public void addPermission(PermissionRole permissionRole) {
+        if (permissions == null) permissions = new HashSet<>();
+        permissions.add(permissionRole);
+    }
 }
