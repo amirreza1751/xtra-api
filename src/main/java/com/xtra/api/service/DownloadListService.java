@@ -3,6 +3,7 @@ package com.xtra.api.service;
 import com.google.common.collect.Sets;
 import com.xtra.api.mapper.DownloadListMapper;
 import com.xtra.api.model.DownloadList;
+import com.xtra.api.projection.DownloadListInsertView;
 import com.xtra.api.projection.DownloadListView;
 import com.xtra.api.repository.DownloadListRepository;
 import org.springframework.data.domain.Page;
@@ -49,7 +50,7 @@ public class DownloadListService extends CrudService<DownloadList, Long, Downloa
     }
 
     @Transactional
-    public DownloadListView updateOrFail(Long id, DownloadListView downloadListView) {
+    public DownloadListView updateOrFail(Long id, DownloadListInsertView downloadListView) {
         downloadListView.setId(id);
         DownloadList downloadList = mapper.convertToEntityWithRelations(downloadListView);
         var existing = findByIdOrFail(id);
@@ -68,7 +69,7 @@ public class DownloadListService extends CrudService<DownloadList, Long, Downloa
     }
 
 
-    public DownloadListView save(DownloadListView downloadListView) {
+    public DownloadListView save(DownloadListInsertView downloadListView) {
         DownloadList downloadList = mapper.convertToEntityWithRelations(downloadListView);
         downloadList.setCollectionsAssign(downloadList.getCollectionsAssign().stream().peek(dlc -> {
             dlc.setCollection(collectionService.findByIdOrFail(dlc.getId().getCollectionId()));

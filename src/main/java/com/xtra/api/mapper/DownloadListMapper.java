@@ -4,6 +4,7 @@ import com.xtra.api.model.DownloadList;
 import com.xtra.api.model.DownloadListCollection;
 import com.xtra.api.model.DownloadListCollectionId;
 import com.xtra.api.projection.DlCollectionDto;
+import com.xtra.api.projection.DownloadListInsertView;
 import com.xtra.api.projection.DownloadListView;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -16,9 +17,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public abstract class DownloadListMapper {
 
-    public abstract DownloadList convertToEntity(DownloadListView downloadListView);
-
-    @Mapping(source = "collections", target = "collectionsAssign")
+    /*@Mapping(source = "collections", target = "collectionsAssign")
     public abstract DownloadList convertToEntityWithRelations(DownloadListView downloadListView);
 
     public Set<DownloadListCollection> convertRelationListToEntity(List<DlCollectionDto> dlCollectionDtos) {
@@ -29,6 +28,23 @@ public abstract class DownloadListMapper {
         for (var dlcDto : dlCollectionDtos) {
             var dlc = new DownloadListCollection();
             dlc.setId(new DownloadListCollectionId(null, dlcDto.getId()));
+            dlc.setOrder(i++);
+            dlcSet.add(dlc);
+        }
+        return dlcSet;
+    }*/
+
+    @Mapping(source = "collections", target = "collectionsAssign")
+    public abstract DownloadList convertToEntityWithRelations(DownloadListInsertView downloadListView);
+
+    public Set<DownloadListCollection> convertInsertRelationListToEntity(Set<Long> collections) {
+        if (collections == null)
+            return null;
+        Set<DownloadListCollection> dlcSet = new LinkedHashSet<>();
+        int i = 0;
+        for (var collection : collections) {
+            var dlc = new DownloadListCollection();
+            dlc.setId(new DownloadListCollectionId(null, collection));
             dlc.setOrder(i++);
             dlcSet.add(dlc);
         }
@@ -46,6 +62,8 @@ public abstract class DownloadListMapper {
         }).collect(Collectors.toSet());
         downloadList.setCollectionsAssign(res);
     }
+
+
 
     /*To DTO */
     @Mapping(source = "collectionsAssign", target = "collections")

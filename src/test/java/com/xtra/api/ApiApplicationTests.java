@@ -22,7 +22,7 @@ class ApiApplicationTests {
         dto.setId(1L);
         var collections = new ArrayList<DlCollectionDto>();
         dto.setCollections(collections);
-        var entity = listMapper.convertToEntity(dto);
+        //var entity = listMapper.convertToEntity(dto);
         System.out.println();
     }
 

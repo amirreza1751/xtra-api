@@ -1,5 +1,6 @@
 package com.xtra.api.controller;
 
+import com.xtra.api.projection.DownloadListInsertView;
 import com.xtra.api.projection.DownloadListView;
 import com.xtra.api.service.DownloadListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +32,12 @@ public class DownloadListController {
     }
 
     @PostMapping("")
-    public ResponseEntity<DownloadListView> addDownloadList(@RequestBody DownloadListView downloadListView) {
+    public ResponseEntity<DownloadListView> addDownloadList(@RequestBody DownloadListInsertView downloadListView) {
         return ResponseEntity.ok(dlService.save(downloadListView));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<DownloadListView> updateDownloadList(@PathVariable Long id, @RequestBody DownloadListView downloadListView) {
+    public ResponseEntity<DownloadListView> updateDownloadList(@PathVariable Long id, @RequestBody DownloadListInsertView downloadListView) {
         return ResponseEntity.ok(dlService.updateOrFail(id, downloadListView));
     }
 
