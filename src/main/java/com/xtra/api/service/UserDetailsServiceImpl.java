@@ -44,7 +44,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     private List<String> getPrivileges(Role role) {
-        return role.getPermissions().stream().map(permission -> permission.getId().getName()).collect(Collectors.toList());
+        return role.getPermissions().stream().map(permission -> permission.getPermission().getId().getName()).collect(Collectors.toList());
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {

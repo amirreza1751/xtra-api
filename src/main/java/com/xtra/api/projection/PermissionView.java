@@ -6,4 +6,12 @@ import lombok.Data;
 public class PermissionView {
     private String name;
     private String description;
+
+    public PermissionView(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public PermissionView() {
+    }
 }

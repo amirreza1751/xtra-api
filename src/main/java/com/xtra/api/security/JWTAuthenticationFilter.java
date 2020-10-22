@@ -21,10 +21,11 @@ import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 import static com.xtra.api.security.SecurityConstants.*;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
+        setFilterProcessesUrl("/api/users/login");
     }
 
     @Override
