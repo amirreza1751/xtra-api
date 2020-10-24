@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -52,4 +54,10 @@ public class ServerController {
     public ResponseEntity<Resource> getRes(@PathVariable Long id) {
         return ResponseEntity.ok(serverService.getRes(id));
     }
+
+    @GetMapping("test-port")
+    public int testPort(HttpServletRequest request){
+        return request.getLocalPort();
+    }
+
 }

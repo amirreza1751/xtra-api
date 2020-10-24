@@ -100,8 +100,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams?line_token=" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
     }
 
-    public Optional<Server> findByIp(String ip){
-        return repository.findByIp(ip);
+    public Optional<Server> findByIpAndCorePort(String ip, String corePort){
+        return repository.findByIpAndCorePort(ip, corePort);
     }
 
     public Resource getResourceUsage(Long serverId, String interfaceName) {
@@ -126,7 +126,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return resourceRepository.findByServerId(serverId).get();
     }
 
-    @Scheduled(fixedDelay = 3000)
+    //@Scheduled(fixedDelay = 3000)
     public void updateServersDetails() {
         List<Server> servers = serverRepository.findAll();
         servers.forEach(server -> {

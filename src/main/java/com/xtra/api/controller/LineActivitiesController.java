@@ -23,9 +23,8 @@ public class LineActivitiesController {
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<?> batchCreateOrUpdateActivities(@RequestBody List<LineActivity> lineActivities, HttpServletRequest request) {
-        String ip = request.getRemoteAddr();
-        lineActivityService.batchCreateOrUpdate(lineActivities, request);
+    public ResponseEntity<?> batchCreateOrUpdateActivities(@RequestBody List<LineActivity> lineActivities, @RequestParam String portNumber, HttpServletRequest request) {
+        lineActivityService.batchCreateOrUpdate(lineActivities, portNumber, request);
         return ResponseEntity.ok().build();
     }
 
