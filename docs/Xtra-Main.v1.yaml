@@ -1,4 +1,4 @@
-openapi: 3.0.0
+Certificate used to sign the license is not signed by JetBrains root certificate (1)openapi: 3.0.0
 info:
   title: Xtra Main
   version: '1.0'
