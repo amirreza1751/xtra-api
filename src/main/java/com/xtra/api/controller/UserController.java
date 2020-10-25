@@ -26,6 +26,11 @@ public class UserController {
         return ResponseEntity.ok(userService.findAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getLine(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findByIdOrFail(id));
+    }
+
     @PostMapping("")
     public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
         return ResponseEntity.ok(userService.insert(user));
