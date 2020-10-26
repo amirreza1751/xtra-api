@@ -9,12 +9,12 @@ import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class RoleDto {
+public class RoleView {
     private long id;
     private String name;
     private String color;
 
-    private UserType userType;
+    private UserType type;
 
-    private Set<String[]> permissions;
+    private Set<PermissionView> permissions;
 }

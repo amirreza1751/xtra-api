@@ -8,7 +8,10 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 @Setter
@@ -24,13 +27,6 @@ public class StreamInfo {
     private String resolution;
     private String videoCodec;
     private String audioCodec;
-
-    @OneToOne(mappedBy = "streamInfo")
-    @JsonBackReference
-    private Stream stream;
-
-    @Column(name = "stream_id")
-    private Long streamId;
 
     public StreamInfo() {
     }

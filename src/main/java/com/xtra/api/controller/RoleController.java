@@ -1,7 +1,7 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.projection.RoleDto;
-import com.xtra.api.facade.RoleFacade;
+import com.xtra.api.mapper.RoleMapper;
+import com.xtra.api.projection.RoleView;
 import com.xtra.api.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,36 +16,36 @@ import java.util.stream.Collectors;
 @RequestMapping("/roles")
 public class RoleController {
     private final RoleService roleService;
-    private final RoleFacade roleFacade;
+    private final RoleMapper roleMapper;
 
     @Autowired
-    public RoleController(RoleService roleService, RoleFacade roleFacade) {
+    public RoleController(RoleService roleService, RoleMapper roleMapper) {
         this.roleService = roleService;
-        this.roleFacade = roleFacade;
+        this.roleMapper = roleMapper;
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<RoleDto>> getRoles(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<RoleView>> getRoles(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         var result = roleService.findAll(search, pageNo, pageSize, sortBy, sortDir);
-        return ResponseEntity.ok(new PageImpl<>(result.stream().map(roleFacade::convertToDto).collect(Collectors.toList())));
+        return ResponseEntity.ok(new PageImpl<>(result.stream().map(roleMapper::convertToDto).collect(Collectors.toList())));
     }
 
     @PostMapping("")
-    public ResponseEntity<RoleDto> addRole(@RequestBody RoleDto roleDto) {
-        return ResponseEntity.ok(roleFacade.convertToDto(roleService.insert(roleFacade.convertToEntity(roleDto))));
+    public ResponseEntity<RoleView> addRole(@RequestBody RoleView roleView) {
+        return ResponseEntity.ok(roleMapper.convertToDto(roleService.insert(roleMapper.convertToEntity(roleView))));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoleDto> getRoleById(@PathVariable Long id) {
-        return ResponseEntity.ok(roleFacade.convertToDto(roleService.findByIdOrFail(id)));
+    public ResponseEntity<RoleView> getRoleById(@PathVariable Long id) {
+        return ResponseEntity.ok(roleMapper.convertToDto(roleService.findByIdOrFail(id)));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<RoleDto> updateRole(@PathVariable Long id, @RequestBody RoleDto roleDTO) {
-        roleDTO.setId(id);
-        var result = roleService.updateOrFail(id, roleFacade.convertToEntity(roleDTO));
-        return ResponseEntity.ok(roleFacade.convertToDto(result));
+    public ResponseEntity<RoleView> updateRole(@PathVariable Long id, @RequestBody RoleView roleView) {
+        roleView.setId(id);
+        var result = roleService.updateOrFail(id, roleMapper.convertToEntity(roleView));
+        return ResponseEntity.ok(roleMapper.convertToDto(result));
     }
 
     @DeleteMapping("/{id}")

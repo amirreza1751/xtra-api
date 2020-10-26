@@ -1,35 +1,45 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Permission {
-    @Id
-    private String pKey;
-    private String name;
-    private boolean isNumeric;
+    @EmbeddedId
+    private PermissionId id;
+    private String description;
 
-    @Enumerated(EnumType.STRING)
-    private UserType userType;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "permission")
+    private Set<PermissionRole> roles;
 
-    @JsonManagedReference("permission_id")
-    @OneToMany(mappedBy = "permission", cascade = CascadeType.ALL)
-    private List<PermissionRole> permissionAssignments = new ArrayList<>();
+    @ManyToOne
+    private Permission parent;
 
-    public void addPermissionAssignment(PermissionRole permissionRole) {
-        permissionAssignments.add(permissionRole);
+    @OneToMany(mappedBy = "parent")
+    private Set<Permission> permissions;
+
+    public void addRole(PermissionRole role) {
+        if (roles == null) roles = new HashSet<>();
+        roles.add(role);
+    }
+
+    public void removeRole(PermissionRole role) {
+        roles.remove(role);
     }
 }

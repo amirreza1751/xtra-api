@@ -18,6 +18,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -51,14 +52,6 @@ public class Stream {
     private Set<DayOfWeek> daysToRestart;
     private LocalTime timeToRestart;
 
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private StreamInfo streamInfo;
-
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private ProgressInfo progressInfo;
-
     @ManyToOne
     private Category category;
 
@@ -70,6 +63,10 @@ public class Stream {
     @JsonManagedReference("stream_server")
     @OneToMany(mappedBy = "stream", cascade = CascadeType.ALL)
     private List<StreamServer> streamServers = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "stream")
+    private Set<CollectionStream> collectionAssigns;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<StreamInput> streamInputs;
@@ -110,5 +107,10 @@ public class Stream {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public void addCollection(CollectionStream collectionStream) {
+        if (collectionAssigns == null) collectionAssigns = new HashSet<>();
+        collectionAssigns.add(collectionStream);
     }
 }

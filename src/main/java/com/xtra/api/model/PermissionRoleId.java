@@ -8,14 +8,15 @@ import java.io.Serializable;
 @Data
 @Embeddable
 public class PermissionRoleId implements Serializable {
+    private PermissionId permissionId;
+
     private Long roleId;
-    private String permissionId;
 
     public PermissionRoleId() {
     }
 
-    public PermissionRoleId(Long roleId, String permissionId) {
-        this.roleId = roleId;
+    public PermissionRoleId(PermissionId permissionId, Long roleId) {
         this.permissionId = permissionId;
+        this.roleId = roleId;
     }
 }

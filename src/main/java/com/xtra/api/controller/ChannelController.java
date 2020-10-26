@@ -1,10 +1,9 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.facade.ChannelFacade;
+import com.xtra.api.mapper.ChannelMapper;
 import com.xtra.api.model.Channel;
-import com.xtra.api.projection.ChannelDto;
+import com.xtra.api.projection.ChannelView;
 import com.xtra.api.service.ChannelService;
-import com.xtra.api.service.StreamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
@@ -13,37 +12,36 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/channels")
 public class ChannelController {
-    ChannelService channelService;
-    StreamService streamService;
-    private final ChannelFacade channelFacade;
+    private final ChannelService channelService;
+    private final ChannelMapper channelMapper;
 
     @Autowired
-    public ChannelController(ChannelService channelService, StreamService streamService, ChannelFacade channelFacade) {
+    public ChannelController(ChannelService channelService, ChannelMapper channelMapper) {
         this.channelService = channelService;
-        this.streamService = streamService;
-        this.channelFacade = channelFacade;
+        this.channelMapper = channelMapper;
     }
 
     // Stream CRUD
     @GetMapping("")
-    public ResponseEntity<Page<Channel>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<ChannelView>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         var result = channelService.findAll(search, pageNo, pageSize, sortBy, sortDir);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(new PageImpl<>(result.stream().map(channelMapper::convertToDto).collect(Collectors.toList())));
     }
 
     @PostMapping(value = {"", "/{start}"})
-    public ResponseEntity<Channel> addChannel(@Valid @RequestBody ChannelDto channelDTO, @PathVariable(required = false) boolean start) {
-        return ResponseEntity.ok(channelService.add(channelFacade.convertToEntity(channelDTO), channelDTO.getStream_servers(), start));
+    public ResponseEntity<ChannelView> addChannel(@Valid @RequestBody ChannelView channelView, @PathVariable(required = false) boolean start) {
+        return ResponseEntity.ok(channelMapper.convertToDto(channelService.add(channelMapper.convertToEntity(channelView), channelView.getServers(), channelView.getCollections(), start)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Channel> getChannelById(@PathVariable Long id) {
-        return ResponseEntity.ok(channelService.findByIdOrFail(id));
+    public ResponseEntity<ChannelView> getChannelById(@PathVariable Long id) {
+        return ResponseEntity.ok(channelMapper.convertToDto(channelService.findByIdOrFail(id)));
     }
 
     @PatchMapping(value = {"/{id}", "/{id}/{restart}"})
@@ -95,7 +93,7 @@ public class ChannelController {
 
 
     @PostMapping("/{channel_id}/update-servers-list")
-    public void updateServersList(@PathVariable Long channel_id, @RequestBody Long[] serverIds){
+    public void updateServersList(@PathVariable Long channel_id, @RequestBody Long[] serverIds) {
         channelService.updateServersList(channel_id, serverIds);
     }
 
