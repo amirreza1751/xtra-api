@@ -83,8 +83,8 @@ public class ChannelController {
     }
 
     @PostMapping("/stream_info/batch")
-    public ResponseEntity<?> batchUpdateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos) {
-        channelService.infoBatchUpdate(infos);
+    public ResponseEntity<?> batchUpdateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos, @RequestParam String portNumber, HttpServletRequest request) {
+        channelService.infoBatchUpdate(infos, portNumber, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

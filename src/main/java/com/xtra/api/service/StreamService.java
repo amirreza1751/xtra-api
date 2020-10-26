@@ -8,7 +8,9 @@ import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.repository.StreamServerRepository;
 import org.checkerframework.checker.nullness.Opt;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,36 +40,38 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     }
 
 
-    public void infoBatchUpdate(LinkedHashMap<String, Object> infos) {
+    public void infoBatchUpdate(LinkedHashMap<String, Object> infos, String portNumber, HttpServletRequest request) {
+        Optional<Server> srv = serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber);
+        Server server = new Server();
+        if (srv.isPresent()){
+           server = srv.get();
+        }
         ObjectMapper mapper = new ObjectMapper();
         List<StreamInfo> streamInfos = mapper.convertValue(infos.get("streamInfoList"), new TypeReference<>() {
         });
         List<ProgressInfo> progressInfos = mapper.convertValue(infos.get("progressInfoList"), new TypeReference<>() {
         });
-        List<S> streams = repository.findAllById(streamInfos.stream().map(StreamInfo::getStreamId).collect(Collectors.toList()));
 
-        for (S stream : streams) {
-            var streamInfo = streamInfos.stream().filter((info) -> info.getStreamId().equals(stream.getId())).findAny();
-            if (streamInfo.isPresent()) {
-                StreamInfo newInfo = streamInfo.get();
-                StreamInfo infoEntity;
-                infoEntity = stream.getStreamInfo() != null ? stream.getStreamInfo() : new StreamInfo();
-                copyProperties(newInfo, infoEntity, "id");
-                stream.setStreamInfo(infoEntity);
-            }
-
-
-            var progressInfo = progressInfos.stream().filter((info) -> info.getStreamId().equals(stream.getId())).findAny();
-            if (progressInfo.isPresent()) {
-                ProgressInfo newInfo = progressInfo.get();
-                ProgressInfo infoEntity;
-                infoEntity = stream.getProgressInfo() != null ? stream.getProgressInfo() : new ProgressInfo();
-                copyProperties(newInfo, infoEntity, "id");
-                stream.setProgressInfo(infoEntity);
-            }
-
-            repository.save(stream);
+        //amir
+       StreamServer streamServer;
+        for (StreamInfo streamInfo : streamInfos){
+            streamServer = serverService.findStreamServerById(new StreamServerId(streamInfo.getStreamId(), server.getId())).get();
+            StreamInfo tempInfo = streamServer.getStreamInfo() != null ? streamServer.getStreamInfo() : new StreamInfo();
+            copyProperties(streamInfo, tempInfo, "id", "streamServer");
+            streamServer.setStreamInfo(tempInfo);
+            serverService.saveStreamServer(streamServer);
         }
+
+
+        for (ProgressInfo progressInfo : progressInfos){
+            streamServer = serverService.findStreamServerById(new StreamServerId(progressInfo.getStreamId() , server.getId())).get();
+            ProgressInfo tempProgress = streamServer.getProgressInfo() != null ? streamServer.getProgressInfo() : new ProgressInfo();
+            copyProperties(progressInfo, tempProgress, "id", "streamServer");
+            streamServer.setProgressInfo(tempProgress);
+            serverService.saveStreamServer(streamServer);
+        }
+        //amir
+
     }
 
     public boolean startOrFail(Long id, Long serverId) {

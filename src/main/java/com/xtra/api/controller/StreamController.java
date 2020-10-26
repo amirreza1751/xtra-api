@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.*;
 
@@ -21,8 +22,8 @@ public class StreamController {
 
     @PatchMapping("/stream_info/batch")
     @Transactional
-    public ResponseEntity<?> batchUpdateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos) {
-        streamService.infoBatchUpdate(infos);
+    public ResponseEntity<?> batchUpdateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos, @RequestParam String portNumber, HttpServletRequest request) {
+        streamService.infoBatchUpdate(infos, portNumber, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

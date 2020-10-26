@@ -5,13 +5,13 @@ import com.xtra.api.model.*;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.ResourceRepository;
 import com.xtra.api.repository.ServerRepository;
+import com.xtra.api.repository.StreamServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -29,17 +29,19 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final ServerRepository serverRepository;
     private final ResourceRepository resourceRepository;
     private final LineActivityRepository lineActivityRepository;
+    private final StreamServerRepository streamServerRepository;
     @Value("${core.apiPath}")
     private String corePath;
     @Value("${core.apiPort}")
     private String corePort;
 
     @Autowired
-    protected ServerService(ServerRepository repository, ServerRepository serverRepository, ResourceRepository resourceRepository, LineActivityRepository lineActivityRepository) {
+    protected ServerService(ServerRepository repository, ServerRepository serverRepository, ResourceRepository resourceRepository, LineActivityRepository lineActivityRepository, StreamServerRepository streamServerRepository) {
         super(repository, Server.class);
         this.serverRepository = serverRepository;
         this.resourceRepository = resourceRepository;
         this.lineActivityRepository = lineActivityRepository;
+        this.streamServerRepository = streamServerRepository;
     }
 
     public List<File> getFiles(Long id, String path) {
@@ -147,5 +149,12 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         if (this.existsById(serverId)){
             return lineActivityRepository.countAllByIdServerId(serverId);
         } else throw new RuntimeException("Server Not Found.");
+    }
+
+    public Optional<StreamServer> findStreamServerById(StreamServerId streamServerId){
+        return streamServerRepository.findById(streamServerId);
+    }
+    public StreamServer saveStreamServer(StreamServer streamServer){
+        return streamServerRepository.save(streamServer);
     }
 }

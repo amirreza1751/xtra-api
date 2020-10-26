@@ -1,14 +1,18 @@
 package com.xtra.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Setter
+@Getter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class StreamInfo {
     @Id
@@ -34,6 +38,10 @@ public class StreamInfo {
     public StreamInfo(Stream stream) {
         this.stream = stream;
     }
+
+    @OneToOne(mappedBy = "streamInfo", cascade = CascadeType.ALL)
+    @JsonBackReference("server_id1")
+    private StreamServer streamServer;
 }
 
 
