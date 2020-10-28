@@ -25,6 +25,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.mariadb.jdbc:mariadb-java-client'
     implementation 'org.projectlombok:lombok'
     implementation 'org.springdoc:springdoc-openapi-ui:1.4.5'
