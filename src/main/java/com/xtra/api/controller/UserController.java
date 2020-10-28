@@ -6,11 +6,9 @@ import com.xtra.api.projection.UserInsertView;
 import com.xtra.api.projection.UserView;
 import com.xtra.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -22,6 +20,17 @@ public class UserController {
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("")
+    public ResponseEntity<Page<User>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                               @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+        return ResponseEntity.ok(userService.findAll(search, pageNo, pageSize, sortBy, sortDir));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getLine(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findByIdOrFail(id));
     }
 
     @PostMapping("")
