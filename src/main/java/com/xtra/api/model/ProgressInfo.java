@@ -18,20 +18,20 @@ public class ProgressInfo {
     private String frameRate;
     private String bitrate;
 
-    @OneToOne(mappedBy = "progressInfo")
-    @JsonBackReference
-    private Stream stream;
-
-    @Column(name = "stream_id")
-    private Long streamId;
+//    @OneToOne(mappedBy = "progressInfo")
+//    @JsonBackReference
+//    private Stream stream;
+//
+//    @Column(name = "stream_id")
+//    private Long streamId;
 
     public ProgressInfo() {
 
     }
 
-    public ProgressInfo(Stream stream) {
-        this.stream = stream;
-    }
+//    public ProgressInfo(Stream stream) {
+//        this.stream = stream;
+//    }
 
     @OneToOne(mappedBy = "progressInfo", cascade = CascadeType.ALL)
     @JsonBackReference("server_id2")

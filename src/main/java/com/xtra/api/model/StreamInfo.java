@@ -25,19 +25,19 @@ public class StreamInfo {
     private String videoCodec;
     private String audioCodec;
 
-    @OneToOne(mappedBy = "streamInfo")
-    @JsonBackReference
-    private Stream stream;
-
-    @Column(name = "stream_id")
-    private Long streamId;
+//    @OneToOne(mappedBy = "streamInfo")
+//    @JsonBackReference
+//    private Stream stream;
+//
+//    @Column(name = "stream_id")
+//    private Long streamId;
 
     public StreamInfo() {
     }
 
-    public StreamInfo(Stream stream) {
-        this.stream = stream;
-    }
+//    public StreamInfo(Stream stream) {
+//        this.stream = stream;
+//    }
 
     @OneToOne(mappedBy = "streamInfo", cascade = CascadeType.ALL)
     @JsonBackReference("server_id1")

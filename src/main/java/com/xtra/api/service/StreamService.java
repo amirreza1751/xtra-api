@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.*;
+import com.xtra.api.projection.ProgressInfoDto;
+import com.xtra.api.projection.StreamInfoDto;
 import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.repository.StreamServerRepository;
@@ -47,26 +49,26 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
            server = srv.get();
         }
         ObjectMapper mapper = new ObjectMapper();
-        List<StreamInfo> streamInfos = mapper.convertValue(infos.get("streamInfoList"), new TypeReference<>() {
+        List<StreamInfoDto> streamInfos = mapper.convertValue(infos.get("streamInfoList"), new TypeReference<>() {
         });
-        List<ProgressInfo> progressInfos = mapper.convertValue(infos.get("progressInfoList"), new TypeReference<>() {
+        List<ProgressInfoDto> progressInfos = mapper.convertValue(infos.get("progressInfoList"), new TypeReference<>() {
         });
 
         //amir
        StreamServer streamServer;
-        for (StreamInfo streamInfo : streamInfos){
-            streamServer = serverService.findStreamServerById(new StreamServerId(streamInfo.getStreamId(), server.getId())).get();
+        for (StreamInfoDto streamInfoDto : streamInfos){
+            streamServer = serverService.findStreamServerById(new StreamServerId(streamInfoDto.getStreamId(), server.getId())).get();
             StreamInfo tempInfo = streamServer.getStreamInfo() != null ? streamServer.getStreamInfo() : new StreamInfo();
-            copyProperties(streamInfo, tempInfo, "id", "streamServer");
+            copyProperties(streamInfoDto, tempInfo, "id", "streamServer", "streamId");
             streamServer.setStreamInfo(tempInfo);
             serverService.saveStreamServer(streamServer);
         }
 
 
-        for (ProgressInfo progressInfo : progressInfos){
-            streamServer = serverService.findStreamServerById(new StreamServerId(progressInfo.getStreamId() , server.getId())).get();
+        for (ProgressInfoDto progressInfoDto : progressInfos){
+            streamServer = serverService.findStreamServerById(new StreamServerId(progressInfoDto.getStreamId() , server.getId())).get();
             ProgressInfo tempProgress = streamServer.getProgressInfo() != null ? streamServer.getProgressInfo() : new ProgressInfo();
-            copyProperties(progressInfo, tempProgress, "id", "streamServer");
+            copyProperties(progressInfoDto, tempProgress, "id", "streamServer", "streamId");
             streamServer.setProgressInfo(tempProgress);
             serverService.saveStreamServer(streamServer);
         }
