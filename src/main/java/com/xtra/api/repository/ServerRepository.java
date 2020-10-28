@@ -10,4 +10,5 @@ import java.util.Set;
 public interface ServerRepository extends JpaRepository<Server, Long> {
     Optional<Server> findByName(String name);
     boolean existsAllByIdIn (Set<Long> serverIds);
+    Optional<Server> findByIpAndCorePort(String ip, String port);
 }
