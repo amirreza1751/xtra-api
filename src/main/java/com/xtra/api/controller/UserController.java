@@ -1,7 +1,5 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.model.Line;
-import com.xtra.api.model.User;
 import com.xtra.api.projection.UserInsertView;
 import com.xtra.api.projection.UserView;
 import com.xtra.api.service.UserService;
@@ -9,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -23,14 +19,14 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<User>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                               @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(userService.findAll(search, pageNo, pageSize, sortBy, sortDir));
+    public ResponseEntity<Page<UserView>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                                   @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+        return ResponseEntity.ok(userService.getAllViews(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getLine(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.findByIdOrFail(id));
+    public ResponseEntity<UserView> getLine(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getViewById(id));
     }
 
     @PostMapping("")
