@@ -28,7 +28,7 @@ public class User {
     protected boolean isBanned = false;
 
     @Enumerated(EnumType.STRING)
-    protected UserType userType;
+    protected UserType userType = UserType.USER;
 
     @ManyToOne
     protected Role role;
