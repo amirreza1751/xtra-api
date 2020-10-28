@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -21,8 +23,8 @@ public class LineActivitiesController {
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<?> batchCreateOrUpdateActivities(@RequestBody List<LineActivity> lineActivities) {
-        lineActivityService.batchCreateOrUpdate(lineActivities);
+    public ResponseEntity<?> batchCreateOrUpdateActivities(@RequestBody List<LineActivity> lineActivities, @RequestParam String portNumber, HttpServletRequest request) {
+        lineActivityService.batchCreateOrUpdate(lineActivities, portNumber, request);
         return ResponseEntity.ok().build();
     }
 

@@ -7,8 +7,7 @@ import com.xtra.api.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -83,8 +82,8 @@ public class ChannelController {
     }
 
     @PostMapping("/stream_info/batch")
-    public ResponseEntity<?> batchUpdateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos) {
-        //channelService.infoBatchUpdate(infos);
+    public ResponseEntity<?> batchUpdateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos, @RequestParam String portNumber, HttpServletRequest request) {
+        channelService.infoBatchUpdate(infos, portNumber, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -101,8 +100,15 @@ public class ChannelController {
 
     //Play a Channel
     @GetMapping("/play/{stream_token}/{line_token}")
-    public ResponseEntity<String> playChannel(@PathVariable String stream_token, @PathVariable String line_token, HttpServletRequest request) {
-        return ResponseEntity.ok(channelService.playChannel(stream_token, line_token, request));
+    public ResponseEntity<String> playChannel(@PathVariable String stream_token, @PathVariable String line_token, HttpServletRequest request){
+        String playlist = channelService.playChannel(stream_token, line_token, request);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        return ResponseEntity.ok()
+                .headers(responseHeaders).contentType(MediaType.valueOf("application/x-mpegurl"))
+                .headers(responseHeaders).contentLength(Long.parseLong(String.valueOf(playlist.length())))
+                .headers(responseHeaders).cacheControl(CacheControl.noCache())
+                .headers(responseHeaders).cacheControl(CacheControl.noStore())
+                .body(playlist);
     }
 
 }

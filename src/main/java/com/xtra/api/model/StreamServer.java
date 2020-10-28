@@ -1,6 +1,7 @@
 package com.xtra.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -21,16 +22,18 @@ public class StreamServer {
     @MapsId("serverId")
     Server server;
 
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonManagedReference("server_id1")
     StreamInfo streamInfo;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonManagedReference("server_id2")
     ProgressInfo progressInfo;
 
     public StreamServer() {
     }
-
-    public StreamServer(StreamServerId id) {
+    public StreamServer(StreamServerId id){
         this.id = id;
     }
 

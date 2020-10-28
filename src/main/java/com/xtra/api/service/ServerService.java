@@ -5,7 +5,7 @@ import com.xtra.api.model.*;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.ResourceRepository;
 import com.xtra.api.repository.ServerRepository;
-import lombok.extern.java.Log;
+import com.xtra.api.repository.StreamServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -32,17 +32,19 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final ServerRepository serverRepository;
     private final ResourceRepository resourceRepository;
     private final LineActivityRepository lineActivityRepository;
+    private final StreamServerRepository streamServerRepository;
     @Value("${core.apiPath}")
     private String corePath;
     @Value("${core.apiPort}")
     private String corePort;
 
     @Autowired
-    protected ServerService(ServerRepository repository, ServerRepository serverRepository, ResourceRepository resourceRepository, LineActivityRepository lineActivityRepository) {
+    protected ServerService(ServerRepository repository, ServerRepository serverRepository, ResourceRepository resourceRepository, LineActivityRepository lineActivityRepository, StreamServerRepository streamServerRepository) {
         super(repository, Server.class);
         this.serverRepository = serverRepository;
         this.resourceRepository = resourceRepository;
         this.lineActivityRepository = lineActivityRepository;
+        this.streamServerRepository = streamServerRepository;
     }
 
     public List<File> getFiles(Long id, String path) {
@@ -103,6 +105,9 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams?line_token=" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
     }
 
+    public Optional<Server> findByIpAndCorePort(String ip, String corePort){
+        return repository.findByIpAndCorePort(ip, corePort);
+    }
 
     public Resource getResourceUsage(Long serverId, String interfaceName) {
         Optional<Server> srv = serverRepository.findById(serverId);
@@ -152,5 +157,12 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         if (this.existsById(serverId)) {
             return lineActivityRepository.countAllByIdServerId(serverId);
         } else throw new RuntimeException("Server Not Found.");
+    }
+
+    public Optional<StreamServer> findStreamServerById(StreamServerId streamServerId){
+        return streamServerRepository.findById(streamServerId);
+    }
+    public StreamServer saveStreamServer(StreamServer streamServer){
+        return streamServerRepository.save(streamServer);
     }
 }

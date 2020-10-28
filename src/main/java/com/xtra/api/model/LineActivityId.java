@@ -16,7 +16,12 @@ public class LineActivityId implements Serializable {
     private Long serverId;
     private String userIp;
 
-    public LineActivityId() {
 
+    public LineActivityId() {}
+    public LineActivityId(Long lineId, Long streamId, Long serverId, String userIp){
+        this.lineId = lineId;
+        this.streamId = streamId;
+        this.serverId = serverId;
+        this.userIp = userIp;
     }
 }
