@@ -2,6 +2,8 @@ package com.xtra.api.controller;
 
 import com.xtra.api.model.Line;
 import com.xtra.api.model.User;
+import com.xtra.api.projection.UserInsertView;
+import com.xtra.api.projection.UserView;
 import com.xtra.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,7 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
-        return ResponseEntity.ok(userService.insert(user));
+    public ResponseEntity<UserView> addUser(@RequestBody UserInsertView insertView) {
+        return ResponseEntity.ok(userService.insert(insertView));
     }
 }

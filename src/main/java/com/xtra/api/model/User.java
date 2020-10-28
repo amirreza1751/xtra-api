@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
+    protected Long id;
 
     @Column(unique = true)
     protected String username;
