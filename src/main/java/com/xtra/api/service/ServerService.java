@@ -139,7 +139,6 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
                     resource.setServer(server);
                     resource.setConnections(this.getServerConnectionsCount(server.getId()));
                     resourceRepository.save(resource);
-                    System.out.println("test");
                 } else
                     throw new RuntimeException("Error in fetching resource");
             } catch (RestClientException e) {
