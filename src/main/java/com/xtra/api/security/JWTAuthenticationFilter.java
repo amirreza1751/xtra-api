@@ -20,6 +20,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
@@ -59,18 +60,17 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain,
                                             Authentication auth) {
         var user = ((org.springframework.security.core.userdetails.User) auth.getPrincipal());
-
-        String token = JWT.create()
-                .withSubject(((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .sign(HMAC512(SECRET.getBytes()));
-        res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
         try {
             var dbUser = userRepository.findByUsername(user.getUsername());
+            String token = JWT.create()
+                    .withSubject(((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername())
+                    .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                    .sign(HMAC512(SECRET.getBytes()));
             var out = res.getWriter();
-            var userData = new HashMap<String, Object>();
+            var userData = new LinkedHashMap<String, Object>();
+            userData.put("token", token);
             userData.put("type", dbUser.getUserType().toString());
             userData.put("permissions", auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
             out.print(new Gson().toJson(userData));
