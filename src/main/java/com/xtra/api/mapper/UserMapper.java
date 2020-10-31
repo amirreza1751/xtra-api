@@ -19,7 +19,7 @@ public abstract class UserMapper {
 
     @AfterMapping
     void addRole(final UserInsertView view, @MappingTarget final User user) {
-        if (view.getId() == null)
+        if (view.getRoleId() == null)
             return;//todo throw exception
         var role = roleService.findByIdOrFail(view.getRoleId());
         user.setRole(role);
