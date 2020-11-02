@@ -8,10 +8,13 @@ import com.xtra.api.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,5 +64,13 @@ public class UserService extends CrudService<User, Long, UserRepository> {
         else userView.setPassword(bCryptPasswordEncoder.encode(userView.getPassword()));
         copyProperties(userMapper.convertToEntity(userView), existingUser, toIgnore.toArray(new String[0]));
         return userMapper.convertToDto(repository.save(existingUser));
+    }
+
+    public Object verifyUser(Authentication auth) {
+        var dbUser = repository.findByUsername(auth.getName());
+        var userData = new LinkedHashMap<String, Object>();
+        userData.put("type", dbUser.getUserType().toString());
+        userData.put("permissions", auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+        return userData;
     }
 }

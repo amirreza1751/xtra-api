@@ -8,9 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import static com.xtra.api.security.SecurityConstants.HEADER_STRING;
 
 @RestController
 @RequestMapping("/users")
@@ -47,5 +52,14 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteOrFail(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    //auth
+    @GetMapping("/verify")
+    public ResponseEntity<?> verifyUserByToken(@AuthenticationPrincipal Authentication authentication) {
+        if (authentication != null)
+            return ResponseEntity.ok(userService.verifyUser(authentication));
+        else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }
