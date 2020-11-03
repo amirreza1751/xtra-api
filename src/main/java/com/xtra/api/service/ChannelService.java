@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -129,5 +130,37 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         ArrayList<Server> servers = loadBalancingService.findAvailableServers(stream_token);
         Server server = loadBalancingService.findLeastConnServer(servers);
         return serverService.sendPlayRequest(stream_token, line_token, server);
+    }
+
+    public int changeSource(Long streamId, String portNumber, HttpServletRequest request){
+        Optional<Server> srv = serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber);
+        if (srv.isEmpty()){
+            throw new RuntimeException("Server is invalid. Check your ip and port.");
+        }
+        Server server = srv.get();
+        Long serverId = server.getId();
+
+        Optional<Channel> ch = this.repository.findById(streamId);
+        if (ch.isEmpty()){
+            throw new RuntimeException("Channel not found");
+        }
+        Channel channel = ch.get();
+        StreamServer streamServer = new StreamServer(new StreamServerId(streamId, serverId));
+        List<StreamServer> streamServers = channel.getStreamServers();
+        if (!streamServers.contains(streamServer)){
+            throw new RuntimeException("There is a problem with the relation between channel and the server.");
+        }
+        int nextSource = 0;
+        for (StreamServer item : streamServers){
+            if (item.equals(streamServer)){
+                nextSource = (item.getSelectedSource() + 1)%channel.getStreamInputs().size();
+                item.setSelectedSource(nextSource);
+                break;
+            }
+        }
+        channel.setStreamServers(streamServers);
+        repository.save(channel);
+        this.restartOrFail(streamId, serverId);
+        return nextSource;
     }
 }

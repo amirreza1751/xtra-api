@@ -111,4 +111,9 @@ public class ChannelController {
                 .body(playlist);
     }
 
+    @GetMapping("/{id}/change-source")
+    public ResponseEntity<Integer> changeSource(@PathVariable Long id, @RequestParam String portNumber, HttpServletRequest request){
+        return ResponseEntity.ok(channelService.changeSource(id, portNumber, request));
+    }
+
 }

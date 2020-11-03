@@ -2,15 +2,18 @@ package com.xtra.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class StreamServer {
     @EmbeddedId
     private StreamServerId id;
+    private int selectedSource = 0;
 
     @ManyToOne
     @JsonBackReference("stream_server")
