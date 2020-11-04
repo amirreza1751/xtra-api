@@ -14,6 +14,7 @@ package:
     - export SPRING_PROFILES_ACTIVE=dev
     - ./gradlew assemble
     - sudo cp build/libs/*.jar /var/xtra/api.jar
+    - sudo systemctl restart api
   artifacts:
     paths:
       - build/libs/*.jar
