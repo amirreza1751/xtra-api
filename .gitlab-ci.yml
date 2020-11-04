@@ -13,6 +13,7 @@ package:
   script:
     - export SPRING_PROFILES_ACTIVE=dev
     - ./gradlew assemble
+    - cp build/libs/*.jar /var/xtra/api.jar
   artifacts:
     paths:
       - build/libs/*.jar
@@ -24,6 +25,8 @@ test:
   stage: test
   script:
     - ./gradlew check
+  only:
+    - deploy
 
 after_script:
   - echo "End CI/CD"
