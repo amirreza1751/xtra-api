@@ -17,8 +17,8 @@ package:
     paths:
       - build/libs/*.jar
     expire_in: 1 week
-    only:
-      - master
+  only:
+    - master
 
 test:
   stage: test
