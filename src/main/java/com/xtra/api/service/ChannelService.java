@@ -52,17 +52,37 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
 
-    public Optional<Channel> updateChannel(Long id, Channel channel, boolean restart) {
+    public Optional<Channel> updateChannel(Long id, Channel channel, Set<Long> serverIds, boolean restart) {
         var result = repository.findById(id);
         if (result.isEmpty()) {
             return Optional.empty();
         }
         Channel oldChannel = result.get();
         copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "lineActivities");
-        channel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
+        oldChannel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
+
+        //@todo should be introduced as a method
+        if (serverIds != null) {
+            ArrayList<StreamServer> streamServers = new ArrayList<>();
+            for (Long serverId : serverIds) {
+                StreamServer streamServer = new StreamServer();
+                streamServer.setId(new StreamServerId(id, serverId));
+
+                var server = serverService.findByIdOrFail(serverId);
+                streamServer.setServer(server);
+                streamServer.setStream(oldChannel);
+                server.addStreamServer(streamServer);
+
+                streamServers.add(streamServer);
+                serverService.updateOrFail(server.getId(), server);
+            }
+            oldChannel.setStreamServers(streamServers);
+        }
+        //@todo should be introduced as a method
+
         if (restart) {
             ExecutorService executor = Executors.newFixedThreadPool(2);
-            channel.getStreamServers().forEach(streamServer -> executor.execute(() -> this.restartOrFail(oldChannel.getId(), streamServer.getId().getServerId())));
+            oldChannel.getStreamServers().forEach(streamServer -> executor.execute(() -> this.restartOrFail(oldChannel.getId(), streamServer.getId().getServerId())));
         }
         return Optional.of(repository.save(oldChannel));
     }
@@ -107,19 +127,17 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
                 server.addStreamServer(streamServer);
 
                 streamServers.add(streamServer);
-                channel.setStreamServers(streamServers);
-                ch = repository.save(channel);
                 serverService.updateOrFail(server.getId(), server);
 
-                if (start) {
-                    ExecutorService executor = Executors.newFixedThreadPool(2);
-                    Channel finalCh = ch;
-                    executor.execute(() -> this.startOrFail(finalCh.getId(), serverId));
-                }
+            }
+            channel.setStreamServers(streamServers);
+            if (start) {
+                ExecutorService executor = Executors.newFixedThreadPool(2);
+                channel.getStreamServers().forEach(streamServer -> executor.execute(() -> this.restartOrFail(channel.getId(), streamServer.getId().getServerId())));
             }
         }
 
-        return ch;
+        return repository.save(channel);
     }
 
     public void updateServersList(Long channel_id, Long[] serverIds) {
