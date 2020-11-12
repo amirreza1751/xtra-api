@@ -27,10 +27,8 @@ public class Resource {
 
     private int connections;
 
-//    @OneToOne(mappedBy = "resource")
-//    @JsonBackReference("resource_id")
     @JsonManagedReference("server_id")
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     private Server server;
 
 }
