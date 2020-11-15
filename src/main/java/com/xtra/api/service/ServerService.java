@@ -58,12 +58,12 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     public boolean sendStartRequest(Long channelId, Server server) {
-        var result = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/start/" + channelId, String.class);
+        var result = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/start/" + channelId + "/?serverId=" + server.getId(), String.class);
         return true;
     }
 
     public void sendRestartRequest(Long channelId, Server server) {
-        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/restart/" + channelId, String.class);
+        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/restart/" + channelId + "/?serverId=" + server.getId(), String.class);
     }
 
     public boolean sendStopRequest(Long channelId, Server server) {

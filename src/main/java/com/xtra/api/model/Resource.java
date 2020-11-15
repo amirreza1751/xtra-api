@@ -27,6 +27,7 @@ public class Resource {
 
     private int connections;
 
+
     @JsonManagedReference("server_id")
     @OneToOne(cascade = CascadeType.MERGE)
     private Server server;
