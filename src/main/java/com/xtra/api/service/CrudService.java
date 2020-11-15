@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>> {
@@ -47,6 +49,15 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
         T oldObject = findByIdOrFail(id);
         copyProperties(newObject, oldObject, "id");
         return repository.save(oldObject);
+    }
+
+    public T updateOrCreate(ID id, T newObject) {
+        Optional<T> oldObject = repository.findById(id);
+        if (oldObject.isEmpty()){
+            return repository.save(newObject);
+        }
+        copyProperties(newObject, oldObject, "id", "streamServers");
+        return repository.save(oldObject.get());
     }
 
     public void deleteOrFail(ID id) {

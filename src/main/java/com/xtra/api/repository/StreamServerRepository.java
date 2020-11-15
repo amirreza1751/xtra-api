@@ -11,4 +11,7 @@ import java.util.Optional;
 
 public interface StreamServerRepository extends JpaRepository<StreamServer, StreamServerId> {
     Optional<StreamServer> findById(StreamServerId streamServerId);
+
+    @Override
+    void delete(StreamServer entity);
 }

@@ -4,6 +4,7 @@ import com.xtra.api.model.*;
 import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
+import com.xtra.api.repository.StreamServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,15 +28,17 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final LoadBalancingService loadBalancingService;
     private final CollectionStreamRepository collectionStreamRepository;
     private final CollectionRepository collectionRepository;
+    private final StreamServerRepository streamServerRepository;
 
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, CollectionStreamRepository collectionStreamRepository, CollectionRepository collectionRepository) {
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, CollectionStreamRepository collectionStreamRepository, CollectionRepository collectionRepository, StreamServerRepository streamServerRepository) {
         super(repository, Channel.class, serverService);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
         this.collectionStreamRepository = collectionStreamRepository;
         this.collectionRepository = collectionRepository;
+        this.streamServerRepository = streamServerRepository;
     }
 
 
@@ -61,6 +64,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "lineActivities");
         oldChannel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
 
+        oldChannel.getStreamServers().forEach(streamServerRepository::delete);
         //@todo should be introduced as a method
         if (serverIds != null) {
             ArrayList<StreamServer> streamServers = new ArrayList<>();
@@ -69,12 +73,13 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
                 streamServer.setId(new StreamServerId(id, serverId));
 
                 var server = serverService.findByIdOrFail(serverId);
+                server.getStreamServers().forEach(streamServerRepository::delete);
                 streamServer.setServer(server);
                 streamServer.setStream(oldChannel);
-                server.addStreamServer(streamServer);
+//                server.addStreamServer(streamServer);
 
                 streamServers.add(streamServer);
-                serverService.updateOrFail(server.getId(), server);
+//                serverService.updateOrCreate(server.getId(), server);
             }
             oldChannel.setStreamServers(streamServers);
         }

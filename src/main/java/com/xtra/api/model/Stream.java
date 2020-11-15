@@ -60,14 +60,14 @@ public class Stream {
 
     @JsonIgnore
     @JsonManagedReference("stream_server")
-    @OneToMany(mappedBy = "stream", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "stream", cascade = CascadeType.MERGE)
     private List<StreamServer> streamServers = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "stream")
     private Set<CollectionStream> collectionAssigns;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.MERGE)
     private List<StreamInput> streamInputs;
 
     @OneToMany(mappedBy = "stream")
