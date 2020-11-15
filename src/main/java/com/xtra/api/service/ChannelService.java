@@ -73,13 +73,10 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
                 streamServer.setId(new StreamServerId(id, serverId));
 
                 var server = serverService.findByIdOrFail(serverId);
-                server.getStreamServers().forEach(streamServerRepository::delete);
                 streamServer.setServer(server);
                 streamServer.setStream(oldChannel);
-//                server.addStreamServer(streamServer);
 
                 streamServers.add(streamServer);
-//                serverService.updateOrCreate(server.getId(), server);
             }
             oldChannel.setStreamServers(streamServers);
         }
