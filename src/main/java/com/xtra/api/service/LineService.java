@@ -2,7 +2,9 @@ package com.xtra.api.service;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.Line;
+import com.xtra.api.model.LineActivity;
 import com.xtra.api.model.LineStatus;
+import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static com.xtra.api.util.Utilities.*;
@@ -18,11 +21,13 @@ import static com.xtra.api.util.Utilities.*;
 public class LineService extends CrudService<Line, Long, LineRepository> {
     private final LineRepository lineRepository;
     private final ServerService serverService;
+    private final LineActivityRepository lineActivityRepository;
 
-    public LineService(LineRepository lineRepository, ServerService serverService) {
+    public LineService(LineRepository lineRepository, ServerService serverService, LineActivityRepository lineActivityRepository) {
         super(lineRepository, Line.class);
         this.lineRepository = lineRepository;
         this.serverService = serverService;
+        this.lineActivityRepository = lineActivityRepository;
     }
 
     private Line findByTokenOrFail(String token) {
@@ -110,7 +115,14 @@ public class LineService extends CrudService<Line, Long, LineRepository> {
 
     public void killAllConnections(Long id) {
         if (lineExists(id)) {
-            serverService.sendKillAllConnectionRequest(id);
+            List<LineActivity> lineActivities = lineActivityRepository.findAllByIdLineId(id);
+            if (!lineActivities.isEmpty()) {
+                lineActivities.forEach((activity) -> {
+                    activity.setHlsEnded(true);
+                    activity.setEndDate(LocalDateTime.now());
+                    lineActivityRepository.save(activity);
+                });
+            }
         }
     }
 
