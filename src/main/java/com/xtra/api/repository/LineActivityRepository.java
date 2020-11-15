@@ -15,4 +15,6 @@ public interface LineActivityRepository extends JpaRepository<LineActivity, Line
 
     int countAllByIdServerId(Long serverId);
 
+    List<LineActivity> findAllByIdLineId(Long lineId);
+
 }

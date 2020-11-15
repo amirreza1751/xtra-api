@@ -71,10 +71,6 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return true;
     }
 
-    public void sendKillAllConnectionRequest(Long lineId) {
-        var result = new RestTemplate().getForObject(corePath + ":" + corePort + "/lines/kill_connections/" + lineId, Boolean.class);
-    }
-
     public Optional<Server> findByName(String search) {
         return repository.findByName(search);
     }
