@@ -1,6 +1,7 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.mapper.RoleMapper;
+import com.xtra.api.projection.RoleInsertView;
 import com.xtra.api.projection.RoleView;
 import com.xtra.api.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class RoleController {
     }
 
     @PostMapping("")
-    public ResponseEntity<RoleView> addRole(@RequestBody RoleView roleView) {
+    public ResponseEntity<RoleView> addRole(@RequestBody RoleInsertView roleView) {
         return ResponseEntity.ok(roleMapper.convertToDto(roleService.insert(roleMapper.convertToEntity(roleView))));
     }
 
@@ -42,7 +43,7 @@ public class RoleController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<RoleView> updateRole(@PathVariable Long id, @RequestBody RoleView roleView) {
+    public ResponseEntity<RoleView> updateRole(@PathVariable Long id, @RequestBody RoleInsertView roleView) {
         roleView.setId(id);
         var result = roleService.updateOrFail(id, roleMapper.convertToEntity(roleView));
         return ResponseEntity.ok(roleMapper.convertToDto(result));

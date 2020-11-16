@@ -2,6 +2,7 @@ package com.xtra.api.mapper;
 
 import com.xtra.api.model.*;
 import com.xtra.api.projection.PermissionView;
+import com.xtra.api.projection.RoleInsertView;
 import com.xtra.api.projection.RoleView;
 import com.xtra.api.service.PermissionService;
 import org.mapstruct.AfterMapping;
@@ -22,17 +23,17 @@ public abstract class RoleMapper {
     public abstract RoleView convertToDto(Role role);
 
     public Set<PermissionView> convertPermissions(Set<PermissionRole> permissions) {
-        return permissions.stream().map(permission -> new PermissionView(permission.getPermission().getId().getName(),permission.getPermission().getDescription())).collect(Collectors.toSet());
+        return permissions.stream().map(permission -> new PermissionView(permission.getPermission().getId().getName(), permission.getPermission().getDescription())).collect(Collectors.toSet());
     }
 
-
-    public abstract Role convertToEntity(RoleView roleView);
+    @Mapping(target = "permissions", ignore = true)
+    public abstract Role convertToEntity(RoleInsertView roleView);
 
     @AfterMapping
-    public void convertPermissionNames(final RoleView roleView, @MappingTarget final Role role) {
+    public void convertPermissionNames(final RoleInsertView roleView, @MappingTarget final Role role) {
         var permissions = new HashSet<PermissionRole>();
         for (var permission : roleView.getPermissions()) {
-            var p = permissionService.findByIdOrFail(new PermissionId(permission.getName(), roleView.getType()));
+            var p = permissionService.findByIdOrFail(new PermissionId(permission, roleView.getType()));
             var pr = new PermissionRole(new PermissionRoleId(p.getId(), role.getId()));
             pr.setRole(role);
             pr.setPermission(p);
