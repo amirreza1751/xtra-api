@@ -11,8 +11,10 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,9 +48,9 @@ public class ChannelController {
     }
 
     @PatchMapping(value = {"/{id}", "/{id}/{restart}"})
-    public ResponseEntity<Channel> updateChannel(@PathVariable Long id, @RequestBody Channel channel, @PathVariable(required = false) boolean restart) {
-        var result = channelService.updateChannel(id, channel, restart);
-        return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ChannelView> updateChannel(@PathVariable Long id, @RequestBody ChannelView channelView, @PathVariable(required = false) boolean restart) {
+        var result = channelMapper.convertToDto(channelService.updateChannel(id, channelMapper.convertToEntity(channelView), channelView.getServers(), restart).orElseThrow());
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/{id}")
@@ -109,6 +111,11 @@ public class ChannelController {
                 .headers(responseHeaders).cacheControl(CacheControl.noCache())
                 .headers(responseHeaders).cacheControl(CacheControl.noStore())
                 .body(playlist);
+    }
+
+    @GetMapping("/{id}/change-source")
+    public ResponseEntity<Integer> changeSource(@PathVariable Long id, @RequestParam String portNumber, HttpServletRequest request){
+        return ResponseEntity.ok(channelService.changeSource(id, portNumber, request));
     }
 
 }

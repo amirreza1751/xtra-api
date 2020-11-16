@@ -28,9 +28,9 @@ public class Server {
     private String nginxPort;
     private String interfaceName;
 
-    @OneToMany(mappedBy = "server")
+    @OneToMany(mappedBy = "server", cascade = CascadeType.MERGE)
     @JsonManagedReference("server_id")
-    @ToString.Exclude
+//    @ToString.Exclude
     private List<StreamServer> streamServers;
 
     public void addStreamServer(StreamServer streamServer){
