@@ -105,27 +105,11 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return repository.findByIpAndCorePort(ip, corePort);
     }
 
-    public Resource getResourceUsage(Long serverId, String interfaceName) {
-        Optional<Server> srv = serverRepository.findById(serverId);
-        if (srv.isPresent()) {
-            var server = srv.get();
-            Resource r = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/?interfaceName=" + interfaceName, Resource.class);
-            if (r != null) {
-                Resource resource = resourceRepository.findByServerId(serverId).orElseGet(Resource::new);
-                copyProperties(r, resource, "id", "server");
-                resource.setServer(server);
-                return resourceRepository.save(resource);
-            } else
-                throw new RuntimeException("Error in fetching resource");
-        } else throw new EntityNotFoundException(aClass.getSimpleName(), serverId.toString());
-    }
-
-    public List<Server> details() {
-        return serverRepository.findAll();
-    }
-
-    public Resource getRes(Long serverId) {
-        return resourceRepository.findByServerId(serverId).get();
+    public Resource getResource(Long serverId) {
+        var srv = repository.findById(serverId);
+        if (srv.isPresent()){
+            return srv.get().getResource();
+        } else throw new EntityNotFoundException(Server.class.toString(), serverId.toString());
     }
 
     @Scheduled(fixedDelay = 3000)
@@ -135,11 +119,13 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
             try {
                 Resource r = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/?interfaceName=" + server.getInterfaceName(), Resource.class);
                 if (r != null) {
-                    Resource resource = resourceRepository.findByServerId(server.getId()).orElseGet(Resource::new);
+                    Resource resource = new Resource();
+                     if (server.getResource() != null){
+                         resource = server.getResource();
+                     }
                     copyProperties(r, resource, "id", "server");
-                    resource.setServer(server);
-                    resource.setConnections(this.getServerConnectionsCount(server.getId()));
-                    resourceRepository.save(resource);
+                     server.setResource(resource);
+                     serverRepository.save(server);
                 } else
                     throw new RuntimeException("Error in fetching resource");
             } catch (RestClientException e) {
