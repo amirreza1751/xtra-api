@@ -3,6 +3,7 @@ package com.xtra.api.model;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.time.Period;
@@ -27,9 +28,11 @@ public class Package {
     @ElementCollection
     private List<StreamProtocol> allowedOutputs;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private DownloadList defaultDownloadList;
 
+    @EqualsAndHashCode.Exclude
     @ManyToMany
     private Set<Role> allowedRoles;
 }
