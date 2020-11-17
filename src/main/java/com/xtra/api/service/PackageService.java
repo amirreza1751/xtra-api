@@ -2,6 +2,7 @@ package com.xtra.api.service;
 
 import com.xtra.api.mapper.PackageMapper;
 import com.xtra.api.model.Package;
+import com.xtra.api.projection.PackageInsertView;
 import com.xtra.api.projection.PackageView;
 import com.xtra.api.repository.PackageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +44,12 @@ public class PackageService extends CrudService<Package, Long, PackageRepository
         return packageMapper.convertToDto(findByIdOrFail(id));
     }
 
-    public PackageView add(Package pack) {
-        return packageMapper.convertToDto(insert(pack));
+    public PackageView add(PackageInsertView packageView) {
+        return packageMapper.convertToDto(insert(packageMapper.convertToEntity(packageView)));
     }
 
-    public PackageView save(Long id, Package pack) {
-        return packageMapper.convertToDto(updateOrFail(id, pack));
+    public PackageView save(Long id, PackageInsertView packageView) {
+        return packageMapper.convertToDto(updateOrFail(id, packageMapper.convertToEntity(packageView)));
     }
 
     public Page<PackageView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {

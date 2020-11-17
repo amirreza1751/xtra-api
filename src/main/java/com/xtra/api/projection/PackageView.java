@@ -2,11 +2,13 @@ package com.xtra.api.projection;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.xtra.api.model.Role;
 import com.xtra.api.model.StreamProtocol;
 import lombok.Data;
 
 import java.time.Period;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -22,4 +24,6 @@ public class PackageView {
     private List<StreamProtocol> allowedOutputs;
 
     private DownloadListView defaultDownloadList;
+
+    private Set<Long> allowedRoles;
 }

@@ -26,6 +26,16 @@ public class Role {
     @OneToMany(mappedBy = "role", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<PermissionRole> permissions;
 
+    @ManyToMany(mappedBy = "allowedRoles")
+    private Set<Package> allowedPackages;
+
+    public Role() {
+    }
+
+    public Role(Long id){
+        setId(id);
+    }
+
     public void addPermission(PermissionRole permissionRole) {
         if (permissions == null) permissions = new HashSet<>();
         permissions.add(permissionRole);

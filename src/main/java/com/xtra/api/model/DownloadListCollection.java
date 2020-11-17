@@ -31,6 +31,13 @@ public class DownloadListCollection {
     @Column(name = "`order`")
     private int order;
 
+    public DownloadListCollection() {
+    }
+
+    public DownloadListCollection(Long downloadListId, Long collectionId) {
+        this.id = new DownloadListCollectionId(downloadListId, collectionId);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -44,6 +51,7 @@ public class DownloadListCollection {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
 }
 
 

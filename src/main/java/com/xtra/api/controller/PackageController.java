@@ -1,6 +1,7 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.model.Package;
+import com.xtra.api.projection.PackageInsertView;
 import com.xtra.api.projection.PackageView;
 import com.xtra.api.service.PackageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +34,13 @@ public class PackageController {
     }
 
     @PostMapping("")
-    public ResponseEntity<PackageView> addPackage(@RequestBody @Valid Package _package) {
-        return ResponseEntity.ok(packageService.add(_package));
+    public ResponseEntity<PackageView> addPackage(@RequestBody PackageInsertView packageView) {
+        return ResponseEntity.ok(packageService.add(packageView));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<PackageView> updatePackage(@PathVariable Long id, @RequestBody @Valid Package _package) {
-        return ResponseEntity.ok(packageService.save(id, _package));
+    public ResponseEntity<PackageView> updatePackage(@PathVariable Long id, @RequestBody PackageInsertView packageView) {
+        return ResponseEntity.ok(packageService.save(id, packageView));
     }
 
     @DeleteMapping("/{id}")

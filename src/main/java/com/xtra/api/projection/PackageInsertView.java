@@ -1,21 +1,18 @@
-package com.xtra.api.model;
+package com.xtra.api.projection;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.xtra.api.model.StreamProtocol;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.time.Period;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-@Entity
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Package {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class PackageInsertView {
     private String name;
     private boolean isTrial = false;
     private int credits;
@@ -23,13 +20,9 @@ public class Package {
     private int maxConnections;
     private boolean canRestream = false;
 
-    @Enumerated(EnumType.STRING)
-    @ElementCollection
     private List<StreamProtocol> allowedOutputs;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    private DownloadList defaultDownloadList;
+    private LinkedHashSet<Long> collections;
 
-    @ManyToMany
-    private Set<Role> allowedRoles;
+    private Set<Long> allowedRoles;
 }
