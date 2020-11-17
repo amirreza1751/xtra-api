@@ -2,6 +2,7 @@ package com.xtra.api.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.xtra.api.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,15 +49,19 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         String token = request.getHeader(HEADER_STRING);
         if (token != null) {
             // parse the token.
-            String user = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
-                    .build()
-                    .verify(token.replace(TOKEN_PREFIX, ""))
-                    .getSubject();
-
-            if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, userDetailsService.loadUserByUsername(user).getAuthorities());
+            try {
+                String user = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+                        .build()
+                        .verify(token.replace(TOKEN_PREFIX, ""))
+                        .getSubject();
+                if (user != null) {
+                    return new UsernamePasswordAuthenticationToken(user, null, userDetailsService.loadUserByUsername(user).getAuthorities());
+                }
+                return null;
+            } catch (JWTVerificationException e) {
+                return null;
             }
-            return null;
+
         }
         return null;
     }
