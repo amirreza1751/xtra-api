@@ -46,24 +46,9 @@ public class ServerController {
         return ResponseEntity.ok(serverService.getFiles(id, path));
     }
 
-    @GetMapping("{id}/resources")
-    public ResponseEntity<Resource> getMemoryUsage(@PathVariable Long id, @RequestParam String interfaceName) {
-        return ResponseEntity.ok(serverService.getResourceUsage(id, interfaceName));
-    }
-
-    @GetMapping("details")
-    public ResponseEntity<List<Server>> details() {
-        return ResponseEntity.ok(serverService.details());
-    }
-
-    @GetMapping("get-res/{id}")
-    public ResponseEntity<Resource> getRes(@PathVariable Long id) {
-        return ResponseEntity.ok(serverService.getRes(id));
-    }
-
-    @GetMapping("test-port")
-    public int testPort(HttpServletRequest request){
-        return request.getLocalPort();
+    @GetMapping("/{id}/resources")
+    public ResponseEntity<Resource> getResource(@PathVariable Long id) {
+        return ResponseEntity.ok(serverService.getResource(id));
     }
 
 }

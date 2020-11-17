@@ -37,7 +37,7 @@ public class Server {
         streamServers.add(streamServer);
     }
 
-    @OneToOne(mappedBy = "server")
-    @JsonBackReference("server_id")
+    @JsonManagedReference("resource_id")
+    @OneToOne(cascade = CascadeType.MERGE)
     private Resource resource;
 }
