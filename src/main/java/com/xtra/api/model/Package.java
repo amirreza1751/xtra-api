@@ -29,7 +29,7 @@ public class Package {
     private List<StreamProtocol> allowedOutputs;
 
     @EqualsAndHashCode.Exclude
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private DownloadList defaultDownloadList;
 
     @EqualsAndHashCode.Exclude

@@ -24,8 +24,8 @@ public class DownloadList {
     private List<Line> lines;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "defaultDownloadList")
-    private Set<Package> packages;
+    @OneToOne(mappedBy = "defaultDownloadList")
+    private Package _package;
 
     @ManyToOne
     private Reseller owner;

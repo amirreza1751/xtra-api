@@ -2,6 +2,7 @@ package com.xtra.api.mapper;
 
 import com.xtra.api.model.*;
 import com.xtra.api.model.Package;
+import com.xtra.api.projection.DlCollectionDto;
 import com.xtra.api.projection.PackageInsertView;
 import com.xtra.api.projection.PackageView;
 import com.xtra.api.service.CollectionService;
@@ -20,12 +21,17 @@ public abstract class PackageMapper {
     @Autowired
     private CollectionService collectionService;
 
+    @Mapping(source = "defaultDownloadList", target = "collections")
     public abstract PackageView convertToDto(Package pack);
 
     Set<Long> convertRolesToIds(Set<Role> roles) {
         if (roles != null)
             return roles.stream().map(Role::getId).collect(Collectors.toSet());
         else return null;
+    }
+
+    Set<DlCollectionDto> convertCollectionsToView(DownloadList defaultDownloadList) {
+        return defaultDownloadList.getCollectionsAssign().stream().map(dlc -> new DlCollectionDto(dlc.getCollection().getId(), dlc.getCollection().getName())).collect(Collectors.toSet());
     }
 
     @Mapping(target = "defaultDownloadList", ignore = true)

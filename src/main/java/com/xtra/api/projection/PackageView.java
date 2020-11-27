@@ -23,7 +23,7 @@ public class PackageView {
 
     private List<StreamProtocol> allowedOutputs;
 
-    private DownloadListView defaultDownloadList;
+    private Set<DlCollectionDto> collections;
 
     private Set<Long> allowedRoles;
 }

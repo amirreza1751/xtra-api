@@ -35,7 +35,7 @@ public class PackageService extends CrudService<Package, Long, PackageRepository
     public Package updateOrFail(Long id, Package pack) {
         var oldPack = findByIdOrFail(id);
         pack.setId(id);
-        oldPack.setDefaultDownloadList(dlService.findByIdOrFail(pack.getDefaultDownloadList().getId()));
+        oldPack.setDefaultDownloadList(pack.getDefaultDownloadList());
         copyProperties(pack, oldPack, "id", "defaultDownloadList");
         return repository.save(oldPack);
     }
