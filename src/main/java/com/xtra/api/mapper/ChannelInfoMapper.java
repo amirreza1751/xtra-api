@@ -1,29 +1,25 @@
 package com.xtra.api.mapper;
 
-import com.xtra.api.model.Channel;
-import com.xtra.api.model.CollectionStream;
-import com.xtra.api.model.StreamInfo;
-import com.xtra.api.model.StreamServer;
+import com.xtra.api.model.*;
 import com.xtra.api.projection.ChannelInfo;
-import com.xtra.api.projection.ChannelView;
+import com.xtra.api.projection.MergedChannelInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Mapper(componentModel = "spring")
 public abstract class ChannelInfoMapper {
 
 
-
-    @Mapping(source = "streamServers", target = "streamInfos")
+    @Mapping(source = "streamServers", target = "infos")
     public abstract ChannelInfo convertToDto(Channel channel);
 
-    public List<StreamInfo> convertToStreamInfoList(List<StreamServer> streamServers) {
+    public List<MergedChannelInfo> convertToInfosMap(List<StreamServer> streamServers){
         if (streamServers == null) return null;
-        return streamServers.stream().map(StreamServer::getStreamInfo).collect(Collectors.toList());
+        List<MergedChannelInfo> infos = new ArrayList<>();
+        streamServers.forEach(streamServer -> infos.add( new MergedChannelInfo(streamServer.getStreamInfo(), streamServer.getProgressInfo())));
+        return infos;
     }
 
 }
