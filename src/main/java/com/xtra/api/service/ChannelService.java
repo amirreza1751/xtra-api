@@ -1,6 +1,7 @@
 package com.xtra.api.service;
 
 import com.xtra.api.model.*;
+import com.xtra.api.projection.ChannelInfo;
 import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
@@ -182,5 +183,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         repository.save(channel);
         this.restartOrFail(streamId, serverId);
         return nextSource;
+    }
+    public Channel channelInfo(Long channelId){
+        return this.findByIdOrFail(channelId);
     }
 }

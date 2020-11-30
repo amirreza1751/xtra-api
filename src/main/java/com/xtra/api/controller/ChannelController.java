@@ -1,7 +1,9 @@
 package com.xtra.api.controller;
 
+import com.xtra.api.mapper.ChannelInfoMapper;
 import com.xtra.api.mapper.ChannelMapper;
 import com.xtra.api.model.Channel;
+import com.xtra.api.projection.ChannelInfo;
 import com.xtra.api.projection.ChannelView;
 import com.xtra.api.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +24,13 @@ import java.util.stream.Collectors;
 public class ChannelController {
     private final ChannelService channelService;
     private final ChannelMapper channelMapper;
+    private final ChannelInfoMapper channelInfoMapper;
 
     @Autowired
-    public ChannelController(ChannelService channelService, ChannelMapper channelMapper) {
+    public ChannelController(ChannelService channelService, ChannelMapper channelMapper, ChannelInfoMapper channelInfoMapper) {
         this.channelService = channelService;
         this.channelMapper = channelMapper;
+        this.channelInfoMapper = channelInfoMapper;
     }
 
     // Stream CRUD
@@ -116,6 +120,11 @@ public class ChannelController {
     @GetMapping("/{id}/change-source")
     public ResponseEntity<Integer> changeSource(@PathVariable Long id, @RequestParam String portNumber, HttpServletRequest request){
         return ResponseEntity.ok(channelService.changeSource(id, portNumber, request));
+    }
+
+    @GetMapping("/{id}/info")
+    public ResponseEntity<ChannelInfo> channelInfo(@PathVariable Long id){
+        return ResponseEntity.ok(channelInfoMapper.convertToDto(channelService.channelInfo(id)));
     }
 
 }
