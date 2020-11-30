@@ -67,7 +67,7 @@ public class Stream {
     @OneToMany(mappedBy = "stream")
     private Set<CollectionStream> collectionAssigns;
 
-    @OneToMany(cascade = CascadeType.MERGE)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private List<StreamInput> streamInputs;
 
     @OneToMany(mappedBy = "stream")
