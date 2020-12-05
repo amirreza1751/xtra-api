@@ -2,8 +2,10 @@ package com.xtra.api.controller;
 
 import com.xtra.api.mapper.ChannelInfoMapper;
 import com.xtra.api.mapper.ChannelMapper;
+import com.xtra.api.mapper.ChannelStartMapper;
 import com.xtra.api.model.Channel;
 import com.xtra.api.projection.ChannelInfo;
+import com.xtra.api.projection.ChannelStart;
 import com.xtra.api.projection.ChannelView;
 import com.xtra.api.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +15,8 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import java.util.LinkedHashMap;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,12 +25,14 @@ public class ChannelController {
     private final ChannelService channelService;
     private final ChannelMapper channelMapper;
     private final ChannelInfoMapper channelInfoMapper;
+    private final ChannelStartMapper channelStartMapper;
 
     @Autowired
-    public ChannelController(ChannelService channelService, ChannelMapper channelMapper, ChannelInfoMapper channelInfoMapper) {
+    public ChannelController(ChannelService channelService, ChannelMapper channelMapper, ChannelInfoMapper channelInfoMapper, ChannelStartMapper channelStartMapper) {
         this.channelService = channelService;
         this.channelMapper = channelMapper;
         this.channelInfoMapper = channelInfoMapper;
+        this.channelStartMapper = channelStartMapper;
     }
 
     // Stream CRUD
@@ -127,4 +129,8 @@ public class ChannelController {
         return ResponseEntity.ok(channelInfoMapper.convertToDto(channelService.channelInfo(id)));
     }
 
+    @GetMapping("/{id}/to-start") //get channel object to start streaming (request origin: core)
+    public ResponseEntity<ChannelStart> channelStart(@PathVariable Long id){
+        return ResponseEntity.ok(channelStartMapper.convertToDto(channelService.channelStart(id)));
+    }
 }

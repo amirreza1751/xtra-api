@@ -187,4 +187,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     public Channel channelInfo(Long channelId){
         return this.findByIdOrFail(channelId);
     }
+
+    public Channel channelStart(Long channelId){
+        return this.findByIdOrFail(channelId);
+    }
 }
