@@ -1,11 +1,9 @@
 package com.xtra.api.service;
 
-import com.xtra.api.model.Permission;
 import com.xtra.api.model.Role;
-import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.repository.UserRepository;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -14,11 +12,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -44,7 +42,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     private List<String> getPrivileges(Role role) {
-        return role.getPermissions().stream().map(permission -> permission.getPermission().getId().getName()).collect(Collectors.toList());
+        return emptyIfNull(role.getPermissions()).stream().map(permission -> permission.getPermission().getId().getName()).collect(Collectors.toList());
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {

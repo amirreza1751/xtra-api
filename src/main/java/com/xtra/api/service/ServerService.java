@@ -129,7 +129,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
                 } else
                     throw new RuntimeException("Error in fetching resource");
             } catch (RestClientException e) {
-                System.out.println(e.getMostSpecificCause().getMessage());
+                //System.out.println(e.getMostSpecificCause().getMessage());
             }
         });
     }
