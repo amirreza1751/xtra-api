@@ -26,7 +26,7 @@ public class Collection {
     private CollectionType type;
 
     @JsonManagedReference("dlc")
-    @OneToMany(mappedBy = "collection")
+    @OneToMany(mappedBy = "collection", cascade = CascadeType.REMOVE)
     private Set<DownloadListCollection> downloadListCollections;
 
     @OrderBy("order ASC")
