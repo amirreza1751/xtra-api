@@ -1,35 +1,27 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.mapper.ChannelInfoMapper;
-import com.xtra.api.mapper.ChannelMapper;
-import com.xtra.api.model.Channel;
 import com.xtra.api.projection.ChannelInfo;
+import com.xtra.api.projection.ChannelInsertView;
 import com.xtra.api.projection.ChannelView;
 import com.xtra.api.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.swing.text.html.Option;
-import javax.validation.Valid;
 import java.util.LinkedHashMap;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/channels")
 public class ChannelController {
     private final ChannelService channelService;
-    private final ChannelMapper channelMapper;
     private final ChannelInfoMapper channelInfoMapper;
 
     @Autowired
-    public ChannelController(ChannelService channelService, ChannelMapper channelMapper, ChannelInfoMapper channelInfoMapper) {
+    public ChannelController(ChannelService channelService, ChannelInfoMapper channelInfoMapper) {
         this.channelService = channelService;
-        this.channelMapper = channelMapper;
         this.channelInfoMapper = channelInfoMapper;
     }
 
@@ -37,24 +29,22 @@ public class ChannelController {
     @GetMapping("")
     public ResponseEntity<Page<ChannelView>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        var result = channelService.findAll(search, pageNo, pageSize, sortBy, sortDir);
-        return ResponseEntity.ok(new PageImpl<>(result.stream().map(channelMapper::convertToDto).collect(Collectors.toList())));
+        return ResponseEntity.ok(channelService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @PostMapping(value = {"", "/{start}"})
-    public ResponseEntity<ChannelView> addChannel(@Valid @RequestBody ChannelView channelView, @PathVariable(required = false) boolean start) {
-        return ResponseEntity.ok(channelMapper.convertToDto(channelService.add(channelMapper.convertToEntity(channelView), channelView.getServers(), channelView.getCollections(), start)));
+    public ResponseEntity<ChannelView> addChannel(@RequestBody ChannelInsertView insertView, @PathVariable(required = false) boolean start) {
+        return ResponseEntity.ok(channelService.add(insertView, start));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ChannelView> getChannelById(@PathVariable Long id) {
-        return ResponseEntity.ok(channelMapper.convertToDto(channelService.findByIdOrFail(id)));
+        return ResponseEntity.ok(channelService.getViewById(id));
     }
 
     @PatchMapping(value = {"/{id}", "/{id}/{restart}"})
-    public ResponseEntity<ChannelView> updateChannel(@PathVariable Long id, @RequestBody ChannelView channelView, @PathVariable(required = false) boolean restart) {
-        var result = channelMapper.convertToDto(channelService.updateChannel(id, channelMapper.convertToEntity(channelView), channelView.getServers(), restart).orElseThrow());
-        return ResponseEntity.ok(result);
+    public ResponseEntity<ChannelView> updateChannel(@PathVariable Long id, @RequestBody ChannelInsertView channelView, @PathVariable(required = false) boolean restart) {
+        return ResponseEntity.ok(channelService.save(id, channelView, restart));
     }
 
     @DeleteMapping("/{id}")
@@ -106,7 +96,7 @@ public class ChannelController {
 
     //Play a Channel
     @GetMapping("/play/{stream_token}/{line_token}")
-    public ResponseEntity<String> playChannel(@PathVariable String stream_token, @PathVariable String line_token, HttpServletRequest request){
+    public ResponseEntity<String> playChannel(@PathVariable String stream_token, @PathVariable String line_token, HttpServletRequest request) {
         String playlist = channelService.playChannel(stream_token, line_token, request);
         HttpHeaders responseHeaders = new HttpHeaders();
         return ResponseEntity.ok()
@@ -118,12 +108,12 @@ public class ChannelController {
     }
 
     @GetMapping("/{id}/change-source")
-    public ResponseEntity<Integer> changeSource(@PathVariable Long id, @RequestParam String portNumber, HttpServletRequest request){
+    public ResponseEntity<Integer> changeSource(@PathVariable Long id, @RequestParam String portNumber, HttpServletRequest request) {
         return ResponseEntity.ok(channelService.changeSource(id, portNumber, request));
     }
 
     @GetMapping("/{id}/info")
-    public ResponseEntity<ChannelInfo> channelInfo(@PathVariable Long id){
+    public ResponseEntity<ChannelInfo> channelInfo(@PathVariable Long id) {
         return ResponseEntity.ok(channelInfoMapper.convertToDto(channelService.channelInfo(id)));
     }
 

@@ -1,16 +1,17 @@
 package com.xtra.api.projection;
 
-import com.xtra.api.model.StreamInput;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.StreamType;
 import lombok.Data;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Data
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ChannelInsertView {
     private Long id;
     private String name;
@@ -28,7 +29,8 @@ public class ChannelInsertView {
     private Set<DayOfWeek> daysToRestart;
     private LocalTime timeToRestart;
     private String customFFMPEG;
-    private List<StreamInput> streamInputs;
+    private List<String> streamInputs;
 
-    private ArrayList<Long> servers;
+    private Set<Long> servers;
+    private Set<Long> collections;
 }

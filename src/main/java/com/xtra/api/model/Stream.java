@@ -16,7 +16,6 @@ import javax.validation.constraints.Size;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,18 +60,18 @@ public class Stream {
     @JsonIgnore
     @JsonManagedReference("stream_server")
     @OneToMany(mappedBy = "stream", cascade = CascadeType.MERGE)
-    private List<StreamServer> streamServers = new ArrayList<>();
+    private Set<StreamServer> streamServers;
 
 
     @OneToMany(mappedBy = "stream")
     private Set<CollectionStream> collectionAssigns;
 
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    private List<StreamInput> streamInputs;
+    @ElementCollection
+    private List<String> streamInputs;
 
     @OneToMany(mappedBy = "stream")
     @JsonManagedReference("stream_id")
-    private List<LineActivity> lineActivities = new ArrayList<>();
+    private List<LineActivity> lineActivities;
 
     private int currentConnections = 0;
 

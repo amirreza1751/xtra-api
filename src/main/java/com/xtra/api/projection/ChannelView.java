@@ -32,7 +32,7 @@ public class ChannelView {
     private Set<DayOfWeek> daysToRestart;
     private LocalTime timeToRestart;
     private String customFFMPEG;
-    private List<StreamInput> streamInputs;
+    private List<String> streamInputs;
 
     private Set<Long> servers;
     private Set<Long> collections;
