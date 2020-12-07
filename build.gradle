@@ -34,6 +34,8 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.4.0.Final'
     implementation 'com.google.guava:guava:29.0-jre'
     implementation 'com.auth0:java-jwt:3.11.0'
+    compile 'org.springframework.boot:spring-boot-starter-webflux'
+    compile 'org.projectreactor:reactor-spring:1.0.1.RELEASE'
 
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.0.Final'
 

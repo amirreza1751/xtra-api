@@ -6,22 +6,34 @@ import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.ResourceRepository;
 import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.repository.StreamServerRepository;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
+import reactor.core.publisher.Mono;
+import reactor.netty.Connection;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.TcpClient;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.net.URI;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -33,18 +45,28 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final ResourceRepository resourceRepository;
     private final LineActivityRepository lineActivityRepository;
     private final StreamServerRepository streamServerRepository;
+    private final TcpClient tcpClient = TcpClient.create()
+            .doOnConnected(connection -> {
+                connection.addHandlerLast(new ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS));
+                connection.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
+            })
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
+    private final WebClient webClient;
     @Value("${core.apiPath}")
     private String corePath;
     @Value("${core.apiPort}")
     private String corePort;
 
     @Autowired
-    protected ServerService(ServerRepository repository, ServerRepository serverRepository, ResourceRepository resourceRepository, LineActivityRepository lineActivityRepository, StreamServerRepository streamServerRepository) {
+    protected ServerService(ServerRepository repository, ServerRepository serverRepository, ResourceRepository resourceRepository, LineActivityRepository lineActivityRepository, StreamServerRepository streamServerRepository, WebClient.Builder webClientBuilder) {
         super(repository, Server.class);
         this.serverRepository = serverRepository;
         this.resourceRepository = resourceRepository;
         this.lineActivityRepository = lineActivityRepository;
         this.streamServerRepository = streamServerRepository;
+        this.webClient = webClientBuilder
+                .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
+                .build();
     }
 
     public List<File> getFiles(Long id, String path) {
@@ -58,8 +80,14 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     public boolean sendStartRequest(Long channelId, Server server) {
-        var result = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/start/" + channelId + "/?serverId=" + server.getId(), String.class);
-        return true;
+        //var result = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/start/" + channelId + "/?serverId=" + server.getId(), String.class);
+           boolean result = this.webClient
+                   .get()
+                   .uri(URI.create( "http://" + server.getIp() + ":" + server.getCorePort()
+                           + "/streams/start/" + channelId + "/?serverId=" + server.getId()))
+                   .retrieve().bodyToMono(Boolean.class).block();
+
+        return result;
     }
 
     public void sendRestartRequest(Long channelId, Server server) {
