@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -47,11 +48,12 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final StreamServerRepository streamServerRepository;
     private final TcpClient tcpClient = TcpClient.create()
             .doOnConnected(connection -> {
-                connection.addHandlerLast(new ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS));
-                connection.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
+                connection.addHandlerLast(new ReadTimeoutHandler(10000, TimeUnit.MILLISECONDS));
+                connection.addHandlerLast(new WriteTimeoutHandler(10000, TimeUnit.MILLISECONDS));
             })
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
     private final WebClient webClient;
+
     @Value("${core.apiPath}")
     private String corePath;
     @Value("${core.apiPort}")
@@ -80,14 +82,20 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     public boolean sendStartRequest(Long channelId, Server server) {
-        //var result = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/start/" + channelId + "/?serverId=" + server.getId(), String.class);
-           boolean result = this.webClient
-                   .get()
+        Mono<Boolean> result = this.webClient
+                .get()
                    .uri(URI.create( "http://" + server.getIp() + ":" + server.getCorePort()
-                           + "/streams/start/" + channelId + "/?serverId=" + server.getId()))
-                   .retrieve().bodyToMono(Boolean.class).block();
+                           + "/streams/streams/" + channelId + "/?serverId=" + server.getId()))
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Boolean.class);
+        result.subscribe(
+                successValue -> System.out.println("success value: " + successValue),
+                error -> System.out.println("error value: " + error)
+        );
 
-        return result;
+        return true;
     }
 
     public void sendRestartRequest(Long channelId, Server server) {
@@ -129,13 +137,13 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams?line_token=" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
     }
 
-    public Optional<Server> findByIpAndCorePort(String ip, String corePort){
+    public Optional<Server> findByIpAndCorePort(String ip, String corePort) {
         return repository.findByIpAndCorePort(ip, corePort);
     }
 
     public Resource getResource(Long serverId) {
         var srv = repository.findById(serverId);
-        if (srv.isPresent()){
+        if (srv.isPresent()) {
             return srv.get().getResource();
         } else throw new EntityNotFoundException(Server.class.toString(), serverId.toString());
     }
@@ -148,13 +156,13 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
                 Resource r = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/?interfaceName=" + server.getInterfaceName(), Resource.class);
                 if (r != null) {
                     Resource resource = new Resource();
-                     if (server.getResource() != null){
-                         resource = server.getResource();
-                     }
-                     copyProperties(r, resource, "id", "server");
-                     resource.setConnections(lineActivityRepository.countAllByIdServerId(server.getId()));
-                     server.setResource(resource);
-                     serverRepository.save(server);
+                    if (server.getResource() != null) {
+                        resource = server.getResource();
+                    }
+                    copyProperties(r, resource, "id", "server");
+                    resource.setConnections(lineActivityRepository.countAllByIdServerId(server.getId()));
+                    server.setResource(resource);
+                    serverRepository.save(server);
                 } else
                     throw new RuntimeException("Error in fetching resource");
             } catch (RestClientException e) {
@@ -169,10 +177,11 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         } else throw new RuntimeException("Server Not Found.");
     }
 
-    public Optional<StreamServer> findStreamServerById(StreamServerId streamServerId){
+    public Optional<StreamServer> findStreamServerById(StreamServerId streamServerId) {
         return streamServerRepository.findById(streamServerId);
     }
-    public StreamServer saveStreamServer(StreamServer streamServer){
+
+    public StreamServer saveStreamServer(StreamServer streamServer) {
         return streamServerRepository.save(streamServer);
     }
 }
