@@ -123,7 +123,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
                      if (server.getResource() != null){
                          resource = server.getResource();
                      }
-                    copyProperties(r, resource, "id", "server");
+                     copyProperties(r, resource, "id", "server");
+                     resource.setConnections(lineActivityRepository.countAllByIdServerId(server.getId()));
                      server.setResource(resource);
                      serverRepository.save(server);
                 } else

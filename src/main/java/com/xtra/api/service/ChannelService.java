@@ -28,16 +28,14 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final ServerService serverService;
     private final LoadBalancingService loadBalancingService;
-    private final StreamServerRepository streamServerRepository;
     private final ChannelMapper channelMapper;
 
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, StreamServerRepository streamServerRepository, ChannelMapper channelMapper) {
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelMapper channelMapper) {
         super(repository, Channel.class, serverService);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
-        this.streamServerRepository = streamServerRepository;
         this.channelMapper = channelMapper;
     }
 
@@ -145,5 +143,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return this.findByIdOrFail(channelId);
     }
 
-
+    public Channel channelStart(Long channelId){
+        return this.findByIdOrFail(channelId);
+    }
 }

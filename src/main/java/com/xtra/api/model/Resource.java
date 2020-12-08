@@ -27,6 +27,7 @@ public class Resource {
 
     private int connections;
 
+    private Long upTime;
 
     @OneToOne(mappedBy = "resource")
     @JsonBackReference("resource_id")

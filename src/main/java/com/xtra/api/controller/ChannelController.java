@@ -1,6 +1,8 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.mapper.ChannelInfoMapper;
+import com.xtra.api.mapper.ChannelStartMapper;
+import com.xtra.api.projection.ChannelStart;
 import com.xtra.api.projection.channel.ChannelInfo;
 import com.xtra.api.projection.channel.ChannelInsertView;
 import com.xtra.api.projection.channel.ChannelView;
@@ -18,11 +20,13 @@ import java.util.LinkedHashMap;
 public class ChannelController {
     private final ChannelService channelService;
     private final ChannelInfoMapper channelInfoMapper;
+    private final ChannelStartMapper channelStartMapper;
 
     @Autowired
-    public ChannelController(ChannelService channelService, ChannelInfoMapper channelInfoMapper) {
+    public ChannelController(ChannelService channelService, ChannelInfoMapper channelInfoMapper, ChannelStartMapper channelStartMapper) {
         this.channelService = channelService;
         this.channelInfoMapper = channelInfoMapper;
+        this.channelStartMapper = channelStartMapper;
     }
 
     // Stream CRUD
@@ -117,4 +121,8 @@ public class ChannelController {
         return ResponseEntity.ok(channelInfoMapper.convertToDto(channelService.channelInfo(id)));
     }
 
+    @GetMapping("/{id}/to-start") //get channel object to start streaming (request origin: core)
+    public ResponseEntity<ChannelStart> channelStart(@PathVariable Long id){
+        return ResponseEntity.ok(channelStartMapper.convertToDto(channelService.channelStart(id)));
+    }
 }
