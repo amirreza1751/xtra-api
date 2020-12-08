@@ -1,8 +1,8 @@
 package com.xtra.api.mapper;
 
 import com.xtra.api.model.*;
-import com.xtra.api.projection.ChannelInfo;
-import com.xtra.api.projection.MergedChannelInfo;
+import com.xtra.api.projection.channel.ChannelInfo;
+import com.xtra.api.projection.channel.MergedChannelInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -1,4 +1,4 @@
-package com.xtra.api.projection;
+package com.xtra.api.projection.channel;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

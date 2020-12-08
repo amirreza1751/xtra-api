@@ -1,7 +1,7 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.projection.DownloadListInsertView;
-import com.xtra.api.projection.DownloadListView;
+import com.xtra.api.projection.downloadlist.DownloadListInsertView;
+import com.xtra.api.projection.downloadlist.DownloadListView;
 import com.xtra.api.service.DownloadListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

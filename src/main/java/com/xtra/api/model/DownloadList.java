@@ -35,4 +35,5 @@ public class DownloadList {
     @OrderBy("order ASC")
     Set<DownloadListCollection> collectionsAssign;
 
+
 }

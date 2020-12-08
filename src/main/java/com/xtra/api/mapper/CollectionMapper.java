@@ -1,9 +1,9 @@
 package com.xtra.api.mapper;
 
 import com.xtra.api.model.*;
-import com.xtra.api.projection.CollectionDto;
-import com.xtra.api.projection.CollectionInsertDto;
-import com.xtra.api.projection.CollectionSimplifiedDto;
+import com.xtra.api.projection.collection.CollectionDto;
+import com.xtra.api.projection.collection.CollectionInsertDto;
+import com.xtra.api.projection.collection.CollectionSimplifiedDto;
 import org.mapstruct.Mapper;
 
 import java.util.LinkedHashSet;

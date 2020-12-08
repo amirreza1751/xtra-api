@@ -1,8 +1,7 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.model.Line;
-import com.xtra.api.projection.UserInsertView;
-import com.xtra.api.projection.UserView;
+import com.xtra.api.projection.user.UserInsertView;
+import com.xtra.api.projection.user.UserView;
 import com.xtra.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,11 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
-import static com.xtra.api.security.SecurityConstants.HEADER_STRING;
 
 @RestController
 @RequestMapping("/users")

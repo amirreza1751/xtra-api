@@ -2,15 +2,14 @@ package com.xtra.api.controller;
 
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineStatus;
+import com.xtra.api.projection.line.LineInsertView;
+import com.xtra.api.projection.line.LineView;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/lines")
@@ -23,24 +22,24 @@ public class LineController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<Line>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+    public ResponseEntity<Page<LineView>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                                @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(lineService.findAll(search, pageNo, pageSize, sortBy, sortDir));
+        return ResponseEntity.ok(lineService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Line> getLine(@PathVariable Long id) {
-        return ResponseEntity.ok(lineService.findByIdOrFail(id));
+    public ResponseEntity<LineView> getLine(@PathVariable Long id) {
+        return ResponseEntity.ok(lineService.getById(id));
     }
 
     @PostMapping("")
-    public ResponseEntity<Line> addLine(@RequestBody @Valid Line line) {
-        return ResponseEntity.ok(lineService.insert(line));
+    public ResponseEntity<LineView> addLine(@RequestBody LineInsertView insertView) {
+        return ResponseEntity.ok(lineService.add(insertView));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Line> updateLine(@PathVariable Long id, @RequestBody @Valid Line line) {
-        return ResponseEntity.ok(lineService.updateOrFail(id, line));
+    public ResponseEntity<LineView> updateLine(@PathVariable Long id, @RequestBody LineInsertView insertView) {
+        return ResponseEntity.ok(lineService.save(id, insertView));
     }
 
     @DeleteMapping("/{id}")

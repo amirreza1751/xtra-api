@@ -1,10 +1,9 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.mapper.CollectionMapper;
-import com.xtra.api.model.Collection;
-import com.xtra.api.projection.CollectionDto;
-import com.xtra.api.projection.CollectionInsertDto;
-import com.xtra.api.projection.CollectionSimplifiedDto;
+import com.xtra.api.projection.collection.CollectionDto;
+import com.xtra.api.projection.collection.CollectionInsertDto;
+import com.xtra.api.projection.collection.CollectionSimplifiedDto;
 import com.xtra.api.service.CollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.stream.Collectors;
 
 @RestController

@@ -1,4 +1,4 @@
-package com.xtra.api.projection;
+package com.xtra.api.projection.downloadlist;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -6,11 +6,11 @@ import lombok.Data;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class DlCollectionDto {
+public class DlCollectionView {
     private Long id;
     private String name;
 
-    public DlCollectionDto(Long id, String name) {
+    public DlCollectionView(Long id, String name) {
         this.id = id;
         this.name = name;
     }

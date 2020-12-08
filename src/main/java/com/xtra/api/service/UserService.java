@@ -2,8 +2,8 @@ package com.xtra.api.service;
 
 import com.xtra.api.mapper.UserMapper;
 import com.xtra.api.model.User;
-import com.xtra.api.projection.UserInsertView;
-import com.xtra.api.projection.UserView;
+import com.xtra.api.projection.user.UserInsertView;
+import com.xtra.api.projection.user.UserView;
 import com.xtra.api.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

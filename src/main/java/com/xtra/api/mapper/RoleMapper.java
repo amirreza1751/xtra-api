@@ -2,8 +2,8 @@ package com.xtra.api.mapper;
 
 import com.xtra.api.model.*;
 import com.xtra.api.projection.PermissionView;
-import com.xtra.api.projection.RoleInsertView;
-import com.xtra.api.projection.RoleView;
+import com.xtra.api.projection.role.RoleInsertView;
+import com.xtra.api.projection.role.RoleView;
 import com.xtra.api.service.PermissionService;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;

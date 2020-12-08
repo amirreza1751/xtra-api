@@ -1,16 +1,13 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.model.Package;
-import com.xtra.api.projection.PackageInsertView;
-import com.xtra.api.projection.PackageView;
+import com.xtra.api.projection.package_.PackageInsertView;
+import com.xtra.api.projection.package_.PackageView;
 import com.xtra.api.service.PackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/packages")

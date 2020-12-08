@@ -3,9 +3,9 @@ package com.xtra.api.mapper;
 import com.xtra.api.model.DownloadList;
 import com.xtra.api.model.DownloadListCollection;
 import com.xtra.api.model.DownloadListCollectionId;
-import com.xtra.api.projection.DlCollectionDto;
-import com.xtra.api.projection.DownloadListInsertView;
-import com.xtra.api.projection.DownloadListView;
+import com.xtra.api.projection.downloadlist.DlCollectionView;
+import com.xtra.api.projection.downloadlist.DownloadListInsertView;
+import com.xtra.api.projection.downloadlist.DownloadListView;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -37,12 +37,12 @@ public abstract class DownloadListMapper {
     @Mapping(source = "collections", target = "collectionsAssign")
     public abstract DownloadList convertToEntityWithRelations(DownloadListInsertView downloadListView);
 
-    public Set<DownloadListCollection> convertInsertRelationListToEntity(Set<Long> collections) {
-        if (collections == null)
+    public Set<DownloadListCollection> convertInsertRelationListToEntity(Set<Long> collectionIds) {
+        if (collectionIds == null)
             return null;
         Set<DownloadListCollection> dlcSet = new LinkedHashSet<>();
         int i = 0;
-        for (var collection : collections) {
+        for (var collection : collectionIds) {
             var dlc = new DownloadListCollection();
             dlc.setId(new DownloadListCollectionId(null, collection));
             dlc.setOrder(i++);
@@ -69,22 +69,22 @@ public abstract class DownloadListMapper {
     @Mapping(source = "collectionsAssign", target = "collections")
     public abstract DownloadListView convertToDto(DownloadList downloadList);
 
-    public List<DlCollectionDto> convertAllToDto(Set<DownloadListCollection> downloadListCollections) {
+    public List<DlCollectionView> convertAllToDto(Set<DownloadListCollection> downloadListCollections) {
         if (downloadListCollections == null)
             return new ArrayList<>();
         
         List<DownloadListCollection> dlcList = new ArrayList<>(downloadListCollections);
         dlcList.sort(Comparator.comparingInt(DownloadListCollection::getOrder));
 
-        List<DlCollectionDto> dlcDtoList = new ArrayList<>();
+        List<DlCollectionView> dlcDtoList = new ArrayList<>();
         for (var dlc : dlcList) {
-            dlcDtoList.add(new DlCollectionDto(dlc.getId().getCollectionId(), dlc.getCollection().getName()));
+            dlcDtoList.add(new DlCollectionView(dlc.getId().getCollectionId(), dlc.getCollection().getName()));
         }
         return dlcDtoList;
     }
 
     @Mapping(source = "dlCollection.collection.id", target = "id")
     @Mapping(source = "dlCollection.collection.name", target = "name")
-    abstract DlCollectionDto convertToEntity(DownloadListCollection dlCollection);
+    abstract DlCollectionView convertToEntity(DownloadListCollection dlCollection);
 
 }

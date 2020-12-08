@@ -25,6 +25,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.mariadb.jdbc:mariadb-java-client'
     implementation 'org.projectlombok:lombok'
@@ -35,6 +36,7 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.4.0.Final'
     implementation 'com.google.guava:guava:29.0-jre'
     implementation 'com.auth0:java-jwt:3.11.0'
+    implementation 'org.projectreactor:reactor-spring:1.0.1.RELEASE'
 
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.0.Final'
 

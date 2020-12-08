@@ -2,26 +2,19 @@ package com.xtra.api.mapper;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.ChannelInsertView;
-import com.xtra.api.projection.ChannelView;
+import com.xtra.api.projection.channel.ChannelInsertView;
+import com.xtra.api.projection.channel.ChannelView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
 import com.xtra.api.repository.ServerRepository;
-import com.xtra.api.service.CollectionService;
-import com.xtra.api.service.ServerService;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")

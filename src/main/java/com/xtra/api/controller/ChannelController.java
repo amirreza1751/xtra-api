@@ -1,9 +1,9 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.mapper.ChannelInfoMapper;
-import com.xtra.api.projection.ChannelInfo;
-import com.xtra.api.projection.ChannelInsertView;
-import com.xtra.api.projection.ChannelView;
+import com.xtra.api.projection.channel.ChannelInfo;
+import com.xtra.api.projection.channel.ChannelInsertView;
+import com.xtra.api.projection.channel.ChannelView;
 import com.xtra.api.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

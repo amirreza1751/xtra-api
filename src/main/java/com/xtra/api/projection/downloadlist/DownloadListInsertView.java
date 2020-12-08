@@ -1,4 +1,4 @@
-package com.xtra.api.projection;
+package com.xtra.api.projection.downloadlist;
 
 import lombok.Data;
 

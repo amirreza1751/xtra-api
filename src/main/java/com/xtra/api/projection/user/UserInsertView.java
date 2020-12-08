@@ -1,4 +1,4 @@
-package com.xtra.api.projection;
+package com.xtra.api.projection.user;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -7,15 +7,16 @@ import lombok.Data;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class UserView {
-    protected long id;
+public class UserInsertView {
+    protected Long id;
 
     protected String username;
+    protected String password;
 
     protected String email;
     protected String _2FASec;
     protected boolean isBanned;
     protected UserType userType;
 
-    protected RoleView role;
+    protected Long roleId;
 }

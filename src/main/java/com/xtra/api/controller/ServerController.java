@@ -3,15 +3,12 @@ package com.xtra.api.controller;
 import com.xtra.api.model.File;
 import com.xtra.api.model.Resource;
 import com.xtra.api.model.Server;
-import com.xtra.api.projection.ChannelView;
 import com.xtra.api.service.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 

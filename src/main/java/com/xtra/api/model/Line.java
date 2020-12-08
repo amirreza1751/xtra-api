@@ -26,8 +26,8 @@ public class Line {
     private Long id;
 
     @Column(unique = true)
-    protected String username;
-    protected String password;
+    private String username;
+    private String password;
     private String lineToken;
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
@@ -57,7 +57,7 @@ public class Line {
     @ManyToOne(cascade = CascadeType.ALL)
     private User owner;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST})
     private DownloadList defaultDownloadList;
 
     @OneToMany(mappedBy = "line")
