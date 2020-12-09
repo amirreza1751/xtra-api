@@ -1,5 +1,6 @@
 package com.xtra.api.controller;
 
+import com.xtra.api.projection.admin.AdminSimpleView;
 import com.xtra.api.projection.user.UserInsertView;
 import com.xtra.api.projection.user.UserView;
 import com.xtra.api.service.UserService;
@@ -22,30 +23,14 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<UserView>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+    public ResponseEntity<Page<UserView>> getAllUsers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                                    @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(userService.getAllViews(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserView> getLine(@PathVariable Long id) {
+    public ResponseEntity<UserView> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getViewById(id));
-    }
-
-    @PostMapping("")
-    public ResponseEntity<UserView> addUser(@RequestBody UserInsertView insertView) {
-        return ResponseEntity.ok(userService.insert(insertView));
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<UserView> updateUser(@PathVariable Long id, @RequestBody UserInsertView view) {
-        return ResponseEntity.ok(userService.updateOrFail(id, view));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        userService.deleteOrFail(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     //auth

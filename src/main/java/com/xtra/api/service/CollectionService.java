@@ -3,7 +3,7 @@ package com.xtra.api.service;
 import com.google.common.collect.Sets;
 import com.xtra.api.mapper.CollectionMapper;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.collection.CollectionInsertDto;
+import com.xtra.api.projection.collection.CollectionInsertView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
 import com.xtra.api.repository.StreamRepository;
@@ -58,7 +58,7 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
         return super.insert(collection);
     }
 
-    public Collection updateOrFail(Long id, CollectionInsertDto collection) {
+    public Collection updateOrFail(Long id, CollectionInsertView collection) {
         collection.setId(id);
         var newColl = mapper.convertToEntity(collection);
         var oldColl = findByIdOrFail(id);
