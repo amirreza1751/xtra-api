@@ -1,6 +1,8 @@
 package com.xtra.api.mapper;
 
+import com.xtra.api.model.Admin;
 import com.xtra.api.model.User;
+import com.xtra.api.projection.admin.AdminSimpleView;
 import com.xtra.api.projection.user.UserInsertView;
 import com.xtra.api.projection.user.UserView;
 import com.xtra.api.service.RoleService;
@@ -25,5 +27,6 @@ public abstract class UserMapper {
         user.setRole(role);
     }
 
-    public abstract UserView convertToDto(User user);
+    public abstract UserView convertToView(User user);
+
 }

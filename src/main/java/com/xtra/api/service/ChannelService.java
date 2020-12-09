@@ -10,12 +10,15 @@ import com.xtra.api.projection.channel.ChannelView;
 import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.StreamServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.ValidationException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
@@ -60,6 +63,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
     public Channel insert(Channel channel, boolean start) {
+//        if (repository.existsByName(channel.getName()))
+//            throw new MethodArgumentNotValidException(this.getClass().getMethod(""));
         String token;
         do {
             token = generateRandomString(10, 16, false);

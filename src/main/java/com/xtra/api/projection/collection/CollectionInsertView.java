@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CollectionInsertDto {
+public class CollectionInsertView {
     private Long id;
     private String name;
     private CollectionType type;

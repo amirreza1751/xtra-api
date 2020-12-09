@@ -1,9 +1,9 @@
 package com.xtra.api.mapper;
 
 import com.xtra.api.model.*;
-import com.xtra.api.projection.collection.CollectionDto;
-import com.xtra.api.projection.collection.CollectionInsertDto;
-import com.xtra.api.projection.collection.CollectionSimplifiedDto;
+import com.xtra.api.projection.collection.CollectionView;
+import com.xtra.api.projection.collection.CollectionInsertView;
+import com.xtra.api.projection.collection.CollectionSimplifiedView;
 import org.mapstruct.Mapper;
 
 import java.util.LinkedHashSet;
@@ -14,34 +14,34 @@ public abstract class CollectionMapper {
 
     /*collection simple display*/
 
-    public CollectionSimplifiedDto convertToSimpleDto(Collection collection) {
-        CollectionSimplifiedDto collectionSimplifiedDto = new CollectionSimplifiedDto();
+    public CollectionSimplifiedView convertToSimpleDto(Collection collection) {
+        CollectionSimplifiedView collectionSimplifiedView = new CollectionSimplifiedView();
 
-        collectionSimplifiedDto.setId(collection.getId());
-        collectionSimplifiedDto.setName(collection.getName());
-        collectionSimplifiedDto.setType(collection.getType());
+        collectionSimplifiedView.setId(collection.getId());
+        collectionSimplifiedView.setName(collection.getName());
+        collectionSimplifiedView.setType(collection.getType());
 
         switch (collection.getType()) {
             case SERIES:
-                collectionSimplifiedDto.setSeries(collection.getVods().size());
+                collectionSimplifiedView.setSeries(collection.getVods().size());
                 break;
             case MOVIE:
-                collectionSimplifiedDto.setMovies(collection.getVods().size());
+                collectionSimplifiedView.setMovies(collection.getVods().size());
                 break;
             case RADIO:
-                collectionSimplifiedDto.setRadios(collection.getStreams().size());
+                collectionSimplifiedView.setRadios(collection.getStreams().size());
                 break;
             case CHANNEL:
-                collectionSimplifiedDto.setChannels(collection.getStreams().size());
+                collectionSimplifiedView.setChannels(collection.getStreams().size());
 
                 break;
         }
-        return collectionSimplifiedDto;
+        return collectionSimplifiedView;
     }
 
     /*collection for insert*/
 
-    public Collection convertToEntity(CollectionInsertDto input) {
+    public Collection convertToEntity(CollectionInsertView input) {
         Collection collection = new Collection();
         collection.setId(input.getId());
         collection.setName(input.getName());
@@ -90,31 +90,31 @@ public abstract class CollectionMapper {
     }
 
 
-    public CollectionDto convertToDto(Collection collection) {
-        CollectionDto collectionDto = new CollectionDto();
-        collectionDto.setId(collection.getId());
-        collectionDto.setName(collection.getName());
-        collectionDto.setType(collection.getType());
+    public CollectionView convertToDto(Collection collection) {
+        CollectionView collectionView = new CollectionView();
+        collectionView.setId(collection.getId());
+        collectionView.setName(collection.getName());
+        collectionView.setType(collection.getType());
 
         switch (collection.getType()) {
             case SERIES:
                 var series = collection.getVods() != null ? collection.getVods().stream().map(vod -> new MediaPair<>(vod.getVod().getId(), vod.getVod().getName())).collect(Collectors.toCollection(LinkedHashSet::new)) : null;
-                collectionDto.setSeries(series);
+                collectionView.setSeries(series);
                 break;
             case MOVIE:
                 var movies = collection.getVods() != null ? collection.getVods().stream().map(vod -> new MediaPair<>(vod.getVod().getId(), vod.getVod().getName())).collect(Collectors.toCollection(LinkedHashSet::new)) : null;
-                collectionDto.setMovies(movies);
+                collectionView.setMovies(movies);
                 break;
             case RADIO:
                 var radios = collection.getStreams() != null ? collection.getStreams().stream().map(stream -> new MediaPair<>(stream.getStream().getId(), stream.getStream().getName())).collect(Collectors.toCollection(LinkedHashSet::new)) : null;
-                collectionDto.setRadios(radios);
+                collectionView.setRadios(radios);
                 break;
             case CHANNEL:
                 var channels = collection.getStreams() != null ? collection.getStreams().stream().map(stream -> new MediaPair<>(stream.getStream().getId(), stream.getStream().getName())).collect(Collectors.toCollection(LinkedHashSet::new)) : null;
-                collectionDto.setChannels(channels);
+                collectionView.setChannels(channels);
                 break;
         }
-        return collectionDto;
+        return collectionView;
     }
 
 }
