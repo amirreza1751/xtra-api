@@ -2,6 +2,7 @@ package com.xtra.api.mapper;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.*;
+import com.xtra.api.projection.downloadlist.DlCollectionView;
 import com.xtra.api.projection.line.LineInsertView;
 import com.xtra.api.projection.line.LineView;
 import com.xtra.api.repository.CollectionRepository;
@@ -13,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 
 @Mapper(componentModel = "spring", uses = DownloadListMapper.class)
 public abstract class LineMapper {
@@ -49,5 +54,10 @@ public abstract class LineMapper {
         return dl;
     }
 
+    @Mapping(source = "defaultDownloadList", target = "collections")
     public abstract LineView convertToView(Line line);
+
+    List<DlCollectionView> convertDownloadListToDlCollectionView(DownloadList downloadList) {
+        return emptyIfNull(downloadList.getCollectionsAssign()).stream().map(dlc -> new DlCollectionView(dlc.getCollection().getId(), dlc.getCollection().getName())).collect(Collectors.toList());
+    }
 }

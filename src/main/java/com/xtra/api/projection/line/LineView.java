@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.StreamProtocol;
 import com.xtra.api.model.User;
+import com.xtra.api.projection.downloadlist.DlCollectionView;
 import com.xtra.api.projection.downloadlist.DownloadListView;
 import lombok.Data;
 
@@ -36,5 +37,5 @@ public class LineView {
 
     private List<StreamProtocol> allowedOutputs;
     private User owner;
-    private DownloadListView defaultDownloadList;
+    private List<DlCollectionView> collections;
 }
