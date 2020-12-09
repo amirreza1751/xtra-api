@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
+import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
@@ -65,10 +66,10 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         } while (repository.existsChannelByStreamToken(token));
 
         channel.setStreamToken(token);
-        channel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
+        channel.setStreamInputs(emptyIfNull(channel.getStreamInputs()).stream().distinct().collect(Collectors.toList()));
         var savedEntity = repository.save(channel);
 
-        var serverIds = savedEntity.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
+        var serverIds = emptyIfNull(savedEntity.getStreamServers()).stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
         if (start) {
             //@todo start servers
         }
@@ -143,7 +144,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return this.findByIdOrFail(channelId);
     }
 
-    public Channel channelStart(Long channelId){
+    public Channel channelStart(Long channelId) {
         return this.findByIdOrFail(channelId);
     }
 }

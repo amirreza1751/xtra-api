@@ -2,7 +2,7 @@ package com.xtra.api.controller;
 
 import com.xtra.api.mapper.ChannelInfoMapper;
 import com.xtra.api.mapper.ChannelStartMapper;
-import com.xtra.api.projection.ChannelStart;
+import com.xtra.api.projection.channel.ChannelStart;
 import com.xtra.api.projection.channel.ChannelInfo;
 import com.xtra.api.projection.channel.ChannelInsertView;
 import com.xtra.api.projection.channel.ChannelView;
