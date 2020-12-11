@@ -58,6 +58,8 @@ public abstract class LineMapper {
     public abstract LineView convertToView(Line line);
 
     List<DlCollectionView> convertDownloadListToDlCollectionView(DownloadList downloadList) {
+        if (downloadList==null)
+            return null;
         return emptyIfNull(downloadList.getCollectionsAssign()).stream().map(dlc -> new DlCollectionView(dlc.getCollection().getId(), dlc.getCollection().getName())).collect(Collectors.toList());
     }
 }
