@@ -101,13 +101,13 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams?line_token=" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
     }
 
-    public Optional<Server> findByIpAndCorePort(String ip, String corePort){
+    public Optional<Server> findByIpAndCorePort(String ip, String corePort) {
         return repository.findByIpAndCorePort(ip, corePort);
     }
 
     public Resource getResource(Long serverId) {
         var srv = repository.findById(serverId);
-        if (srv.isPresent()){
+        if (srv.isPresent()) {
             return srv.get().getResource();
         } else throw new EntityNotFoundException(Server.class.toString(), serverId.toString());
     }
@@ -117,16 +117,18 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         List<Server> servers = serverRepository.findAll();
         servers.forEach(server -> {
             try {
+                if (server.getIp() == null || server.getCorePort() == null)
+                    return;
                 Resource r = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/?interfaceName=" + server.getInterfaceName(), Resource.class);
                 if (r != null) {
                     Resource resource = new Resource();
-                     if (server.getResource() != null){
-                         resource = server.getResource();
-                     }
-                     copyProperties(r, resource, "id", "server");
-                     resource.setConnections(lineActivityRepository.countAllByIdServerId(server.getId()));
-                     server.setResource(resource);
-                     serverRepository.save(server);
+                    if (server.getResource() != null) {
+                        resource = server.getResource();
+                    }
+                    copyProperties(r, resource, "id", "server");
+                    resource.setConnections(lineActivityRepository.countAllByIdServerId(server.getId()));
+                    server.setResource(resource);
+                    serverRepository.save(server);
                 } else
                     throw new RuntimeException("Error in fetching resource");
             } catch (RestClientException e) {
@@ -141,10 +143,11 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         } else throw new RuntimeException("Server Not Found.");
     }
 
-    public Optional<StreamServer> findStreamServerById(StreamServerId streamServerId){
+    public Optional<StreamServer> findStreamServerById(StreamServerId streamServerId) {
         return streamServerRepository.findById(streamServerId);
     }
-    public StreamServer saveStreamServer(StreamServer streamServer){
+
+    public StreamServer saveStreamServer(StreamServer streamServer) {
         return streamServerRepository.save(streamServer);
     }
 }
