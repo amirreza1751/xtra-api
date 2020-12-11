@@ -3,9 +3,12 @@ package com.xtra.api.controller;
 import com.xtra.api.model.File;
 import com.xtra.api.model.Resource;
 import com.xtra.api.model.Server;
+import com.xtra.api.projection.line.LineInsertView;
+import com.xtra.api.projection.line.LineView;
 import com.xtra.api.service.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +39,17 @@ public class ServerController {
     @PostMapping("")
     public ResponseEntity<Server> addServer(@Valid @RequestBody Server server) {
         return ResponseEntity.ok(serverService.insert(server));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Server> updateServer(@PathVariable Long id, @RequestBody Server server) {
+        return ResponseEntity.ok(serverService.updateOrFail(id, server));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteServer(@PathVariable Long id) {
+        serverService.deleteOrFail(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("{id}/files")
