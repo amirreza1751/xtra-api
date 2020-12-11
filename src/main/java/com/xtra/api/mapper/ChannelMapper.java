@@ -2,15 +2,14 @@ package com.xtra.api.mapper;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.*;
+import com.xtra.api.projection.channel.ChannelInfo;
 import com.xtra.api.projection.channel.ChannelInsertView;
 import com.xtra.api.projection.channel.ChannelView;
+import com.xtra.api.projection.channel.MergedChannelInfo;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
 import com.xtra.api.repository.ServerRepository;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
@@ -27,6 +26,7 @@ public abstract class ChannelMapper {
     @Autowired
     private CollectionRepository collectionRepository;
 
+    @Mapping(target = "streamType", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     public abstract Channel convertToEntity(ChannelInsertView channelView);
 
     @AfterMapping
@@ -74,5 +74,15 @@ public abstract class ChannelMapper {
     public Set<Long> convertToCollectionIds(Set<CollectionStream> collectionStreams) {
         if (collectionStreams == null) return null;
         return collectionStreams.stream().map(collectionStream -> collectionStream.getCollection().getId()).collect(Collectors.toSet());
+    }
+
+    @Mapping(source = "streamServers", target = "infos")
+    public abstract ChannelInfo convertToChannelInfo(Channel channel);
+
+    public Set<MergedChannelInfo> convertToInfosMap(Set<StreamServer> streamServers) {
+        if (streamServers == null) return null;
+        Set<MergedChannelInfo> infos = new HashSet<>();
+        streamServers.forEach(streamServer -> infos.add(new MergedChannelInfo(streamServer.getStreamInfo(), streamServer.getProgressInfo())));
+        return infos;
     }
 }

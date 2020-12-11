@@ -2,9 +2,9 @@ package com.xtra.api.controller;
 
 import com.xtra.api.mapper.ChannelInfoMapper;
 import com.xtra.api.mapper.ChannelStartMapper;
-import com.xtra.api.projection.channel.ChannelStart;
 import com.xtra.api.projection.channel.ChannelInfo;
 import com.xtra.api.projection.channel.ChannelInsertView;
+import com.xtra.api.projection.channel.ChannelStart;
 import com.xtra.api.projection.channel.ChannelView;
 import com.xtra.api.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class ChannelController {
 
     // Stream CRUD
     @GetMapping("")
-    public ResponseEntity<Page<ChannelView>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<ChannelInfo>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(channelService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }

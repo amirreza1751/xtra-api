@@ -2,13 +2,11 @@ package com.xtra.api.projection.channel;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.StreamInput;
 import com.xtra.api.model.StreamType;
 import lombok.Data;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -36,4 +34,6 @@ public class ChannelView {
 
     private Set<Long> servers;
     private Set<Long> collections;
+
+    private List<MergedChannelInfo> infos;
 }

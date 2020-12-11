@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.StreamType;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 
 @Data
@@ -18,5 +18,5 @@ public class ChannelInfo {
     private StreamType streamType;
     private String streamToken;
 
-    private List<MergedChannelInfo> infos;
+    private Set<MergedChannelInfo> infos;
 }
