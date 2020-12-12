@@ -1,7 +1,9 @@
 package com.xtra.api.service;
 
+import com.xtra.api.mapper.ChannelStartMapper;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.ChannelInfo;
+import com.xtra.api.projection.ChannelStart;
 import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
@@ -10,12 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -30,16 +30,18 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final CollectionStreamRepository collectionStreamRepository;
     private final CollectionRepository collectionRepository;
     private final StreamServerRepository streamServerRepository;
+    private final ChannelStartMapper channelStartMapper;
 
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, CollectionStreamRepository collectionStreamRepository, CollectionRepository collectionRepository, StreamServerRepository streamServerRepository) {
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, CollectionStreamRepository collectionStreamRepository, CollectionRepository collectionRepository, StreamServerRepository streamServerRepository, ChannelStartMapper channelStartMapper) {
         super(repository, Channel.class, serverService);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
         this.collectionStreamRepository = collectionStreamRepository;
         this.collectionRepository = collectionRepository;
         this.streamServerRepository = streamServerRepository;
+        this.channelStartMapper = channelStartMapper;
     }
 
 
@@ -153,28 +155,28 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return serverService.sendPlayRequest(stream_token, line_token, server);
     }
 
-    public int changeSource(Long streamId, String portNumber, HttpServletRequest request){
+    public int changeSource(Long streamId, String portNumber, HttpServletRequest request) {
         Optional<Server> srv = serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber);
-        if (srv.isEmpty()){
+        if (srv.isEmpty()) {
             throw new RuntimeException("Server is invalid. Check your ip and port.");
         }
         Server server = srv.get();
         Long serverId = server.getId();
 
         Optional<Channel> ch = this.repository.findById(streamId);
-        if (ch.isEmpty()){
+        if (ch.isEmpty()) {
             throw new RuntimeException("Channel not found");
         }
         Channel channel = ch.get();
         StreamServer streamServer = new StreamServer(new StreamServerId(streamId, serverId));
         List<StreamServer> streamServers = channel.getStreamServers();
-        if (!streamServers.contains(streamServer)){
+        if (!streamServers.contains(streamServer)) {
             throw new RuntimeException("There is a problem with the relation between channel and the server.");
         }
         int nextSource = 0;
-        for (StreamServer item : streamServers){
-            if (item.equals(streamServer)){
-                nextSource = (item.getSelectedSource() + 1)%channel.getStreamInputs().size();
+        for (StreamServer item : streamServers) {
+            if (item.equals(streamServer)) {
+                nextSource = (item.getSelectedSource() + 1) % channel.getStreamInputs().size();
                 item.setSelectedSource(nextSource);
                 break;
             }
@@ -184,11 +186,38 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         this.restartOrFail(streamId, serverId);
         return nextSource;
     }
-    public Channel channelInfo(Long channelId){
+
+    public Channel channelInfo(Long channelId) {
         return this.findByIdOrFail(channelId);
     }
 
-    public Channel channelStart(Long channelId){
+    public Channel channelStart(Long channelId) {
         return this.findByIdOrFail(channelId);
+    }
+
+    public ChannelList getBatchChannel(List<Long> streamIds){
+        List<Channel> channels = repository.findByIdIn(streamIds);
+        List<ChannelStart> channelStarts = new ArrayList<>();
+        channels.forEach(channel -> channelStarts.add(channelStartMapper.convertToDto(channel)));
+        ChannelList channelList = new ChannelList();
+        channelList.setChannelList(channelStarts);
+        return channelList;
+    }
+
+
+
+
+    public void stopAllChannelsOnServer(Long serverId) {
+        var server = serverService.findByIdOrFail(serverId);
+        server.getStreamServers().forEach(streamServer -> {
+            this.stopOrFail(streamServer.getStream().getId(), serverId);
+        });
+    }
+
+    public void restartAllChannelsOnServer(Long serverId) {
+        var server = serverService.findByIdOrFail(serverId);
+        server.getStreamServers().forEach(streamServer -> {
+            this.restartOrFail(streamServer.getStream().getId(), serverId);
+        });
     }
 }

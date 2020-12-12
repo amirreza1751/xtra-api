@@ -4,6 +4,7 @@ import com.xtra.api.mapper.ChannelInfoMapper;
 import com.xtra.api.mapper.ChannelMapper;
 import com.xtra.api.mapper.ChannelStartMapper;
 import com.xtra.api.model.Channel;
+import com.xtra.api.model.ChannelList;
 import com.xtra.api.projection.ChannelInfo;
 import com.xtra.api.projection.ChannelStart;
 import com.xtra.api.projection.ChannelView;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -133,4 +136,10 @@ public class ChannelController {
     public ResponseEntity<ChannelStart> channelStart(@PathVariable Long id){
         return ResponseEntity.ok(channelStartMapper.convertToDto(channelService.channelStart(id)));
     }
+
+    @GetMapping("/batch-get")
+    public ResponseEntity<ChannelList> getBatchChannel(@RequestParam List<Long>  streamIds) {
+        return ResponseEntity.ok(channelService.getBatchChannel(streamIds));
+    }
+
 }

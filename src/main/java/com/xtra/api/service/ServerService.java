@@ -85,7 +85,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         Mono<Boolean> result = this.webClient
                 .get()
                    .uri(URI.create( "http://" + server.getIp() + ":" + server.getCorePort()
-                           + "/streams/streams/" + channelId + "/?serverId=" + server.getId()))
+                           + "/streams/start/" + channelId + "/?serverId=" + server.getId()))
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
@@ -183,5 +183,19 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
 
     public StreamServer saveStreamServer(StreamServer streamServer) {
         return streamServerRepository.save(streamServer);
+    }
+
+    public Boolean startAllChannelsOnServer(Long serverId) {
+        var srv = repository.findById(serverId);
+        Server server = new Server();
+        if (srv.isPresent()){
+            server = srv.get();
+        }
+        StringJoiner joiner = new StringJoiner(",");
+        server.getStreamServers().forEach(streamServer -> {
+            joiner.add(streamServer.getStream().getId().toString());
+        });
+        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-start/?serverId="+serverId + "&streamIds=" + joiner.toString(), Boolean.class);
+        return true;
     }
 }

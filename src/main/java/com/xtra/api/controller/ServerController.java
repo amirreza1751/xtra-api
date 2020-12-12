@@ -51,4 +51,8 @@ public class ServerController {
         return ResponseEntity.ok(serverService.getResource(id));
     }
 
+    @GetMapping("/{id}/streams/start")
+    public ResponseEntity<Boolean> startAllChannelsOnServer(@PathVariable Long id) {
+        return ResponseEntity.ok(serverService.startAllChannelsOnServer(id));
+    }
 }
