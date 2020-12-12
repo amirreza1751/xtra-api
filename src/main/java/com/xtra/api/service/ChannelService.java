@@ -36,23 +36,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final ServerService serverService;
     private final LoadBalancingService loadBalancingService;
     private final ChannelStartMapper channelStartMapper;
-//<<<<<<< HEAD
-//    private final CollectionStreamRepository collectionStreamRepository;
-//    private final CollectionRepository collectionRepository;
-//    private final StreamServerRepository streamServerRepository;
-//    private final ChannelStartMapper channelStartMapper;
-//
-//
-//    @Autowired
-//    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, CollectionStreamRepository collectionStreamRepository, CollectionRepository collectionRepository, StreamServerRepository streamServerRepository, ChannelStartMapper channelStartMapper) {
-//        super(repository, Channel.class, serverService);
-//        this.serverService = serverService;
-//        this.loadBalancingService = loadBalancingService;
-//        this.collectionStreamRepository = collectionStreamRepository;
-//        this.collectionRepository = collectionRepository;
-//        this.streamServerRepository = streamServerRepository;
-//        this.channelStartMapper = channelStartMapper;
-//=======
+
     private final ChannelMapper channelMapper;
 
 
@@ -63,7 +47,6 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         this.loadBalancingService = loadBalancingService;
         this.channelStartMapper = channelStartMapper;
         this.channelMapper = channelMapper;
-//>>>>>>> 418adc79fdb7cc7ca528f1dbc74349439ea5836b
     }
 
 
@@ -151,9 +134,9 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         Channel channel = ch.get();
         StreamServer streamServer = new StreamServer(new StreamServerId(streamId, serverId));
         Set<StreamServer> streamServers = channel.getStreamServers();
-//        if (!streamServers.contains(streamServer)) {
-//            throw new RuntimeException("There is a problem with the relation between the channel and the server.");
-//        }
+        if (!streamServers.contains(streamServer)) {
+            throw new RuntimeException("There is a problem with the relation between the channel and the server.");
+        }
         int nextSource = 0;
         for (StreamServer item : streamServers) {
             if (item.equals(streamServer)) {
@@ -185,20 +168,4 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return channelList;
     }
 
-
-
-
-    public void stopAllChannelsOnServer(Long serverId) {
-        var server = serverService.findByIdOrFail(serverId);
-        server.getStreamServers().forEach(streamServer -> {
-            this.stopOrFail(streamServer.getStream().getId(), serverId);
-        });
-    }
-
-    public void restartAllChannelsOnServer(Long serverId) {
-        var server = serverService.findByIdOrFail(serverId);
-        server.getStreamServers().forEach(streamServer -> {
-            this.restartOrFail(streamServer.getStream().getId(), serverId);
-        });
-    }
 }

@@ -66,4 +66,14 @@ public class ServerController {
     public ResponseEntity<Boolean> startAllChannelsOnServer(@PathVariable Long id) {
         return ResponseEntity.ok(serverService.startAllChannelsOnServer(id));
     }
+
+    @GetMapping("/{id}/streams/stop")
+    public ResponseEntity<Boolean> stopAllChannelsOnServer(@PathVariable Long id) {
+        return ResponseEntity.ok(serverService.stopAllChannelsOnServer(id));
+    }
+
+    @GetMapping("/{id}/streams/restart")
+    public ResponseEntity<Boolean> restartAllChannelsOnServer(@PathVariable Long id) {
+        return ResponseEntity.ok(serverService.restartAllChannelsOnServer(id));
+    }
 }

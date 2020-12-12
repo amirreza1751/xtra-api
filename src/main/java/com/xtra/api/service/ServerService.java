@@ -197,8 +197,36 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         server.getStreamServers().forEach(streamServer -> {
             joiner.add(streamServer.getStream().getId().toString());
         });
-        System.out.println("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-start/?serverId="+serverId + "&streamIds=" + joiner.toString());
         new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-start/?serverId="+serverId + "&streamIds=" + joiner.toString(), Boolean.class);
         return true;
     }
+
+    public Boolean stopAllChannelsOnServer(Long serverId) {
+        var srv = repository.findById(serverId);
+        Server server = new Server();
+        if (srv.isPresent()){
+            server = srv.get();
+        }
+        StringJoiner joiner = new StringJoiner(",");
+        server.getStreamServers().forEach(streamServer -> {
+            joiner.add(streamServer.getStream().getId().toString());
+        });
+        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-stop/?streamIds=" + joiner.toString(), Boolean.class);
+        return true;
+    }
+
+    public Boolean restartAllChannelsOnServer(Long serverId) {
+        var srv = repository.findById(serverId);
+        Server server = new Server();
+        if (srv.isPresent()){
+            server = srv.get();
+        }
+        StringJoiner joiner = new StringJoiner(",");
+        server.getStreamServers().forEach(streamServer -> {
+            joiner.add(streamServer.getStream().getId().toString());
+        });
+        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-restart/?serverId="+serverId + "&streamIds=" + joiner.toString(), Boolean.class);
+        return true;
+    }
+
 }
