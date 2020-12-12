@@ -60,8 +60,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
     public Channel insert(Channel channel, boolean start) {
-//        if (repository.existsByName(channel.getName()))
-//            throw new MethodArgumentNotValidException(this.getClass().getMethod(""));
+        //@todo check validation check
         String token;
         do {
             token = generateRandomString(10, 16, false);
@@ -71,6 +70,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         channel.setStreamInputs(emptyIfNull(channel.getStreamInputs()).stream().distinct().collect(Collectors.toList()));
         var savedEntity = repository.save(channel);
 
+        savedEntity.updateRelationIds();
+        repository.save(savedEntity);
         var serverIds = emptyIfNull(savedEntity.getStreamServers()).stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
         if (start) {
             //@todo start servers
@@ -83,14 +84,13 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
     public Channel update(Long id, Channel channel, boolean restart) {
-
+        //@todo check validation check
         Channel oldChannel = findByIdOrFail(id);
         copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "lineActivities");
-        //oldChannel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
+        oldChannel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
+        oldChannel.updateRelationIds();
 
-        //oldChannel.getStreamServers().forEach(streamServerRepository::delete);
         var savedEntity = repository.save(oldChannel);
-
         if (savedEntity.getStreamServers() != null) {
             var serverIds = savedEntity.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
             if (restart) {

@@ -1,7 +1,9 @@
 package com.xtra.api.mapper;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
-import com.xtra.api.model.*;
+import com.xtra.api.model.Channel;
+import com.xtra.api.model.CollectionStream;
+import com.xtra.api.model.StreamServer;
 import com.xtra.api.projection.channel.ChannelInfo;
 import com.xtra.api.projection.channel.ChannelInsertView;
 import com.xtra.api.projection.channel.ChannelView;
@@ -36,11 +38,8 @@ public abstract class ChannelMapper {
             Set<StreamServer> streamServers = new HashSet<>();
             for (Long serverId : serverIds) {
                 StreamServer streamServer = new StreamServer();
-                streamServer.setId(new StreamServerId(channel.getId(), serverId));
-
                 var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
                 streamServer.setServer(server);
-                streamServer.setStream(channel);
                 streamServers.add(streamServer);
             }
             channel.setStreamServers(streamServers);
@@ -50,10 +49,9 @@ public abstract class ChannelMapper {
         if (collectionIds != null) {
             Set<CollectionStream> collectionStreams = new HashSet<>();
             for (var id : collectionIds) {
-                var collectionStream = new CollectionStream(new CollectionStreamId(id, channel.getId()));
+                var collectionStream = new CollectionStream();
                 var orderCount = collectionStreamRepository.countAllByIdCollectionId(id);
                 collectionStream.setOrder(orderCount + 1);
-                collectionStream.setStream(channel);
                 var col = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("collection", id.toString()));
                 collectionStream.setCollection(col);
                 collectionStreams.add(collectionStream);
@@ -68,7 +66,7 @@ public abstract class ChannelMapper {
 
     public Set<Long> convertToServerIds(Set<StreamServer> streamServers) {
         if (streamServers == null) return null;
-        return streamServers.stream().map(streamServer -> streamServer.getId().getServerId()).collect(Collectors.toSet());
+        return streamServers.stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
     }
 
     public Set<Long> convertToCollectionIds(Set<CollectionStream> collectionStreams) {

@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -59,11 +60,11 @@ public class Stream {
 
     @JsonIgnore
     @JsonManagedReference("stream_server")
-    @OneToMany(mappedBy = "stream", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.MERGE})
     private Set<StreamServer> streamServers;
 
 
-    @OneToMany(mappedBy = "stream")
+    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.MERGE})
     private Set<CollectionStream> collectionAssigns;
 
     @ElementCollection
@@ -92,6 +93,23 @@ public class Stream {
 
     public Stream() {
 
+    }
+
+    public void updateRelationIds() {
+        if (streamServers != null) {
+            setStreamServers(getStreamServers().stream().peek(streamServer -> {
+                        streamServer.setId(new StreamServerId(getId(), streamServer.getServer().getId()));
+                        streamServer.setStream(this);
+                    }
+            ).collect(Collectors.toSet()));
+        }
+
+        if (getCollectionAssigns() != null) {
+            setCollectionAssigns(getCollectionAssigns().stream().peek(collectionStream -> {
+                collectionStream.setId(new CollectionStreamId(collectionStream.getCollection().getId(), getId()));
+                collectionStream.setStream(this);
+            }).collect(Collectors.toSet()));
+        }
     }
 
     @Override
