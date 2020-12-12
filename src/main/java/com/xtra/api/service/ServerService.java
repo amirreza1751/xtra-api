@@ -153,6 +153,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         List<Server> servers = serverRepository.findAll();
         servers.forEach(server -> {
             try {
+                if (server.getIp() == null || server.getCorePort() == null)
+                    return;
                 Resource r = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/?interfaceName=" + server.getInterfaceName(), Resource.class);
                 if (r != null) {
                     Resource resource = new Resource();
@@ -166,7 +168,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
                 } else
                     throw new RuntimeException("Error in fetching resource");
             } catch (RestClientException e) {
-                System.out.println(e.getMostSpecificCause().getMessage());
+                //System.out.println(e.getMostSpecificCause().getMessage());
             }
         });
     }
@@ -195,6 +197,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         server.getStreamServers().forEach(streamServer -> {
             joiner.add(streamServer.getStream().getId().toString());
         });
+        System.out.println("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-start/?serverId="+serverId + "&streamIds=" + joiner.toString());
         new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-start/?serverId="+serverId + "&streamIds=" + joiner.toString(), Boolean.class);
         return true;
     }

@@ -2,9 +2,9 @@ package com.xtra.api.mapper;
 
 import com.xtra.api.model.*;
 import com.xtra.api.model.Package;
-import com.xtra.api.projection.DlCollectionDto;
-import com.xtra.api.projection.PackageInsertView;
-import com.xtra.api.projection.PackageView;
+import com.xtra.api.projection.downloadlist.DlCollectionView;
+import com.xtra.api.projection.package_.PackageInsertView;
+import com.xtra.api.projection.package_.PackageView;
 import com.xtra.api.service.CollectionService;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -30,8 +30,8 @@ public abstract class PackageMapper {
         else return null;
     }
 
-    Set<DlCollectionDto> convertCollectionsToView(DownloadList defaultDownloadList) {
-        return defaultDownloadList.getCollectionsAssign().stream().map(dlc -> new DlCollectionDto(dlc.getCollection().getId(), dlc.getCollection().getName())).collect(Collectors.toSet());
+    Set<DlCollectionView> convertCollectionsToView(DownloadList defaultDownloadList) {
+        return defaultDownloadList.getCollectionsAssign().stream().map(dlc -> new DlCollectionView(dlc.getCollection().getId(), dlc.getCollection().getName())).collect(Collectors.toSet());
     }
 
     @Mapping(target = "defaultDownloadList", ignore = true)

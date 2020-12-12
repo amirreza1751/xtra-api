@@ -1,21 +1,20 @@
-package com.xtra.api.projection;
+package com.xtra.api.projection.collection;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.*;
+import com.xtra.api.model.CollectionType;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CollectionDto {
+public class CollectionInsertView {
     private Long id;
     private String name;
     private CollectionType type;
-    private Set<MediaPair<Long, String>> channels;
-    private Set<MediaPair<Long, String>> movies;
-    private Set<MediaPair<Long, String>> series;
-    private Set<MediaPair<Long, String>> radios;
+    private List<Long> channels;
+    private List<Long> movies;
+    private List<Long> series;
+    private List<Long> radios;
 }

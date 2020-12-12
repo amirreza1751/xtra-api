@@ -1,8 +1,8 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.mapper.RoleMapper;
-import com.xtra.api.projection.RoleInsertView;
-import com.xtra.api.projection.RoleView;
+import com.xtra.api.projection.role.RoleInsertView;
+import com.xtra.api.projection.role.RoleView;
 import com.xtra.api.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

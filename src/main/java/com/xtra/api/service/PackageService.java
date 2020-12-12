@@ -2,8 +2,8 @@ package com.xtra.api.service;
 
 import com.xtra.api.mapper.PackageMapper;
 import com.xtra.api.model.Package;
-import com.xtra.api.projection.PackageInsertView;
-import com.xtra.api.projection.PackageView;
+import com.xtra.api.projection.package_.PackageInsertView;
+import com.xtra.api.projection.package_.PackageView;
 import com.xtra.api.repository.PackageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

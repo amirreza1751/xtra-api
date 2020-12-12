@@ -1,47 +1,72 @@
 package com.xtra.api.mapper;
 
+import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.ChannelView;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import com.xtra.api.projection.channel.ChannelInfo;
+import com.xtra.api.projection.channel.ChannelInsertView;
+import com.xtra.api.projection.channel.ChannelView;
+import com.xtra.api.projection.channel.MergedChannelInfo;
+import com.xtra.api.repository.CollectionRepository;
+import com.xtra.api.repository.CollectionStreamRepository;
+import com.xtra.api.repository.ServerRepository;
+import org.mapstruct.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public abstract class ChannelMapper {
 
+    @Autowired
+    private ServerRepository serverRepository;
+    @Autowired
+    private CollectionStreamRepository collectionStreamRepository;
+    @Autowired
+    private CollectionRepository collectionRepository;
 
-    /*@Mapping(source = "collections", target = "collectionAssigns")
-    @Mapping(source = "servers", target = "streamServers")*/
-    public abstract Channel convertToEntity(ChannelView channelView);
+    @Mapping(target = "streamType", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    public abstract Channel convertToEntity(ChannelInsertView channelView);
 
-    /*public Set<CollectionStream> addCollectionRelations(List<Long> collectionIds) {
-        if (collectionIds == null) return null;
-        var collectionAssigns = new HashSet<CollectionStream>();
-        for (var id : collectionIds) {
-            collectionAssigns.add(new CollectionStream(new CollectionStreamId(id, null)));
+    @AfterMapping
+    void convertServerIdsAndCollectionIds(final ChannelInsertView channelView, @MappingTarget final Channel channel) {
+        var serverIds = channelView.getServers();
+        if (serverIds != null) {
+            Set<StreamServer> streamServers = new HashSet<>();
+            for (Long serverId : serverIds) {
+                StreamServer streamServer = new StreamServer();
+                streamServer.setId(new StreamServerId(channel.getId(), serverId));
+
+                var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
+                streamServer.setServer(server);
+                streamServer.setStream(channel);
+                streamServers.add(streamServer);
+            }
+            channel.setStreamServers(streamServers);
         }
-        return collectionAssigns;
+
+        var collectionIds = channelView.getCollections();
+        if (collectionIds != null) {
+            Set<CollectionStream> collectionStreams = new HashSet<>();
+            for (var id : collectionIds) {
+                var collectionStream = new CollectionStream(new CollectionStreamId(id, channel.getId()));
+                var orderCount = collectionStreamRepository.countAllByIdCollectionId(id);
+                collectionStream.setOrder(orderCount + 1);
+                collectionStream.setStream(channel);
+                var col = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("collection", id.toString()));
+                collectionStream.setCollection(col);
+                collectionStreams.add(collectionStream);
+            }
+            channel.setCollectionAssigns(collectionStreams);
+        }
     }
-
-    public List<StreamServer> convertServerIds(Set<Long> ids) {
-        if (ids == null) return null;
-        List<StreamServer> servers = new ArrayList<>();
-        for (var id : ids) {
-            servers.add(new StreamServer(new StreamServerId(null, id)));
-        }
-        return servers;
-    }*/
 
     @Mapping(source = "streamServers", target = "servers")
     @Mapping(source = "collectionAssigns", target = "collections")
-    public abstract ChannelView convertToDto(Channel channel);
+    public abstract ChannelView convertToView(Channel channel);
 
-    public Set<Long> convertToServerIds(List<StreamServer> streamServers) {
+    public Set<Long> convertToServerIds(Set<StreamServer> streamServers) {
         if (streamServers == null) return null;
         return streamServers.stream().map(streamServer -> streamServer.getId().getServerId()).collect(Collectors.toSet());
     }
@@ -49,5 +74,15 @@ public abstract class ChannelMapper {
     public Set<Long> convertToCollectionIds(Set<CollectionStream> collectionStreams) {
         if (collectionStreams == null) return null;
         return collectionStreams.stream().map(collectionStream -> collectionStream.getCollection().getId()).collect(Collectors.toSet());
+    }
+
+    @Mapping(source = "streamServers", target = "infos")
+    public abstract ChannelInfo convertToChannelInfo(Channel channel);
+
+    public Set<MergedChannelInfo> convertToInfosMap(Set<StreamServer> streamServers) {
+        if (streamServers == null) return null;
+        Set<MergedChannelInfo> infos = new HashSet<>();
+        streamServers.forEach(streamServer -> infos.add(new MergedChannelInfo(streamServer.getStreamInfo(), streamServer.getProgressInfo())));
+        return infos;
     }
 }

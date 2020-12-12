@@ -1,12 +1,16 @@
 package com.xtra.api.service;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.mapper.LineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineActivity;
 import com.xtra.api.model.LineStatus;
+import com.xtra.api.projection.line.LineInsertView;
+import com.xtra.api.projection.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -14,20 +18,21 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.*;
 
 @Service
 public class LineService extends CrudService<Line, Long, LineRepository> {
     private final LineRepository lineRepository;
-    private final ServerService serverService;
     private final LineActivityRepository lineActivityRepository;
+    private final LineMapper lineMapper;
 
-    public LineService(LineRepository lineRepository, ServerService serverService, LineActivityRepository lineActivityRepository) {
+    public LineService(LineRepository lineRepository, LineActivityRepository lineActivityRepository, LineMapper lineMapper) {
         super(lineRepository, Line.class);
         this.lineRepository = lineRepository;
-        this.serverService = serverService;
         this.lineActivityRepository = lineActivityRepository;
+        this.lineMapper = lineMapper;
     }
 
     private Line findByTokenOrFail(String token) {
@@ -67,6 +72,18 @@ public class LineService extends CrudService<Line, Long, LineRepository> {
             return LineStatus.NOT_FOUND;
     }
 
+    public Page<LineView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+        return new PageImpl<>(findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(lineMapper::convertToView).collect(Collectors.toList()));
+    }
+
+    public LineView getById(Long id) {
+        return lineMapper.convertToView(findByIdOrFail(id));
+    }
+
+    public LineView add(LineInsertView lineInsertView) {
+        return lineMapper.convertToView(insert(lineMapper.convertToEntity(lineInsertView)));
+    }
+
     @Override
     public Line insert(Line line) {
         if (StringUtils.isEmpty(line.getUsername())) {
@@ -97,6 +114,10 @@ public class LineService extends CrudService<Line, Long, LineRepository> {
 
         line.setLineToken(token);
         return lineRepository.save(line);
+    }
+
+    public LineView save(Long id, LineInsertView lineInsertView) {
+        return lineMapper.convertToView(updateOrFail(id, lineMapper.convertToEntity(lineInsertView)));
     }
 
     public void updateLineBlock(Long id, boolean blocked) {
@@ -139,4 +160,7 @@ public class LineService extends CrudService<Line, Long, LineRepository> {
     protected Page<Line> findWithSearch(Pageable page, String search) {
         return lineRepository.findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(search, search, search, page);
     }
+
+
+
 }

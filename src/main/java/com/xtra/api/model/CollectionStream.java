@@ -32,7 +32,7 @@ public class CollectionStream {
     }
 
     public CollectionStream() {
-
+        id = new CollectionStreamId();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class CollectionStream {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CollectionStream that = (CollectionStream) o;
-        return Objects.equal(id, that.id);
+        return Objects.equal(stream.getId(), that.stream.getId()) && Objects.equal(collection.getId(), that.collection.getId());
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.xtra.api.mapper;
 
 import com.xtra.api.model.Channel;
-import com.xtra.api.projection.ChannelStart;
+import com.xtra.api.projection.channel.ChannelStart;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

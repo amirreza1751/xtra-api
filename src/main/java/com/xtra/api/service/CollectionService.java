@@ -1,10 +1,9 @@
 package com.xtra.api.service;
 
 import com.google.common.collect.Sets;
-import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.CollectionMapper;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.CollectionInsertDto;
+import com.xtra.api.projection.collection.CollectionInsertView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
 import com.xtra.api.repository.StreamRepository;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -60,7 +58,7 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
         return super.insert(collection);
     }
 
-    public Collection updateOrFail(Long id, CollectionInsertDto collection) {
+    public Collection updateOrFail(Long id, CollectionInsertView collection) {
         collection.setId(id);
         var newColl = mapper.convertToEntity(collection);
         var oldColl = findByIdOrFail(id);

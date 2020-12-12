@@ -1,8 +1,7 @@
-package com.xtra.api.projection;
+package com.xtra.api.projection.downloadlist;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.Reseller;
 import lombok.Data;
 
 import java.util.List;
@@ -13,5 +12,5 @@ public class DownloadListView {
     private Long id;
     private String name;
 
-    private List<DlCollectionDto> collections;
+    private List<DlCollectionView> collections;
 }

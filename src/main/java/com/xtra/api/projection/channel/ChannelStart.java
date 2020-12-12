@@ -1,4 +1,4 @@
-package com.xtra.api.projection;
+package com.xtra.api.projection.channel;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -18,6 +18,6 @@ public class ChannelStart {
     private String name;
     private String streamToken;
 
-    private List<StreamInput> streamInputs;
+    private List<String> streamInputs;
     private List<StreamServer> streamServers;
 }

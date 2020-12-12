@@ -1,13 +1,11 @@
-package com.xtra.api.projection;
+package com.xtra.api.projection.channel;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.ProgressInfo;
-import com.xtra.api.model.StreamInfo;
 import com.xtra.api.model.StreamType;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 
 @Data
@@ -20,5 +18,5 @@ public class ChannelInfo {
     private StreamType streamType;
     private String streamToken;
 
-    private List<MergedChannelInfo> infos;
+    private Set<MergedChannelInfo> infos;
 }
