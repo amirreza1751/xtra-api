@@ -54,10 +54,6 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
     private final WebClient webClient;
 
-    @Value("${core.apiPath}")
-    private String corePath;
-    @Value("${core.apiPort}")
-    private String corePort;
 
     @Autowired
     protected ServerService(ServerRepository repository, ServerRepository serverRepository, ResourceRepository resourceRepository, LineActivityRepository lineActivityRepository, StreamServerRepository streamServerRepository, WebClient.Builder webClientBuilder) {
@@ -72,9 +68,10 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     public List<File> getFiles(Long id, String path) {
+        Server server = findByIdOrFail(id);
         List<File> result = null;
         try {
-            result = new RestTemplate().getForObject(corePath + ":" + corePort + "/file/list_files?path=" + path, List.class);
+            result = new RestTemplate().getForObject(server.getIp() + ":" + server.getCorePort() + "/file/list_files?path=" + path, List.class);
         } catch (HttpClientErrorException exception) {
             System.out.println(exception.getMessage());
         }
@@ -84,8 +81,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     public boolean sendStartRequest(Long channelId, Server server) {
         Mono<Boolean> result = this.webClient
                 .get()
-                   .uri(URI.create( "http://" + server.getIp() + ":" + server.getCorePort()
-                           + "/streams/start/" + channelId + "/?serverId=" + server.getId()))
+                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/start/" + channelId + "/?serverId=" + server.getId()))
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
@@ -111,7 +108,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return repository.findByName(search);
     }
 
-    public void sendEncodeRequest(Movie movie) {
+    /*public void sendEncodeRequest(Movie movie) {
         new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", movie, String.class);
     }
 
@@ -121,7 +118,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
 
     public String SetAudioRequest(Movie movie) {
         return new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/set_audios/", movie, String.class);
-    }
+    }*/
 
 
     @Override
@@ -188,25 +185,17 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     public Boolean startAllChannelsOnServer(Long serverId) {
-        var srv = repository.findById(serverId);
-        Server server = new Server();
-        if (srv.isPresent()){
-            server = srv.get();
-        }
+        var server = findByIdOrFail(serverId);
         StringJoiner joiner = new StringJoiner(",");
         server.getStreamServers().forEach(streamServer -> {
             joiner.add(streamServer.getStream().getId().toString());
         });
-        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-start/?serverId="+serverId + "&streamIds=" + joiner.toString(), Boolean.class);
+        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-start/?serverId=" + serverId + "&streamIds=" + joiner.toString(), Boolean.class);
         return true;
     }
 
     public Boolean stopAllChannelsOnServer(Long serverId) {
-        var srv = repository.findById(serverId);
-        Server server = new Server();
-        if (srv.isPresent()){
-            server = srv.get();
-        }
+        var server = findByIdOrFail(serverId);
         StringJoiner joiner = new StringJoiner(",");
         server.getStreamServers().forEach(streamServer -> {
             joiner.add(streamServer.getStream().getId().toString());
@@ -216,16 +205,12 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     public Boolean restartAllChannelsOnServer(Long serverId) {
-        var srv = repository.findById(serverId);
-        Server server = new Server();
-        if (srv.isPresent()){
-            server = srv.get();
-        }
+        var server = findByIdOrFail(serverId);
         StringJoiner joiner = new StringJoiner(",");
         server.getStreamServers().forEach(streamServer -> {
             joiner.add(streamServer.getStream().getId().toString());
         });
-        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-restart/?serverId="+serverId + "&streamIds=" + joiner.toString(), Boolean.class);
+        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-restart/?serverId=" + serverId + "&streamIds=" + joiner.toString(), Boolean.class);
         return true;
     }
 
