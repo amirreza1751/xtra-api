@@ -134,9 +134,6 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         Channel channel = ch.get();
         StreamServer streamServer = new StreamServer(new StreamServerId(streamId, serverId));
         Set<StreamServer> streamServers = channel.getStreamServers();
-        if (!streamServers.contains(streamServer)) {
-            throw new RuntimeException("There is a problem with the relation between the channel and the server.");
-        }
         int nextSource = 0;
         for (StreamServer item : streamServers) {
             if (item.equals(streamServer)) {
