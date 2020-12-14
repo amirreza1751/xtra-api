@@ -77,9 +77,9 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return repository.save(movie);
     }
 
-    public Long getByToken(String vodToken) {
-        var movie = repository.findByToken(vodToken);
-        return movie.map(Vod::getId).orElse(null);
+    public Video getByToken(String vodToken) {
+        var m = repository.findByToken(vodToken);
+        return m.map(movie -> movie.getVideos().stream().findFirst().get()).orElse(null);
     }
 
     public Movie updateOrFail(Long id, Movie movie, boolean encode) {
