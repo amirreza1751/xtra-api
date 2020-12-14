@@ -20,7 +20,11 @@ public abstract class ChannelInfoMapper {
     public Set<MergedChannelInfo> convertToInfosMap(Set<StreamServer> streamServers) {
         if (streamServers == null) return null;
         Set<MergedChannelInfo> infos = new HashSet<>();
-        streamServers.forEach(streamServer -> infos.add(new MergedChannelInfo(streamServer.getStreamInfo(), streamServer.getProgressInfo())));
+        streamServers.forEach(streamServer -> {
+            var mergedInfo = new MergedChannelInfo(streamServer.getStreamInfo(), streamServer.getProgressInfo());
+            mergedInfo.setServerName(streamServer.getServer().getName());
+            infos.add(mergedInfo);
+        });
         return infos;
     }
 

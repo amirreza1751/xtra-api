@@ -15,7 +15,7 @@ public class Movie extends Vod {
     @OneToOne(cascade = CascadeType.ALL)
     private MovieInfo info;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Video> videos;
 
 

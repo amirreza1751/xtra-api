@@ -12,6 +12,7 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class MergedChannelInfo {
 
+    private String serverName;
     private StreamInfo streamInfo;
     private ProgressInfo progressInfo;
 
