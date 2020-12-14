@@ -58,13 +58,12 @@ public class Stream {
     private TranscodeProfile transcodeProfile;
     private String customFFMPEG;
 
-    @JsonIgnore
     @JsonManagedReference("stream_server")
-    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.MERGE})
+    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     private Set<StreamServer> streamServers;
 
 
-    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.MERGE})
+    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     private Set<CollectionStream> collectionAssigns;
 
     @ElementCollection
