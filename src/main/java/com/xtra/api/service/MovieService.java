@@ -40,7 +40,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         movie.setToken(token);
 
         if (encode) {
-            serverService.sendEncodeRequest(movie);
+            serverService.sendEncodeRequest(movie.getVideos().stream().findFirst().get());
         }
         return super.insert(movie);
     }
@@ -73,7 +73,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
     public Movie encode(Long id) {
         var movie = findByIdOrFail(id);
-        serverService.sendEncodeRequest(movie);
+        serverService.sendEncodeRequest(movie.getVideos().stream().findFirst().get());
         return repository.save(movie);
     }
 
