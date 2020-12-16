@@ -50,7 +50,7 @@ public class MovieController {
     }
 
     @GetMapping("/token/{vod_token}/id")
-    public ResponseEntity<Long> getVodIdByToken(@PathVariable("vod_token") String vodToken) {
+    public ResponseEntity<Video> getVodIdByToken(@PathVariable("vod_token") String vodToken) {
         return ResponseEntity.ok(movieService.getByToken(vodToken));
     }
 
