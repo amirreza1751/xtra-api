@@ -1,5 +1,6 @@
 package com.xtra.api.projection.line;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.StreamProtocol;
@@ -18,6 +19,8 @@ public class LineView {
     private String username;
     private String password;
     private String lineToken;
+    @JsonFormat
+            (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;
