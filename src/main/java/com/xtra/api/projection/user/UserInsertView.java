@@ -6,7 +6,6 @@ import com.xtra.api.model.UserType;
 import lombok.Data;
 
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UserInsertView {
     protected Long id;
 
