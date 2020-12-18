@@ -2,7 +2,6 @@ package com.xtra.api.service;
 
 import com.xtra.api.mapper.AdminMapper;
 import com.xtra.api.model.Admin;
-import com.xtra.api.model.User;
 import com.xtra.api.projection.admin.AdminInsertView;
 import com.xtra.api.projection.admin.AdminView;
 import com.xtra.api.repository.AdminRepository;
@@ -44,7 +43,7 @@ public class AdminService extends CrudService<Admin, Long, AdminRepository> {
         var existingAdmin = findByIdOrFail(id);
         List<String> toIgnore = new ArrayList<>();
         toIgnore.add("id");
-        if (insertView.getRoleId() == null) toIgnore.add("roleId");
+        if (insertView.getRole() == null) toIgnore.add("roleId");
         if (insertView.getPassword() == null) toIgnore.add("password");
         else insertView.setPassword(bCryptPasswordEncoder.encode(insertView.getPassword()));
         copyProperties(adminMapper.convertToEntity(insertView), existingAdmin, toIgnore.toArray(new String[0]));

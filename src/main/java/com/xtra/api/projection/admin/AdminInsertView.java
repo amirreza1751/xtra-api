@@ -7,12 +7,12 @@ import lombok.Data;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class AdminInsertView{
+public class AdminInsertView {
     protected Long id;
     protected String username;
     protected String password;
-    private String firstName;
-    private String lastName;
+    private String firstname;
+    private String lastname;
     protected String email;
     protected String _2FASec;
     protected boolean isBanned;

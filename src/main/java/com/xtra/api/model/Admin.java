@@ -9,8 +9,8 @@ import javax.persistence.Entity;
 @Entity
 @Data
 public class Admin extends User {
-    private String firstName;
-    private String lastName;
+    private String firstname;
+    private String lastname;
 
     public Admin() {
         setUserType(UserType.ADMIN);

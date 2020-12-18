@@ -21,17 +21,25 @@ public abstract class AdminMapper {
 
     public abstract Admin convertToEntity(AdminInsertView view);
 
+    Role convertToId(Long roleId) {
+        if (roleId == null)
+            return null;//todo throw exception
+        return roleService.findByIdOrFail(roleId);
+    }
+
     @AfterMapping
     void addRole(final AdminInsertView view, @MappingTarget final Admin admin) {
-        if (view.getRoleId() == null)
+        if (view.getRole() == null)
             return;//todo throw exception
-        var role = roleService.findByIdOrFail(view.getRoleId());
+        var role = roleService.findByIdOrFail(view.getRole());
         admin.setRole(role);
     }
 
     public abstract AdminView convertToView(Admin admin);
 
     Long convertRoleToId(Role role) {
+        if (role == null)
+            return null;
         return role.getId();
     }
 
