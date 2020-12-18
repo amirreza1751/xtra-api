@@ -1,9 +1,12 @@
 package com.xtra.api.projection.admin;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.UserType;
 import lombok.Data;
 
 @Data
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class AdminInsertView{
     protected Long id;
     protected String username;
@@ -15,5 +18,5 @@ public class AdminInsertView{
     protected boolean isBanned;
     protected UserType userType;
 
-    protected Long roleId;
+    protected Long role;
 }

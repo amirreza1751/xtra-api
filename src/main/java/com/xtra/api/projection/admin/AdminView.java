@@ -7,6 +7,7 @@ import com.xtra.api.projection.role.RoleView;
 import lombok.Data;
 
 @Data
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class AdminView {
     protected long id;
 
