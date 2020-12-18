@@ -1,7 +1,5 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.projection.admin.AdminSimpleView;
-import com.xtra.api.projection.user.UserInsertView;
 import com.xtra.api.projection.user.UserView;
 import com.xtra.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
