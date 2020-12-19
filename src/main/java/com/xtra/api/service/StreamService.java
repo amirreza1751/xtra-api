@@ -13,10 +13,7 @@ import org.checkerframework.checker.nullness.Opt;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -79,6 +76,13 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     public boolean startOrFail(Long id, Long serverId) {
         Optional<S> ch = repository.findById(id);
         if (ch.isPresent()) {
+            if (serverId == null){
+                Set<Server> servers = ch.get().getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toSet());
+                for (Server server : servers) {
+                    serverService.sendStartRequest(id, server);
+                }
+                return true;
+            }
             Server server = serverService.findByIdOrFail(serverId);
             return serverService.sendStartRequest(id, server);
         } else
@@ -89,13 +93,15 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
         Optional<S> streamById = repository.findById(id);
         if (streamById.isPresent()) {
             S stream = streamById.get();
+            if (serverId == null){
+                Set<Server> servers = stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toSet());
+                for (Server server : servers) {
+                    serverService.sendStopRequest(id, server);
+                }
+                return true;
+            }
             Server server = serverService.findByIdOrFail(serverId);
-            if (!serverService.sendStopRequest(stream.getId(), server))
-                return false;
-            //stream.setStreamInfo(null);
-            //stream.setProgressInfo(null);
-            repository.save(stream);
-            return true;
+            return serverService.sendStopRequest(stream.getId(), server);
         } else
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
     }
@@ -104,6 +110,13 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
         Optional<S> streamById = repository.findById(id);
         if (streamById.isPresent()) {
             S stream = streamById.get();
+            if (serverId == null){
+                Set<Server> servers = stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toSet());
+                for (Server server : servers) {
+                    serverService.sendRestartRequest(id, server);
+                }
+                return true;
+            }
             Server server = serverService.findByIdOrFail(serverId);
             serverService.sendRestartRequest(stream.getId(), server);
             return true;
