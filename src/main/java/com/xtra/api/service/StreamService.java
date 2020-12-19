@@ -76,7 +76,8 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     public boolean startOrFail(Long id, Long serverId) {
         Optional<S> ch = repository.findById(id);
         if (ch.isPresent()) {
-            if (serverId == null){
+            if (serverId == 0L){
+                System.out.println("0: start all");
                 Set<Server> servers = ch.get().getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toSet());
                 for (Server server : servers) {
                     serverService.sendStartRequest(id, server);
@@ -93,7 +94,7 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
         Optional<S> streamById = repository.findById(id);
         if (streamById.isPresent()) {
             S stream = streamById.get();
-            if (serverId == null){
+            if (serverId == 0L){
                 Set<Server> servers = stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toSet());
                 for (Server server : servers) {
                     serverService.sendStopRequest(id, server);
@@ -110,7 +111,7 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
         Optional<S> streamById = repository.findById(id);
         if (streamById.isPresent()) {
             S stream = streamById.get();
-            if (serverId == null){
+            if (serverId == 0L){
                 Set<Server> servers = stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toSet());
                 for (Server server : servers) {
                     serverService.sendRestartRequest(id, server);
