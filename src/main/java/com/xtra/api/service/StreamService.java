@@ -73,53 +73,46 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
 
     }
 
-    public boolean startOrFail(Long id, Long serverId) {
+    public boolean startOrFail(Long id, List<Long> serverIds) {
         Optional<S> ch = repository.findById(id);
+        List<Server> servers = null;
         if (ch.isPresent()) {
-            if (serverId == 0L){
-                System.out.println("0: start all");
-                Set<Server> servers = ch.get().getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toSet());
-                for (Server server : servers) {
-                    serverService.sendStartRequest(id, server);
-                }
-                return true;
+            if (serverIds == null){
+                servers = ch.get().getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
+            } else servers = serverService.findByIdIn(serverIds);
+            for (Server server : servers) {
+                serverService.sendStartRequest(id, server);
             }
-            Server server = serverService.findByIdOrFail(serverId);
-            return serverService.sendStartRequest(id, server);
+            return true;
         } else
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
     }
 
-    public boolean stopOrFail(Long id, Long serverId) {
+    public boolean stopOrFail(Long id, List<Long> serverIds) {
         Optional<S> streamById = repository.findById(id);
+        List<Server> servers = null;
         if (streamById.isPresent()) {
-            S stream = streamById.get();
-            if (serverId == 0L){
-                Set<Server> servers = stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toSet());
-                for (Server server : servers) {
-                    serverService.sendStopRequest(id, server);
-                }
-                return true;
+            if (serverIds == null){
+                servers = streamById.get().getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
+            } else servers = serverService.findByIdIn(serverIds);
+            for (Server server : servers) {
+                serverService.sendStopRequest(id, server);
             }
-            Server server = serverService.findByIdOrFail(serverId);
-            return serverService.sendStopRequest(stream.getId(), server);
+            return true;
         } else
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
     }
 
-    public boolean restartOrFail(Long id, Long serverId) {
+    public boolean restartOrFail(Long id, List<Long> serverIds) {
         Optional<S> streamById = repository.findById(id);
+        List<Server> servers = null;
         if (streamById.isPresent()) {
-            S stream = streamById.get();
-            if (serverId == 0L){
-                Set<Server> servers = stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toSet());
-                for (Server server : servers) {
-                    serverService.sendRestartRequest(id, server);
-                }
-                return true;
+            if (serverIds == null){
+                servers = streamById.get().getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
+            } else servers = serverService.findByIdIn(serverIds);
+            for (Server server : servers) {
+                serverService.sendRestartRequest(id, server);
             }
-            Server server = serverService.findByIdOrFail(serverId);
-            serverService.sendRestartRequest(stream.getId(), server);
             return true;
         } else
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());

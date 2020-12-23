@@ -163,6 +163,10 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return repository.findByIpAndCorePort(ip, corePort);
     }
 
+    public List<Server> findByIdIn(List<Long> ids){
+        return repository.findByIdIn(ids);
+    }
+
     public Resource getResource(Long serverId) {
         var srv = repository.findById(serverId);
         if (srv.isPresent()) {

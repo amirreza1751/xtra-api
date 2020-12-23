@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/channels")
@@ -63,24 +64,25 @@ public class ChannelController {
     }
 
     // Stream Operations
-    @GetMapping("/start/{id}/")
-    public ResponseEntity<String> startChannel(@PathVariable Long id, @RequestParam (defaultValue = "0", required = false) Long serverId) {
-        if (channelService.startOrFail(id, serverId))
-            return ResponseEntity.ok().build();
-        else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
-
-    @GetMapping("/stop/{id}")
-    public ResponseEntity<?> stopChannel(@PathVariable Long id, @RequestParam (defaultValue = "0", required = false) Long serverId) {
-        if (channelService.stopOrFail(id, serverId))
+    @GetMapping("/{id}/start/")
+    public ResponseEntity<String> startChannel(@PathVariable Long id, @RequestParam (required = false) List<Long> servers) {
+        if (channelService.startOrFail(id, servers))
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-    @GetMapping("/restart/{id}")
-    public ResponseEntity<String> restartChannel(@PathVariable Long id, @RequestParam (defaultValue = "0", required = false) Long serverId) {
-        if (channelService.restartOrFail(id, serverId))
+    @GetMapping("/{id}/stop/")
+    public ResponseEntity<?> stopChannel(@PathVariable Long id, @RequestParam (required = false) List<Long> servers) {
+        if (channelService.stopOrFail(id, servers))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
+    @GetMapping("/{id}/restart/")
+    public ResponseEntity<String> restartChannel(@PathVariable Long id, @RequestParam ( required = false) List<Long> servers) {
+        if (channelService.restartOrFail(id, servers))
             return ResponseEntity.ok().build();
         else
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

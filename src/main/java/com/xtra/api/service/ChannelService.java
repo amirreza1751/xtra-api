@@ -144,7 +144,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         }
         channel.setStreamServers(streamServers);
         repository.save(channel);
-        this.restartOrFail(streamId, serverId);
+        this.restartOrFail(streamId, Collections.singletonList(serverId));
         return nextSource;
     }
 
