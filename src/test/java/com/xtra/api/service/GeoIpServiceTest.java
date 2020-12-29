@@ -25,7 +25,7 @@ import java.net.UnknownHostException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@TestPropertySource(locations="classpath:")
+@TestPropertySource(locations="classpath:application-dev.properties")
 @DataJpaTest
 class GeoIpServiceTest {
 
@@ -34,8 +34,7 @@ class GeoIpServiceTest {
     private DatabaseReader reader;
 
     @MockBean
-    @Value("${maxmind.dbPath}")
-    private String dbPath;
+    private final String dbPath = "/workspace/xtra/xtra2/GeoLite2-City_20201229/GeoLite2-City.mmdb";
 
     @InjectMocks
     private static GeoIpService geoIpService;
@@ -52,33 +51,6 @@ class GeoIpServiceTest {
 
     @Test
     void shouldGetIpInformation() throws IOException, GeoIp2Exception {
-        Country country = geoIpService.getIpInformation("128.101.101.101");
-        System.out.println("ISO Code: " + country.getName());
-
-
-//        InetAddress ipAddress = InetAddress.getByName("128.101.101.101");
-////        InetAddress ipAddress = InetAddress.getByName("95.217.186.119");
-//        // Replace "city" with the appropriate method for your database, e.g.,
-//        // "country".
-//        CityResponse response = reader.city(ipAddress);
-//
-//        Country country = response.getCountry();
-//        System.out.println("ISO Code: " + country.getIsoCode());            // 'US'
-//        System.out.println("" + country.getName());               // 'United States'
-//        System.out.println("" + country.getNames().get("MN")); // '美国'
-//
-//        Subdivision subdivision = response.getMostSpecificSubdivision();
-//        System.out.println(subdivision.getName());    // 'Minnesota'
-//        System.out.println(subdivision.getIsoCode()); // 'MN'
-//
-//        City city = response.getCity();
-//        System.out.println(city.getName()); // 'Minneapolis'
-//
-//        Postal postal = response.getPostal();
-//        System.out.println(postal.getCode()); // '55455'
-//
-//        Location location = response.getLocation();
-//        System.out.println(location.getLatitude());  // 44.9733
-//        System.out.println(location.getLongitude()); // -93.2323
+        CityResponse country = geoIpService.getIpInformation("128.101.101.101");
     }
 }
