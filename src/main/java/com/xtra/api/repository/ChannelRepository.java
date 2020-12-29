@@ -20,4 +20,6 @@ public interface ChannelRepository extends StreamRepository<Channel> {
 
     List<Channel> findByIdIn(List<Long> ids);
 
+    Optional<Channel> findByName(String name);
+
 }
