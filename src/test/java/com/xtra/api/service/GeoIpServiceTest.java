@@ -17,23 +17,23 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import static org.junit.jupiter.api.Assertions.*;
-@ActiveProfiles("dev")
 @DataJpaTest
 class GeoIpServiceTest {
 
-    private DatabaseReader reader;
+
+//    private DatabaseReader reader;
 
     @Autowired
-    private GeoIpService geoIpService;
+    private static GeoIpService geoIpService;
 
     @BeforeEach
     void setUp() throws IOException {
         // A File object pointing to your GeoIP2 or GeoLite2 database
-        File database = new File(System.getProperty("user.home") + File.separator + "/workspace/xtra/xtra2/GeoLite2-City_20201229/GeoLite2-City.mmdb");
+//        File database = new File(System.getProperty("user.home") + File.separator + "/workspace/xtra/xtra2/GeoLite2-City_20201229/GeoLite2-City.mmdb");
 
         // This creates the DatabaseReader object. To improve performance, reuse
         // the object across lookups. The object is thread-safe.
-        reader = new DatabaseReader.Builder(database).build();
+//        reader = new DatabaseReader.Builder(database).build();
     }
 
     @Test
