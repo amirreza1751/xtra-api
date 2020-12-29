@@ -6,9 +6,12 @@ import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.record.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
@@ -17,13 +20,19 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import static org.junit.jupiter.api.Assertions.*;
+@ActiveProfiles("dev")
 @DataJpaTest
 class GeoIpServiceTest {
 
 
-//    private DatabaseReader reader;
+    @MockBean
+    private DatabaseReader reader;
 
-    @Autowired
+    @MockBean
+    @Value("${maxmind.dbPath}")
+    private String dbPath;
+
+    @InjectMocks
     private static GeoIpService geoIpService;
 
     @BeforeEach

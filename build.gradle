@@ -51,6 +51,10 @@ dependencies {
     //h2
 //    runtimeOnly 'com.h2database:h2'
     //h2
+
+    //mockito
+    testCompile "org.mockito:mockito-core:2.+"
+    //mockito
 }
 
 test {
