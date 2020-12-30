@@ -53,6 +53,12 @@ public class ResellerController {
         return ResponseEntity.ok(resellerService.save(id, reseller));
     }
 
+    @PatchMapping("/{id}/credits")
+    public ResponseEntity<?> updateResellerCredits(@PathVariable Long id, @RequestBody int credits) {
+        resellerService.updateCredits(id, credits);
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteReseller(@PathVariable Long id) {
         resellerService.deleteOrFail(id);

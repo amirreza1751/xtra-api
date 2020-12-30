@@ -53,4 +53,13 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
     public ResellerView add(ResellerInsertView resellerInsertView) {
         return resellerMapper.convertToView(insert(resellerMapper.convertToEntity(resellerInsertView)));
     }
+
+    public void updateCredits(Long id, int credits) {
+        if (credits < 0)
+            //@todo throw bad request exception
+            return;
+        var existingReseller = findByIdOrFail(id);
+        existingReseller.setCredits(credits);
+        repository.save(existingReseller);
+    }
 }
