@@ -2,8 +2,8 @@ package com.xtra.api.service;
 
 import com.xtra.api.mapper.AdminMapper;
 import com.xtra.api.model.Admin;
-import com.xtra.api.projection.admin.AdminInsertView;
-import com.xtra.api.projection.admin.AdminView;
+import com.xtra.api.projection.user.admin.AdminInsertView;
+import com.xtra.api.projection.user.admin.AdminView;
 import com.xtra.api.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
