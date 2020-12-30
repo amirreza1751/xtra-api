@@ -1,9 +1,9 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.mapper.AdminMapper;
-import com.xtra.api.projection.admin.AdminInsertView;
-import com.xtra.api.projection.admin.AdminSimpleView;
-import com.xtra.api.projection.admin.AdminView;
+import com.xtra.api.projection.user.UserSimpleView;
+import com.xtra.api.projection.user.admin.AdminInsertView;
+import com.xtra.api.projection.user.admin.AdminView;
 import com.xtra.api.service.AdminService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -31,8 +31,8 @@ public class AdminController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Page<AdminSimpleView>> getAdminsSimpleList(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                                                     @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+    public ResponseEntity<Page<UserSimpleView>> getAdminsSimpleList(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                                                    @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(new PageImpl<>(adminService.findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(adminMapper::convertToSimpleView).collect(Collectors.toList())));
     }
 

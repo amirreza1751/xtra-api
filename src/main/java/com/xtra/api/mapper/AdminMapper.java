@@ -2,9 +2,9 @@ package com.xtra.api.mapper;
 
 import com.xtra.api.model.Admin;
 import com.xtra.api.model.Role;
-import com.xtra.api.projection.admin.AdminInsertView;
-import com.xtra.api.projection.admin.AdminSimpleView;
-import com.xtra.api.projection.admin.AdminView;
+import com.xtra.api.projection.user.admin.AdminInsertView;
+import com.xtra.api.projection.user.UserSimpleView;
+import com.xtra.api.projection.user.admin.AdminView;
 import com.xtra.api.service.RoleService;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -17,7 +17,7 @@ public abstract class AdminMapper {
     @Autowired
     private RoleService roleService;
 
-    public abstract AdminSimpleView convertToSimpleView(Admin admin);
+    public abstract UserSimpleView convertToSimpleView(Admin admin);
 
     public abstract Admin convertToEntity(AdminInsertView view);
 
