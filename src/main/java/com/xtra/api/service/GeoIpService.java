@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Optional;
 
 @Service
 public class GeoIpService {
@@ -29,12 +30,12 @@ public class GeoIpService {
         }
     }
 
-    public CityResponse getIpInformation(String ip){
+    public Optional<CityResponse> getIpInformation(String ip){
         InetAddress ipAddress = null;
-        CityResponse response = null;
+        Optional<CityResponse> response = null;
         try {
             ipAddress = InetAddress.getByName(ip);
-            response = reader.city(ipAddress);
+            response = reader.tryCity(ipAddress);
         } catch (IOException | GeoIp2Exception e) {
             e.printStackTrace();
         }

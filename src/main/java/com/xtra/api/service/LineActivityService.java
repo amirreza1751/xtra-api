@@ -94,12 +94,12 @@ public class LineActivityService {
     }
 
     public LineActivity setIpInformation(String ip, LineActivity activity){
-        CityResponse cityResponse = geoIpService.getIpInformation(ip);
+        Optional<CityResponse> cityResponse = geoIpService.getIpInformation(ip);
         try {
-            activity.setCountry(cityResponse.getCountry().getName());
-            activity.setCity(cityResponse.getCity().getName());
-            activity.setIsoCode(cityResponse.getCountry().getIsoCode());
-            activity.setIsp(cityResponse.getTraits().getIsp());
+            activity.setCountry(cityResponse.map(result -> result.getCountry().getName()).orElse("Unknown Country"));
+            activity.setCity(cityResponse.map(result -> result.getCity().getName()).orElse("Unknown City"));
+            activity.setIsoCode(cityResponse.map(result -> result.getCountry().getIsoCode()).orElse("Unknown ISO Code"));
+            activity.setIsp(cityResponse.map(result -> result.getTraits().getIsp()).orElse("Unknown ISP"));
         } catch (NullPointerException ignored){}
         return activity;
     }
