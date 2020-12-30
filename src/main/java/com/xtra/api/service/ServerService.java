@@ -99,11 +99,33 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     public void sendRestartRequest(Long channelId, Server server) {
-        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/restart/" + channelId + "/?serverId=" + server.getId(), String.class);
+        Mono<Boolean> result = this.webClient
+                .get()
+                .uri(URI.create( "http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/restart/" + channelId + "/?serverId=" + server.getId()))
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Boolean.class);
+        result.subscribe(
+                successValue -> System.out.println("success value: " + successValue),
+                error -> System.out.println("error value: " + error)
+        );
     }
 
     public boolean sendStopRequest(Long channelId, Server server) {
-        var result = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/stop/" + channelId, String.class);
+        Mono<Boolean> result = this.webClient
+                .get()
+                .uri(URI.create( "http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/stop/" + channelId + "/?serverId=" + server.getId()))
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Boolean.class);
+        result.subscribe(
+                successValue -> System.out.println("success value: " + successValue),
+                error -> System.out.println("error value: " + error)
+        );
         return true;
     }
 
@@ -139,6 +161,10 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
 
     public Optional<Server> findByIpAndCorePort(String ip, String corePort) {
         return repository.findByIpAndCorePort(ip, corePort);
+    }
+
+    public List<Server> findByIdIn(List<Long> ids){
+        return repository.findByIdIn(ids);
     }
 
     public Resource getResource(Long serverId) {
