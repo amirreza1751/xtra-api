@@ -1,5 +1,7 @@
 package com.xtra.api.service;
 
+import com.maxmind.geoip2.exception.AddressNotFoundException;
+import com.maxmind.geoip2.model.CityResponse;
 import com.xtra.api.model.LineActivity;
 import com.xtra.api.model.LineActivityId;
 import com.xtra.api.model.Server;
@@ -22,13 +24,15 @@ public class LineActivityService {
     final private LineService lineService;
     final private StreamService streamService;
     private final ServerService serverService;
+    private final GeoIpService geoIpService;
 
     @Autowired
-    public LineActivityService(LineActivityRepository lineActivityRepository, LineService lineService, StreamService streamService, ServerService serverService) {
+    public LineActivityService(LineActivityRepository lineActivityRepository, LineService lineService, StreamService streamService, ServerService serverService, GeoIpService geoIpService) {
         this.lineActivityRepository = lineActivityRepository;
         this.lineService = lineService;
         this.streamService = streamService;
         this.serverService = serverService;
+        this.geoIpService = geoIpService;
     }
 
     public void deleteLineActivity(LineActivityId activityId) {
@@ -54,6 +58,7 @@ public class LineActivityService {
                 if (serverById.isEmpty())
                     continue;
                 activity.setServer(serverById.get());
+                activity = this.setIpInformation(activity.getId().getUserIp(), activity);
                 lineActivityRepository.save(activity);
 
             } else {
@@ -62,18 +67,18 @@ public class LineActivityService {
                 var streamById = streamService.findById(activity.getId().getStreamId());
                 if (streamById.isEmpty())
                     continue;
-                activity.setStream((Stream) streamById.get());
+                oldActivity.setStream((Stream) streamById.get());
 
                 var lineById = lineService.findById(activity.getId().getLineId());
                 if (lineById.isEmpty())
                     continue;
-                activity.setLine(lineById.get());
+                oldActivity.setLine(lineById.get());
 
                 var serverById = serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber);
                 if (serverById.isEmpty())
                     continue;
-                activity.setServer(serverById.get());
-
+                oldActivity.setServer(serverById.get());
+                oldActivity = this.setIpInformation(activity.getId().getUserIp(), oldActivity);
                 lineActivityRepository.save(oldActivity);
 
             }
@@ -86,6 +91,17 @@ public class LineActivityService {
         for (var activity : lineActivities) {
             lineActivityRepository.deleteById(activity.getId());
         }
+    }
+
+    public LineActivity setIpInformation(String ip, LineActivity activity){
+        Optional<CityResponse> cityResponse = geoIpService.getIpInformation(ip);
+        try {
+            activity.setCountry(cityResponse.map(result -> result.getCountry().getName()).orElse("Unknown Country"));
+            activity.setCity(cityResponse.map(result -> result.getCity().getName()).orElse("Unknown City"));
+            activity.setIsoCode(cityResponse.map(result -> result.getCountry().getIsoCode()).orElse("Unknown ISO Code"));
+            activity.setIsp(cityResponse.map(result -> result.getTraits().getIsp()).orElse("Unknown ISP"));
+        } catch (NullPointerException ignored){}
+        return activity;
     }
 
 }

@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 public class JavaTest {
 
-    @Test
-    void equalsTest() {
-        var a = new CollectionStream(new CollectionStreamId(1L, 2L));
-        var b = new CollectionStream(new CollectionStreamId(1L, 2L));
-        assertEquals(a,b);
-    }
+//    @Test
+//    void equalsTest() {
+//        var a = new CollectionStream(new CollectionStreamId(1L, 2L));
+//        var b = new CollectionStream(new CollectionStreamId(1L, 2L));
+//        assertEquals(a,b);
+//    }
 }

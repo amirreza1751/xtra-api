@@ -47,5 +47,6 @@ public class LineActivity {
     private String isp;
     private String country;
     private String city;
+    private String isoCode;
 
 }

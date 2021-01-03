@@ -15,17 +15,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("dev")
 @DataJpaTest
 public class ChannelOperations {
-
-    @Autowired
-    ChannelRepository channelRepository;
-
-    @Test
-    public void insertChannel(){
-        Channel channel = new Channel();
-        channel.setName("Test Channel");
-        var savedChannel = channelRepository.save(channel);
-        System.out.println(savedChannel.getId());
-        savedChannel.setCustomFFMPEG("");
-        channelRepository.save(savedChannel);
-    }
+//
+//    @Autowired
+//    ChannelRepository channelRepository;
+//
+//    @Test
+//    public void insertChannel(){
+//        Channel channel = new Channel();
+//        channel.setName("Test Channel");
+//        var savedChannel = channelRepository.save(channel);
+//        System.out.println(savedChannel.getId());
+//        savedChannel.setCustomFFMPEG("");
+//        channelRepository.save(savedChannel);
+//    }
 }

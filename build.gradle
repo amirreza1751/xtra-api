@@ -46,6 +46,8 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    compile 'com.maxmind.geoip2:geoip2:2.15.0'
+
 }
 
 test {
