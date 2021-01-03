@@ -12,7 +12,6 @@ public class Utilities {
     }
 
 
-
     public static String generateRandomString(int minSize, int maxSize, boolean useReadableCharacters) {
         String characters = "ABCDEFGHJKMNPQRSTUVWXYZ";
         if (useReadableCharacters) {

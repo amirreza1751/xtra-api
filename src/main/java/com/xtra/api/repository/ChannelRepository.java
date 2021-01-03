@@ -16,7 +16,7 @@ public interface ChannelRepository extends StreamRepository<Channel> {
 
     boolean existsChannelByStreamToken(String streamToken);
 
-    Page<Channel> findByNameLikeOrCategoryNameLike(String name, String categoryName, String currentInputUrl, Pageable pageable);
+    Page<Channel> findByNameLike(String name, Pageable pageable);
 
     List<Channel> findByIdIn(List<Long> ids);
 

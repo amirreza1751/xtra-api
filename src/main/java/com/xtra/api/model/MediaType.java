@@ -1,6 +1,6 @@
 package com.xtra.api.model;
 
-public enum CollectionType {
+public enum MediaType {
     CHANNEL,
     RADIO,
     MOVIE,

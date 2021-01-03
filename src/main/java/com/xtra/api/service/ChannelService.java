@@ -9,7 +9,6 @@ import com.xtra.api.model.Channel;
 import com.xtra.api.model.Server;
 import com.xtra.api.model.StreamServer;
 import com.xtra.api.model.StreamServerId;
-import com.xtra.api.projection.channel.ChannelInfo;
 import com.xtra.api.projection.channel.ChannelInsertView;
 import com.xtra.api.projection.channel.ChannelView;
 import com.xtra.api.repository.ChannelRepository;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -61,7 +59,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     @Override
     protected Page<Channel> findWithSearch(Pageable page, String search) {
-        return repository.findByNameLikeOrCategoryNameLike(search, search, search, page);
+        return repository.findByNameLike(search, page);
     }
 
     public ChannelView add(ChannelInsertView insertView, boolean start) {
@@ -156,7 +154,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return this.findByIdOrFail(channelId);
     }
 
-    public ChannelList getBatchChannel(List<Long> streamIds){
+    public ChannelList getBatchChannel(List<Long> streamIds) {
         List<Channel> channels = repository.findByIdIn(streamIds);
         List<ChannelStart> channelStarts = new ArrayList<>();
         channels.forEach(channel -> channelStarts.add(channelStartMapper.convertToDto(channel)));

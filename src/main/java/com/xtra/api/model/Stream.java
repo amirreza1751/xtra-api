@@ -51,8 +51,6 @@ public class Stream {
     private Set<DayOfWeek> daysToRestart;
     private LocalTime timeToRestart;
 
-    @ManyToOne
-    private Category category;
 
     @ManyToOne
     private TranscodeProfile transcodeProfile;

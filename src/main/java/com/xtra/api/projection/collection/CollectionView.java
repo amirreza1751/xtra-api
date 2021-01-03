@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.*;
 import lombok.Data;
 
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -13,7 +12,7 @@ import java.util.Set;
 public class CollectionView {
     private Long id;
     private String name;
-    private CollectionType type;
+    private MediaType type;
     private Set<MediaPair<Long, String>> channels;
     private Set<MediaPair<Long, String>> movies;
     private Set<MediaPair<Long, String>> series;
