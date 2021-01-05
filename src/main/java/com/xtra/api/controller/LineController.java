@@ -1,7 +1,7 @@
 package com.xtra.api.controller;
 
-import com.xtra.api.model.Line;
 import com.xtra.api.model.LineStatus;
+import com.xtra.api.projection.line.LineAuth;
 import com.xtra.api.projection.line.LineInsertView;
 import com.xtra.api.projection.line.LineView;
 import com.xtra.api.service.LineService;
@@ -23,7 +23,7 @@ public class LineController {
 
     @GetMapping("")
     public ResponseEntity<Page<LineView>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                               @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+                                                   @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(lineService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
@@ -66,14 +66,14 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/stream_auth/{line_token}/{stream_token}")
-    public LineStatus authorizeLineForStream(@PathVariable("line_token") String lineToken, @PathVariable("stream_token") String streamToken) {
-        return lineService.isLineEligibleForPlaying(lineToken, streamToken);
+    @PostMapping("/stream_auth")
+    public LineStatus authorizeLineForStream(@RequestBody LineAuth lineAuth) {
+        return lineService.isLineEligibleForPlaying(lineAuth);
     }
 
-    @GetMapping("/vod_auth/{line_token}/{vod_token}")
-    public LineStatus authorizeLineForVod(@PathVariable("line_token") String lineToken, @PathVariable("vod_token") String vodToken) {
-        return lineService.isLineEligibleForPlaying(lineToken, vodToken);
+    @PostMapping("/vod_auth")
+    public LineStatus authorizeLineForVod(@RequestBody LineAuth lineAuth) {
+        return lineService.isLineEligibleForPlaying(lineAuth);
     }
 
     @GetMapping("/get_id/{line_token}")

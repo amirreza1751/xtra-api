@@ -5,13 +5,16 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.neovisionaries.i18n.CountryCode;
 import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.net.Inet4Address;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 @Entity
@@ -37,10 +40,22 @@ public class Line {
     private boolean isTrial;
     private boolean isBlocked = false;
     private boolean isBanned = false;
-    private boolean isIspLocked = false;
     private boolean isStalker;
     private String adminNotes;
     private String resellerNotes;
+
+    private boolean isCountryLocked = false;
+    private CountryCode forcedCountry;
+
+    @ElementCollection
+    private List<String> allowedIps;
+    @ElementCollection
+    private List<String> blockedIps;
+
+    @ElementCollection
+    private List<String> allowedUserAgents;
+    @ElementCollection
+    private List<String> blockedUserAgents;
 
     private boolean isMag;
     private boolean isEnigma;

@@ -5,6 +5,7 @@ import com.xtra.api.mapper.LineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineActivity;
 import com.xtra.api.model.LineStatus;
+import com.xtra.api.projection.line.LineAuth;
 import com.xtra.api.projection.line.LineInsertView;
 import com.xtra.api.projection.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
@@ -27,12 +28,14 @@ public class LineService extends CrudService<Line, Long, LineRepository> {
     private final LineRepository lineRepository;
     private final LineActivityRepository lineActivityRepository;
     private final LineMapper lineMapper;
+    private final GeoIpService geoIpService;
 
-    public LineService(LineRepository lineRepository, LineActivityRepository lineActivityRepository, LineMapper lineMapper) {
+    public LineService(LineRepository lineRepository, LineActivityRepository lineActivityRepository, LineMapper lineMapper, GeoIpService geoIpService) {
         super(lineRepository, Line.class);
         this.lineRepository = lineRepository;
         this.lineActivityRepository = lineActivityRepository;
         this.lineMapper = lineMapper;
+        this.geoIpService = geoIpService;
     }
 
     private Line findByTokenOrFail(String token) {
@@ -51,8 +54,8 @@ public class LineService extends CrudService<Line, Long, LineRepository> {
     }
 
 
-    public LineStatus isLineEligibleForPlaying(String lineToken, String stringToken) {
-        var lineByToken = lineRepository.findByLineToken(lineToken);
+    public LineStatus isLineEligibleForPlaying(LineAuth lineAuth) {
+        var lineByToken = lineRepository.findByLineToken(lineAuth.getLineToken());
         if (lineByToken.isPresent()) {
             var line = lineByToken.get();
             if (line.isBanned()) {
@@ -63,6 +66,10 @@ public class LineService extends CrudService<Line, Long, LineRepository> {
                 return LineStatus.EXPIRED;
             } else if (line.getMaxConnections() == 0 || line.getMaxConnections() < line.getCurrentConnections()) {
                 return LineStatus.MAX_CONNECTION_REACHED;
+            } else if (!isIpAllowed(line, lineAuth.getIpAddress())) {
+                return LineStatus.FORBIDDEN;
+            } else if (!isUserAgentAllowed(line, lineAuth.getUserAgent())) {
+                return LineStatus.FORBIDDEN;
             } else if (false) {//@todo check access to stream
                 return LineStatus.NO_ACCESS_TO_STREAM;
             } else {
@@ -70,6 +77,35 @@ public class LineService extends CrudService<Line, Long, LineRepository> {
             }
         } else
             return LineStatus.NOT_FOUND;
+    }
+
+    private boolean isUserAgentAllowed(Line line, String userAgent) {
+        if (line.getAllowedUserAgents() != null && !line.getAllowedUserAgents().isEmpty()) {
+            if (!line.getAllowedUserAgents().contains(userAgent))
+                return false;
+        }
+        if (line.getBlockedUserAgents() != null && !line.getBlockedUserAgents().isEmpty()){
+            return !line.getBlockedUserAgents().contains(userAgent);
+        }
+        return true;
+    }
+
+    private boolean isIpAllowed(Line line, String ipAddress) {
+        if (line.isCountryLocked()) {
+            var cityResponse = geoIpService.getIpInformation(ipAddress);
+            if (cityResponse.isPresent()) {
+                if (!line.getForcedCountry().getAlpha2().equals(cityResponse.get().getCountry().getIsoCode()))
+                    return false;
+            }
+        }
+        if (line.getBlockedIps() != null && !line.getBlockedIps().isEmpty()) {
+            if (line.getBlockedIps().contains(ipAddress))
+                return false;
+        }
+        if (line.getAllowedIps() != null && !line.getAllowedIps().isEmpty()) {
+            return line.getAllowedIps().contains(ipAddress);
+        }
+        return true;
     }
 
     public Page<LineView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -160,7 +196,6 @@ public class LineService extends CrudService<Line, Long, LineRepository> {
     protected Page<Line> findWithSearch(Pageable page, String search) {
         return lineRepository.findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(search, search, search, page);
     }
-
 
 
 }

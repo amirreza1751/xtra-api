@@ -21,7 +21,7 @@ public class GeoIpService {
     private DatabaseReader reader;
 
     @Autowired
-    public GeoIpService(@Value("${maxmind.dbPath}") String dbPath){
+    public GeoIpService(@Value("${maxmind.dbPath}") String dbPath) {
         File database = new File(System.getProperty("user.home") + dbPath);
         try {
             this.reader = new DatabaseReader.Builder(database).withCache(new CHMCache()).build();
@@ -30,9 +30,9 @@ public class GeoIpService {
         }
     }
 
-    public Optional<CityResponse> getIpInformation(String ip){
-        InetAddress ipAddress = null;
-        Optional<CityResponse> response = null;
+    public Optional<CityResponse> getIpInformation(String ip) {
+        InetAddress ipAddress;
+        Optional<CityResponse> response = Optional.empty();
         try {
             ipAddress = InetAddress.getByName(ip);
             response = reader.tryCity(ipAddress);
