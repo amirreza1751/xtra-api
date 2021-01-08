@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -44,6 +45,10 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
         Channel channel = channelRepository.findById(streamId).orElse(null);
         channel.setEpgChannel(epgChannel);
        return channelRepository.save(channel);
+    }
+
+    public Set<EpgChannel> getEpgChannels(Long epgFileId){
+        return repository.findById(epgFileId).get().getEpgChannels();
     }
 
 }
