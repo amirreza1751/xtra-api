@@ -9,6 +9,7 @@ import org.apache.tomcat.jni.Local;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 @Getter
@@ -20,9 +21,11 @@ public class Program {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
+    @Lob
+    @Column( length = 100000 )
     private String description;
-    private LocalDateTime start;
-    private LocalDateTime stop;
+    private ZonedDateTime start;
+    private ZonedDateTime stop;
     private String category;
     private String language;
 

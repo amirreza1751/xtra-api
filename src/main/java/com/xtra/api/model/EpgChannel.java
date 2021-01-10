@@ -15,7 +15,6 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Embeddable
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class EpgChannel {
     @Id
