@@ -32,7 +32,6 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.4.5'
     implementation 'org.apache.commons:commons-lang3:3.11'
     implementation 'org.apache.commons:commons-collections4:4.4'
-    implementation 'org.modelmapper:modelmapper:2.3.8'
     implementation 'org.mapstruct:mapstruct:1.4.0.Final'
     implementation 'com.google.guava:guava:29.0-jre'
     implementation 'com.auth0:java-jwt:3.11.0'
@@ -40,14 +39,13 @@ dependencies {
     implementation 'org.projectreactor:reactor-spring:1.0.1.RELEASE'
     implementation 'com.neovisionaries:nv-i18n:1.27'
     implementation 'org.projectreactor:reactor-spring:1.0.1.RELEASE'
+    implementation 'com.maxmind.geoip2:geoip2:2.15.0'
 
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.0.Final'
-
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    compile 'com.maxmind.geoip2:geoip2:2.15.0'
 
 }
 

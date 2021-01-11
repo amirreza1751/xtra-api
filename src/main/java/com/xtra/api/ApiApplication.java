@@ -37,5 +37,4 @@ public class ApiApplication {
         b.propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         return b;
     }
-
 }
