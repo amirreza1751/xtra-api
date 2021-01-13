@@ -21,14 +21,9 @@ public class EpgFile {
     private Long id;
     private String name;
     private String source;
-    @JacksonXmlProperty(isAttribute = true, localName = "generator-info-name")
-    private String generatorInfoName;
-    @JacksonXmlProperty(isAttribute = true, localName = "generator-info-url")
-    private String generatorInfoUrl;
 
     @OneToMany(mappedBy = "epgFile", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JsonManagedReference("epg_file_id")
-    @JacksonXmlProperty(localName = "channel")
     private Set<EpgChannel> epgChannels;
 
 

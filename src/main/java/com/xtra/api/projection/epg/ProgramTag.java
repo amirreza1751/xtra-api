@@ -36,7 +36,5 @@ public class ProgramTag {
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<CategoryTag> categories ;
 
-    private String language;
-
 
 }

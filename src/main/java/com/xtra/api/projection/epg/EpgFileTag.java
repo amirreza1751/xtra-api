@@ -19,10 +19,10 @@ public class EpgFileTag {
 
     private String name;
     private String source;
-    @JacksonXmlProperty(isAttribute = true, localName = "generator-info-name")
-    private String generatorInfoName;
-    @JacksonXmlProperty(isAttribute = true, localName = "generator-info-url")
-    private String generatorInfoUrl;
+//    @JacksonXmlProperty(isAttribute = true, localName = "generator-info-name")
+//    private String generatorInfoName;
+//    @JacksonXmlProperty(isAttribute = true, localName = "generator-info-url")
+//    private String generatorInfoUrl;
 
     @JacksonXmlProperty(localName = "channel")
     @JacksonXmlCData

@@ -26,12 +26,12 @@ public class EpgChannel {
     private String language;
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonBackReference("epg_file_id")
     private EpgFile epgFile;
 
 
-    @OneToMany(mappedBy = "epgChannel", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "epgChannel", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference("epg_channel_id")
     private Set<Program> programs;
 

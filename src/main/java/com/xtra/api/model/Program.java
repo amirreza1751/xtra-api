@@ -10,6 +10,7 @@ import org.apache.tomcat.jni.Local;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -17,20 +18,30 @@ import java.time.ZonedDateTime;
 @Embeddable
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Program {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String title;
+    @EmbeddedId
+    private ProgramId id;
+
     @Lob
     @Column( length = 100000 )
     private String description;
-    private ZonedDateTime start;
-    private ZonedDateTime stop;
     private String category;
-    private String language;
 
 
-    @ManyToOne
+    @ManyToOne()
+    @MapsId("epgChannelId")
     @JsonBackReference("epg_channel_id")
     private EpgChannel epgChannel;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Program program = (Program) o;
+        return id.equals(program.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
