@@ -41,9 +41,9 @@ public class EpgScheduler {
         this.programRepository = programRepository;
     }
 
-        @Scheduled(fixedDelay = 2000)
+//        @Scheduled(fixedDelay = 2000)
     @Transactional
-//    @Scheduled(cron = "0 0 * * 1")
+    @Scheduled(cron = "0 0 1 * * MON")
     public void updateEpg(){
         XmlMapper xmlMapper = new XmlMapper();
         URL xmlUrl = null;
