@@ -1,5 +1,6 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -70,6 +71,10 @@ public class Stream {
     @OneToMany(mappedBy = "stream")
     @JsonManagedReference("stream_id")
     private List<LineActivity> lineActivities;
+
+    @JsonManagedReference("epgChannel")
+    @OneToOne(cascade = CascadeType.ALL)
+    private EpgChannel epgChannel;
 
     private int currentConnections = 0;
 
