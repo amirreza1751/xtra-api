@@ -1,9 +1,10 @@
 package com.xtra.api.mapper;
 
 import com.xtra.api.model.*;
-import com.xtra.api.projection.collection.CollectionView;
+import com.xtra.api.projection.MediaPair;
 import com.xtra.api.projection.collection.CollectionInsertView;
 import com.xtra.api.projection.collection.CollectionSimplifiedView;
+import com.xtra.api.projection.collection.CollectionView;
 import org.mapstruct.Mapper;
 
 import java.util.LinkedHashSet;

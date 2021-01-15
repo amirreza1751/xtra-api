@@ -9,11 +9,4 @@ import javax.persistence.Entity;
 @Entity
 @Data
 public class Radio extends Stream {
-
-    public Radio() {
-    }
-
-    public Radio(Long id) {
-        setId(id);
-    }
 }

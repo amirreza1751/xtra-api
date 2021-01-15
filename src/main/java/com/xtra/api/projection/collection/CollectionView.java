@@ -2,7 +2,8 @@ package com.xtra.api.projection.collection;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.*;
+import com.xtra.api.model.MediaType;
+import com.xtra.api.projection.MediaPair;
 import lombok.Data;
 
 import java.util.Set;

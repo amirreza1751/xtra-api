@@ -1,13 +1,7 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.google.common.base.Objects;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -23,13 +17,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-@Getter
-@Setter
 @Inheritance(strategy = InheritanceType.JOINED)
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Stream {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NotNull
@@ -57,7 +51,6 @@ public class Stream {
     private TranscodeProfile transcodeProfile;
     private String customFFMPEG;
 
-    @JsonManagedReference("stream_server")
     @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     private Set<StreamServer> streamServers;
 
@@ -69,10 +62,8 @@ public class Stream {
     private List<String> streamInputs;
 
     @OneToMany(mappedBy = "stream")
-    @JsonManagedReference("stream_id")
     private List<LineActivity> lineActivities;
 
-    @JsonManagedReference("epgChannel")
     @OneToOne(cascade = CascadeType.ALL)
     private EpgChannel epgChannel;
 
@@ -112,19 +103,6 @@ public class Stream {
                 collectionStream.setStream(this);
             }).collect(Collectors.toSet()));
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Stream stream = (Stream) o;
-        return Objects.equal(id, stream.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 
     public void addCollection(CollectionStream collectionStream) {

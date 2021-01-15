@@ -1,7 +1,5 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -30,7 +28,6 @@ public class Resource {
     private Long upTime;
 
     @OneToOne(mappedBy = "resource")
-    @JsonBackReference("resource_id")
     private Server server;
 
 }

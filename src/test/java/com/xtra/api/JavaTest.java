@@ -1,13 +1,10 @@
 package com.xtra.api;
 
-import com.xtra.api.model.CollectionStream;
-import com.xtra.api.model.CollectionStreamId;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
+@ActiveProfiles("dev")
 public class JavaTest {
 
 //    @Test
@@ -16,4 +13,11 @@ public class JavaTest {
 //        var b = new CollectionStream(new CollectionStreamId(1L, 2L));
 //        assertEquals(a,b);
 //    }
+
+    /*@Test
+    void testZonedDateTime(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss [XXX][X]");
+        ZonedDateTime start = ZonedDateTime.parse("20210115122700 +0330", formatter);
+        System.out.println(start.toString());
+    }*/
 }

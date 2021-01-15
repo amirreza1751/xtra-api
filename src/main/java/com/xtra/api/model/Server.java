@@ -1,22 +1,13 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Setter
-@Getter
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Data
 public class Server {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,15 +20,9 @@ public class Server {
     private String interfaceName;
 
     @OneToMany(mappedBy = "server", cascade = CascadeType.MERGE)
-    @JsonManagedReference("server_id")
-//    @ToString.Exclude
+    @ToString.Exclude
     private List<StreamServer> streamServers;
 
-    public void addStreamServer(StreamServer streamServer){
-        streamServers.add(streamServer);
-    }
-
-    @JsonManagedReference("resource_id")
     @OneToOne(cascade = CascadeType.MERGE)
     private Resource resource;
 }

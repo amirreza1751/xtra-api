@@ -1,28 +1,17 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.neovisionaries.i18n.CountryCode;
 import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.net.Inet4Address;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 
 @Entity
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "username")
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -76,7 +65,6 @@ public class Line {
     private DownloadList defaultDownloadList;
 
     @OneToMany(mappedBy = "line")
-    @JsonManagedReference("line_id")
     @ToString.Exclude
     private List<LineActivity> activities = new ArrayList<>();
 

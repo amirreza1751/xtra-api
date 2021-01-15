@@ -3,17 +3,13 @@ package com.xtra.api.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
+@Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class EpgFile {
     @Id

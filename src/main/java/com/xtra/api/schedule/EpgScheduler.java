@@ -1,24 +1,22 @@
 package com.xtra.api.schedule;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.xtra.api.model.*;
+import com.xtra.api.model.EpgChannel;
+import com.xtra.api.model.EpgFile;
+import com.xtra.api.model.Program;
+import com.xtra.api.model.ProgramId;
 import com.xtra.api.projection.epg.CategoryTag;
 import com.xtra.api.projection.epg.EpgChannelTag;
 import com.xtra.api.projection.epg.EpgFileTag;
 import com.xtra.api.projection.epg.ProgramTag;
 import com.xtra.api.repository.EpgChannelRepository;
 import com.xtra.api.repository.EpgFileRepository;
-import com.xtra.api.repository.ProgramRepository;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLOutput;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,20 +31,18 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public class EpgScheduler {
     private final EpgChannelRepository epgChannelRepository;
     private final EpgFileRepository epgFileRepository;
-    private final ProgramRepository programRepository;
 
-    public EpgScheduler(EpgChannelRepository epgChannelRepository, EpgFileRepository epgFileRepository, ProgramRepository programRepository) {
+    public EpgScheduler(EpgChannelRepository epgChannelRepository, EpgFileRepository epgFileRepository) {
         this.epgChannelRepository = epgChannelRepository;
         this.epgFileRepository = epgFileRepository;
-        this.programRepository = programRepository;
     }
 
-//        @Scheduled(fixedDelay = 2000)
+    //        @Scheduled(fixedDelay = 2000)
     @Transactional
     @Scheduled(cron = "0 0 1 * * MON")
-    public void updateEpg(){
+    public void updateEpg() {
         XmlMapper xmlMapper = new XmlMapper();
-        URL xmlUrl = null;
+        URL xmlUrl;
         try {
             List<EpgFile> epgFiles = epgFileRepository.findAll();
             for (EpgFile epgFile : epgFiles) {
@@ -70,7 +66,7 @@ public class EpgScheduler {
                     if (existingEpgChannel.isEmpty()) {
                         epgChannel.setEpgFile(epgFile);
                         Set<Program> programs = new HashSet<>();
-                        for (Program program:epgChannel.getPrograms()){
+                        for (Program program : epgChannel.getPrograms()) {
                             program.setEpgChannel(epgChannel);
                             programs.add(program);
                         }
@@ -84,7 +80,7 @@ public class EpgScheduler {
                         copyProperties(epgChannel, oldEpgChannel, "id", "epgFile", "stream", "programs");
                         Set<Program> oldPrograms = oldEpgChannel.getPrograms();
                         Set<Program> programs = new HashSet<>();
-                        for (Program program:epgChannel.getPrograms()){
+                        for (Program program : epgChannel.getPrograms()) {
                             program.setEpgChannel(oldEpgChannel);
                             program.setId(new ProgramId(program.getId().getTitle(), program.getId().getStart(), program.getId().getStop(), program.getId().getLanguage(), oldEpgChannel.getId()));
                             programs.add(program);
@@ -101,25 +97,26 @@ public class EpgScheduler {
         }
 
     }
-    public EpgChannel convertToEntity(EpgChannelTag epgChannelTag){
+
+    public EpgChannel convertToEntity(EpgChannelTag epgChannelTag) {
         EpgChannel epgChannel = new EpgChannel();
         epgChannel.setName(epgChannelTag.getName());
         epgChannel.setIcon(epgChannelTag.getIconTag() == null ? "" : epgChannelTag.getIconTag().getSrc());
-        epgChannel.setUrl(epgChannelTag.getUrlTag() == null ? "" :epgChannelTag.getUrlTag().getText());
-        epgChannel.setLanguage(epgChannelTag.getDisplayNameTag().getLanguage() == null ? "" :epgChannelTag.getDisplayNameTag().getLanguage());
+        epgChannel.setUrl(epgChannelTag.getUrlTag() == null ? "" : epgChannelTag.getUrlTag().getText());
+        epgChannel.setLanguage(epgChannelTag.getDisplayNameTag().getLanguage() == null ? "" : epgChannelTag.getDisplayNameTag().getLanguage());
         return epgChannel;
     }
 
-    public Program convertToEntity(ProgramTag programTag){
+    public Program convertToEntity(ProgramTag programTag) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss [XXX][X]");
-        String start = ZonedDateTime.parse(programTag.getStart(), formatter).toString();
+        ZonedDateTime start = ZonedDateTime.parse(programTag.getStart(), formatter);
 
-        String stop = ZonedDateTime.parse(programTag.getStop(), formatter).toString();
+        ZonedDateTime stop = ZonedDateTime.parse(programTag.getStop(), formatter);
 
         Program program = new Program();
         program.setId(new ProgramId(programTag.getTitleTag().getText(), start, stop, programTag.getTitleTag().getLang(), null));
-        program.setDescription(programTag.getDescriptionTag() == null ? "" :programTag.getDescriptionTag().getText());
+        program.setDescription(programTag.getDescriptionTag() == null ? "" : programTag.getDescriptionTag().getText());
         program.setCategory(programTag.getCategories() == null ? "" : programTag.getCategories().stream().map(CategoryTag::getText).collect(Collectors.joining("|")));
-        return  program;
+        return program;
     }
 }

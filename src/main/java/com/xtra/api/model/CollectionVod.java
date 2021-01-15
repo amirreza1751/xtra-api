@@ -1,19 +1,19 @@
 package com.xtra.api.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
-@Getter
-@Setter
-@ToString
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
 public class CollectionVod {
 
     @EmbeddedId
+    @EqualsAndHashCode.Include
     private CollectionVodId id;
 
     @MapsId("vodId")
@@ -29,21 +29,5 @@ public class CollectionVod {
 
     public CollectionVod(CollectionVodId id) {
         this.id = id;
-    }
-
-    public CollectionVod() {
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CollectionVod that = (CollectionVod) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }

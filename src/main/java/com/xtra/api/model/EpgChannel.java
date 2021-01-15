@@ -1,7 +1,6 @@
 package com.xtra.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -9,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -23,6 +21,7 @@ public class EpgChannel {
     private String name;
     private String icon;
     private String url;
+    @Column(length = 2)
     private String language;
 
 

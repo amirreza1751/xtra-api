@@ -1,6 +1,5 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -14,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@ToString(exclude = {"line", "stream", "server"})
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LineActivity {
 
@@ -21,21 +21,15 @@ public class LineActivity {
     private LineActivityId id = new LineActivityId();
 
     @ManyToOne
-    @JsonBackReference("line_id")
     @MapsId("lineId")
-    @ToString.Exclude
     private Line line;
 
     @ManyToOne
-    @JsonBackReference("stream_id")
     @MapsId("streamId")
-    @ToString.Exclude
     private Stream stream;
 
     @ManyToOne
-    @JsonBackReference("server_id")
     @MapsId("serverId")
-    @ToString.Exclude
     private Server server;
 
     private LocalDateTime startDate;

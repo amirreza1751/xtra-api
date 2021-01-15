@@ -2,7 +2,6 @@ package com.xtra.api.model;
 
 import lombok.Data;
 
-
 @Data
 public class File {
     private String name;
@@ -15,5 +14,4 @@ public class File {
         this.size = size;
         this.isDirectory = isDirectory;
     }
-
 }

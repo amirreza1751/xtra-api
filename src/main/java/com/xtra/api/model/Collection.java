@@ -1,6 +1,5 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
@@ -23,7 +22,6 @@ public class Collection {
     @Enumerated(EnumType.STRING)
     private MediaType type;
 
-    @JsonManagedReference("dlc")
     @OneToMany(mappedBy = "collection", cascade = CascadeType.REMOVE)
     private Set<DownloadListCollection> downloadListCollections;
 

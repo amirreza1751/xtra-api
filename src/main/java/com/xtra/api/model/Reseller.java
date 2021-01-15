@@ -8,9 +8,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class Reseller extends User {
     private boolean isVerified;
     private int credits;
