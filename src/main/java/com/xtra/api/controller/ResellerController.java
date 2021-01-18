@@ -2,6 +2,7 @@ package com.xtra.api.controller;
 
 import com.xtra.api.mapper.ResellerMapper;
 import com.xtra.api.projection.user.UserSimpleView;
+import com.xtra.api.projection.user.reseller.ResellerCreditChangeView;
 import com.xtra.api.projection.user.reseller.ResellerInsertView;
 import com.xtra.api.projection.user.reseller.ResellerView;
 import com.xtra.api.service.ResellerService;
@@ -54,8 +55,8 @@ public class ResellerController {
     }
 
     @PatchMapping("/{id}/credits")
-    public ResponseEntity<?> updateResellerCredits(@PathVariable Long id, @RequestBody int credits) {
-        resellerService.updateCredits(id, credits);
+    public ResponseEntity<?> updateResellerCredits(@PathVariable Long id, @RequestBody ResellerCreditChangeView creditChangeView) {
+        resellerService.updateCredits(id, creditChangeView);
         return ResponseEntity.ok().build();
     }
 

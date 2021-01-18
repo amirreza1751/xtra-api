@@ -2,6 +2,7 @@ package com.xtra.api.service;
 
 import com.xtra.api.mapper.ResellerMapper;
 import com.xtra.api.model.Reseller;
+import com.xtra.api.projection.user.reseller.ResellerCreditChangeView;
 import com.xtra.api.projection.user.reseller.ResellerInsertView;
 import com.xtra.api.projection.user.reseller.ResellerView;
 import com.xtra.api.repository.ResellerRepository;
@@ -54,12 +55,13 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         return resellerMapper.convertToView(insert(resellerMapper.convertToEntity(resellerInsertView)));
     }
 
-    public void updateCredits(Long id, int credits) {
-        if (credits < 0)
+    public void updateCredits(Long id, ResellerCreditChangeView credits) {
+        if (credits.getCredits() < 0)
             //@todo throw bad request exception
             return;
         var existingReseller = findByIdOrFail(id);
-        existingReseller.setCredits(credits);
+        existingReseller.setCredits(credits.getCredits());
+        //@todo log the credit change with reason
         repository.save(existingReseller);
     }
 }
