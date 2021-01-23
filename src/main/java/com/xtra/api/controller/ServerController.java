@@ -1,10 +1,9 @@
 package com.xtra.api.controller;
 
 import com.xtra.api.model.File;
-import com.xtra.api.model.Resource;
-import com.xtra.api.model.Server;
-import com.xtra.api.projection.line.LineInsertView;
-import com.xtra.api.projection.line.LineView;
+import com.xtra.api.projection.server.ServerView;
+import com.xtra.api.projection.server.SimpleServerView;
+import com.xtra.api.projection.server.resource.ResourceView;
 import com.xtra.api.service.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,24 +25,24 @@ public class ServerController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<Server>> getServers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<SimpleServerView>> getServers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(serverService.findAll(search, pageNo, pageSize, sortBy, sortDir));
+        return ResponseEntity.ok(serverService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Server> getServerById(@PathVariable Long id) {
-        return ResponseEntity.ok(serverService.findByIdOrFail(id));
+    public ResponseEntity<ServerView> getServerById(@PathVariable Long id) {
+        return ResponseEntity.ok(serverService.getById(id));
     }
 
     @PostMapping("")
-    public ResponseEntity<Server> addServer(@Valid @RequestBody Server server) {
-        return ResponseEntity.ok(serverService.insert(server));
+    public ResponseEntity<ServerView> addServer(@Valid @RequestBody ServerView server) {
+        return ResponseEntity.ok(serverService.add(server));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Server> updateServer(@PathVariable Long id, @RequestBody Server server) {
-        return ResponseEntity.ok(serverService.updateOrFail(id, server));
+    public ResponseEntity<ServerView> updateServer(@PathVariable Long id, @RequestBody ServerView server) {
+        return ResponseEntity.ok(serverService.save(id, server));
     }
 
     @DeleteMapping("/{id}")
@@ -58,8 +57,8 @@ public class ServerController {
     }
 
     @GetMapping("/{id}/resources")
-    public ResponseEntity<Resource> getResource(@PathVariable Long id) {
-        return ResponseEntity.ok(serverService.getResource(id));
+    public ResponseEntity<ResourceView> getServerResources(@PathVariable Long id) {
+        return ResponseEntity.ok(serverService.getServerResource(id));
     }
 
     @GetMapping("/{id}/streams/start")
