@@ -36,10 +36,9 @@ dependencies {
     implementation 'com.google.guava:guava:29.0-jre'
     implementation 'com.auth0:java-jwt:3.11.0'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.1'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
     implementation 'org.projectreactor:reactor-spring:1.0.1.RELEASE'
     implementation 'com.neovisionaries:nv-i18n:1.27'
-    implementation 'org.projectreactor:reactor-spring:1.0.1.RELEASE'
     implementation 'com.maxmind.geoip2:geoip2:2.15.0'
 
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.0.Final'

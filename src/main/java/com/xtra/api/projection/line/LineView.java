@@ -1,20 +1,17 @@
 package com.xtra.api.projection.line;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.neovisionaries.i18n.CountryCode;
 import com.xtra.api.model.StreamProtocol;
-import com.xtra.api.model.User;
+import com.xtra.api.projection.BaseView;
 import com.xtra.api.projection.downloadlist.DlCollectionView;
-import com.xtra.api.projection.downloadlist.DownloadListView;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LineView {
+public class LineView implements BaseView {
     private Long id;
     private String username;
     private String password;
@@ -29,7 +26,6 @@ public class LineView {
     private boolean isTrial;
     private boolean isBlocked = false;
     private boolean isBanned = false;
-    private boolean isIspLocked = false;
     private boolean isStalker;
     private String adminNotes;
     private String resellerNotes;
@@ -39,6 +35,15 @@ public class LineView {
     private String mac;
 
     private List<StreamProtocol> allowedOutputs;
-    private User owner;
+    private String ownerUsername;
     private List<DlCollectionView> collections;
+
+    private boolean isCountryLocked = false;
+    private String forcedCountry;
+
+    private List<String> allowedIps;
+    private List<String> blockedIps;
+
+    private List<String> allowedUserAgents;
+    private List<String> blockedUserAgents;
 }

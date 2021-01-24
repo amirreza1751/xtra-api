@@ -1,8 +1,11 @@
 package com.xtra.api.projection.line;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.neovisionaries.i18n.CountryCode;
 import com.xtra.api.model.StreamProtocol;
 import lombok.Data;
 
+import javax.persistence.ElementCollection;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,11 +23,11 @@ public class LineInsertView {
     private boolean isTrial;
     private boolean isBlocked = false;
     private boolean isBanned = false;
-    private boolean isIspLocked = false;
     private boolean isStalker;
     private String adminNotes;
     private String resellerNotes;
 
+    /* Device Section */
     private boolean isMag;
     private boolean isEnigma;
     private boolean isMinistraPortal;
@@ -33,4 +36,14 @@ public class LineInsertView {
     private List<StreamProtocol> allowedOutputs;
     private Long owner;
     private LinkedHashSet<Long> collections;
+
+    /* Location Based Permissions */
+    private boolean isCountryLocked = false;
+    private String forcedCountry;
+
+    private List<String> allowedIps;
+    private List<String> blockedIps;
+
+    private List<String> allowedUserAgents;
+    private List<String> blockedUserAgents;
 }
