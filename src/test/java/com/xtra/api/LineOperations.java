@@ -1,7 +1,7 @@
 package com.xtra.api;
 
 import com.xtra.api.model.Line;
-import com.xtra.api.service.LineService;
+import com.xtra.api.service.admin.AdminLineServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -13,11 +13,11 @@ import org.springframework.test.context.ActiveProfiles;
 @DataJpaTest
 public class LineOperations {
     @Autowired
-    LineService lineService;
+    AdminLineServiceImpl adminLineService;
 
     @Test
     Line insertLineTest() {
         Line line = new Line();
-        lineService.insert()
+        return adminLineService.insert(new Line());
     }
 }

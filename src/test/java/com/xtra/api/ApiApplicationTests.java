@@ -1,14 +1,6 @@
 package com.xtra.api;
 
-import com.xtra.api.mapper.DownloadListMapper;
-import com.xtra.api.model.CollectionStreamId;
-import com.xtra.api.projection.downloadlist.DlCollectionView;
-import com.xtra.api.projection.downloadlist.DownloadListView;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.ArrayList;
 
 @SpringBootTest
 class ApiApplicationTests {
