@@ -2,8 +2,8 @@ package com.xtra.api.mapper.admin;
 
 import com.xtra.api.model.Category;
 import com.xtra.api.model.MediaType;
-import com.xtra.api.projection.category.CategoriesWrapper;
-import com.xtra.api.projection.category.CategoryView;
+import com.xtra.api.projection.admin.category.CategoriesWrapper;
+import com.xtra.api.projection.admin.category.CategoryView;
 import org.mapstruct.Mapper;
 
 import java.util.ArrayList;

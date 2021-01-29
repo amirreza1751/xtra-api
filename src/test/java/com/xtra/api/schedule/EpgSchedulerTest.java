@@ -1,24 +1,14 @@
 package com.xtra.api.schedule;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 //import com.xtra.api.model.EpgFileTag;
-import com.xtra.api.projection.epg.EpgFileTag;
-import com.xtra.api.model.EpgChannel;
-import com.xtra.api.model.Program;
-import com.xtra.api.repository.EpgChannelRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.xml.stream.XMLStreamException;
+        import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.net.URL;
-import java.time.*;
+        import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class EpgSchedulerTest {
 

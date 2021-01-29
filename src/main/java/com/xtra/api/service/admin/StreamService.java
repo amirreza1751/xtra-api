@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.ProgressInfoDto;
-import com.xtra.api.projection.StreamInfoDto;
+import com.xtra.api.projection.admin.ProgressInfoDto;
+import com.xtra.api.projection.admin.StreamInfoDto;
 import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.service.CrudService;
 

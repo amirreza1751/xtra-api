@@ -1,7 +1,7 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.projection.line.LineInsertView;
-import com.xtra.api.projection.line.LineView;
+import com.xtra.api.projection.admin.line.LineInsertView;
+import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.service.admin.AdminLineServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

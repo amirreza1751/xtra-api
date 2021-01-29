@@ -1,7 +1,7 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.projection.package_.PackageInsertView;
-import com.xtra.api.projection.package_.PackageView;
+import com.xtra.api.projection.admin.package_.PackageInsertView;
+import com.xtra.api.projection.admin.package_.PackageView;
 import com.xtra.api.service.admin.PackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

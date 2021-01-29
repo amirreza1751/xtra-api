@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.xtra.api.mapper.admin.CategoryMapper;
 import com.xtra.api.model.Category;
 import com.xtra.api.model.MediaType;
-import com.xtra.api.projection.category.CategoriesWrapper;
+import com.xtra.api.projection.admin.category.CategoriesWrapper;
 import com.xtra.api.repository.CategoryRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;

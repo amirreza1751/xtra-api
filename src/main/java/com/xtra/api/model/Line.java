@@ -59,7 +59,7 @@ public class Line {
     private User referrer;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    private User owner;
+    private Reseller owner;
 
     @ManyToOne(cascade = {CascadeType.PERSIST})
     private DownloadList defaultDownloadList;

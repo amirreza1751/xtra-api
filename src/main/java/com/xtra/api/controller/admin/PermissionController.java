@@ -2,7 +2,7 @@ package com.xtra.api.controller.admin;
 
 import com.xtra.api.mapper.admin.PermissionMapper;
 import com.xtra.api.model.UserType;
-import com.xtra.api.projection.PermissionView;
+import com.xtra.api.projection.admin.PermissionView;
 import com.xtra.api.service.admin.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

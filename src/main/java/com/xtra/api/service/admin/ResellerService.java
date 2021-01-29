@@ -2,9 +2,9 @@ package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.model.Reseller;
-import com.xtra.api.projection.user.reseller.ResellerCreditChangeView;
-import com.xtra.api.projection.user.reseller.ResellerInsertView;
-import com.xtra.api.projection.user.reseller.ResellerView;
+import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
+import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
+import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;

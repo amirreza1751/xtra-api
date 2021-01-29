@@ -1,6 +1,7 @@
 package com.xtra.api.repository;
 
 import com.xtra.api.model.Line;
+import com.xtra.api.model.Reseller;
 import com.xtra.api.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,11 +12,17 @@ import java.util.Optional;
 public interface LineRepository extends JpaRepository<Line, Long> {
     Page<Line> findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(String username, String adminNotes, String resellerNotes, Pageable pageable);
 
-    Page<Line> findAllByOwner(User owner);
+    Page<Line> findAllByOwner(Reseller owner, Pageable page);
+
+    Optional<Line> findByOwnerAndId(Reseller owner, Long id);
 
     Optional<Line> findByUsername(String username);
 
     Optional<Line> findByLineToken(String lineToken);
 
     boolean existsLineById(Long id);
+
+    boolean existsByOwnerAndId(Reseller owner, Long id);
+
+    void deleteByOwnerAndId(Reseller owner, Long id);
 }

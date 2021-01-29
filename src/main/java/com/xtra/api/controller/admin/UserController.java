@@ -1,6 +1,6 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.projection.user.UserView;
+import com.xtra.api.projection.admin.user.UserView;
 import com.xtra.api.service.admin.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

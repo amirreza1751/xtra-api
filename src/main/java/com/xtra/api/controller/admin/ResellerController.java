@@ -1,10 +1,10 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.mapper.admin.ResellerMapper;
-import com.xtra.api.projection.user.UserSimpleView;
-import com.xtra.api.projection.user.reseller.ResellerCreditChangeView;
-import com.xtra.api.projection.user.reseller.ResellerInsertView;
-import com.xtra.api.projection.user.reseller.ResellerView;
+import com.xtra.api.projection.admin.user.UserSimpleView;
+import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
+import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
+import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.service.admin.ResellerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

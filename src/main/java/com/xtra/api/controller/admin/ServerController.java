@@ -1,9 +1,9 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.model.File;
-import com.xtra.api.projection.server.ServerView;
-import com.xtra.api.projection.server.SimpleServerView;
-import com.xtra.api.projection.server.resource.ResourceView;
+import com.xtra.api.projection.admin.server.ServerView;
+import com.xtra.api.projection.admin.server.SimpleServerView;
+import com.xtra.api.projection.admin.server.resource.ResourceView;
 import com.xtra.api.service.admin.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

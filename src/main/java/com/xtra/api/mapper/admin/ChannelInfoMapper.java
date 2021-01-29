@@ -2,8 +2,8 @@ package com.xtra.api.mapper.admin;
 
 import com.xtra.api.model.Channel;
 import com.xtra.api.model.StreamServer;
-import com.xtra.api.projection.channel.ChannelInfo;
-import com.xtra.api.projection.channel.MergedChannelInfo;
+import com.xtra.api.projection.admin.channel.ChannelInfo;
+import com.xtra.api.projection.admin.channel.MergedChannelInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

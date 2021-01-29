@@ -2,9 +2,9 @@ package com.xtra.api.mapper.admin;
 
 import com.xtra.api.model.*;
 import com.xtra.api.model.Package;
-import com.xtra.api.projection.downloadlist.DlCollectionView;
-import com.xtra.api.projection.package_.PackageInsertView;
-import com.xtra.api.projection.package_.PackageView;
+import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
+import com.xtra.api.projection.admin.package_.PackageInsertView;
+import com.xtra.api.projection.admin.package_.PackageView;
 import com.xtra.api.service.admin.CollectionService;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;

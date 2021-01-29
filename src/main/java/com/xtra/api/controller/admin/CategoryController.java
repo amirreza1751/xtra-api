@@ -1,8 +1,8 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.model.MediaType;
-import com.xtra.api.projection.category.CategoriesWrapper;
-import com.xtra.api.projection.category.CategoryView;
+import com.xtra.api.projection.admin.category.CategoriesWrapper;
+import com.xtra.api.projection.admin.category.CategoryView;
 import com.xtra.api.service.admin.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

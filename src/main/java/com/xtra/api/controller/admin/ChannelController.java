@@ -4,10 +4,10 @@ import com.xtra.api.mapper.admin.ChannelInfoMapper;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
 
 import com.xtra.api.model.ChannelList;
-import com.xtra.api.projection.channel.ChannelInfo;
-import com.xtra.api.projection.channel.ChannelInsertView;
-import com.xtra.api.projection.channel.ChannelStart;
-import com.xtra.api.projection.channel.ChannelView;
+import com.xtra.api.projection.admin.channel.ChannelInfo;
+import com.xtra.api.projection.admin.channel.ChannelInsertView;
+import com.xtra.api.projection.admin.channel.ChannelStart;
+import com.xtra.api.projection.admin.channel.ChannelView;
 import com.xtra.api.service.admin.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

@@ -3,7 +3,7 @@ package com.xtra.api.service.admin;
 import com.google.common.collect.Sets;
 import com.xtra.api.mapper.admin.CollectionMapper;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.collection.CollectionInsertView;
+import com.xtra.api.projection.admin.collection.CollectionInsertView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
 import com.xtra.api.repository.StreamRepository;

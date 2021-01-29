@@ -2,7 +2,7 @@ package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.UserMapper;
 import com.xtra.api.model.User;
-import com.xtra.api.projection.user.UserView;
+import com.xtra.api.projection.admin.user.UserView;
 import com.xtra.api.repository.UserRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;

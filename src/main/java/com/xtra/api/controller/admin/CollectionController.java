@@ -1,9 +1,9 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.mapper.admin.CollectionMapper;
-import com.xtra.api.projection.collection.CollectionView;
-import com.xtra.api.projection.collection.CollectionInsertView;
-import com.xtra.api.projection.collection.CollectionSimplifiedView;
+import com.xtra.api.projection.admin.collection.CollectionView;
+import com.xtra.api.projection.admin.collection.CollectionInsertView;
+import com.xtra.api.projection.admin.collection.CollectionSimplifiedView;
 import com.xtra.api.service.admin.CollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

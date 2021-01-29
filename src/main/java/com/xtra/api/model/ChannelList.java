@@ -2,7 +2,7 @@ package com.xtra.api.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.projection.channel.ChannelStart;
+import com.xtra.api.projection.admin.channel.ChannelStart;
 import lombok.Getter;
 import lombok.Setter;
 

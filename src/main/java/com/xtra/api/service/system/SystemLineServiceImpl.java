@@ -1,11 +1,11 @@
 package com.xtra.api.service.system;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
-import com.xtra.api.mapper.admin.LineMapper;
+import com.xtra.api.mapper.admin.AdminLineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineStatus;
-import com.xtra.api.projection.line.LineAuth;
-import com.xtra.api.projection.line.LineView;
+import com.xtra.api.projection.system.LineAuth;
+import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.service.LineService;
@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class SystemLineServiceImpl extends LineService {
-    private final LineMapper lineMapper;
+    private final AdminLineMapper lineMapper;
     private final GeoIpService geoIpService;
 
     @Autowired
-    public SystemLineServiceImpl(LineRepository repository, LineActivityRepository lineActivityRepository, LineMapper lineMapper, GeoIpService geoIpService) {
+    public SystemLineServiceImpl(LineRepository repository, LineActivityRepository lineActivityRepository, AdminLineMapper lineMapper, GeoIpService geoIpService) {
         super(repository, Line.class, lineActivityRepository);
         this.lineMapper = lineMapper;
         this.geoIpService = geoIpService;
