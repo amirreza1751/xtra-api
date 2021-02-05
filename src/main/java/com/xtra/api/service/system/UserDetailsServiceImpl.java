@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,16 +37,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new User(user.getUsername(), user.getPassword(), true, true, true, !user.isBanned(), getAuthorities(user.getRole()));
     }
 
-
     private Collection<? extends GrantedAuthority> getAuthorities(Role role) {
-        return getGrantedAuthorities(getPrivileges(role));
+        List<GrantedAuthority> privileges = role.getPermissions().stream().map(permission -> new SimpleGrantedAuthority(permission.getPermission().getId().getName())).collect(Collectors.toList());
+        privileges.add(new SimpleGrantedAuthority("ROLE_" + role.getType().toString()));
+        return privileges;
     }
 
-    private List<String> getPrivileges(Role role) {
-        return emptyIfNull(role.getPermissions()).stream().map(permission -> permission.getPermission().getId().getName()).collect(Collectors.toList());
-    }
 
-    private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
-        return privileges.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-    }
 }
