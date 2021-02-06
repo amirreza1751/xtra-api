@@ -51,7 +51,7 @@ public class UserService extends CrudService<User, Long, UserRepository> {
 
 
     public Map<String, Object> verifyUser(Authentication auth) {
-        var dbUser = repository.findByUsername(auth.getName());
+        var dbUser = repository.findByUsername(auth.getName()).orElseThrow();
         var userData = new LinkedHashMap<String, Object>();
         userData.put("type", dbUser.getUserType().toString());
         userData.put("permissions", auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));

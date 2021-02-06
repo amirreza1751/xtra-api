@@ -67,9 +67,9 @@ public abstract class DownloadListMapper {
 
     /*To DTO */
     @Mapping(source = "collectionsAssign", target = "collections")
-    public abstract DownloadListView convertToDto(DownloadList downloadList);
+    public abstract DownloadListView convertToView(DownloadList downloadList);
 
-    public List<DlCollectionView> convertAllToDto(Set<DownloadListCollection> downloadListCollections) {
+    public List<DlCollectionView> convertAllToView(Set<DownloadListCollection> downloadListCollections) {
         if (downloadListCollections == null)
             return new ArrayList<>();
         

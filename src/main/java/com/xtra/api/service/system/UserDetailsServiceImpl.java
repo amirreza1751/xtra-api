@@ -30,10 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(username);
-        }
+        var user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
         return new User(user.getUsername(), user.getPassword(), true, true, true, !user.isBanned(), getAuthorities(user.getRole()));
     }
 
