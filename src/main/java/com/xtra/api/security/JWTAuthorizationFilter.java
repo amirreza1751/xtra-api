@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -21,7 +22,6 @@ import static com.xtra.api.security.SecurityConstants.*;
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     private final UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
     public JWTAuthorizationFilter(AuthenticationManager authManager, UserDetailsServiceImpl userDetailsService) {
         super(authManager);
         this.userDetailsService = userDetailsService;
@@ -49,12 +49,13 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         if (token != null) {
             // parse the token.
             try {
-                String user = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+                String username = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
                         .build()
                         .verify(token.replace(TOKEN_PREFIX, ""))
                         .getSubject();
-                if (user != null) {
-                    return new UsernamePasswordAuthenticationToken(user, null, userDetailsService.loadUserByUsername(user).getAuthorities());
+                if (username != null) {
+                    var userDetails = userDetailsService.loadUserByUsername(username);
+                    return new UsernamePasswordAuthenticationToken(userDetails, null, userDetailsService.loadUserByUsername(username).getAuthorities());
                 }
                 return null;
             } catch (JWTVerificationException e) {

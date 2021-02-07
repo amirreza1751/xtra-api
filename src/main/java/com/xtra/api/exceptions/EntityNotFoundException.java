@@ -18,7 +18,7 @@ public class EntityNotFoundException extends RuntimeException {
     public EntityNotFoundException() {
     }
 
-    public EntityNotFoundException(String message){
+    public EntityNotFoundException(String message) {
         super("Entity Not Found!");
         details = message;
     }
@@ -28,7 +28,12 @@ public class EntityNotFoundException extends RuntimeException {
         details = generateMessage(entityName, id);
     }
 
-    private static String generateMessage(String entityName, String id) {
+    public EntityNotFoundException(String entityName, String fieldName, String value) {
+        super("Entity Not Found!");
+        details = entityName + " was not found for " + fieldName + " = " + value;
+    }
+
+    private String generateMessage(String entityName, String id) {
         return entityName + " was not found for id = " + id;
     }
 

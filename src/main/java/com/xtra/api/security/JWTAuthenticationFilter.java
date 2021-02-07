@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -63,7 +64,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
         try {
-            var dbUser = userRepository.findByUsername(user.getUsername());
+            var dbUser = userRepository.findByUsername(user.getUsername()).orElseThrow(() -> new UsernameNotFoundException(user.getUsername()));
             String token = JWT.create()
                     .withSubject(((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername())
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
