@@ -1,7 +1,7 @@
 package com.xtra.api.service.line;
 
 import com.xtra.api.mapper.line.LineLineMapper;
-import com.xtra.api.model.Line;
+import com.xtra.api.model.*;
 import com.xtra.api.projection.line.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class LineLineServiceImpl extends LineService {
@@ -37,9 +38,31 @@ public class LineLineServiceImpl extends LineService {
     public Map<String, String> downloadLine(Long id) {
         Map<String, String> data = new HashMap<>();
 
-        String playlist = "test test test";
+        String playlist = "#EXTM3U\n";
+
+        Line line = findByIdOrFail(id);
+        DownloadList downloadList = line.getDefaultDownloadList();
+        Set<DownloadListCollection> collections = downloadList.getCollectionsAssign();
+
+        for (DownloadListCollection dlCollection : collections) {
+            Collection collection = dlCollection.getCollection();
+
+            Set<CollectionStream> streams = collection.getStreams();
+            for (CollectionStream cStream : streams) {
+                Stream stream = cStream.getStream();
+
+                //#EXTINF:-1 tvg-id="" tvg-name="Sport-DE: Eurosport 1 FHD (NULL)" tvg-logo="" group-title="Sports",Sport-DE: Eurosport 1 FHD (NULL)
+                //http://portal.unblkservice1.xyz:8080/mamad1234/mamad123/48876
+                if (stream.getStreamInputs().size() > 0) {
+                    playlist += "#EXTINF:-1 tvg-id=\"\" tvg-name=\"" + stream.getName() + "roup-title=\"Sports\"," + stream.getName() + "\n";
+                    playlist += stream.getStreamInputs().get(0) + "\n";
+                }
+
+            }
+        }
+
         data.put("fileName", "test.m3u8");
-        data.put("playlist", playlist);
+        data.put("playlist", playlist.toString());
 
         return data;
     }
