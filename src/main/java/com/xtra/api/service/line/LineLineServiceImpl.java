@@ -38,7 +38,7 @@ public class LineLineServiceImpl extends LineService {
     public Map<String, String> downloadLine(Long id) {
         Map<String, String> data = new HashMap<>();
 
-        String playlist = "#EXTM3U\n";
+        StringBuilder playlist = new StringBuilder("#EXTM3U\n");
 
         Line line = findByIdOrFail(id);
         DownloadList downloadList = line.getDefaultDownloadList();
@@ -54,8 +54,8 @@ public class LineLineServiceImpl extends LineService {
                 //#EXTINF:-1 tvg-id="" tvg-name="Sport-DE: Eurosport 1 FHD (NULL)" tvg-logo="" group-title="Sports",Sport-DE: Eurosport 1 FHD (NULL)
                 //http://portal.unblkservice1.xyz:8080/mamad1234/mamad123/48876
                 if (stream.getStreamInputs().size() > 0) {
-                    playlist += "#EXTINF:-1 tvg-id=\"\" tvg-name=\"" + stream.getName() + "roup-title=\"Sports\"," + stream.getName() + "\n";
-                    playlist += stream.getStreamInputs().get(0) + "\n";
+                    playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\"Sports\",").append(stream.getName()).append("\n");
+                    playlist.append(stream.getStreamInputs().get(0)).append("\n");
                 }
 
             }
