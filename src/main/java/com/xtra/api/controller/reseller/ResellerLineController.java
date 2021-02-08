@@ -40,6 +40,11 @@ public class ResellerLineController {
         return ResponseEntity.ok(lineService.updateLine(id, createView));
     }
 
+    @PatchMapping("/{id}/extend")
+    public ResponseEntity<LineView> extendResellerLine(@PathVariable Long id, @RequestBody Long packageId) {
+        return ResponseEntity.ok(lineService.extendLine(id, packageId));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteResellerLine(@PathVariable Long id) {
         lineService.deleteOrFail(id);

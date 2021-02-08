@@ -1,14 +1,17 @@
 package com.xtra.api.service.reseller;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exceptions.UnsuccessfulOperationException;
 import com.xtra.api.mapper.reseller.ResellerLineMapper;
 import com.xtra.api.model.Line;
-import com.xtra.api.model.Reseller;
+import com.xtra.api.model.Package;
 import com.xtra.api.projection.reseller.line.LineCreateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.service.LineService;
+import com.xtra.api.service.admin.PackageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,15 +26,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
+import static org.springframework.beans.BeanUtils.copyProperties;
+
 @Service
 @PreAuthorize("hasRole('RESELLER')")
 public class ResellerLineServiceImpl extends LineService {
     private final ResellerLineMapper lineMapper;
+    private final PackageService packageService;
+    private final ResellerRepository resellerRepository;
 
     @Autowired
-    protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, LineActivityRepository lineActivityRepository) {
+    protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, LineActivityRepository lineActivityRepository, PackageService packageService, ResellerRepository resellerRepository) {
         super(repository, Line.class, lineActivityRepository);
         this.lineMapper = lineMapper;
+        this.packageService = packageService;
+        this.resellerRepository = resellerRepository;
     }
 
     public Page<LineView> getAllLines(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -49,6 +58,22 @@ public class ResellerLineServiceImpl extends LineService {
 
     public LineView updateLine(Long id, LineCreateView createView) {
         return lineMapper.convertToView(updateOrFail(id, lineMapper.convertToEntity(createView)));
+    }
+
+    public LineView extendLine(Long id, Long packageId) {
+        Package pack = packageService.findByIdOrFail(packageId);
+        Line line = findByIdOrFail(id);
+        line.setExpireDate(line.getExpireDate().plus(pack.getDuration()));
+        line.setMaxConnections(pack.getMaxConnections());
+
+        var owner = resellerRepository.findByUsername(getLoggedInReseller()).orElseThrow(() -> new AccessDeniedException("User Does not Exist"));
+        var currentCredits = owner.getCredits();
+        var packageCredits = pack.getCredits();
+        if (currentCredits >= packageCredits) {
+            owner.setCredits(currentCredits - packageCredits);
+            return lineMapper.convertToView(repository.save(line));
+        }
+        throw new UnsuccessfulOperationException("LOW_CREDIT", "User Credit is Low");
     }
 
     @Override
@@ -96,9 +121,11 @@ public class ResellerLineServiceImpl extends LineService {
         if (auth != null) {
             var principal = auth.getPrincipal();
             if (principal != null) {
-                return ((User)principal).getUsername();
+                return ((User) principal).getUsername();
             }
         }
         throw new AccessDeniedException("access denied");
     }
+
+
 }

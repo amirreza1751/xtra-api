@@ -35,6 +35,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
+    @ExceptionHandler(UnsuccessfulOperationException.class)
+    protected ResponseEntity<Object> handleUnsuccessfulOperation(UnsuccessfulOperationException ex, WebRequest request) {
+        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
+        ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, path, ex.getErrorCode(), ex.getMessage(), "");
+        return buildResponseEntity(apiError);
+    }
+
     /*@ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException exception, WebRequest request) {
         String path = ((ServletWebRequest) request).getRequest().getRequestURI();
