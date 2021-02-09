@@ -9,13 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@RestController("resellerLineController")
 @RequestMapping("users/current/lines")
-public class ResellerLineController {
+public class LineController {
     private final ResellerLineServiceImpl lineService;
 
     @Autowired
-    public ResellerLineController(ResellerLineServiceImpl lineService) {
+    public LineController(ResellerLineServiceImpl lineService) {
         this.lineService = lineService;
     }
 

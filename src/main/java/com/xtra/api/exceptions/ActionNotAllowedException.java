@@ -5,10 +5,10 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UnsuccessfulOperationException extends RuntimeException {
+public class ActionNotAllowedException extends RuntimeException {
     private String errorCode;
 
-    public UnsuccessfulOperationException(String message, String errorCode) {
+    public ActionNotAllowedException(String message, String errorCode) {
         super(message);
         this.errorCode = errorCode;
     }
