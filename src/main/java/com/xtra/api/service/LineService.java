@@ -3,6 +3,7 @@ package com.xtra.api.service;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineActivity;
+import com.xtra.api.model.Reseller;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
 import org.springframework.util.StringUtils;
@@ -71,5 +72,9 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
 
         line.setLineToken(token);
         return repository.save(line);
+    }
+
+    public Line findByUsernameOrFail(String username) {
+        return repository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(aClass.getSimpleName(), "Username", username));
     }
 }
