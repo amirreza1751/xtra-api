@@ -1,5 +1,6 @@
 package com.xtra.api.controller.line;
 
+import com.xtra.api.projection.line.line.LineInsertView;
 import com.xtra.api.projection.line.line.LineView;
 import com.xtra.api.service.line.LineLineServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,5 +20,10 @@ public class LineProfileController {
     @GetMapping("/{id}")
     public ResponseEntity<LineView> getLineProfile(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.getById(id));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<LineView> updateLineProfile(@PathVariable Long id, @RequestBody LineInsertView insertView) {
+        return ResponseEntity.ok(lineService.save(id, insertView));
     }
 }

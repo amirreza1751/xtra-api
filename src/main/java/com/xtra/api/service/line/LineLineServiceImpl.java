@@ -2,6 +2,7 @@ package com.xtra.api.service.line;
 
 import com.xtra.api.mapper.line.LineLineMapper;
 import com.xtra.api.model.*;
+import com.xtra.api.projection.line.line.LineInsertView;
 import com.xtra.api.projection.line.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
@@ -37,6 +38,10 @@ public class LineLineServiceImpl extends LineService {
 
     public LineView getById(Long id) {
         return lineMapper.convertToView(findByIdOrFail(id));
+    }
+
+    public LineView save(Long id, LineInsertView lineInsertView) {
+        return lineMapper.convertToView(updateOrFail(id, lineMapper.convertToEntity(lineInsertView)));
     }
 
     public Map<String, String> downloadLine() {

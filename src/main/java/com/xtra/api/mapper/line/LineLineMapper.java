@@ -1,6 +1,7 @@
 package com.xtra.api.mapper.line;
 
 import com.xtra.api.model.Line;
+import com.xtra.api.projection.line.line.LineInsertView;
 import com.xtra.api.projection.line.line.LineView;
 //import com.xtra.api.projection.line.line.LineCreateView;
 import org.mapstruct.Mapper;
@@ -10,6 +11,6 @@ public abstract class LineLineMapper {
 
     public abstract LineView convertToView(Line line);
 
-//    public abstract Line convertToEntity(LineCreateView lineView);
+    public abstract Line convertToEntity(LineInsertView lineView);
 
 }
