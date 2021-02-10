@@ -21,10 +21,13 @@ public class Reseller extends User {
     @OneToMany(mappedBy = "owner")
     private List<DownloadList> customDownloadLists;
 
+    @ManyToOne
+    private Reseller owner;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Line> lines;
+
     public Reseller() {
         setUserType(UserType.RESELLER);
     }
-
-    @ManyToOne
-    private Reseller owner;
 }

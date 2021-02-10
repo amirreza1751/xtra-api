@@ -1,7 +1,7 @@
 package com.xtra.api.service.reseller;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
-import com.xtra.api.exceptions.UnsuccessfulOperationException;
+import com.xtra.api.exceptions.ActionNotAllowedException;
 import com.xtra.api.mapper.reseller.ResellerLineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.Package;
@@ -73,7 +73,7 @@ public class ResellerLineServiceImpl extends LineService {
             owner.setCredits(currentCredits - packageCredits);
             return lineMapper.convertToView(repository.save(line));
         }
-        throw new UnsuccessfulOperationException("LOW_CREDIT", "User Credit is Low");
+        throw new ActionNotAllowedException("LOW_CREDIT", "User Credit is Low");
     }
 
     @Override
