@@ -1,16 +1,14 @@
 package com.xtra.api.service.admin;
 
+import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.channel.ChannelInfo;
-import com.xtra.api.projection.admin.channel.ChannelStart;
+import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.mapper.admin.ChannelMapper;
 import com.xtra.api.model.Channel;
 import com.xtra.api.model.Server;
 import com.xtra.api.model.StreamServer;
 import com.xtra.api.model.StreamServerId;
-import com.xtra.api.projection.admin.channel.ChannelInsertView;
-import com.xtra.api.projection.admin.channel.ChannelView;
 import com.xtra.api.repository.ChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -88,6 +86,34 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     public ChannelView save(Long id, ChannelInsertView channelView, boolean restart) {
         return channelMapper.convertToView(update(id, channelMapper.convertToEntity(channelView), restart));
+    }
+
+    public void saveAll(ChannelMassInsertView channelMassInsertView, boolean restart) {
+        var channelIds = channelMassInsertView.getChannelIds();
+        if (channelIds != null) {
+            for (Long channelId : channelIds) {
+                var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
+                System.out.println(channelMassInsertView.toString());
+                if (channelMassInsertView.getReadNative() != null)
+                    channel.setReadNative(Boolean.parseBoolean(channelMassInsertView.getReadNative()));
+                if (channelMassInsertView.getStreamAll() != null)
+                    channel.setStreamAll(Boolean.parseBoolean(channelMassInsertView.getStreamAll()));
+                if (channelMassInsertView.getDirectSource() != null)
+                    channel.setDirectSource(Boolean.parseBoolean(channelMassInsertView.getDirectSource()));
+                if (channelMassInsertView.getGenTimestamps() != null)
+                    channel.setGenTimestamps(Boolean.parseBoolean(channelMassInsertView.getGenTimestamps()));
+                if (channelMassInsertView.getRtmpOutput() != null)
+                    channel.setRtmpOutput(Boolean.parseBoolean(channelMassInsertView.getRtmpOutput()));
+                repository.save(channel);
+
+                if (channel.getStreamServers() != null) {
+                    var serverIds = channel.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
+                    if (restart) {
+                        //@todo call stream restart on servers
+                    }
+                }
+            }
+        }
     }
 
     public Channel update(Long id, Channel channel, boolean restart) {
