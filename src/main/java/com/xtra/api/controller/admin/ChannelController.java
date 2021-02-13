@@ -67,7 +67,7 @@ public class ChannelController {
 
     @DeleteMapping("/mass}")
     public ResponseEntity<?> deleteChannels(@RequestBody ChannelMassDeleteView channelView) {
-        channelService.deleteALl(channelView);
+        channelService.deleteAll(channelView);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

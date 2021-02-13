@@ -116,7 +116,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         }
     }
 
-    public void deleteALl(ChannelMassDeleteView channelMassDeleteView) {
+    public void deleteAll(ChannelMassDeleteView channelMassDeleteView) {
         var channelIds = channelMassDeleteView.getChannelIds();
         if (channelIds != null) {
             for (Long channelId : channelIds) {
