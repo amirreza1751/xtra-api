@@ -15,8 +15,5 @@ public class ChannelInfo {
     private Long id;
     private String name;
     private String logo;
-    private StreamType streamType;
-    private String streamToken;
-
-    private Set<MergedChannelInfo> infos;
+    private Set<MergedChannelInfo> channelInfos;
 }
