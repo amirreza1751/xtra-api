@@ -74,7 +74,7 @@ public abstract class ChannelMapper {
         return collectionStreams.stream().map(collectionStream -> collectionStream.getCollection().getId()).collect(Collectors.toSet());
     }
 
-    @Mapping(source = "streamServers", target = "infos")
+    @Mapping(source = "streamServers", target = "channelInfos")
     public abstract ChannelInfo convertToChannelInfo(Channel channel);
 
     public Set<MergedChannelInfo> convertToInfosMap(Set<StreamServer> streamServers) {
