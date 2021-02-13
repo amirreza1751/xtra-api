@@ -65,6 +65,12 @@ public class ChannelController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @DeleteMapping("/mass}")
+    public ResponseEntity<?> deleteChannels(@RequestBody ChannelMassDeleteView channelView) {
+        channelService.deleteALl(channelView);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     // Stream Operations
     @GetMapping("/{id}/start")
     public ResponseEntity<String> startChannel(@PathVariable Long id, @RequestParam (required = false) List<Long> servers) {

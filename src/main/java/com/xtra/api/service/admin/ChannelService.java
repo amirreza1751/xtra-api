@@ -116,6 +116,15 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         }
     }
 
+    public void deleteALl(ChannelMassDeleteView channelMassDeleteView) {
+        var channelIds = channelMassDeleteView.getChannelIds();
+        if (channelIds != null) {
+            for (Long channelId : channelIds) {
+                deleteOrFail(channelId);
+            }
+        }
+    }
+
     public Channel update(Long id, Channel channel, boolean restart) {
         //@todo check validation check
         Channel oldChannel = findByIdOrFail(id);
