@@ -24,5 +24,5 @@ public interface LineRepository extends JpaRepository<Line, Long> {
 
     boolean existsByOwnerUsernameAndId(String username, Long id);
 
-    void deleteByOwnerUsernameAndId(String username, Long id);
+    void deleteLineByOwnerUsernameAndId(String username, Long id);
 }
