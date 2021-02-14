@@ -14,7 +14,7 @@ import java.util.Set;
 public abstract class ChannelInfoMapper {
 
 
-    @Mapping(source = "streamServers", target = "infos")
+    @Mapping(source = "streamServers", target = "channelInfos")
     public abstract ChannelInfo convertToDto(Channel channel);
 
     public Set<MergedChannelInfo> convertToInfosMap(Set<StreamServer> streamServers) {
