@@ -3,6 +3,7 @@ package com.xtra.api.mapper.admin;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.Channel;
 import com.xtra.api.model.CollectionStream;
+import com.xtra.api.model.Server;
 import com.xtra.api.model.StreamServer;
 import com.xtra.api.projection.admin.channel.ChannelInfo;
 import com.xtra.api.projection.admin.channel.ChannelInsertView;
@@ -15,6 +16,7 @@ import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,6 +69,19 @@ public abstract class ChannelMapper {
     public Set<Long> convertToServerIds(Set<StreamServer> streamServers) {
         if (streamServers == null) return null;
         return streamServers.stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
+    }
+
+    public Set<StreamServer> convertToServers(Set<Long> ids) {
+        Set<StreamServer> streamServers = new HashSet<>();
+
+        for (Long id : ids) {
+            StreamServer streamServer = new StreamServer();
+            var server = serverRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Server", id.toString()));
+            streamServer.setServer(server);
+            streamServers.add(streamServer);
+        }
+
+        return streamServers;
     }
 
     public Set<Long> convertToCollectionIds(Set<CollectionStream> collectionStreams) {

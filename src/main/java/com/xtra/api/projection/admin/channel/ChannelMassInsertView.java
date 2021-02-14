@@ -17,4 +17,5 @@ public class ChannelMassInsertView {
     private String rtmpOutput;
 
     private Set<Long> channelIds;
+    private Set<Long> serverIds;
 }

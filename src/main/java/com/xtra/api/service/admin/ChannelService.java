@@ -90,10 +90,11 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     public void saveAll(ChannelMassInsertView channelMassInsertView, boolean restart) {
         var channelIds = channelMassInsertView.getChannelIds();
+        var serverIds = channelMassInsertView.getServerIds();
         if (channelIds != null) {
             for (Long channelId : channelIds) {
                 var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
-                System.out.println(channelMassInsertView.toString());
+
                 if (channelMassInsertView.getReadNative() != null)
                     channel.setReadNative(Boolean.parseBoolean(channelMassInsertView.getReadNative()));
                 if (channelMassInsertView.getStreamAll() != null)
@@ -104,10 +105,16 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
                     channel.setGenTimestamps(Boolean.parseBoolean(channelMassInsertView.getGenTimestamps()));
                 if (channelMassInsertView.getRtmpOutput() != null)
                     channel.setRtmpOutput(Boolean.parseBoolean(channelMassInsertView.getRtmpOutput()));
+
+                Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds);
+                channel.setStreamServers(streamServers);
+
+                System.out.println(channel);
+
                 repository.save(channel);
 
                 if (channel.getStreamServers() != null) {
-                    var serverIds = channel.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
+                    var resetServerIds = channel.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
                     if (restart) {
                         //@todo call stream restart on servers
                     }
