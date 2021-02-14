@@ -4,8 +4,9 @@ import com.xtra.api.exceptions.ActionNotAllowedException;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.model.Reseller;
-import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
+import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
+import com.xtra.api.projection.reseller.subreseller.SubresellerView;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.service.CrudService;
@@ -18,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -39,37 +39,39 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         return null;
     }
 
-    public Page<ResellerView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+    public Page<SubresellerView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
-        return new PageImpl<>(repository.findAllByOwner(getCurrentReseller(), page).stream().map(resellerMapper::convertToView).collect(Collectors.toList()));
+        return new PageImpl<>(repository.findAllByOwner(getCurrentReseller(), page).stream().map(resellerMapper::convertToSubresellerView).collect(Collectors.toList()));
 
     }
 
-    public ResellerView getReseller(Long id) {
+    public SubresellerView getReseller(Long id) {
         var subreseller = repository.findByIdAndOwnerUsername(id, getCurrentReseller().getUsername());
-        return resellerMapper.convertToView(subreseller.orElseThrow(() -> new EntityNotFoundException("Reseller", id.toString())));
+        return resellerMapper.convertToSubresellerView(subreseller.orElseThrow(() -> new EntityNotFoundException("Reseller", id.toString())));
     }
 
-    public ResellerView addSubreseller(ResellerInsertView insertView) {
-        var subreseller = resellerMapper.convertToEntity(insertView);
+    public SubresellerView addSubreseller(SubresellerCreateView view) {
+        var subreseller = resellerMapper.convertToEntity(view);
         var currentReseller = getCurrentReseller();
         if (currentReseller.getCredits() < subreseller.getCredits())
             throw new ActionNotAllowedException("Not Enough Credits", "LOW_CREDITS");
         subreseller.setOwner(currentReseller);
 
         var currentCredits = currentReseller.getCredits();
-        currentReseller.setCredits(currentCredits - insertView.getCredits());
+        currentReseller.setCredits(currentCredits - view.getCredits());
         var res = repository.save(subreseller);
         repository.save(currentReseller);
-        return resellerMapper.convertToView(res);
+        return resellerMapper.convertToSubresellerView(res);
     }
 
-    public ResellerView updateSubreseller(Long id, ResellerInsertView insertView) {
-        var subreseller = resellerMapper.convertToEntity(insertView);
+    public SubresellerView updateSubreseller(Long id, SubresellerCreateView view) {
+        var subreseller = resellerMapper.convertToEntity(view);
         var currentReseller = getCurrentReseller();
         var oldSubreseller = repository.findByIdAndOwnerUsername(id, currentReseller.getUsername()).orElseThrow(() -> new EntityNotFoundException("Reseller", id.toString()));
-        copyProperties(subreseller, oldSubreseller, ResellerInsertView.class);
-        return resellerMapper.convertToView(repository.save(oldSubreseller));
+        oldSubreseller.setEmail(subreseller.getEmail());
+        oldSubreseller.setPassword(subreseller.getPassword());
+        oldSubreseller.setResellerDns(subreseller.getResellerDns());
+        return resellerMapper.convertToSubresellerView(repository.save(oldSubreseller));
     }
 
     public void deleteSubreseller(Long id) {
