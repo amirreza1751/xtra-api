@@ -18,7 +18,7 @@ public class ProgramId implements Serializable {
     private ZonedDateTime stop;
     @Column(length = 2)
     private String language;
-    private Long epgChannelId;
+    private EpgChannelId epgChannelId;
 
     public ProgramId(String title, ZonedDateTime start, ZonedDateTime stop, String language) {
         this.title = title;

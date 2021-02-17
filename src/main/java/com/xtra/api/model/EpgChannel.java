@@ -23,7 +23,7 @@ public class EpgChannel {
 
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @MapsId("epgChannelId")
+    @MapsId("epgId")
     private EpgFile epgFile;
 
 

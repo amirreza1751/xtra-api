@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Embeddable
 public class EpgChannelId implements Serializable {
     private String name;
-    private Long epgChannelId;
+    private Long epgId;
     @Column(length = 2)
     private String language;
 
