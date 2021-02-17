@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
 public class ProgramId implements Serializable {
@@ -20,4 +19,11 @@ public class ProgramId implements Serializable {
     @Column(length = 2)
     private String language;
     private Long epgChannelId;
+
+    public ProgramId(String title, ZonedDateTime start, ZonedDateTime stop, String language) {
+        this.title = title;
+        this.start = start;
+        this.stop = stop;
+        this.language = language;
+    }
 }

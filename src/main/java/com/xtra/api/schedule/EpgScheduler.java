@@ -1,31 +1,23 @@
 package com.xtra.api.schedule;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.xtra.api.model.EpgChannel;
-import com.xtra.api.model.EpgFile;
-import com.xtra.api.model.Program;
-import com.xtra.api.model.ProgramId;
-import com.xtra.api.projection.admin.epg.CategoryTag;
-import com.xtra.api.projection.admin.epg.EpgChannelTag;
-import com.xtra.api.projection.admin.epg.EpgFileTag;
-import com.xtra.api.projection.admin.epg.ProgramTag;
+import com.xtra.api.model.*;
 import com.xtra.api.repository.EpgChannelRepository;
 import com.xtra.api.repository.EpgFileRepository;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.json.JSONObject;
+import org.json.XML;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Component
 public class EpgScheduler {
@@ -37,86 +29,69 @@ public class EpgScheduler {
         this.epgFileRepository = epgFileRepository;
     }
 
-    //        @Scheduled(fixedDelay = 2000)
-    @Transactional
+    //@todo dynamic time
     @Scheduled(cron = "0 0 1 * * MON")
-    public void updateEpg() {
-        XmlMapper xmlMapper = new XmlMapper();
+    public void checkEpgUpdate() {
         URL xmlUrl;
         try {
             List<EpgFile> epgFiles = epgFileRepository.findAll();
             for (EpgFile epgFile : epgFiles) {
                 xmlUrl = new URL(epgFile.getSource());
-                EpgFileTag value = xmlMapper.readValue(xmlUrl.openStream(), EpgFileTag.class);
-                List<EpgChannel> epgChannels = new ArrayList<>();
-                for (EpgChannelTag epgChannelTag : value.getEpgChannelTags()) {
-                    EpgChannel epgChannel = convertToEntity(epgChannelTag);
-                    Set<Program> programs = new HashSet<>();
-                    for (ProgramTag programTag : value.getProgramTags()) {
-                        if (programTag.getChannelId().equals(epgChannelTag.getName())) {
-                            Program program = convertToEntity(programTag);
-                            programs.add(program);
-                        }
-                    }
-                    epgChannel.setPrograms(programs);
-                    epgChannels.add(epgChannel);
+                String xml;
+                try (Scanner scanner = new Scanner(xmlUrl.openStream(),
+                        StandardCharsets.UTF_8.toString())) {
+                    scanner.useDelimiter("\\A");
+                    xml = scanner.hasNext() ? scanner.next() : "";
                 }
-                for (EpgChannel epgChannel : epgChannels) {
-                    var existingEpgChannel = epgChannelRepository.findByName(epgChannel.getName());
-                    if (existingEpgChannel.isEmpty()) {
-                        epgChannel.setEpgFile(epgFile);
-                        Set<Program> programs = new HashSet<>();
-                        for (Program program : epgChannel.getPrograms()) {
-                            program.setEpgChannel(epgChannel);
-                            programs.add(program);
-                        }
-                        epgChannel.setPrograms(programs);
-                        Set<EpgChannel> channels = epgFile.getEpgChannels();
-                        channels.add(epgChannel);
-                        epgFile.setEpgChannels(channels);
-                        epgChannelRepository.save(epgChannel);
-                    } else {
-                        var oldEpgChannel = existingEpgChannel.get();
-                        copyProperties(epgChannel, oldEpgChannel, "id", "epgFile", "stream", "programs");
-                        Set<Program> oldPrograms = oldEpgChannel.getPrograms();
-                        Set<Program> programs = new HashSet<>();
-                        for (Program program : epgChannel.getPrograms()) {
-                            program.setEpgChannel(oldEpgChannel);
-                            program.setId(new ProgramId(program.getId().getTitle(), program.getId().getStart(), program.getId().getStop(), program.getId().getLanguage(), oldEpgChannel.getId()));
-                            programs.add(program);
-                        }
-                        oldPrograms.addAll(programs);
-                        oldEpgChannel.setPrograms(oldPrograms);
-                        oldEpgChannel.setEpgFile(epgFile);
-                        epgChannelRepository.save(oldEpgChannel);
-                    }
-                }
+
+                //Check if file is updated
+                var newHash = DigestUtils.md5Hex(xml);
+                if (!epgFile.getLastVersionHash().isEmpty() && epgFile.getLastVersionHash().equals(newHash))
+                    continue;
+
+                updateEpg(epgFile, xml);
+
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            System.out.println(exception.getMessage());
         }
-
     }
 
-    public EpgChannel convertToEntity(EpgChannelTag epgChannelTag) {
-        EpgChannel epgChannel = new EpgChannel();
-        epgChannel.setName(epgChannelTag.getName());
-        epgChannel.setIcon(epgChannelTag.getIconTag() == null ? "" : epgChannelTag.getIconTag().getSrc());
-        epgChannel.setUrl(epgChannelTag.getUrlTag() == null ? "" : epgChannelTag.getUrlTag().getText());
-        epgChannel.setLanguage(epgChannelTag.getDisplayNameTag().getLanguage() == null ? "" : epgChannelTag.getDisplayNameTag().getLanguage());
-        return epgChannel;
-    }
-
-    public Program convertToEntity(ProgramTag programTag) {
+    private void updateEpg(EpgFile epgFile, String xml) {
+        JSONObject root = XML.toJSONObject(xml);
+        Set<EpgChannel> epgChannelList = new HashSet<>();
+        for (var json : root.getJSONObject("tv").getJSONArray("channel")) {
+            var channel = ((JSONObject) json);
+            var channelId = new EpgChannelId(channel.getString("id"), channel.getJSONObject("display-name").getString("lang"));
+            var dbChannel = epgChannelRepository.findById(channelId);
+            EpgChannel epgChannel;
+            epgChannel = dbChannel.orElseGet(() -> new EpgChannel(channelId));
+            epgChannel.setUrl(channel.getString("url"));
+            if (channel.has("icon"))
+                epgChannel.setIcon(channel.getJSONObject("icon").getString("src"));
+            epgChannel.setEpgFile(epgFile);
+            epgChannelList.add(epgChannel);
+        }
+        epgFile.setEpgChannels(epgChannelList);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss [XXX][X]");
-        ZonedDateTime start = ZonedDateTime.parse(programTag.getStart(), formatter);
 
-        ZonedDateTime stop = ZonedDateTime.parse(programTag.getStop(), formatter);
+        for (var programJson : root.getJSONObject("tv").getJSONArray("programme")) {
+            var programObject = ((JSONObject) programJson);
+            var channelName = programObject.getString("channel");
+            var channel = epgChannelList.stream().filter(epgChannel -> epgChannel.getId().getName().equals(channelName)).findAny();
+            if (channel.isPresent()) {
+                Program program = new Program(new ProgramId(programObject.getJSONObject("title").getString("content"), ZonedDateTime.parse(programObject.getString("start"), formatter),
+                        ZonedDateTime.parse(programObject.getString("stop"), formatter), programObject.getJSONObject("title").getString("lang")));
+                program.setContent(programJson.toString());
+                program.setEpgChannel(channel.get());
+                if (!channel.get().addProgram(program)) {
+                    channel.get().removeProgram(program);
+                    channel.get().addProgram(program);
+                }
 
-        Program program = new Program();
-        program.setId(new ProgramId(programTag.getTitleTag().getText(), start, stop, programTag.getTitleTag().getLang(), null));
-        program.setDescription(programTag.getDescriptionTag() == null ? "" : programTag.getDescriptionTag().getText());
-        program.setCategory(programTag.getCategories() == null ? "" : programTag.getCategories().stream().map(CategoryTag::getText).collect(Collectors.joining("|")));
-        return program;
+            }
+        }
+        epgFileRepository.save(epgFile);
     }
+
 }
