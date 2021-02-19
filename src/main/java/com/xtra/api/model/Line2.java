@@ -10,11 +10,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Line extends User{
+public class Line2 extends User {
 
     private String lineToken;
     private LocalDateTime expireDate;
