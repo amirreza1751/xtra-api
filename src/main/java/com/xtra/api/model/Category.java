@@ -1,27 +1,26 @@
 package com.xtra.api.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.PreRemove;
 import java.util.Set;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class Category {
     @Id
     private String name;
 
-    @Column(name = "`order`")
-    private int order;
-
     @OneToMany(mappedBy = "category")
     private Set<Collection> collections;
 
-    public Category(String name, int order) {
-        this.name = name;
-
-    }
-
-    public Category() {
+    @PreRemove
+    private void preRemove() {
+        collections.forEach(collection -> collection.setCategory(null));
     }
 }
