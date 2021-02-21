@@ -64,7 +64,7 @@ public class Stream {
     @OneToMany(mappedBy = "stream")
     private List<LineActivity> lineActivities;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private EpgChannel epgChannel;
 
     private int currentConnections = 0;

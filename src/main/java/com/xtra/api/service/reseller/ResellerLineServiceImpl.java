@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -44,15 +45,17 @@ public class ResellerLineServiceImpl extends LineService {
     }
 
     public Page<LineView> getAllLines(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return new PageImpl<>(findAll(getLoggedInReseller(), search, pageNo, pageSize, sortBy, sortDir).stream().map(lineMapper::convertToView).collect(Collectors.toList()));
+        return new PageImpl<>(findAll(getLoggedInUsername(), search, pageNo, pageSize, sortBy, sortDir).stream().map(lineMapper::convertToView).collect(Collectors.toList()));
     }
 
     public LineView getById(Long id) {
-        return lineMapper.convertToView(findLineByOwnerUsernameAndIdOrFail(getLoggedInReseller(), id));
+        return lineMapper.convertToView(findLineByOwnerUsernameAndIdOrFail(getLoggedInUsername(), id));
     }
 
     public LineView createLine(LineCreateView createView) {
-        return lineMapper.convertToView(insert(lineMapper.convertToEntity(createView)));
+        Line line = lineMapper.convertToEntity(createView);
+        line.setOwner(resellerRepository.findByUsername(getLoggedInUsername()).orElseThrow());
+        return lineMapper.convertToView(insert(line));
     }
 
 
@@ -66,7 +69,7 @@ public class ResellerLineServiceImpl extends LineService {
         line.setExpireDate(line.getExpireDate().plus(pack.getDuration()));
         line.setMaxConnections(pack.getMaxConnections());
 
-        var owner = resellerRepository.findByUsername(getLoggedInReseller()).orElseThrow(() -> new AccessDeniedException("User Does not Exist"));
+        var owner = resellerRepository.findByUsername(getLoggedInUsername()).orElseThrow(() -> new AccessDeniedException("User Does not Exist"));
         var currentCredits = owner.getCredits();
         var packageCredits = pack.getCredits();
         if (currentCredits >= packageCredits) {
@@ -77,22 +80,23 @@ public class ResellerLineServiceImpl extends LineService {
     }
 
     @Override
+    @Transactional
     public void deleteOrFail(Long id) {
-        var owner = getLoggedInReseller();
+        var owner = getLoggedInUsername();
         if (!repository.existsByOwnerUsernameAndId(owner, id))
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
-        repository.deleteByOwnerUsernameAndId(owner, id);
+        repository.deleteLineByOwnerUsernameAndId(owner, id);
     }
 
     public void updateLineBlock(Long id, boolean blocked) {
-        Line line = findLineByOwnerUsernameAndIdOrFail(getLoggedInReseller(), id);
+        Line line = findLineByOwnerUsernameAndIdOrFail(getLoggedInUsername(), id);
         line.setBlocked(blocked);
         killAllConnections(id);
         repository.save(line);
     }
 
     public void updateLineBan(Long id, boolean banned) {
-        Line line = findLineByOwnerUsernameAndIdOrFail(getLoggedInReseller(), id);
+        Line line = findLineByOwnerUsernameAndIdOrFail(getLoggedInUsername(), id);
         line.setBanned(banned);
         killAllConnections(id);
         repository.save(line);
@@ -116,7 +120,7 @@ public class ResellerLineServiceImpl extends LineService {
         return null;
     }
 
-    private String getLoggedInReseller() {
+    private String getLoggedInUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
             var principal = auth.getPrincipal();

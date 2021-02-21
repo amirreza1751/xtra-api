@@ -4,7 +4,11 @@ import com.xtra.api.mapper.admin.ChannelInfoMapper;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
 
 import com.xtra.api.model.ChannelList;
-import com.xtra.api.projection.admin.channel.*;
+import com.xtra.api.model.EpgChannelId;
+import com.xtra.api.projection.admin.channel.ChannelInfo;
+import com.xtra.api.projection.admin.channel.ChannelInsertView;
+import com.xtra.api.projection.admin.channel.ChannelStart;
+import com.xtra.api.projection.admin.channel.ChannelView;
 import com.xtra.api.service.admin.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -52,28 +56,15 @@ public class ChannelController {
         return ResponseEntity.ok(channelService.save(id, channelView, restart));
     }
 
-    // Mass Edit
-    @PatchMapping(value = {"/mass", "/mass/{restart}"})
-    public ResponseEntity<?> updateChannels(@RequestBody ChannelMassInsertView channelView, @PathVariable(required = false) boolean restart) {
-        channelService.saveAll(channelView, restart);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteChannel(@PathVariable Long id) {
         channelService.deleteOrFail(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping("/mass")
-    public ResponseEntity<?> deleteChannels(@RequestBody ChannelMassDeleteView channelView) {
-        channelService.deleteAll(channelView);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
     // Stream Operations
     @GetMapping("/{id}/start")
-    public ResponseEntity<String> startChannel(@PathVariable Long id, @RequestParam (required = false) List<Long> servers) {
+    public ResponseEntity<String> startChannel(@PathVariable Long id, @RequestParam(required = false) List<Long> servers) {
         if (channelService.startOrFail(id, servers))
             return ResponseEntity.ok().build();
         else
@@ -81,7 +72,7 @@ public class ChannelController {
     }
 
     @GetMapping("/{id}/stop")
-    public ResponseEntity<?> stopChannel(@PathVariable Long id, @RequestParam (required = false) List<Long> servers) {
+    public ResponseEntity<?> stopChannel(@PathVariable Long id, @RequestParam(required = false) List<Long> servers) {
         if (channelService.stopOrFail(id, servers))
             return ResponseEntity.ok().build();
         else
@@ -89,7 +80,7 @@ public class ChannelController {
     }
 
     @GetMapping("/{id}/restart")
-    public ResponseEntity<String> restartChannel(@PathVariable Long id, @RequestParam ( required = false) List<Long> servers) {
+    public ResponseEntity<String> restartChannel(@PathVariable Long id, @RequestParam(required = false) List<Long> servers) {
         if (channelService.restartOrFail(id, servers))
             return ResponseEntity.ok().build();
         else
@@ -137,13 +128,19 @@ public class ChannelController {
     }
 
     @GetMapping("/{id}/to-start") //get channel object to start streaming (request origin: core)
-    public ResponseEntity<ChannelStart> channelStart(@PathVariable Long id){
+    public ResponseEntity<ChannelStart> channelStart(@PathVariable Long id) {
         return ResponseEntity.ok(channelStartMapper.convertToDto(channelService.channelStart(id)));
     }
 
     @GetMapping("/batch-get")
-    public ResponseEntity<ChannelList> getBatchChannel(@RequestParam List<Long>  streamIds) {
+    public ResponseEntity<ChannelList> getBatchChannel(@RequestParam List<Long> streamIds) {
         return ResponseEntity.ok(channelService.getBatchChannel(streamIds));
+    }
+
+    @PatchMapping("{id}/epg-channel")
+    public ResponseEntity<?> setEpgRecord(@PathVariable Long id, @RequestBody EpgChannelId epgChannelId) {
+        channelService.setEpgRecord(id,epgChannelId);
+        return ResponseEntity.ok().build();
     }
 
 }

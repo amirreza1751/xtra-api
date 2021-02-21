@@ -55,10 +55,10 @@ public class Line {
     @ElementCollection
     private List<StreamProtocol> allowedOutputs;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private User referrer;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Reseller owner;
 
     @ManyToOne(cascade = {CascadeType.PERSIST})

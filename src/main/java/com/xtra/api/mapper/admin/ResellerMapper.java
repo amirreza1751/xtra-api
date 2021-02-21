@@ -7,6 +7,8 @@ import com.xtra.api.model.Role;
 import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
+import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
+import com.xtra.api.projection.reseller.subreseller.SubresellerView;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.service.admin.RoleService;
 import org.mapstruct.Mapper;
@@ -29,6 +31,8 @@ public abstract class ResellerMapper {
 
     public abstract ResellerView convertToView(Reseller reseller);
 
+    public abstract SubresellerView convertToSubresellerView(Reseller reseller);
+
     Set<Long> convertToIdSet(List<DownloadList> downloadLists) {
         if (downloadLists == null)
             return null;
@@ -38,7 +42,7 @@ public abstract class ResellerMapper {
     public abstract Reseller convertToEntity(ResellerInsertView insertView);
 
     Long convertToId(Reseller reseller) {
-        if (reseller==null)
+        if (reseller == null)
             return null;
         return reseller.getId();
     }
@@ -54,5 +58,7 @@ public abstract class ResellerMapper {
             return null;
         return repository.findById(resellerId).orElseThrow(() -> new EntityNotFoundException("Reseller", resellerId.toString()));
     }
+
+    public abstract Reseller convertToEntity(SubresellerCreateView view);
 
 }

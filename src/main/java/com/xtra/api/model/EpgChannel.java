@@ -1,40 +1,51 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class EpgChannel {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
+    @EmbeddedId
+    private EpgChannelId id;
     private String icon;
     private String url;
-    @Column(length = 2)
-    private String language;
 
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JsonBackReference("epg_file_id")
+    @MapsId("epgId")
     private EpgFile epgFile;
 
 
-    @OneToMany(mappedBy = "epgChannel", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonManagedReference("epg_channel_id")
+    @OneToMany(mappedBy = "epgChannel", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     private Set<Program> programs;
 
-    @JsonBackReference("epgChannel")
-    @OneToOne(mappedBy = "epgChannel", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "epgChannel")
     private Stream stream;
+
+    public EpgChannel(EpgChannelId id) {
+        this.id = id;
+    }
+
+    public boolean addProgram(Program program) {
+        if (programs == null)
+            programs = new HashSet<>();
+        return programs.add(program);
+    }
+
+    public boolean removeProgram(Program program) {
+        if (programs == null)
+            return false;
+        return programs.remove(program);
+    }
 }

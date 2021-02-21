@@ -10,6 +10,7 @@ import com.xtra.api.model.Server;
 import com.xtra.api.model.StreamServer;
 import com.xtra.api.model.StreamServerId;
 import com.xtra.api.repository.ChannelRepository;
+import com.xtra.api.repository.EpgChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,17 +33,18 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final ServerService serverService;
     private final LoadBalancingService loadBalancingService;
     private final ChannelStartMapper channelStartMapper;
-
     private final ChannelMapper channelMapper;
+    private final EpgChannelRepository epgChannelRepository;
 
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper) {
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository) {
         super(repository, Channel.class, serverService);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
         this.channelStartMapper = channelStartMapper;
         this.channelMapper = channelMapper;
+        this.epgChannelRepository = epgChannelRepository;
     }
 
 
@@ -205,4 +207,10 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return channelList;
     }
 
+    public void setEpgRecord(Long id, EpgChannelId epgChannelId) {
+        var epgChannel = epgChannelRepository.findById(epgChannelId).orElseThrow(() -> new EntityNotFoundException("Epg channel not found!"));
+        var channel = findByIdOrFail(id);
+        channel.setEpgChannel(epgChannel);
+        repository.save(channel);
+    }
 }
