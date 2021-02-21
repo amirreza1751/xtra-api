@@ -1,7 +1,6 @@
 package com.xtra.api.mapper.admin;
 
 import com.xtra.api.model.Category;
-import com.xtra.api.model.MediaType;
 import com.xtra.api.projection.admin.category.CategoriesWrapper;
 import com.xtra.api.projection.admin.category.CategoryView;
 import org.mapstruct.Mapper;
@@ -20,7 +19,7 @@ public abstract class CategoryMapper {
         List<Category> categories = new ArrayList<>();
         int i = 0;
         for (var name : emptyIfNull(wrapper.getChannelCategories())) {
-            categories.add(new Category(name, MediaType.CHANNEL, i++));
+            categories.add(new Category(name, i++));
         }
         return categories;
     }
@@ -29,7 +28,7 @@ public abstract class CategoryMapper {
         List<Category> categories = new ArrayList<>();
         int i = 0;
         for (var name : emptyIfNull(wrapper.getRadioCategories())) {
-            categories.add(new Category(name, MediaType.RADIO, i++));
+            categories.add(new Category(name, i++));
         }
         return categories;
     }
@@ -38,7 +37,7 @@ public abstract class CategoryMapper {
         List<Category> categories = new ArrayList<>();
         int i = 0;
         for (var name : emptyIfNull(wrapper.getMovieCategories())) {
-            categories.add(new Category(name, MediaType.MOVIE, i++));
+            categories.add(new Category(name, i++));
         }
         return categories;
     }
@@ -47,7 +46,7 @@ public abstract class CategoryMapper {
         List<Category> categories = new ArrayList<>();
         int i = 0;
         for (var name : emptyIfNull(wrapper.getSeriesCategories())) {
-            categories.add(new Category(name, MediaType.SERIES, i++));
+            categories.add(new Category(name, i++));
         }
         return categories;
     }
