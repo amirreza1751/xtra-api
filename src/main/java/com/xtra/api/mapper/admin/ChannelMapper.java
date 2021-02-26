@@ -78,7 +78,7 @@ public abstract class ChannelMapper {
         Set<StreamServer> streamServers = new HashSet<>();
 
         for (Long id : ids) {
-            StreamServer streamServer = new StreamServer();
+            StreamServer streamServer = new StreamServer(new StreamServerId(channelId, id));
             var server = serverRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Server", id.toString()));
             var channel = channelRepository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Server", id.toString()));
             streamServer.setStream(channel);
