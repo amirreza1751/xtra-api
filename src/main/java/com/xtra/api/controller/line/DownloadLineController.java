@@ -24,9 +24,9 @@ public class DownloadLineController {
         this.lineService = lineService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<String> downloadLine(@PathVariable Long id) {
-        Map<String, String> data = lineService.downloadLine(id);
+    @GetMapping("")
+    public ResponseEntity<String> downloadLine() {
+        Map<String, String> data = lineService.downloadLine();
         HttpHeaders responseHeaders = new HttpHeaders();
         return ResponseEntity.ok()
                 .headers(responseHeaders).contentType(MediaType.valueOf("application/x-mpegurl"))
