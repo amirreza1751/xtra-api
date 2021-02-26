@@ -4,7 +4,6 @@ import com.xtra.api.exceptions.ActionNotAllowedException;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.model.Reseller;
-import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
 import com.xtra.api.projection.reseller.subreseller.SubresellerView;
 import com.xtra.api.repository.LineRepository;
@@ -13,15 +12,11 @@ import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
-import static org.springframework.beans.BeanUtils.copyProperties;
+import static com.xtra.api.service.system.SystemResellerService.getCurrentReseller;
 
 @Service
 public class SubresellerService extends CrudService<Reseller, Long, ResellerRepository> {
@@ -98,17 +93,6 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
             line.setBlocked(true);
         }
         lineRepository.saveAll(lines);
-    }
-
-    private Reseller getCurrentReseller() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            var principal = auth.getPrincipal();
-            if (principal != null && !(principal instanceof String)) {
-                return repository.findByUsername(((User) principal).getUsername()).orElseThrow(() -> new AccessDeniedException("access denied"));
-            }
-        }
-        throw new AccessDeniedException("access denied");
     }
 
 }
