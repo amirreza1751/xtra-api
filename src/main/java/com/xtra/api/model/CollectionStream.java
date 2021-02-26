@@ -10,16 +10,15 @@ import javax.persistence.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class CollectionStream {
     @EmbeddedId
+    @EqualsAndHashCode.Include
     private CollectionStreamId id;
 
     @MapsId("streamId")
     @ManyToOne
-    @EqualsAndHashCode.Include
     private Stream stream;
 
     @MapsId("collectionId")
     @ManyToOne
-    @EqualsAndHashCode.Include
     private Collection collection;
 
     @Column(name = "`order`")
