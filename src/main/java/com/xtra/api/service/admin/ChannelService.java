@@ -83,23 +83,23 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return channelMapper.convertToView(update(id, channelMapper.convertToEntity(channelView), restart));
     }
 
-    public void saveAll(ChannelMassInsertView channelMassInsertView, boolean restart) {
-        var channelIds = channelMassInsertView.getChannelIds();
-        var serverIds = channelMassInsertView.getServerIds();
+    public void saveAll(ChannelBatchInsertView channelBatchInsertView, boolean restart) {
+        var channelIds = channelBatchInsertView.getChannelIds();
+        var serverIds = channelBatchInsertView.getServerIds();
         if (channelIds != null) {
             for (Long channelId : channelIds) {
                 var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
 
-                if (channelMassInsertView.getReadNative() != null)
-                    channel.setReadNative(Boolean.parseBoolean(channelMassInsertView.getReadNative()));
-                if (channelMassInsertView.getStreamAll() != null)
-                    channel.setStreamAll(Boolean.parseBoolean(channelMassInsertView.getStreamAll()));
-                if (channelMassInsertView.getDirectSource() != null)
-                    channel.setDirectSource(Boolean.parseBoolean(channelMassInsertView.getDirectSource()));
-                if (channelMassInsertView.getGenTimestamps() != null)
-                    channel.setGenTimestamps(Boolean.parseBoolean(channelMassInsertView.getGenTimestamps()));
-                if (channelMassInsertView.getRtmpOutput() != null)
-                    channel.setRtmpOutput(Boolean.parseBoolean(channelMassInsertView.getRtmpOutput()));
+                if (channelBatchInsertView.getReadNative() != null)
+                    channel.setReadNative(Boolean.parseBoolean(channelBatchInsertView.getReadNative()));
+                if (channelBatchInsertView.getStreamAll() != null)
+                    channel.setStreamAll(Boolean.parseBoolean(channelBatchInsertView.getStreamAll()));
+                if (channelBatchInsertView.getDirectSource() != null)
+                    channel.setDirectSource(Boolean.parseBoolean(channelBatchInsertView.getDirectSource()));
+                if (channelBatchInsertView.getGenTimestamps() != null)
+                    channel.setGenTimestamps(Boolean.parseBoolean(channelBatchInsertView.getGenTimestamps()));
+                if (channelBatchInsertView.getRtmpOutput() != null)
+                    channel.setRtmpOutput(Boolean.parseBoolean(channelBatchInsertView.getRtmpOutput()));
 
                 Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channelId);
                 channel.getStreamServers().retainAll(streamServers);
@@ -111,8 +111,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         }
     }
 
-    public void deleteAll(ChannelMassDeleteView channelMassDeleteView) {
-        var channelIds = channelMassDeleteView.getChannelIds();
+    public void deleteAll(ChannelBatchDeleteView channelBatchDeleteView) {
+        var channelIds = channelBatchDeleteView.getChannelIds();
         if (channelIds != null) {
             for (Long channelId : channelIds) {
                 deleteOrFail(channelId);

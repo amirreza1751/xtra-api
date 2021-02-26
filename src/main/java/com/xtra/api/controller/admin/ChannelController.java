@@ -53,21 +53,21 @@ public class ChannelController {
         return ResponseEntity.ok(channelService.save(id, channelView, restart));
     }
 
-    // Mass Edit
-    @PatchMapping(value = {"/mass", "/mass/{restart}"})
-    public ResponseEntity<?> updateChannels(@RequestBody ChannelMassInsertView channelView, @PathVariable(required = false) boolean restart) {
-        channelService.saveAll(channelView, restart);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteChannel(@PathVariable Long id) {
         channelService.deleteOrFail(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping("/mass")
-    public ResponseEntity<?> deleteChannels(@RequestBody ChannelMassDeleteView channelView) {
+    // Batch Actions
+    @PatchMapping(value = {"/batch", "/batch/{restart}"})
+    public ResponseEntity<?> updateChannels(@RequestBody ChannelBatchInsertView channelView, @PathVariable(required = false) boolean restart) {
+        channelService.saveAll(channelView, restart);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/batch")
+    public ResponseEntity<?> deleteChannels(@RequestBody ChannelBatchDeleteView channelView) {
         channelService.deleteAll(channelView);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

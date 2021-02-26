@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ChannelMassInsertView {
+public class ChannelBatchInsertView {
     private String readNative;
     private String streamAll;
     private String directSource;

@@ -9,6 +9,6 @@ import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ChannelMassDeleteView {
+public class ChannelBatchDeleteView {
     private Set<Long> channelIds;
 }
