@@ -101,10 +101,9 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
                 if (channelBatchInsertView.getRtmpOutput() != null)
                     channel.setRtmpOutput(Boolean.parseBoolean(channelBatchInsertView.getRtmpOutput()));
 
-                Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channelId);
+                Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channel);
                 channel.getStreamServers().retainAll(streamServers);
                 channel.getStreamServers().addAll(streamServers);
-                //channel.updateRelationIds();
 
                 repository.save(channel);
             }
