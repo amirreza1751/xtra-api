@@ -29,6 +29,8 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.springframework.beans.BeanUtils.copyProperties;
+
 @Service
 public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository> {
 
@@ -55,6 +57,14 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
 
     public EpgView updateEpgFile(Long id, EpgInsertView insertView) {
         return epgMapper.toView(updateOrFail(id, epgMapper.toEntity(insertView)));
+    }
+
+    @Override
+    public EpgFile updateOrFail(Long id, EpgFile epgFile) {
+        var oldEpg = findByIdOrFail(id);
+        oldEpg.setName(epgFile.getName());
+        oldEpg.setSource(epgFile.getSource());
+        return repository.save(oldEpg);
     }
 
     public EpgView add(EpgInsertView insertView) {
