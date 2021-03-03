@@ -106,7 +106,9 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
             epgChannel.setEpgFile(epgFile);
             epgChannelList.add(epgChannel);
         }
-        epgFile.setEpgChannels(epgChannelList);
+        epgFile.getEpgChannels().retainAll(epgChannelList);
+        epgFile.getEpgChannels().addAll(epgChannelList);
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss [XXX][X]");
 
         for (var programJson : root.getJSONObject("tv").getJSONArray("programme")) {
