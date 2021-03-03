@@ -51,4 +51,10 @@ public class EpgController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @GetMapping("/sync-all")
+    public ResponseEntity<?> syncEpgNow(){
+        epgFileService.syncAllEpg();
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
 }
