@@ -1,7 +1,6 @@
 package com.xtra.api.controller.reseller;
 
-import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
-import com.xtra.api.projection.admin.user.reseller.ResellerView;
+import com.xtra.api.projection.reseller.subreseller.CreditChangeRequest;
 import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
 import com.xtra.api.projection.reseller.subreseller.SubresellerView;
 import com.xtra.api.service.reseller.SubresellerService;
@@ -38,6 +37,12 @@ public class SubresellerController {
     @PatchMapping("/{id}")
     public ResponseEntity<SubresellerView> updateSubreseller(@PathVariable Long id, @RequestBody SubresellerCreateView createView) {
         return ResponseEntity.ok(subresellerService.updateSubreseller(id, createView));
+    }
+
+    @PatchMapping("/{id}/credits")
+    public ResponseEntity<Void> changeCredits(@PathVariable Long id, @RequestBody CreditChangeRequest creditChangeRequest) {
+        subresellerService.changeCredits(id, creditChangeRequest);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")

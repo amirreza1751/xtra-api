@@ -20,7 +20,7 @@ public class SystemResellerService {
 
     public static Reseller getCurrentReseller() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated()) {
+        if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
             var principal = auth.getPrincipal();
             return repository.findByUsername(((User) principal).getUsername()).orElseThrow(() -> new AccessDeniedException("access denied"));
         }
