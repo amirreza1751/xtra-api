@@ -8,10 +8,12 @@ import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
+import com.xtra.api.projection.reseller.subreseller.SubresellerSimplified;
 import com.xtra.api.projection.reseller.subreseller.SubresellerView;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.service.admin.RoleService;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +34,9 @@ public abstract class ResellerMapper {
     public abstract ResellerView convertToView(Reseller reseller);
 
     public abstract SubresellerView convertToSubresellerView(Reseller reseller);
+
+    @Mapping(source = "owner.username", target = "owner")
+    public abstract SubresellerSimplified convertToSimplifiedSubreseller(Reseller reseller);
 
     Set<Long> convertToIdSet(List<DownloadList> downloadLists) {
         if (downloadLists == null)

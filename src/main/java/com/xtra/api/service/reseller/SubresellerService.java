@@ -7,6 +7,7 @@ import com.xtra.api.mapper.reseller.CreditChangeMapper;
 import com.xtra.api.model.Reseller;
 import com.xtra.api.projection.reseller.subreseller.CreditChangeRequest;
 import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
+import com.xtra.api.projection.reseller.subreseller.SubresellerSimplified;
 import com.xtra.api.projection.reseller.subreseller.SubresellerView;
 import com.xtra.api.repository.CreditChangeLogRepository;
 import com.xtra.api.repository.LineRepository;
@@ -42,9 +43,9 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         return null;
     }
 
-    public Page<SubresellerView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+    public Page<SubresellerSimplified> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
-        return new PageImpl<>(repository.findAllByOwner(getCurrentReseller(), page).stream().map(resellerMapper::convertToSubresellerView).collect(Collectors.toList()));
+        return new PageImpl<>(repository.findAllByOwner(getCurrentReseller(), page).stream().map(resellerMapper::convertToSimplifiedSubreseller).collect(Collectors.toList()));
 
     }
 
