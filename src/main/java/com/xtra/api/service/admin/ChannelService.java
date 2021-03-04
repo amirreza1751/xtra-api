@@ -1,14 +1,10 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.mapper.admin.ChannelMapper;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.channel.*;
-import com.xtra.api.mapper.admin.ChannelMapper;
-import com.xtra.api.model.Channel;
-import com.xtra.api.model.Server;
-import com.xtra.api.model.StreamServer;
-import com.xtra.api.model.StreamServerId;
 import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.EpgChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
@@ -90,43 +83,35 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return channelMapper.convertToView(update(id, channelMapper.convertToEntity(channelView), restart));
     }
 
-    public void saveAll(ChannelMassInsertView channelMassInsertView, boolean restart) {
-        var channelIds = channelMassInsertView.getChannelIds();
-        var serverIds = channelMassInsertView.getServerIds();
+    public void saveAll(ChannelBatchInsertView channelBatchInsertView, boolean restart) {
+        var channelIds = channelBatchInsertView.getChannelIds();
+        var serverIds = channelBatchInsertView.getServerIds();
         if (channelIds != null) {
             for (Long channelId : channelIds) {
                 var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
 
-                if (channelMassInsertView.getReadNative() != null)
-                    channel.setReadNative(Boolean.parseBoolean(channelMassInsertView.getReadNative()));
-                if (channelMassInsertView.getStreamAll() != null)
-                    channel.setStreamAll(Boolean.parseBoolean(channelMassInsertView.getStreamAll()));
-                if (channelMassInsertView.getDirectSource() != null)
-                    channel.setDirectSource(Boolean.parseBoolean(channelMassInsertView.getDirectSource()));
-                if (channelMassInsertView.getGenTimestamps() != null)
-                    channel.setGenTimestamps(Boolean.parseBoolean(channelMassInsertView.getGenTimestamps()));
-                if (channelMassInsertView.getRtmpOutput() != null)
-                    channel.setRtmpOutput(Boolean.parseBoolean(channelMassInsertView.getRtmpOutput()));
+                if (channelBatchInsertView.getReadNative() != null)
+                    channel.setReadNative(Boolean.parseBoolean(channelBatchInsertView.getReadNative()));
+                if (channelBatchInsertView.getStreamAll() != null)
+                    channel.setStreamAll(Boolean.parseBoolean(channelBatchInsertView.getStreamAll()));
+                if (channelBatchInsertView.getDirectSource() != null)
+                    channel.setDirectSource(Boolean.parseBoolean(channelBatchInsertView.getDirectSource()));
+                if (channelBatchInsertView.getGenTimestamps() != null)
+                    channel.setGenTimestamps(Boolean.parseBoolean(channelBatchInsertView.getGenTimestamps()));
+                if (channelBatchInsertView.getRtmpOutput() != null)
+                    channel.setRtmpOutput(Boolean.parseBoolean(channelBatchInsertView.getRtmpOutput()));
 
-                Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds);
-                channel.setStreamServers(streamServers);
-
-                System.out.println(channel);
+                Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channel);
+                channel.getStreamServers().retainAll(streamServers);
+                channel.getStreamServers().addAll(streamServers);
 
                 repository.save(channel);
-
-                if (channel.getStreamServers() != null) {
-                    var resetServerIds = channel.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
-                    if (restart) {
-                        //@todo call stream restart on servers
-                    }
-                }
             }
         }
     }
 
-    public void deleteAll(ChannelMassDeleteView channelMassDeleteView) {
-        var channelIds = channelMassDeleteView.getChannelIds();
+    public void deleteAll(ChannelBatchDeleteView channelBatchDeleteView) {
+        var channelIds = channelBatchDeleteView.getChannelIds();
         if (channelIds != null) {
             for (Long channelId : channelIds) {
                 deleteOrFail(channelId);
@@ -137,10 +122,26 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     public Channel update(Long id, Channel channel, boolean restart) {
         //@todo check validation check
         Channel oldChannel = findByIdOrFail(id);
-        copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "lineActivities");
-        oldChannel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
-        oldChannel.updateRelationIds();
+        copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "lineActivities", "streamServers", "streamCollections");
 
+        //remove old servers from channel and add new ones
+        if (oldChannel.getStreamServers() != null) {
+            oldChannel.getStreamServers().clear();
+            oldChannel.getStreamServers().addAll(channel.getStreamServers().stream().peek(streamServer -> {
+                streamServer.setId(new StreamServerId(oldChannel.getId(), streamServer.getServer().getId()));
+                streamServer.setStream(oldChannel);
+            }).collect(Collectors.toSet()));
+        }
+        //remove old collections from channel and add new ones
+        if (oldChannel.getCollectionAssigns() != null) {
+            oldChannel.getCollectionAssigns().clear();
+            oldChannel.getCollectionAssigns().addAll(channel.getCollectionAssigns().stream().peek(collectionStream -> {
+                collectionStream.setId(new CollectionStreamId(collectionStream.getCollection().getId(), oldChannel.getId()));
+                collectionStream.setStream(oldChannel);
+            }).collect(Collectors.toSet()));
+        }
+
+        oldChannel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
         var savedEntity = repository.save(oldChannel);
         if (savedEntity.getStreamServers() != null) {
             var serverIds = savedEntity.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());

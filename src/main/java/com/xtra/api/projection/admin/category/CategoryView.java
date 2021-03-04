@@ -4,6 +4,9 @@ import lombok.Data;
 
 @Data
 public class CategoryView {
-    private Long id;
     private String name;
+    private int channelCount;
+    private int radioCount;
+    private int movieCount;
+    private int seriesCount;
 }

@@ -12,6 +12,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +43,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         privileges.add(new SimpleGrantedAuthority("ROLE_" + role.getType().toString()));
         return privileges;
     }
-
-
 }

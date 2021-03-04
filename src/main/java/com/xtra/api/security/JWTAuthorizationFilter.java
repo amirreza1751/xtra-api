@@ -4,11 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.xtra.api.service.system.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -16,6 +14,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import static com.xtra.api.security.SecurityConstants.*;
 
@@ -55,7 +56,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                         .getSubject();
                 if (username != null) {
                     var userDetails = userDetailsService.loadUserByUsername(username);
-                    return new UsernamePasswordAuthenticationToken(userDetails, null, userDetailsService.loadUserByUsername(username).getAuthorities());
+                    return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 }
                 return null;
             } catch (JWTVerificationException e) {

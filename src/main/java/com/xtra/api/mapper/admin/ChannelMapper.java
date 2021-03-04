@@ -1,22 +1,19 @@
 package com.xtra.api.mapper.admin;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
-import com.xtra.api.model.Channel;
-import com.xtra.api.model.CollectionStream;
-import com.xtra.api.model.Server;
-import com.xtra.api.model.StreamServer;
+import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.channel.ChannelInfo;
 import com.xtra.api.projection.admin.channel.ChannelInsertView;
 import com.xtra.api.projection.admin.channel.ChannelView;
 import com.xtra.api.projection.admin.channel.MergedChannelInfo;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
+import com.xtra.api.repository.EpgChannelRepository;
 import com.xtra.api.repository.ServerRepository;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,18 +26,24 @@ public abstract class ChannelMapper {
     private CollectionStreamRepository collectionStreamRepository;
     @Autowired
     private CollectionRepository collectionRepository;
+    @Autowired
+    private EpgChannelRepository epgChannelRepository;
 
     @Mapping(target = "streamType", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     public abstract Channel convertToEntity(ChannelInsertView channelView);
 
     @AfterMapping
     void convertServerIdsAndCollectionIds(final ChannelInsertView channelView, @MappingTarget final Channel channel) {
+        var epgDetails = channelView.getEpgDetails();
+        var epgChannel = epgChannelRepository.findById(new EpgChannelId(epgDetails.getName(), epgDetails.getEpgId(), epgDetails.getLanguage())).orElseThrow(() -> new EntityNotFoundException("epg channel"));
+        channel.setEpgChannel(epgChannel);
+
         var serverIds = channelView.getServers();
         if (serverIds != null) {
             Set<StreamServer> streamServers = new HashSet<>();
             for (Long serverId : serverIds) {
-                StreamServer streamServer = new StreamServer();
                 var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
+                StreamServer streamServer = new StreamServer(new StreamServerId(null, serverId));
                 streamServer.setServer(server);
                 streamServers.add(streamServer);
             }
@@ -71,12 +74,13 @@ public abstract class ChannelMapper {
         return streamServers.stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
     }
 
-    public Set<StreamServer> convertToServers(Set<Long> ids) {
+    public Set<StreamServer> convertToServers(Set<Long> ids, Channel channel) {
         Set<StreamServer> streamServers = new HashSet<>();
 
         for (Long id : ids) {
-            StreamServer streamServer = new StreamServer();
+            StreamServer streamServer = new StreamServer(new StreamServerId(channel.getId(), id));
             var server = serverRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Server", id.toString()));
+            streamServer.setStream(channel);
             streamServer.setServer(server);
             streamServers.add(streamServer);
         }

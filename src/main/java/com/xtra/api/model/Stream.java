@@ -51,7 +51,7 @@ public class Stream {
     private TranscodeProfile transcodeProfile;
     private String customFFMPEG;
 
-    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private Set<StreamServer> streamServers;
 
 

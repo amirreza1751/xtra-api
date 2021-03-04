@@ -22,17 +22,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.xtra.api.service.system.SystemResellerService.getCurrentReseller;
 import static java.util.stream.Collectors.toSet;
 
 
 @Service("ResellerDownloadListService")
 @PreAuthorize("hasRole('RESELLER')")
 public class DownloadListServiceImpl extends DownloadListService {
-    private final ResellerService resellerService;
 
     protected DownloadListServiceImpl(DownloadListRepository repository, DownloadListMapper downloadListMapper, CollectionService collectionService, ResellerService resellerService) {
         super(repository, collectionService, downloadListMapper);
-        this.resellerService = resellerService;
     }
 
     @Override
@@ -71,16 +70,5 @@ public class DownloadListServiceImpl extends DownloadListService {
         if (!repository.existsByIdAndOwner(id, getCurrentReseller()))
             throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
         repository.deleteById(id);
-    }
-
-    private Reseller getCurrentReseller() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            var principal = auth.getPrincipal();
-            if (principal != null) {
-                return resellerService.findByUsernameOrFail(((User) principal).getUsername());
-            }
-        }
-        throw new AccessDeniedException("access denied");
     }
 }

@@ -1,18 +1,15 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Data
+@ToString(exclude = {"downloadListCollections","streams","vods"})
 public class Collection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +21,9 @@ public class Collection {
 
     @OneToMany(mappedBy = "collection", cascade = CascadeType.REMOVE)
     private Set<DownloadListCollection> downloadListCollections;
+
+    @ManyToOne(optional = false)
+    private Category category;
 
     @OrderBy("order ASC")
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)

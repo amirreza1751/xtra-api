@@ -3,6 +3,7 @@ package com.xtra.api.projection.admin.channel;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.StreamType;
+import com.xtra.api.projection.admin.epg.EpgDetails;
 import lombok.Data;
 
 import java.time.DayOfWeek;
@@ -33,4 +34,5 @@ public class ChannelInsertView {
 
     private Set<Long> servers;
     private Set<Long> collections;
+    private EpgDetails epgDetails;
 }

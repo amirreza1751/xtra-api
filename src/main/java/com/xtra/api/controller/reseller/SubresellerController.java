@@ -1,8 +1,8 @@
 package com.xtra.api.controller.reseller;
 
-import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
-import com.xtra.api.projection.admin.user.reseller.ResellerView;
+import com.xtra.api.projection.reseller.subreseller.CreditChangeRequest;
 import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
+import com.xtra.api.projection.reseller.subreseller.SubresellerSimplified;
 import com.xtra.api.projection.reseller.subreseller.SubresellerView;
 import com.xtra.api.service.reseller.SubresellerService;
 import org.springframework.data.domain.Page;
@@ -20,8 +20,8 @@ public class SubresellerController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<SubresellerView>> getSubresellers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                                                 @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+    public ResponseEntity<Page<SubresellerSimplified>> getSubresellers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                                                       @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(subresellerService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
@@ -38,6 +38,12 @@ public class SubresellerController {
     @PatchMapping("/{id}")
     public ResponseEntity<SubresellerView> updateSubreseller(@PathVariable Long id, @RequestBody SubresellerCreateView createView) {
         return ResponseEntity.ok(subresellerService.updateSubreseller(id, createView));
+    }
+
+    @PatchMapping("/{id}/credits")
+    public ResponseEntity<Void> changeCredits(@PathVariable Long id, @RequestBody CreditChangeRequest creditChangeRequest) {
+        subresellerService.changeCredits(id, creditChangeRequest);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")

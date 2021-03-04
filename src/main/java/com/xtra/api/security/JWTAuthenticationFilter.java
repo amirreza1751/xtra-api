@@ -17,7 +17,10 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.Principal;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -65,6 +68,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         res.setCharacterEncoding("UTF-8");
         try {
             var dbUser = userRepository.findByUsername(user.getUsername()).orElseThrow(() -> new UsernameNotFoundException(user.getUsername()));
+            updateLastLoginDetails(user.getUsername(), ZonedDateTime.now(), req.getRemoteAddr());
             String token = JWT.create()
                     .withSubject(((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername())
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -79,5 +83,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateLastLoginDetails(String username, ZonedDateTime lastLoginDate, String ipAddress) {
+        var user = userRepository.findByUsername(username).orElseThrow();
+        user.setLastLoginDate(lastLoginDate);
+        user.setLastLoginIp(ipAddress);
+        userRepository.save(user);
     }
 }

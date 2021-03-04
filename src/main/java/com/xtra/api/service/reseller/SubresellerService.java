@@ -3,35 +3,39 @@ package com.xtra.api.service.reseller;
 import com.xtra.api.exceptions.ActionNotAllowedException;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ResellerMapper;
+import com.xtra.api.mapper.reseller.CreditChangeMapper;
 import com.xtra.api.model.Reseller;
-import com.xtra.api.projection.admin.user.reseller.ResellerView;
+import com.xtra.api.projection.reseller.subreseller.CreditChangeRequest;
 import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
+import com.xtra.api.projection.reseller.subreseller.SubresellerSimplified;
 import com.xtra.api.projection.reseller.subreseller.SubresellerView;
+import com.xtra.api.repository.CreditChangeLogRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
-import static org.springframework.beans.BeanUtils.copyProperties;
+import static com.xtra.api.service.system.SystemResellerService.getCurrentReseller;
 
 @Service
 public class SubresellerService extends CrudService<Reseller, Long, ResellerRepository> {
     private final ResellerMapper resellerMapper;
     private final LineRepository lineRepository;
+    private final CreditChangeMapper creditChangeMapper;
+    private final CreditChangeLogRepository creditChangeRepository;
 
-    protected SubresellerService(ResellerRepository repository, ResellerMapper resellerMapper, LineRepository lineRepository) {
+    protected SubresellerService(ResellerRepository repository, ResellerMapper resellerMapper, LineRepository lineRepository, CreditChangeMapper creditChangeMapper, CreditChangeLogRepository creditChangeRepository) {
         super(repository, Reseller.class);
         this.resellerMapper = resellerMapper;
         this.lineRepository = lineRepository;
+        this.creditChangeMapper = creditChangeMapper;
+        this.creditChangeRepository = creditChangeRepository;
     }
 
     @Override
@@ -39,9 +43,9 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         return null;
     }
 
-    public Page<SubresellerView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+    public Page<SubresellerSimplified> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
-        return new PageImpl<>(repository.findAllByOwner(getCurrentReseller(), page).stream().map(resellerMapper::convertToSubresellerView).collect(Collectors.toList()));
+        return new PageImpl<>(repository.findAllByOwner(getCurrentReseller(), page).stream().map(resellerMapper::convertToSimplifiedSubreseller).collect(Collectors.toList()));
 
     }
 
@@ -74,6 +78,19 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         return resellerMapper.convertToSubresellerView(repository.save(oldSubreseller));
     }
 
+    public void changeCredits(Long id, CreditChangeRequest creditChangeRequest) {
+        var target = findByIdOrFail(id);
+        var credChange = creditChangeMapper.toEntity(creditChangeRequest);
+        target.setCredits(target.getCredits() + credChange.getChangeAmount());
+        repository.save(target);
+
+        credChange.setTarget(target);
+        credChange.setActor(getCurrentReseller());
+        credChange.setDate(LocalDateTime.now());
+        creditChangeRepository.save(credChange);
+    }
+
+
     public void deleteSubreseller(Long id) {
         var currentReseller = getCurrentReseller();
         if (repository.existsByIdAndOwner(id, currentReseller)) {
@@ -100,15 +117,5 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         lineRepository.saveAll(lines);
     }
 
-    private Reseller getCurrentReseller() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            var principal = auth.getPrincipal();
-            if (principal != null && !(principal instanceof String)) {
-                return repository.findByUsername(((User) principal).getUsername()).orElseThrow(() -> new AccessDeniedException("access denied"));
-            }
-        }
-        throw new AccessDeniedException("access denied");
-    }
 
 }
