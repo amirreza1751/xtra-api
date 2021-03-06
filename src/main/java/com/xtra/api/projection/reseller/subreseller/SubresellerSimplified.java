@@ -9,6 +9,7 @@ public class SubresellerSimplified {
     private long id;
     private String username;
     private String owner;
+    private int credits;
     private LocalDateTime lastLoginDate;
     private String lastLoginIp;
 }
