@@ -4,16 +4,18 @@ import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.AdminLineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineStatus;
-import com.xtra.api.projection.system.LineAuth;
 import com.xtra.api.projection.admin.line.LineView;
+import com.xtra.api.projection.system.LineAuth;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.GeoIpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,8 +28,9 @@ public class SystemLineServiceImpl extends LineService {
     private final GeoIpService geoIpService;
 
     @Autowired
-    public SystemLineServiceImpl(LineRepository repository, LineActivityRepository lineActivityRepository, AdminLineMapper lineMapper, GeoIpService geoIpService) {
-        super(repository, Line.class, lineActivityRepository);
+    public SystemLineServiceImpl(LineRepository repository, LineActivityRepository lineActivityRepository, AdminLineMapper lineMapper
+            , BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService, RoleRepository roleRepository) {
+        super(repository, Line.class, lineActivityRepository, bCryptPasswordEncoder, roleRepository);
         this.lineMapper = lineMapper;
         this.geoIpService = geoIpService;
     }
@@ -71,7 +74,7 @@ public class SystemLineServiceImpl extends LineService {
             if (!line.getAllowedUserAgents().contains(userAgent))
                 return false;
         }
-        if (line.getBlockedUserAgents() != null && !line.getBlockedUserAgents().isEmpty()){
+        if (line.getBlockedUserAgents() != null && !line.getBlockedUserAgents().isEmpty()) {
             return !line.getBlockedUserAgents().contains(userAgent);
         }
         return true;
