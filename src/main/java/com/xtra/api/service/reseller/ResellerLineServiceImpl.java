@@ -1,7 +1,7 @@
 package com.xtra.api.service.reseller;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.exceptions.ActionNotAllowedException;
+import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.reseller.ResellerLineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.Package;
@@ -10,6 +10,7 @@ import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ResellerRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.PackageService;
 import org.apache.commons.lang3.StringUtils;
@@ -22,12 +23,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.stream.Collectors;
-
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 @PreAuthorize("hasRole('RESELLER')")
@@ -37,8 +37,9 @@ public class ResellerLineServiceImpl extends LineService {
     private final ResellerRepository resellerRepository;
 
     @Autowired
-    protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, LineActivityRepository lineActivityRepository, PackageService packageService, ResellerRepository resellerRepository) {
-        super(repository, Line.class, lineActivityRepository);
+    protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, LineActivityRepository lineActivityRepository, PackageService packageService
+            , ResellerRepository resellerRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+        super(repository, Line.class, lineActivityRepository, bCryptPasswordEncoder, roleRepository);
         this.lineMapper = lineMapper;
         this.packageService = packageService;
         this.resellerRepository = resellerRepository;

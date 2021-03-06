@@ -5,13 +5,14 @@ import com.xtra.api.model.*;
 import com.xtra.api.projection.line.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,8 +22,9 @@ public class LineLineServiceImpl extends LineService {
     private final LineLineMapper lineMapper;
 
     @Autowired
-    protected LineLineServiceImpl(LineRepository repository, LineLineMapper lineMapper, LineActivityRepository lineActivityRepository) {
-        super(repository, Line.class, lineActivityRepository);
+    protected LineLineServiceImpl(LineRepository repository, LineLineMapper lineMapper, LineActivityRepository lineActivityRepository
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+        super(repository, Line.class, lineActivityRepository, bCryptPasswordEncoder, roleRepository);
         this.lineMapper = lineMapper;
     }
 

@@ -3,8 +3,11 @@ package com.xtra.api.service;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineActivity;
+import com.xtra.api.model.UserType;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.repository.RoleRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -14,10 +17,14 @@ import static com.xtra.api.util.Utilities.generateRandomString;
 
 public abstract class LineService extends CrudService<Line, Long, LineRepository> {
     private final LineActivityRepository lineActivityRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RoleRepository roleRepository;
 
-    protected LineService(LineRepository repository, Class<Line> aClass, LineActivityRepository lineActivityRepository) {
+    protected LineService(LineRepository repository, Class<Line> aClass, LineActivityRepository lineActivityRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
         super(repository, aClass);
         this.lineActivityRepository = lineActivityRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     protected boolean lineExists(Long id) {
@@ -47,7 +54,7 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
             var isUnique = false;
             var username = "";
             while (!isUnique) {
-                username = generateRandomString(5, 10, true);
+                username = generateRandomString(8, 12, true);
                 if (repository.findByUsername(username).isEmpty()) {
                     isUnique = true;
                 }
@@ -57,18 +64,16 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
             if (repository.findByUsername(line.getUsername()).isPresent())
                 throw new RuntimeException("username already exists");
         }
-
-        if (StringUtils.isEmpty(line.getPassword())) {
-            var password = generateRandomString(5, 10, true);
-            line.setPassword(password);
-        }
+        line.setPassword(bCryptPasswordEncoder.encode(line.getPassword()));
 
         String token;
         do {
             token = generateRandomString(8, 12, false);
         }
         while (repository.findByLineToken(token).isPresent());
-
+        if (line.getRole() == null) {
+            line.setRole(roleRepository.findByTypeAndName(UserType.LINE, "default").orElseThrow(() -> new EntityNotFoundException("role")));
+        }
         line.setLineToken(token);
         return repository.save(line);
     }

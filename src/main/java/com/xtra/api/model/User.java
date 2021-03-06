@@ -4,15 +4,13 @@ import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     protected Long id;
 
     @Column(unique = true)
@@ -20,14 +18,12 @@ public class User {
     protected String password;
 
     @Email(message = "Email should be valid", regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")
-    @NotEmpty
-    @NotNull
     protected String email;
     protected String _2FASec;
     protected boolean isBanned = false;
 
     @Enumerated(EnumType.STRING)
-    protected UserType userType = UserType.USER;
+    protected UserType userType = UserType.LINE;
 
     @ManyToOne
     protected Role role;

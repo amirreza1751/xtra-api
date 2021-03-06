@@ -14,18 +14,14 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Data
-public class Line extends User{
-
+public class Line extends User {
     private String lineToken;
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;
     private int currentConnections = 0;
-    private boolean isReStreamer = false;
     private boolean isTrial;
     private boolean isBlocked = false;
-    private boolean isBanned = false;
-    private boolean isStalker;
     private String adminNotes;
     private String resellerNotes;
 
@@ -41,11 +37,6 @@ public class Line extends User{
     private List<String> allowedUserAgents;
     @ElementCollection
     private List<String> blockedUserAgents;
-
-    private boolean isMag;
-    private boolean isEnigma;
-    private boolean isMinistraPortal;
-    private String mac;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection
@@ -68,4 +59,7 @@ public class Line extends User{
         return activities.size();
     }
 
+    public Line() {
+        userType = UserType.LINE;
+    }
 }
