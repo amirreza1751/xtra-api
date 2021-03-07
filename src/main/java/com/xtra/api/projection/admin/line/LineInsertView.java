@@ -11,6 +11,7 @@ import java.util.List;
 public class LineInsertView {
     protected String username;
     protected String password;
+    private Long roleId;
     private String lineToken;
     private LocalDateTime expireDate;
     private boolean neverExpire = false;

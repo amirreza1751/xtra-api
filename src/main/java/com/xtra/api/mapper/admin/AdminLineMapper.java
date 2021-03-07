@@ -6,6 +6,7 @@ import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
 import com.xtra.api.projection.admin.line.LineInsertView;
 import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.repository.CollectionRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.admin.UserService;
 import org.apache.commons.lang3.RandomUtils;
 import org.mapstruct.Mapper;
@@ -26,14 +27,24 @@ public abstract class AdminLineMapper {
     private UserService userService;
     @Autowired
     private CollectionRepository collectionRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Mapping(source = "collections", target = "defaultDownloadList")
+    @Mapping(source = "roleId", target = "role")
     public abstract Line convertToEntity(LineInsertView insertView);
 
     Reseller convertFromId(Long ownerId) {
         if (ownerId == null)
             return null;
         return (Reseller) userService.findByIdOrFail(ownerId);
+    }
+
+    Role fetchRole(Long roleId) {
+        if (roleId != null)
+            return roleRepository.findById(roleId).orElseThrow(() -> new EntityNotFoundException("Role"));
+        else
+            return null;
     }
 
     DownloadList convertCollectionIdsToDownloadList(LinkedHashSet<Long> collectionIds) {
@@ -55,10 +66,11 @@ public abstract class AdminLineMapper {
     }
 
     @Mapping(source = "defaultDownloadList", target = "collections")
+    @Mapping(source = "role.id", target = "roleId")
     public abstract LineView convertToView(Line line);
 
     List<DlCollectionView> convertDownloadListToDlCollectionView(DownloadList downloadList) {
-        if (downloadList==null)
+        if (downloadList == null)
             return null;
         return emptyIfNull(downloadList.getCollectionsAssign()).stream().map(dlc -> new DlCollectionView(dlc.getCollection().getId(), dlc.getCollection().getName())).collect(Collectors.toList());
     }

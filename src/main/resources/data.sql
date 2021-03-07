@@ -1,10 +1,10 @@
-/*Default Roles*/
-insert ignore into role (name, type, color)
-values ('default', 'ADMIN', '');
-insert ignore into role (name, type, color)
-values ('default', 'RESELLER', '');
-insert ignore into role (name, type, color)
-values ('default', 'LINE', '');
+# /*Default Roles*/
+# insert ignore into role (name, type, color)
+# values ('default', 'ADMIN', '');
+# insert ignore into role (name, type, color)
+# values ('default', 'RESELLER', '');
+# insert ignore into role (name, type, color)
+# values ('default', 'LINE', '');
 
 /* Default Permissions*/
 insert ignore into permission (name, description, user_type)

@@ -3,8 +3,6 @@ package com.xtra.api.service;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineActivity;
-import com.xtra.api.model.UserType;
-import com.xtra.api.model.Reseller;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.RoleRepository;
@@ -72,9 +70,6 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
             token = generateRandomString(8, 12, false);
         }
         while (repository.findByLineToken(token).isPresent());
-        if (line.getRole() == null) {
-            line.setRole(roleRepository.findByTypeAndName(UserType.LINE, "default").orElseThrow(() -> new EntityNotFoundException("role")));
-        }
         line.setLineToken(token);
         return repository.save(line);
     }

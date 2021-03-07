@@ -14,6 +14,7 @@ public class LineView implements BaseView {
     private Long id;
     private String username;
     private String password;
+    private Long roleId;
     private String lineToken;
     @JsonFormat
             (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
