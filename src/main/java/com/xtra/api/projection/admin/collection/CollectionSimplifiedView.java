@@ -10,6 +10,7 @@ import lombok.Data;
 public class CollectionSimplifiedView {
     private Long id;
     private String name;
+    private String categoryName;
     private MediaType type;
     private int channels;
     private int movies;
