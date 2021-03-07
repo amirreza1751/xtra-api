@@ -9,7 +9,6 @@ import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.EpgChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -42,8 +41,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
 
     public Page<ChannelInfo> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        var result = findAll(search, pageNo, pageSize, sortBy, sortDir);
-        return new PageImpl<>(result.stream().map(channelMapper::convertToChannelInfo).collect(Collectors.toList()));
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(channelMapper::convertToChannelInfo);
     }
 
     public ChannelView getViewById(Long id) {

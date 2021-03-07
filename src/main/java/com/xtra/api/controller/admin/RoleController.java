@@ -6,12 +6,9 @@ import com.xtra.api.projection.admin.role.RoleView;
 import com.xtra.api.service.admin.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/roles")
@@ -29,7 +26,7 @@ public class RoleController {
     public ResponseEntity<Page<RoleView>> getRoles(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         var result = roleService.findAll(search, pageNo, pageSize, sortBy, sortDir);
-        return ResponseEntity.ok(new PageImpl<>(result.stream().map(roleMapper::convertToDto).collect(Collectors.toList())));
+        return ResponseEntity.ok(result.map(roleMapper::convertToDto));
     }
 
     @PostMapping("")

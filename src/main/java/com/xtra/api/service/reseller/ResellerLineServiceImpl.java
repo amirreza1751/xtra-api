@@ -10,21 +10,18 @@ import com.xtra.api.projection.reseller.line.LineCreateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
-import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.PackageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.stream.Collectors;
 
 import static com.xtra.api.service.system.SystemResellerService.getCurrentReseller;
 
@@ -36,14 +33,14 @@ public class ResellerLineServiceImpl extends LineService {
 
     @Autowired
     protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, LineActivityRepository lineActivityRepository, PackageService packageService
-            , ResellerRepository resellerRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
         super(repository, Line.class, lineActivityRepository, bCryptPasswordEncoder, roleRepository);
         this.lineMapper = lineMapper;
         this.packageService = packageService;
     }
 
     public Page<LineView> getAllLines(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return new PageImpl<>(findAll(getCurrentReseller(), search, pageNo, pageSize, sortBy, sortDir).stream().map(lineMapper::convertToView).collect(Collectors.toList()));
+        return findAll(getCurrentReseller(), search, pageNo, pageSize, sortBy, sortDir).map(lineMapper::convertToView);
     }
 
     public LineView getById(Long id) {

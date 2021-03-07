@@ -6,7 +6,6 @@ import com.xtra.api.projection.admin.user.UserView;
 import com.xtra.api.repository.UserRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 public class UserService extends CrudService<User, Long, UserRepository> {
@@ -42,7 +39,7 @@ public class UserService extends CrudService<User, Long, UserRepository> {
     }
 
     public Page<UserView> getAllViews(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return new PageImpl<>(super.findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(userMapper::convertToView).collect(Collectors.toList()));
+        return (super.findAll(search, pageNo, pageSize, sortBy, sortDir).map(userMapper::convertToView));
     }
 
     public UserView getViewById(Long id) {
@@ -58,7 +55,4 @@ public class UserService extends CrudService<User, Long, UserRepository> {
         return userData;
     }
 
-  /*  public Page<AdminView> getAllAdminViews(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return new PageImpl<>(findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(userMapper::convertToAdminView).collect(Collectors.toList()));
-    }*/
 }

@@ -13,14 +13,12 @@ import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.GeoIpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class SystemLineServiceImpl extends LineService {
@@ -99,7 +97,7 @@ public class SystemLineServiceImpl extends LineService {
     }
 
     public Page<LineView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return new PageImpl<>(findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(lineMapper::convertToView).collect(Collectors.toList()));
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(lineMapper::convertToView);
     }
 
     public LineView getById(Long id) {

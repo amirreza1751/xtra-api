@@ -14,12 +14,10 @@ import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 import static com.xtra.api.service.system.SystemResellerService.getCurrentReseller;
 
@@ -45,8 +43,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
 
     public Page<SubresellerSimplified> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
-        return new PageImpl<>(repository.findAllByOwner(getCurrentReseller(), page).stream().map(resellerMapper::convertToSimplifiedSubreseller).collect(Collectors.toList()));
-
+        return repository.findAllByOwner(getCurrentReseller(), page).map(resellerMapper::convertToSimplifiedSubreseller);
     }
 
     public SubresellerView getReseller(Long id) {
