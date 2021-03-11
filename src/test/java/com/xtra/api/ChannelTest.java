@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.xtra.api.controller.admin.ChannelController;
 import com.xtra.api.model.Channel;
 import com.xtra.api.repository.ChannelRepository;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -44,9 +48,33 @@ public class ChannelTest {
 
     @Test
     public void insertChannel() throws Exception {
-        String input = "{\"name\":\"amirak\",\"logo\":\"http://tes.com\",\"notes\":\"\",\"days_to_restart\":[\"MONDAY\"],\"time_to_restart\":\"02:00\",\"custom_ffmpeg\":\"\",\"stream_inputs\":[\"http://tes.com\"],\"stream_type\":\"CHANNEL\",\"stream_url\":\"\",\"servers\":[],\"collections\":[]}";
 
-        this.mockMvc.perform(post("/channels").content(input).contentType("application/json")).andDo(print())
+        JSONArray stream_inputs = new JSONArray();
+        stream_inputs.put("http://test.com");
+
+        JSONObject channel = new JSONObject();
+        channel.put("name", "amirakk22");
+        channel.put("logo", "http://tes.com");
+        channel.put("stream_inputs", stream_inputs);
+
+        this.mockMvc.perform(post("/channels").content(channel.toString()).contentType("application/json")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+        ;
+    }
+
+    @Test
+    public void testInsertChannelValidation() throws Exception {
+
+        JSONArray stream_inputs = new JSONArray();
+        stream_inputs.put("http://test.com");
+
+        JSONObject channel = new JSONObject();
+        channel.put("name", "test");
+        channel.put("logo", "http://tes.com");
+        channel.put("stream_inputs", stream_inputs);
+
+        this.mockMvc.perform(post("/channels").content(channel.toString()).contentType("application/json")).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
         ;
@@ -55,16 +83,18 @@ public class ChannelTest {
     @Test
     public void updateChannel() throws Exception {
         Channel channel = new Channel();
-        channel.setName("Test Channel");
+        channel.setName("test1");
         var savedChannel = channelRepository.save(channel);
         Long id = savedChannel.getId();
 
-        String input = "{\"name\":\"amirak\",\"logo\":\"http://tes.com\",\"notes\":\"\",\"days_to_restart\":[\"MONDAY\"],\"time_to_restart\":\"02:00\",\"custom_ffmpeg\":\"\",\"stream_inputs\":[\"http://tes.com\"],\"stream_type\":\"CHANNEL\",\"stream_url\":\"\",\"servers\":[],\"collections\":[]}";
+        savedChannel.setName("test2");
+        JSONObject jo = new JSONObject(savedChannel);
 
-        this.mockMvc.perform(patch("/channels/" + id).content(input).contentType("application/json")).andDo(print())
+
+        this.mockMvc.perform(patch("/channels/" + id).content(jo.toString()).contentType("application/json")).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
-                .andExpect(content().string(containsString("amirak")))
+                .andExpect(content().string(containsString("test2")))
         ;
     }
 
@@ -76,9 +106,7 @@ public class ChannelTest {
         Long id = savedChannel.getId();
 
         this.mockMvc.perform(delete("/channels/" + id).contentType("application/json")).andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(content().string(containsString("amirak")))
+                .andExpect(status().is2xxSuccessful())
         ;
         assertThat(channelRepository.findById(id).isEmpty());
 
