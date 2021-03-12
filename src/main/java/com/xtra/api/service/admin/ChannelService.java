@@ -218,12 +218,17 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
     public void changeDns(StreamInputPair streamInputPair){
-        Optional<StreamInput> streamInputs = streamInputRepository.findByUrl(streamInputPair.getOldDns());
-        if (streamInputs.isPresent()){
-            streamInputs.ifPresent(streamInput -> {
+        List<StreamInput> streamInputs = streamInputRepository.findAllByUrl(streamInputPair.getOldDns());
+//        if (streamInputs.isPresent()){
+//            streamInputs.ifPresent(streamInput -> {
+//                streamInput.setUrl(streamInputPair.getNewDns());
+//                streamInputRepository.save(streamInput);
+//            });
+//        }
+        if (!streamInputs.isEmpty())
+            for (StreamInput streamInput : streamInputs) {
                 streamInput.setUrl(streamInputPair.getNewDns());
                 streamInputRepository.save(streamInput);
-            });
-        }
+            }
     }
 }
