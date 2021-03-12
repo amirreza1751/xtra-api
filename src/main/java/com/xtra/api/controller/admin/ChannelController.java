@@ -5,6 +5,7 @@ import com.xtra.api.mapper.admin.ChannelStartMapper;
 
 import com.xtra.api.model.ChannelList;
 import com.xtra.api.model.EpgChannelId;
+import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.service.admin.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,6 +151,13 @@ public class ChannelController {
     @PatchMapping("{id}/epg-channel")
     public ResponseEntity<?> setEpgRecord(@PathVariable Long id, @RequestBody EpgChannelId epgChannelId) {
         channelService.setEpgRecord(id,epgChannelId);
+        return ResponseEntity.ok().build();
+    }
+
+    //Stream Tools
+    @PatchMapping("/tools/dns")
+    public ResponseEntity<?> changeDns(@RequestBody StreamInputPair streamInputPair){
+        channelService.changeDns(streamInputPair);
         return ResponseEntity.ok().build();
     }
 
