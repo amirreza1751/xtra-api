@@ -78,15 +78,4 @@ public class LineLineServiceImpl extends LineService {
 
         return data;
     }
-
-    private Line getCurrentLine() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            var principal = auth.getPrincipal();
-            if (principal != null) {
-                return findByUsernameOrFail(((User) principal).getUsername());
-            }
-        }
-        throw new AccessDeniedException("access denied");
-    }
 }

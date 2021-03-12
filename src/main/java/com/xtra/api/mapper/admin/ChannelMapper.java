@@ -35,9 +35,10 @@ public abstract class ChannelMapper {
     @AfterMapping
     void convertServerIdsAndCollectionIds(final ChannelInsertView channelView, @MappingTarget final Channel channel) {
         var epgDetails = channelView.getEpgDetails();
-        var epgChannel = epgChannelRepository.findById(new EpgChannelId(epgDetails.getName(), epgDetails.getEpgId(), epgDetails.getLanguage())).orElseThrow(() -> new EntityNotFoundException("epg channel"));
-        channel.setEpgChannel(epgChannel);
-
+        if (epgDetails != null) {
+            var epgChannel = epgChannelRepository.findById(new EpgChannelId(epgDetails.getName(), epgDetails.getEpgId(), epgDetails.getLanguage())).orElseThrow(() -> new EntityNotFoundException("epg channel"));
+            channel.setEpgChannel(epgChannel);
+        }
         var serverIds = channelView.getServers();
         if (serverIds != null) {
             Set<StreamServer> streamServers = new HashSet<>();

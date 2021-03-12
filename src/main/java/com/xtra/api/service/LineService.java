@@ -7,6 +7,10 @@ import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.RoleRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -76,5 +80,14 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
 
     public Line findByUsernameOrFail(String username) {
         return repository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(aClass.getSimpleName(), "Username", username));
+    }
+
+    public Line getCurrentLine() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
+            var principal = auth.getPrincipal();
+            return repository.findByUsername(((User) principal).getUsername()).orElseThrow(() -> new AccessDeniedException("access denied"));
+        }
+        throw new AccessDeniedException("access denied");
     }
 }
