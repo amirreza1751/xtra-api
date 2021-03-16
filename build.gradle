@@ -46,6 +46,15 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    // https://mvnrepository.com/artifact/org.assertj/assertj-core
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
+//    // https://mvnrepository.com/artifact/org.mockito/mockito-all
+//    testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
+    // https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.7.7'
+
 }
 
 test {

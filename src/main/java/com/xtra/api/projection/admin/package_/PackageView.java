@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.StreamProtocol;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.Period;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
+@AllArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PackageView {
     private Long id;
