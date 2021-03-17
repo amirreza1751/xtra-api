@@ -15,6 +15,8 @@ public class LineServiceTest {
     private AdminLineServiceImpl lineService;
 
     @Test
-    public void insert_default_
+    public void insert_noUsernameAndPassword_success() {
+
+    }
 
 }
