@@ -1,6 +1,6 @@
-package com.xtra.api.model;
+package com.xtra.api.integration;
 
-import com.xtra.api.projection.admin.StreamInputPair;
+import com.xtra.api.model.StreamInput;
 import com.xtra.api.repository.StreamInputRepository;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 

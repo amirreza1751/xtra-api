@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -51,14 +50,6 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
         return repository.save(oldObject);
     }
 
-    public T updateOrCreate(ID id, T newObject) {
-        Optional<T> oldObject = repository.findById(id);
-        if (oldObject.isEmpty()) {
-            return repository.save(newObject);
-        }
-        copyProperties(newObject, oldObject, "id", "streamServers");
-        return repository.save(oldObject.get());
-    }
 
     public void deleteOrFail(ID id) {
         if (!repository.existsById(id))

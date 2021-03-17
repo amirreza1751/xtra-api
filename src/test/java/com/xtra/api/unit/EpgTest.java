@@ -1,4 +1,4 @@
-package com.xtra.api;
+package com.xtra.api.unit;
 
 import com.xtra.api.repository.EpgFileRepository;
 import com.xtra.api.repository.ProgramRepository;
