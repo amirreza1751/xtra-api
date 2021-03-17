@@ -34,7 +34,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     @Autowired
     public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository, StreamInputRepository streamInputRepository) {
-        super(repository, Channel.class, serverService);
+        super(repository, "Channel", serverService);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
         this.channelStartMapper = channelStartMapper;
@@ -217,7 +217,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         repository.save(channel);
     }
 
-    public void changeDns(StreamInputPair streamInputPair){
+    public void changeDns(StreamInputPair streamInputPair) {
         List<StreamInput> streamInputs = streamInputRepository.findAllByUrl(streamInputPair.getOldDns());
 //        if (streamInputs.isPresent()){
 //            streamInputs.ifPresent(streamInput -> {

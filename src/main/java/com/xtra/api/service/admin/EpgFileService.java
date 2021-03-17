@@ -6,7 +6,6 @@ import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.epg.EpgInsertView;
 import com.xtra.api.projection.admin.epg.EpgSimpleView;
 import com.xtra.api.projection.admin.epg.EpgView;
-import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.EpgChannelRepository;
 import com.xtra.api.repository.EpgFileRepository;
 import com.xtra.api.service.CrudService;
@@ -37,8 +36,8 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
     private final EpgFileRepository epgFileRepository;
 
     @Autowired
-    protected EpgFileService(EpgFileRepository epgFileRepository, EpgChannelRepository epgChannelRepository, ChannelRepository channelRepository, EpgMapper epgMapper, EpgChannelRepository epgChannelRepository1, EpgFileRepository epgFileRepository1) {
-        super(epgFileRepository, EpgFile.class);
+    protected EpgFileService(EpgFileRepository epgFileRepository, EpgMapper epgMapper, EpgChannelRepository epgChannelRepository1, EpgFileRepository epgFileRepository1) {
+        super(epgFileRepository, "Epg File");
         this.epgMapper = epgMapper;
         this.epgChannelRepository = epgChannelRepository1;
         this.epgFileRepository = epgFileRepository1;

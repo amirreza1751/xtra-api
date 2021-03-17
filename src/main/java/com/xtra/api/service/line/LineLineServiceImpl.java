@@ -6,15 +6,10 @@ import com.xtra.api.projection.line.line.LineInsertView;
 import com.xtra.api.projection.line.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
-import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +23,8 @@ public class LineLineServiceImpl extends LineService {
 
     @Autowired
     protected LineLineServiceImpl(LineRepository repository, LineLineMapper lineMapper, LineActivityRepository lineActivityRepository
-            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
-        super(repository, Line.class, lineActivityRepository, bCryptPasswordEncoder, roleRepository);
+            , BCryptPasswordEncoder bCryptPasswordEncoder) {
+        super(repository, lineActivityRepository, bCryptPasswordEncoder);
         this.lineMapper = lineMapper;
     }
 

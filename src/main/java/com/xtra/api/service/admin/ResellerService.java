@@ -1,6 +1,5 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.model.Reseller;
 import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
@@ -26,7 +25,7 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
 
     @Autowired
     protected ResellerService(ResellerRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, ResellerMapper resellerMapper) {
-        super(repository, Reseller.class);
+        super(repository, "Reseller");
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.resellerMapper = resellerMapper;
     }
@@ -42,9 +41,6 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         return super.insert(reseller);
     }
 
-    public Reseller findByUsernameOrFail(String username) {
-        return repository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(aClass.getSimpleName(), "Username", username));
-    }
 
     public ResellerView save(Long id, ResellerInsertView insertView) {
         var existingReseller = findByIdOrFail(id);

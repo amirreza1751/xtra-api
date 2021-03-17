@@ -22,7 +22,7 @@ public class UserService extends CrudService<User, Long, UserRepository> {
     private final UserMapper userMapper;
 
     protected UserService(UserRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper) {
-        super(repository, User.class);
+        super(repository, "User");
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userMapper = userMapper;
     }

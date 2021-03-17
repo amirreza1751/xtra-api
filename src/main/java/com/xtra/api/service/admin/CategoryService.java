@@ -20,7 +20,7 @@ public class CategoryService extends CrudService<Category, String, CategoryRepos
 
     @Autowired
     protected CategoryService(CategoryRepository repository, CategoryMapper categoryMapper) {
-        super(repository, Category.class);
+        super(repository, "Category");
         this.categoryMapper = categoryMapper;
     }
 

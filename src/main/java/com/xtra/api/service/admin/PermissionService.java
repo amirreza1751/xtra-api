@@ -17,7 +17,7 @@ import java.util.List;
 public class PermissionService extends CrudService<Permission, PermissionId, PermissionRepository> {
 
     protected PermissionService(PermissionRepository repository) {
-        super(repository, Permission.class);
+        super(repository, "Permission");
     }
 
     @Override

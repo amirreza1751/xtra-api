@@ -17,7 +17,7 @@ public abstract class DownloadListService extends CrudService<DownloadList, Long
     protected final DownloadListMapper mapper;
 
     protected DownloadListService(DownloadListRepository repository, CollectionService collectionService, DownloadListMapper mapper) {
-        super(repository, DownloadList.class);
+        super(repository, "DownloadList");
         this.collectionService = collectionService;
         this.mapper = mapper;
     }

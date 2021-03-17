@@ -1,7 +1,6 @@
 package com.xtra.api.service.reseller;
 
 import com.xtra.api.exceptions.ActionNotAllowedException;
-import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.reseller.ResellerLineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.Package;
@@ -34,7 +33,7 @@ public class ResellerLineServiceImpl extends LineService {
     @Autowired
     protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, LineActivityRepository lineActivityRepository, PackageService packageService
             , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
-        super(repository, Line.class, lineActivityRepository, bCryptPasswordEncoder, roleRepository);
+        super(repository, lineActivityRepository, bCryptPasswordEncoder);
         this.lineMapper = lineMapper;
         this.packageService = packageService;
     }
@@ -79,7 +78,7 @@ public class ResellerLineServiceImpl extends LineService {
     public void deleteOrFail(Long id) {
         var owner = getCurrentReseller();
         if (!repository.existsByOwnerAndId(owner, id))
-            throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
+            entityNotFoundException("id", id);
         repository.deleteLineByOwnerAndId(owner, id);
     }
 
@@ -99,7 +98,7 @@ public class ResellerLineServiceImpl extends LineService {
 
     private Line findLineByOwnerAndIdOrFail(Reseller owner, Long id) {
         var result = repository.findByOwnerAndId(owner, id);
-        return result.orElseThrow(() -> new EntityNotFoundException(aClass.getSimpleName(), id.toString()));
+        return result.orElseThrow(entityNotFoundException("id", id));
     }
 
     private Page<Line> findAll(Reseller owner, String search, int pageNo, int pageSize, String sortBy, String sortDir) {

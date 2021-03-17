@@ -19,7 +19,7 @@ public class PackageService extends CrudService<Package, Long, PackageRepository
 
     @Autowired
     protected PackageService(PackageRepository repository, PackageMapper packageMapper) {
-        super(repository, Package.class);
+        super(repository, "Package");
         this.packageMapper = packageMapper;
     }
 

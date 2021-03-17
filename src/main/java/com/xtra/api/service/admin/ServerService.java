@@ -56,7 +56,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
 
     @Autowired
     protected ServerService(ServerRepository repository, LineActivityRepository lineActivityRepository, StreamServerRepository streamServerRepository, ServerMapper serverMapper, WebClient.Builder webClientBuilder) {
-        super(repository, Server.class);
+        super(repository, "Server");
         this.lineActivityRepository = lineActivityRepository;
         this.streamServerRepository = streamServerRepository;
         this.serverMapper = serverMapper;

@@ -1,6 +1,5 @@
 package com.xtra.api.service.system;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.AdminLineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineStatus;
@@ -8,7 +7,6 @@ import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.projection.system.LineAuth;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
-import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.GeoIpService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +25,14 @@ public class SystemLineServiceImpl extends LineService {
 
     @Autowired
     public SystemLineServiceImpl(LineRepository repository, LineActivityRepository lineActivityRepository, AdminLineMapper lineMapper
-            , BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService, RoleRepository roleRepository) {
-        super(repository, Line.class, lineActivityRepository, bCryptPasswordEncoder, roleRepository);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService) {
+        super(repository, lineActivityRepository, bCryptPasswordEncoder);
         this.lineMapper = lineMapper;
         this.geoIpService = geoIpService;
     }
 
     private Line findByTokenOrFail(String token) {
-        var lineById = repository.findByLineToken(token);
-        if (lineById.isEmpty()) {
-            throw new EntityNotFoundException(aClass.getSimpleName(), token);
-        }
-        return lineById.get();
+        return repository.findByLineToken(token).orElseThrow(entityNotFoundException("Token", token));
     }
 
 

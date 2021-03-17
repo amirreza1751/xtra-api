@@ -29,7 +29,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
     private final CreditChangeLogRepository creditChangeRepository;
 
     protected SubresellerService(ResellerRepository repository, ResellerMapper resellerMapper, LineRepository lineRepository, CreditChangeMapper creditChangeMapper, CreditChangeLogRepository creditChangeRepository) {
-        super(repository, Reseller.class);
+        super(repository, "Reseller");
         this.resellerMapper = resellerMapper;
         this.lineRepository = lineRepository;
         this.creditChangeMapper = creditChangeMapper;
