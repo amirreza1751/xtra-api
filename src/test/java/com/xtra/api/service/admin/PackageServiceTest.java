@@ -5,6 +5,7 @@ import com.xtra.api.mapper.admin.PackageMapper;
 import com.xtra.api.model.*;
 import com.xtra.api.model.Package;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
+import com.xtra.api.projection.admin.package_.PackageInsertView;
 import com.xtra.api.projection.admin.package_.PackageView;
 import com.xtra.api.repository.PackageRepository;
 import com.xtra.api.service.CrudService;
@@ -23,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 import java.time.Period;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -82,7 +84,20 @@ class PackageServiceTest {
 
 
     @Test
-    void add() {
+    @DisplayName("add a package with a given packageView")
+    void addAPackageWithGivenPacgeView() {
+        Package aPackage = new Package(123L, "package name",  false, 123, Period.ZERO, 123, false, Collections.<StreamProtocol>emptyList(), new DownloadList(), Collections.<Role>emptySet());
+        PackageView packageView = new PackageView(123L, "package name", false, 123, Period.ZERO, 123, false, Collections.<StreamProtocol>emptyList(), Collections.<DlCollectionView>emptySet(), Collections.<Long>emptySet());
+        PackageInsertView packageInsertView = new PackageInsertView("package name", false, 123, Period.ZERO, 123, false, Collections.<StreamProtocol>emptyList(), new LinkedHashSet<>(), Collections.<Long>emptySet());
+        PackageService packageService1 = Mockito.spy(packageService);
+        Mockito.doReturn(aPackage).when(packageService1).insert(aPackage);
+        Mockito.when(packageMapper.convertToDto(aPackage)).thenReturn(packageView);
+        Mockito.when(packageMapper.convertToEntity(packageInsertView)).thenReturn(aPackage);
+
+        PackageView actualPackageView = packageService1.add(packageInsertView);
+
+        Assertions.assertThat(actualPackageView.getName()).isEqualTo(packageInsertView.getName());
+
     }
 
     @Test
