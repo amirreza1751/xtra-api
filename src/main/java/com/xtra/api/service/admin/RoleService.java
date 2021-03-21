@@ -14,12 +14,10 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 public class RoleService extends CrudService<Role, Long, RoleRepository> {
-    private final PermissionRepository permissionRepository;
 
     @Autowired
     protected RoleService(RoleRepository repository, PermissionRepository permissionRepository) {
-        super(repository, Role.class);
-        this.permissionRepository = permissionRepository;
+        super(repository, "Role");
     }
 
     @Override

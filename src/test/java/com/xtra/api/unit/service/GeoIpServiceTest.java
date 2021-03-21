@@ -1,4 +1,4 @@
-package com.xtra.api.service;
+package com.xtra.api.unit.service;
 
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;

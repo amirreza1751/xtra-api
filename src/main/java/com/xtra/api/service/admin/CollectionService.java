@@ -28,7 +28,7 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
 
     @Autowired
     protected CollectionService(CollectionRepository repository, CollectionMapper mapper, StreamService streamService, VodService vodService, CollectionStreamRepository csRepository) {
-        super(repository, Collection.class);
+        super(repository, "Collection");
         this.mapper = mapper;
         this.streamService = streamService;
         this.vodService = vodService;

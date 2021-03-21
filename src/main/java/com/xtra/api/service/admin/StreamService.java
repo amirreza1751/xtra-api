@@ -10,7 +10,9 @@ import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.service.CrudService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -18,8 +20,8 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public abstract class StreamService<S extends Stream, R extends StreamRepository<S>> extends CrudService<S, Long, R> {
     private final ServerService serverService;
 
-    protected StreamService(R repository, Class<S> aClass, ServerService serverService) {
-        super(repository, aClass);
+    protected StreamService(R repository, String className, ServerService serverService) {
+        super(repository, className);
         this.serverService = serverService;
     }
 
@@ -39,8 +41,8 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     public void infoBatchUpdate(LinkedHashMap<String, Object> infos, String portNumber, HttpServletRequest request) {
         Optional<Server> srv = serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber);
         Server server = new Server();
-        if (srv.isPresent()){
-           server = srv.get();
+        if (srv.isPresent()) {
+            server = srv.get();
         }
         ObjectMapper mapper = new ObjectMapper();
         List<StreamInfoDto> streamInfos = mapper.convertValue(infos.get("streamInfoList"), new TypeReference<>() {
@@ -49,8 +51,8 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
         });
 
         //amir
-       StreamServer streamServer;
-        for (StreamInfoDto streamInfoDto : streamInfos){
+        StreamServer streamServer;
+        for (StreamInfoDto streamInfoDto : streamInfos) {
             streamServer = serverService.findStreamServerById(new StreamServerId(streamInfoDto.getStreamId(), server.getId())).get();
             StreamInfo tempInfo = streamServer.getStreamInfo() != null ? streamServer.getStreamInfo() : new StreamInfo();
             copyProperties(streamInfoDto, tempInfo, "id", "streamServer", "streamId");
@@ -58,61 +60,45 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
             serverService.saveStreamServer(streamServer);
         }
 
-
-        for (ProgressInfoDto progressInfoDto : progressInfos){
-            streamServer = serverService.findStreamServerById(new StreamServerId(progressInfoDto.getStreamId() , server.getId())).get();
+        for (ProgressInfoDto progressInfoDto : progressInfos) {
+            streamServer = serverService.findStreamServerById(new StreamServerId(progressInfoDto.getStreamId(), server.getId())).get();
             ProgressInfo tempProgress = streamServer.getProgressInfo() != null ? streamServer.getProgressInfo() : new ProgressInfo();
             copyProperties(progressInfoDto, tempProgress, "id", "streamServer", "streamId");
             streamServer.setProgressInfo(tempProgress);
             serverService.saveStreamServer(streamServer);
         }
         //amir
-
     }
 
+
     public boolean startOrFail(Long id, List<Long> serverIds) {
-        Optional<S> ch = repository.findById(id);
-        List<Server> servers = null;
-        if (ch.isPresent()) {
-            if (serverIds == null){
-                servers = ch.get().getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
-            } else servers = serverService.findByIdIn(serverIds);
-            for (Server server : servers) {
-                serverService.sendStartRequest(id, server);
-            }
-            return true;
-        } else
-            throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
+        for (Server server : getStreamServers(id, serverIds)) {
+            serverService.sendStartRequest(id, server);
+        }
+        return true;
     }
 
     public boolean stopOrFail(Long id, List<Long> serverIds) {
-        Optional<S> streamById = repository.findById(id);
-        List<Server> servers = null;
-        if (streamById.isPresent()) {
-            if (serverIds == null){
-                servers = streamById.get().getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
-            } else servers = serverService.findByIdIn(serverIds);
-            for (Server server : servers) {
-                serverService.sendStopRequest(id, server);
-            }
-            return true;
-        } else
-            throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
+        for (Server server : getStreamServers(id, serverIds)) {
+            serverService.sendStopRequest(id, server);
+        }
+        return true;
     }
 
     public boolean restartOrFail(Long id, List<Long> serverIds) {
-        Optional<S> streamById = repository.findById(id);
-        List<Server> servers = null;
-        if (streamById.isPresent()) {
-            if (serverIds == null){
-                servers = streamById.get().getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
-            } else servers = serverService.findByIdIn(serverIds);
-            for (Server server : servers) {
-                serverService.sendRestartRequest(id, server);
-            }
-            return true;
-        } else
-            throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
+        for (Server server : getStreamServers(id, serverIds)) {
+            serverService.sendRestartRequest(id, server);
+        }
+        return true;
     }
 
+    //@todo possible database optimizations necessary
+    private List<Server> getStreamServers(Long id, List<Long> serverIds) {
+        List<Server> servers;
+        var stream = repository.findById(id).orElseThrow(entityNotFoundException("id", id));
+        if (serverIds == null) {
+            servers = stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
+        } else servers = serverService.findByIdIn(serverIds);
+        return servers;
+    }
 }

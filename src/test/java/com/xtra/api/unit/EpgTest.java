@@ -1,9 +1,5 @@
-package com.xtra.api;
+package com.xtra.api.unit;
 
-import com.xtra.api.model.EpgChannel;
-import com.xtra.api.model.EpgFile;
-import com.xtra.api.model.Program;
-import com.xtra.api.model.ProgramId;
 import com.xtra.api.repository.EpgFileRepository;
 import com.xtra.api.repository.ProgramRepository;
 import org.json.JSONObject;
@@ -17,9 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Scanner;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("dev")

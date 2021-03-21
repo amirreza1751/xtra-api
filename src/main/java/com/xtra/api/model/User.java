@@ -4,18 +4,14 @@ import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.net.InetAddress;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     protected Long id;
 
     @Column(unique = true)
@@ -31,7 +27,7 @@ public class User {
     protected String lastLoginIp;
 
     @Enumerated(EnumType.STRING)
-    protected UserType userType = UserType.USER;
+    protected UserType userType = UserType.LINE;
 
     @ManyToOne
     protected Role role;

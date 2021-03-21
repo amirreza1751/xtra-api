@@ -8,12 +8,9 @@ import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.service.admin.ResellerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/resellers")
@@ -30,13 +27,13 @@ public class ResellerController {
     @GetMapping("")
     public ResponseEntity<Page<ResellerView>> getResellers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                                            @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(new PageImpl<>(resellerService.findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(resellerMapper::convertToView).collect(Collectors.toList())));
+        return ResponseEntity.ok(resellerService.findAll(search, pageNo, pageSize, sortBy, sortDir).map(resellerMapper::convertToView));
     }
 
     @GetMapping("/list")
     public ResponseEntity<Page<UserSimpleView>> getResellersSimpleList(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                                                        @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(new PageImpl<>(resellerService.findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(resellerMapper::convertToSimpleView).collect(Collectors.toList())));
+        return ResponseEntity.ok(resellerService.findAll(search, pageNo, pageSize, sortBy, sortDir).map(resellerMapper::convertToSimpleView));
     }
 
     @GetMapping("/{id}")

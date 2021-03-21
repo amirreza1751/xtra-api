@@ -13,6 +13,7 @@ import java.util.Set;
 public class CollectionView {
     private Long id;
     private String name;
+    private String categoryName;
     private MediaType type;
     private Set<MediaPair<Long, String>> channels;
     private Set<MediaPair<Long, String>> movies;

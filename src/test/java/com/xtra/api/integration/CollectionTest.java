@@ -1,7 +1,6 @@
-package com.xtra.api;
+package com.xtra.api.integration;
 
 import com.xtra.api.controller.admin.CollectionController;
-import com.xtra.api.model.Channel;
 import com.xtra.api.model.Collection;
 import com.xtra.api.repository.CollectionRepository;
 import org.json.JSONArray;
@@ -17,7 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc

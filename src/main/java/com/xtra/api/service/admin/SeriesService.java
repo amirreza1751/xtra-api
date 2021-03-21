@@ -13,7 +13,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
 
     @Autowired
     protected SeriesService(SeriesRepository repository) {
-        super(repository, Series.class);
+        super(repository, "Series");
     }
 
     @Override

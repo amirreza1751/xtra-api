@@ -13,7 +13,7 @@ public class RadioService extends CrudService<Radio, Long, RadioRepository> {
 
     @Autowired
     protected RadioService(RadioRepository repository) {
-        super(repository, Radio.class);
+        super(repository, "Radio");
     }
 
     @Override

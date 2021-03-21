@@ -6,12 +6,9 @@ import com.xtra.api.projection.admin.user.admin.AdminInsertView;
 import com.xtra.api.projection.admin.user.admin.AdminView;
 import com.xtra.api.service.admin.AdminService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admins")
@@ -27,13 +24,13 @@ public class AdminController {
     @GetMapping("")
     public ResponseEntity<Page<AdminView>> getAdmins(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                                      @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(new PageImpl<>(adminService.findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(adminMapper::convertToView).collect(Collectors.toList())));
+        return ResponseEntity.ok(adminService.findAll(search, pageNo, pageSize, sortBy, sortDir).map(adminMapper::convertToView));
     }
 
     @GetMapping("/list")
     public ResponseEntity<Page<UserSimpleView>> getAdminsSimpleList(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                                                     @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(new PageImpl<>(adminService.findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(adminMapper::convertToSimpleView).collect(Collectors.toList())));
+        return ResponseEntity.ok(adminService.findAll(search, pageNo, pageSize, sortBy, sortDir).map(adminMapper::convertToSimpleView));
     }
 
     @GetMapping("/{id}")

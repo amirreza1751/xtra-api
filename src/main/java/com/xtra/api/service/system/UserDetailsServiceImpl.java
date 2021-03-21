@@ -2,7 +2,6 @@ package com.xtra.api.service.system;
 
 import com.xtra.api.model.Role;
 import com.xtra.api.repository.UserRepository;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,11 +11,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Role role) {
-        List<GrantedAuthority> privileges = role.getPermissions().stream().map(permission -> new SimpleGrantedAuthority(permission.getPermission().getId().getName())).collect(Collectors.toList());
+        List<GrantedAuthority> privileges = emptyIfNull(role.getPermissions()).stream().map(permission -> new SimpleGrantedAuthority(permission.getPermission().getId().getName())).collect(Collectors.toList());
         privileges.add(new SimpleGrantedAuthority("ROLE_" + role.getType().toString()));
         return privileges;
     }

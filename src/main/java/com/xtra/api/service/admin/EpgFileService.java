@@ -6,14 +6,14 @@ import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.epg.EpgInsertView;
 import com.xtra.api.projection.admin.epg.EpgSimpleView;
 import com.xtra.api.projection.admin.epg.EpgView;
-import com.xtra.api.repository.*;
+import com.xtra.api.repository.EpgChannelRepository;
+import com.xtra.api.repository.EpgFileRepository;
 import com.xtra.api.service.CrudService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -27,9 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository> {
@@ -39,8 +36,8 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
     private final EpgFileRepository epgFileRepository;
 
     @Autowired
-    protected EpgFileService(EpgFileRepository epgFileRepository, EpgChannelRepository epgChannelRepository, ChannelRepository channelRepository, EpgMapper epgMapper, EpgChannelRepository epgChannelRepository1, EpgFileRepository epgFileRepository1) {
-        super(epgFileRepository, EpgFile.class);
+    protected EpgFileService(EpgFileRepository epgFileRepository, EpgMapper epgMapper, EpgChannelRepository epgChannelRepository1, EpgFileRepository epgFileRepository1) {
+        super(epgFileRepository, "Epg File");
         this.epgMapper = epgMapper;
         this.epgChannelRepository = epgChannelRepository1;
         this.epgFileRepository = epgFileRepository1;
@@ -52,7 +49,7 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
     }
 
     public Page<EpgSimpleView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return new PageImpl<>(findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(epgMapper::toSimpleView).collect(Collectors.toList()));
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(epgMapper::toSimpleView);
     }
 
     public EpgView updateEpgFile(Long id, EpgInsertView insertView) {

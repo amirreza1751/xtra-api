@@ -22,7 +22,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
     @Autowired
     protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository) {
-        super(repository, Movie.class);
+        super(repository);
         this.serverService = serverService;
         this.videoRepository = videoRepository;
     }

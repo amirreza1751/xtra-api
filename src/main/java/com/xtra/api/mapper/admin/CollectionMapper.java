@@ -1,17 +1,23 @@
 package com.xtra.api.mapper.admin;
 
+import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.MediaPair;
 import com.xtra.api.projection.admin.collection.CollectionInsertView;
 import com.xtra.api.projection.admin.collection.CollectionSimplifiedView;
 import com.xtra.api.projection.admin.collection.CollectionView;
+import com.xtra.api.repository.CategoryRepository;
 import org.mapstruct.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public abstract class CollectionMapper {
+
+    @Autowired
+    CategoryRepository categoryRepository;
 
     /*collection simple display*/
 
@@ -21,7 +27,7 @@ public abstract class CollectionMapper {
         collectionSimplifiedView.setId(collection.getId());
         collectionSimplifiedView.setName(collection.getName());
         collectionSimplifiedView.setType(collection.getType());
-
+        collectionSimplifiedView.setCategoryName(collection.getCategory().getName());
         switch (collection.getType()) {
             case SERIES:
                 collectionSimplifiedView.setSeries(collection.getVods().size());
@@ -47,7 +53,7 @@ public abstract class CollectionMapper {
         collection.setId(input.getId());
         collection.setName(input.getName());
         collection.setType(input.getType());
-
+        collection.setCategory(categoryRepository.findById(input.getCategoryName()).orElseThrow(() -> new EntityNotFoundException("category")));
         int i;
         switch (collection.getType()) {
             case SERIES:
@@ -96,7 +102,7 @@ public abstract class CollectionMapper {
         collectionView.setId(collection.getId());
         collectionView.setName(collection.getName());
         collectionView.setType(collection.getType());
-
+        collectionView.setCategoryName(collection.getCategory().getName());
         switch (collection.getType()) {
             case SERIES:
                 var series = collection.getVods() != null ? collection.getVods().stream().map(vod -> new MediaPair<>(vod.getVod().getId(), vod.getVod().getName())).collect(Collectors.toCollection(LinkedHashSet::new)) : null;

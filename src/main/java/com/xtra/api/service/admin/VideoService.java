@@ -15,7 +15,7 @@ public class VideoService extends CrudService<Video, Long, VideoRepository> {
 
     @Autowired
     protected VideoService(VideoRepository videoRepository){
-        super(videoRepository, Video.class);
+        super(videoRepository, "Video");
     }
 
     @Override

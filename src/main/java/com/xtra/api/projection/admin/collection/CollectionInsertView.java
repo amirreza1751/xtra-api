@@ -12,6 +12,7 @@ import java.util.List;
 public class CollectionInsertView {
     private Long id;
     private String name;
+    private String categoryName;
     private MediaType type;
     private List<Long> channels;
     private List<Long> movies;

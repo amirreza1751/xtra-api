@@ -1,6 +1,5 @@
 package com.xtra.api.service.reseller;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.exceptions.ActionNotAllowedException;
 import com.xtra.api.mapper.reseller.ResellerLineMapper;
 import com.xtra.api.model.Line;
@@ -10,23 +9,20 @@ import com.xtra.api.projection.reseller.line.LineCreateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
-import com.xtra.api.repository.ResellerRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.PackageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.stream.Collectors;
 
 import static com.xtra.api.service.system.SystemResellerService.getCurrentReseller;
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 @PreAuthorize("hasRole('RESELLER')")
@@ -35,14 +31,15 @@ public class ResellerLineServiceImpl extends LineService {
     private final PackageService packageService;
 
     @Autowired
-    protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, LineActivityRepository lineActivityRepository, PackageService packageService, ResellerRepository resellerRepository) {
-        super(repository, Line.class, lineActivityRepository);
+    protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, LineActivityRepository lineActivityRepository, PackageService packageService
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+        super(repository, lineActivityRepository, bCryptPasswordEncoder);
         this.lineMapper = lineMapper;
         this.packageService = packageService;
     }
 
     public Page<LineView> getAllLines(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return new PageImpl<>(findAll(getCurrentReseller(), search, pageNo, pageSize, sortBy, sortDir).stream().map(lineMapper::convertToView).collect(Collectors.toList()));
+        return findAll(getCurrentReseller(), search, pageNo, pageSize, sortBy, sortDir).map(lineMapper::convertToView);
     }
 
     public LineView getById(Long id) {
@@ -81,7 +78,7 @@ public class ResellerLineServiceImpl extends LineService {
     public void deleteOrFail(Long id) {
         var owner = getCurrentReseller();
         if (!repository.existsByOwnerAndId(owner, id))
-            throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
+            entityNotFoundException("id", id);
         repository.deleteLineByOwnerAndId(owner, id);
     }
 
@@ -101,7 +98,7 @@ public class ResellerLineServiceImpl extends LineService {
 
     private Line findLineByOwnerAndIdOrFail(Reseller owner, Long id) {
         var result = repository.findByOwnerAndId(owner, id);
-        return result.orElseThrow(() -> new EntityNotFoundException(aClass.getSimpleName(), id.toString()));
+        return result.orElseThrow(entityNotFoundException("id", id));
     }
 
     private Page<Line> findAll(Reseller owner, String search, int pageNo, int pageSize, String sortBy, String sortDir) {

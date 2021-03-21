@@ -4,12 +4,13 @@ import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ChannelMapper;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
 import com.xtra.api.model.*;
+import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.EpgChannelRepository;
+import com.xtra.api.repository.StreamInputRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -28,22 +29,23 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final ChannelStartMapper channelStartMapper;
     private final ChannelMapper channelMapper;
     private final EpgChannelRepository epgChannelRepository;
+    private final StreamInputRepository streamInputRepository;
 
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository) {
-        super(repository, Channel.class, serverService);
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository, StreamInputRepository streamInputRepository) {
+        super(repository, "Channel", serverService);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
         this.channelStartMapper = channelStartMapper;
         this.channelMapper = channelMapper;
         this.epgChannelRepository = epgChannelRepository;
+        this.streamInputRepository = streamInputRepository;
     }
 
 
     public Page<ChannelInfo> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        var result = findAll(search, pageNo, pageSize, sortBy, sortDir);
-        return new PageImpl<>(result.stream().map(channelMapper::convertToChannelInfo).collect(Collectors.toList()));
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(channelMapper::convertToChannelInfo);
     }
 
     public ChannelView getViewById(Long id) {
@@ -213,5 +215,20 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         var channel = findByIdOrFail(id);
         channel.setEpgChannel(epgChannel);
         repository.save(channel);
+    }
+
+    public void changeDns(StreamInputPair streamInputPair) {
+        List<StreamInput> streamInputs = streamInputRepository.findAllByUrl(streamInputPair.getOldDns());
+//        if (streamInputs.isPresent()){
+//            streamInputs.ifPresent(streamInput -> {
+//                streamInput.setUrl(streamInputPair.getNewDns());
+//                streamInputRepository.save(streamInput);
+//            });
+//        }
+        if (!streamInputs.isEmpty())
+            for (StreamInput streamInput : streamInputs) {
+                streamInput.setUrl(streamInputPair.getNewDns());
+                streamInputRepository.save(streamInput);
+            }
     }
 }

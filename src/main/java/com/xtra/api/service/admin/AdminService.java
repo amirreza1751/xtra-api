@@ -24,7 +24,7 @@ public class AdminService extends CrudService<Admin, Long, AdminRepository> {
 
     @Autowired
     protected AdminService(AdminRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, AdminMapper adminMapper) {
-        super(repository, Admin.class);
+        super(repository, "Admin");
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.adminMapper = adminMapper;
     }

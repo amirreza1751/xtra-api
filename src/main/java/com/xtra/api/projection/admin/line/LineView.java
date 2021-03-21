@@ -14,6 +14,7 @@ public class LineView implements BaseView {
     private Long id;
     private String username;
     private String password;
+    private Long roleId;
     private String lineToken;
     @JsonFormat
             (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
@@ -21,17 +22,11 @@ public class LineView implements BaseView {
     private boolean neverExpire = false;
     private int maxConnections = 1;
     private int currentConnections = 0;
-    private boolean isReStreamer = false;
     private boolean isTrial;
     private boolean isBlocked = false;
     private boolean isBanned = false;
-    private boolean isStalker;
     private String adminNotes;
     private String resellerNotes;
-    private boolean isMag;
-    private boolean isEnigma;
-    private boolean isMinistraPortal;
-    private String mac;
 
     private List<StreamProtocol> allowedOutputs;
     private String ownerUsername;

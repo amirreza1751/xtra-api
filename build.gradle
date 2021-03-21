@@ -36,7 +36,6 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.4.0.Final'
     implementation 'com.google.guava:guava:29.0-jre'
     implementation 'com.auth0:java-jwt:3.11.0'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
     implementation 'org.projectreactor:reactor-spring:1.0.1.RELEASE'
     implementation 'com.neovisionaries:nv-i18n:1.27'
     implementation 'com.maxmind.geoip2:geoip2:2.15.0'

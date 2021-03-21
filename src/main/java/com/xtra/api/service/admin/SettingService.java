@@ -19,7 +19,7 @@ public class SettingService extends CrudService<Setting, String, SettingReposito
     private final SettingMapper settingMapper;
 
     protected SettingService(SettingRepository repository, SettingMapper settingMapper) {
-        super(repository, Setting.class);
+        super(repository, "Setting");
         this.settingMapper = settingMapper;
     }
 

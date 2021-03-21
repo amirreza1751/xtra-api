@@ -11,24 +11,17 @@ import java.util.List;
 public class LineInsertView {
     protected String username;
     protected String password;
+    private Long roleId;
     private String lineToken;
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;
     private int currentConnections = 0;
-    private boolean isReStreamer = false;
     private boolean isTrial;
-    private boolean isBlocked = false;
     private boolean isBanned = false;
-    private boolean isStalker;
+    private boolean isBlocked = false;
     private String adminNotes;
     private String resellerNotes;
-
-    /* Device Section */
-    private boolean isMag;
-    private boolean isEnigma;
-    private boolean isMinistraPortal;
-    private String mac;
 
     private List<StreamProtocol> allowedOutputs;
     private Long owner;

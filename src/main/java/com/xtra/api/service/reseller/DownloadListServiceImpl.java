@@ -1,9 +1,7 @@
 package com.xtra.api.service.reseller;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.DownloadListMapper;
 import com.xtra.api.model.DownloadList;
-import com.xtra.api.model.Reseller;
 import com.xtra.api.projection.admin.downloadlist.DownloadListInsertView;
 import com.xtra.api.projection.admin.downloadlist.DownloadListView;
 import com.xtra.api.repository.DownloadListRepository;
@@ -12,11 +10,7 @@ import com.xtra.api.service.admin.CollectionService;
 import com.xtra.api.service.admin.ResellerService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,7 +45,7 @@ public class DownloadListServiceImpl extends DownloadListService {
 
     private DownloadList findByIdAndOwnerOrFail(Long id) {
         var currentReseller = getCurrentReseller();
-        return repository.findByIdAndOwner(id, currentReseller).orElseThrow(() -> new EntityNotFoundException(aClass.getSimpleName(), "Username", currentReseller.getUsername()));
+        return repository.findByIdAndOwner(id, currentReseller).orElseThrow(entityNotFoundException("Reseller", currentReseller.getUsername()));
     }
 
     @Override
@@ -65,10 +59,11 @@ public class DownloadListServiceImpl extends DownloadListService {
         return mapper.convertToView(super.insert(downloadList));
     }
 
+    //@todo delete and check for existence in one query
     @Override
     public void deleteOrFail(Long id) {
         if (!repository.existsByIdAndOwner(id, getCurrentReseller()))
-            throw new EntityNotFoundException(aClass.getSimpleName(), id.toString());
+            entityNotFoundException("id", id);
         repository.deleteById(id);
     }
 }

@@ -8,10 +8,7 @@ import com.xtra.api.projection.admin.downloadlist.DownloadListView;
 import com.xtra.api.repository.DownloadListRepository;
 import com.xtra.api.service.admin.CollectionService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -20,7 +17,7 @@ public abstract class DownloadListService extends CrudService<DownloadList, Long
     protected final DownloadListMapper mapper;
 
     protected DownloadListService(DownloadListRepository repository, CollectionService collectionService, DownloadListMapper mapper) {
-        super(repository, DownloadList.class);
+        super(repository, "DownloadList");
         this.collectionService = collectionService;
         this.mapper = mapper;
     }
@@ -31,8 +28,7 @@ public abstract class DownloadListService extends CrudService<DownloadList, Long
 
 
     public Page<DownloadListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        var result = super.findAll(search, pageNo, pageSize, sortBy, sortDir);
-        return new PageImpl<>(result.stream().map(mapper::convertToView).collect(Collectors.toList()));
+        return super.findAll(search, pageNo, pageSize, sortBy, sortDir).map(mapper::convertToView);
     }
 
     @Transactional

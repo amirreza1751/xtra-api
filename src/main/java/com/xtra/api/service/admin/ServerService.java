@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -34,9 +33,10 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
 import java.net.URI;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -56,7 +56,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
 
     @Autowired
     protected ServerService(ServerRepository repository, LineActivityRepository lineActivityRepository, StreamServerRepository streamServerRepository, ServerMapper serverMapper, WebClient.Builder webClientBuilder) {
-        super(repository, Server.class);
+        super(repository, "Server");
         this.lineActivityRepository = lineActivityRepository;
         this.streamServerRepository = streamServerRepository;
         this.serverMapper = serverMapper;
@@ -252,7 +252,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
 
     @Override
     public Page<SimpleServerView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return new PageImpl<>(findAll(search, pageNo, pageSize, sortBy, sortDir).stream().map(serverMapper::convertToSimpleView).collect(Collectors.toList()));
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(serverMapper::convertToSimpleView);
     }
 
     @Override
