@@ -1,6 +1,5 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.PackageMapper;
 import com.xtra.api.model.*;
 import com.xtra.api.model.Package;
@@ -8,9 +7,7 @@ import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
 import com.xtra.api.projection.admin.package_.PackageInsertView;
 import com.xtra.api.projection.admin.package_.PackageView;
 import com.xtra.api.repository.PackageRepository;
-import com.xtra.api.service.CrudService;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,24 +17,23 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
-import java.time.Instant;
 import java.time.Period;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class PackageServiceTest {
+class PackageServiceUnitTest {
 
     @Mock
     private PackageRepository packageRepository;
     @Mock
     private PackageMapper packageMapper;
-    @Mock
-    private CrudService crudService;
 
     PackageService packageService;
 
@@ -91,7 +87,7 @@ class PackageServiceTest {
         PackageInsertView packageInsertView = new PackageInsertView("package name", false, 123, Period.ZERO, 123, false, Collections.<StreamProtocol>emptyList(), new LinkedHashSet<>(), Collections.<Long>emptySet());
         PackageService packageService1 = Mockito.spy(packageService);
         Mockito.doReturn(aPackage).when(packageService1).insert(aPackage);
-        Mockito.when(packageMapper.convertToDto(aPackage)).thenReturn(packageView);
+        Mockito.when(packageMapper.convertToDto(Mockito.any(Package.class))).thenReturn(packageView);
         Mockito.when(packageMapper.convertToEntity(packageInsertView)).thenReturn(aPackage);
 
         PackageView actualPackageView = packageService1.add(packageInsertView);
@@ -101,10 +97,18 @@ class PackageServiceTest {
     }
 
     @Test
-    void save() {
-    }
-
-    @Test
+    @DisplayName("pass a pageable of PackageViews for a given search")
     void getAll() {
+        Package aPackage = new Package(123L, "package name",  false, 123, Period.ZERO, 123, false, Collections.<StreamProtocol>emptyList(), new DownloadList(), Collections.<Role>emptySet());
+        Page<Package> packagePage = new PageImpl<Package>(Arrays.asList(new Package[]{aPackage}));
+        PackageView packageView = new PackageView(123L, "package name", false, 123, Period.ZERO, 123, false, Collections.<StreamProtocol>emptyList(), Collections.<DlCollectionView>emptySet(), Collections.<Long>emptySet());
+        PackageService packageService1 = Mockito.spy(packageService);
+        Mockito.doReturn(packagePage).when(packageService1).findAll("package name", 1, 10, "id", "asc");
+        Mockito.when(packageMapper.convertToDto(aPackage)).thenReturn(packageView);
+
+        Page<PackageView> packageViewPages = packageService1.getAll("package name", 1, 10, "id", "asc");
+
+        Assertions.assertThat(packageViewPages.iterator().next().getName()).isEqualTo(packageView.getName());
+        Assertions.assertThat(packageViewPages.getTotalElements()).isEqualTo(1L);
     }
 }
