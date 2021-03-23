@@ -1,25 +1,17 @@
 package com.xtra.api.unit.service;
 
 import com.xtra.api.model.Line;
-import com.xtra.api.model.LineActivity;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.service.LineService;
-import com.xtra.api.service.admin.AdminLineServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.Assertions.*;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Optional;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
@@ -29,9 +21,6 @@ public class LineServiceTest {
     private LineActivityRepository lineActivityRepository;
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @InjectMocks
-    private AdminLineServiceImpl lineService;
 
     @Test
     public void lineInsert_noUsername_usernameGenerated() {

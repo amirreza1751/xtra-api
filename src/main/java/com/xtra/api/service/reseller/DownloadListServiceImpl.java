@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.xtra.api.service.system.SystemResellerService.getCurrentReseller;
+import static com.xtra.api.service.system.UserAuthService.getCurrentReseller;
 import static java.util.stream.Collectors.toSet;
 
 

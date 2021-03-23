@@ -1,4 +1,4 @@
-package com.xtra.api.service.admin;
+package com.xtra.api.unit.service.admin;
 
 import com.xtra.api.mapper.admin.PackageMapper;
 import com.xtra.api.model.*;
@@ -7,6 +7,7 @@ import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
 import com.xtra.api.projection.admin.package_.PackageInsertView;
 import com.xtra.api.projection.admin.package_.PackageView;
 import com.xtra.api.repository.PackageRepository;
+import com.xtra.api.service.admin.PackageService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

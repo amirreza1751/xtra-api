@@ -4,10 +4,6 @@ import com.xtra.api.model.Line;
 import com.xtra.api.model.LineActivity;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 
@@ -66,14 +62,5 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
         while (repository.findByLineToken(token).isPresent());
         line.setLineToken(token);*/
         return repository.save(line);
-    }
-
-    public Line getCurrentLine() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
-            var principal = auth.getPrincipal();
-            return repository.findByUsername(((User) principal).getUsername()).orElseThrow(() -> new AccessDeniedException("access denied"));
-        }
-        throw new AccessDeniedException("access denied");
     }
 }

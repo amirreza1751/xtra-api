@@ -18,7 +18,7 @@ public class  PackageService extends CrudService<Package, Long, PackageRepositor
     private final PackageMapper packageMapper;
 
     @Autowired
-    protected PackageService(PackageRepository repository, PackageMapper packageMapper) {
+    public PackageService(PackageRepository repository, PackageMapper packageMapper) {
         super(repository, "Package");
         this.packageMapper = packageMapper;
     }

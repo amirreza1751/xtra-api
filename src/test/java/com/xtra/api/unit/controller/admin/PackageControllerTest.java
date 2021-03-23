@@ -1,4 +1,4 @@
-package com.xtra.api.controller.admin;
+package com.xtra.api.unit.controller.admin;
 
 import org.junit.jupiter.api.Test;
 

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-import static com.xtra.api.service.system.SystemResellerService.getCurrentReseller;
+import static com.xtra.api.service.system.UserAuthService.getCurrentUser;
 
 @Service
 public class SubresellerService extends CrudService<Reseller, Long, ResellerRepository> {
@@ -47,7 +47,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
     }
 
     public SubresellerView getReseller(Long id) {
-        var subreseller = repository.findByIdAndOwnerUsername(id, getCurrentReseller().getUsername());
+        var subreseller = repository.findByIdAndOwnerUsername(id, getCurrentUser().getUsername());
         return resellerMapper.convertToSubresellerView(subreseller.orElseThrow(() -> new EntityNotFoundException("Reseller", id.toString())));
     }
 
@@ -67,7 +67,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
 
     public SubresellerView updateSubreseller(Long id, SubresellerCreateView view) {
         var subreseller = resellerMapper.convertToEntity(view);
-        var currentReseller = getCurrentReseller();
+        var currentReseller = getCurrentUser();
         var oldSubreseller = repository.findByIdAndOwnerUsername(id, currentReseller.getUsername()).orElseThrow(() -> new EntityNotFoundException("Reseller", id.toString()));
         oldSubreseller.setEmail(subreseller.getEmail());
         oldSubreseller.setPassword(subreseller.getPassword());
@@ -82,7 +82,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         repository.save(target);
 
         credChange.setTarget(target);
-        credChange.setActor(getCurrentReseller());
+        credChange.setActor(getCurrentUser());
         credChange.setDate(LocalDateTime.now());
         creditChangeRepository.save(credChange);
     }
@@ -97,7 +97,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
     }
 
     public void enableResellerLines(Long subresellerId) {
-        var subreseller = repository.findByIdAndOwnerUsername(subresellerId, getCurrentReseller().getUsername());
+        var subreseller = repository.findByIdAndOwnerUsername(subresellerId, getCurrentUser().getUsername());
         var lines = subreseller.orElseThrow(() -> new EntityNotFoundException("Reseller", subresellerId.toString())).getLines();
         for (var line : lines) {
             line.setBlocked(false);
@@ -106,7 +106,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
     }
 
     public void disableResellerLines(Long subresellerId) {
-        var subreseller = repository.findByIdAndOwnerUsername(subresellerId, getCurrentReseller().getUsername());
+        var subreseller = repository.findByIdAndOwnerUsername(subresellerId, getCurrentUser().getUsername());
         var lines = subreseller.orElseThrow(() -> new EntityNotFoundException("Reseller", subresellerId.toString())).getLines();
         for (var line : lines) {
             line.setBlocked(true);
@@ -114,5 +114,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         lineRepository.saveAll(lines);
     }
 
-
+    protected Reseller getCurrentReseller() {
+        return (Reseller) getCurrentUser();
+    }
 }
