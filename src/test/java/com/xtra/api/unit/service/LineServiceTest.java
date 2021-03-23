@@ -24,7 +24,7 @@ public class LineServiceTest {
 
     @Test
     public void lineInsert_noUsername_usernameGenerated() {
-        Mockito.doReturn(false).when(lineRepository).exitsByUsername(Mockito.anyString());
+        Mockito.doReturn(false).when(lineRepository).existsByUsername(Mockito.anyString());
 
         LineService lineService = Mockito.mock(
                 LineService.class, Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS).useConstructor(lineRepository, lineActivityRepository, bCryptPasswordEncoder)

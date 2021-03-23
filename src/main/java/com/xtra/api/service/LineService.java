@@ -44,13 +44,13 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
             var username = "";
             while (!isUnique) {
                 username = generateRandomString(8, 12, true);
-                if (!repository.exitsByUsername(username)) {
+                if (!repository.existsByUsername(username)) {
                     isUnique = true;
                 }
             }
             line.setUsername(username);
         } else {
-            if (repository.exitsByUsername(lineUsername))
+            if (repository.existsByUsername(lineUsername))
                 throw new RuntimeException("lineUsername already exists");
         }
         line.setPassword(bCryptPasswordEncoder.encode(line.getPassword()));

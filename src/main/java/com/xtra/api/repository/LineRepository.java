@@ -18,7 +18,7 @@ public interface LineRepository extends JpaRepository<Line, Long> {
 
     Optional<Line> findByUsername(String username);
 
-    boolean exitsByUsername(String username);
+    boolean existsByUsername(String username);
 
     Optional<Line> findByLineToken(String lineToken);
 
