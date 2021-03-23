@@ -43,6 +43,7 @@ dependencies {
 
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.0.Final'
     annotationProcessor 'org.projectlombok:lombok'
+    testImplementation("org.assertj:assertj-core:3.11.1")
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

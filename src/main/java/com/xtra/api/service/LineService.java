@@ -42,28 +42,29 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
 
     @Override
     public Line insert(Line line) {
-        if (StringUtils.isEmpty(line.getUsername())) {
+        String lineUsername = line.getUsername();
+        if (lineUsername == null || StringUtils.isEmpty(lineUsername)) {
             var isUnique = false;
             var username = "";
             while (!isUnique) {
                 username = generateRandomString(8, 12, true);
-                if (repository.findByUsername(username).isEmpty()) {
+                if (!repository.exitsByUsername(username)) {
                     isUnique = true;
                 }
             }
             line.setUsername(username);
         } else {
-            if (repository.findByUsername(line.getUsername()).isPresent())
-                throw new RuntimeException("username already exists");
+            if (repository.exitsByUsername(lineUsername))
+                throw new RuntimeException("lineUsername already exists");
         }
         line.setPassword(bCryptPasswordEncoder.encode(line.getPassword()));
 
-        String token;
+        /*String token;
         do {
             token = generateRandomString(8, 12, false);
         }
         while (repository.findByLineToken(token).isPresent());
-        line.setLineToken(token);
+        line.setLineToken(token);*/
         return repository.save(line);
     }
 
