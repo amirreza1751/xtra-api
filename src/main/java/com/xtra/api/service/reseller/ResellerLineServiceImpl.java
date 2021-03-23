@@ -1,6 +1,7 @@
 package com.xtra.api.service.reseller;
 
 import com.xtra.api.exceptions.ActionNotAllowedException;
+import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.reseller.ResellerLineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.Package;
@@ -98,7 +99,7 @@ public class ResellerLineServiceImpl extends LineService {
 
     private Line findLineByOwnerAndIdOrFail(Reseller owner, Long id) {
         var result = repository.findByOwnerAndId(owner, id);
-        return result.orElseThrow(entityNotFoundException("id", id));
+        return result.orElseThrow(() -> new EntityNotFoundException(entityName, id));
     }
 
     private Page<Line> findAll(Reseller owner, String search, int pageNo, int pageSize, String sortBy, String sortDir) {

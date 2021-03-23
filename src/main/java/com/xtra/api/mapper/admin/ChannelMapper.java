@@ -46,6 +46,7 @@ public abstract class ChannelMapper {
                 var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
                 StreamServer streamServer = new StreamServer(new StreamServerId(null, serverId));
                 streamServer.setServer(server);
+                streamServer.setStream(channel);
                 streamServers.add(streamServer);
             }
             channel.setStreamServers(streamServers);
@@ -60,6 +61,7 @@ public abstract class ChannelMapper {
                 collectionStream.setOrder(orderCount + 1);
                 var col = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("collection", id.toString()));
                 collectionStream.setCollection(col);
+                collectionStream.setStream(channel);
                 collectionStreams.add(collectionStream);
             }
             channel.setCollectionAssigns(collectionStreams);

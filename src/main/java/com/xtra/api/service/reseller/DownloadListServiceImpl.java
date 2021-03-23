@@ -1,5 +1,6 @@
 package com.xtra.api.service.reseller;
 
+``import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.DownloadListMapper;
 import com.xtra.api.model.DownloadList;
 import com.xtra.api.projection.admin.downloadlist.DownloadListInsertView;
@@ -45,7 +46,7 @@ public class DownloadListServiceImpl extends DownloadListService {
 
     private DownloadList findByIdAndOwnerOrFail(Long id) {
         var currentReseller = getCurrentReseller();
-        return repository.findByIdAndOwner(id, currentReseller).orElseThrow(entityNotFoundException("Reseller", currentReseller.getUsername()));
+        return repository.findByIdAndOwner(id, currentReseller).orElseThrow(() -> new EntityNotFoundException(entityName, "Reseller", currentReseller.getUsername()));
     }
 
     @Override
