@@ -32,6 +32,7 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -249,4 +250,6 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         //@todo different protocols - use dns if present
         return "http://" + server.getIp() + ":" + server.getCorePort();
     }
+
+
 }
