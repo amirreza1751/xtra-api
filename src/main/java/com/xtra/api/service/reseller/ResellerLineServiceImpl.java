@@ -1,6 +1,7 @@
 package com.xtra.api.service.reseller;
 
 import com.xtra.api.exceptions.ActionNotAllowedException;
+import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.reseller.ResellerLineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.Package;
@@ -9,7 +10,6 @@ import com.xtra.api.projection.reseller.line.LineCreateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
-import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.PackageService;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
-import static com.xtra.api.service.system.SystemResellerService.getCurrentReseller;
+import static com.xtra.api.service.system.UserAuthService.getCurrentReseller;
 
 @Service
 @PreAuthorize("hasRole('RESELLER')")
@@ -32,7 +32,7 @@ public class ResellerLineServiceImpl extends LineService {
 
     @Autowired
     protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, LineActivityRepository lineActivityRepository, PackageService packageService
-            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+            , BCryptPasswordEncoder bCryptPasswordEncoder) {
         super(repository, lineActivityRepository, bCryptPasswordEncoder);
         this.lineMapper = lineMapper;
         this.packageService = packageService;
@@ -98,7 +98,7 @@ public class ResellerLineServiceImpl extends LineService {
 
     private Line findLineByOwnerAndIdOrFail(Reseller owner, Long id) {
         var result = repository.findByOwnerAndId(owner, id);
-        return result.orElseThrow(entityNotFoundException("id", id));
+        return result.orElseThrow(() -> new EntityNotFoundException(entityName, id));
     }
 
     private Page<Line> findAll(Reseller owner, String search, int pageNo, int pageSize, String sortBy, String sortDir) {

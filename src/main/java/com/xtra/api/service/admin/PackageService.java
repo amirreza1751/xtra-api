@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
-public class PackageService extends CrudService<Package, Long, PackageRepository> {
+public class  PackageService extends CrudService<Package, Long, PackageRepository> {
     private final PackageMapper packageMapper;
 
     @Autowired
-    protected PackageService(PackageRepository repository, PackageMapper packageMapper) {
+    public PackageService(PackageRepository repository, PackageMapper packageMapper) {
         super(repository, "Package");
         this.packageMapper = packageMapper;
     }

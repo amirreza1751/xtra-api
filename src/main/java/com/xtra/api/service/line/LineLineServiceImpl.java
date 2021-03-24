@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static com.xtra.api.service.system.UserAuthService.getCurrentLine;
+
 @Service
 public class LineLineServiceImpl extends LineService {
     private final LineLineMapper lineMapper;

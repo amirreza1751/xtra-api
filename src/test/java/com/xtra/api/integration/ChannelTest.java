@@ -104,8 +104,7 @@ public class ChannelTest {
         Long id = savedChannel.getId();
 
         this.mockMvc.perform(delete("/channels/" + id).contentType("application/json")).andDo(print())
-                .andExpect(status().is2xxSuccessful())
-        ;
+                .andExpect(status().is2xxSuccessful());
         assertThat(channelRepository.findById(id).isEmpty());
     }
 }

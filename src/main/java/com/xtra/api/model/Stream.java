@@ -2,6 +2,7 @@ package com.xtra.api.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
 public class Stream {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,26 +86,6 @@ public class Stream {
         this.id = id;
     }
 
-    public Stream() {
-
-    }
-
-    public void updateRelationIds() {
-        if (streamServers != null) {
-            setStreamServers(getStreamServers().stream().peek(streamServer -> {
-                        streamServer.setId(new StreamServerId(getId(), streamServer.getServer().getId()));
-                        streamServer.setStream(this);
-                    }
-            ).collect(Collectors.toSet()));
-        }
-
-        if (getCollectionAssigns() != null) {
-            setCollectionAssigns(getCollectionAssigns().stream().peek(collectionStream -> {
-                collectionStream.setId(new CollectionStreamId(collectionStream.getCollection().getId(), getId()));
-                collectionStream.setStream(this);
-            }).collect(Collectors.toSet()));
-        }
-    }
 
     public void addCollection(CollectionStream collectionStream) {
         if (collectionAssigns == null) collectionAssigns = new HashSet<>();

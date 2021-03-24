@@ -1,5 +1,6 @@
 package com.xtra.api.service.system;
 
+import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.AdminLineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineStatus;
@@ -32,7 +33,7 @@ public class SystemLineServiceImpl extends LineService {
     }
 
     private Line findByTokenOrFail(String token) {
-        return repository.findByLineToken(token).orElseThrow(entityNotFoundException("Token", token));
+        return repository.findByLineToken(token).orElseThrow(() -> new EntityNotFoundException(entityName, "token", token));
     }
 
 

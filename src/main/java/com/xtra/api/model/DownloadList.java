@@ -1,6 +1,8 @@
 package com.xtra.api.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -9,6 +11,8 @@ import java.util.Set;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString(exclude = {"collectionsAssign", "lines"})
 public class DownloadList {
     @Id

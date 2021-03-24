@@ -27,7 +27,7 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
 
     public T findByIdOrFail(ID id) {
         var result = repository.findById(id);
-        return result.orElseThrow(entityNotFoundException("id", id));
+        return result.orElseThrow(() -> new EntityNotFoundException(entityName));
     }
 
     protected abstract Page<T> findWithSearch(Pageable page, String search);
@@ -72,7 +72,7 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
         return page;
     }
 
-    protected Supplier<EntityNotFoundException> entityNotFoundException(String field, Object fieldValue) throws EntityNotFoundException {
+    protected void entityNotFoundException(String field, Object fieldValue) {
         throw new EntityNotFoundException(entityName, field, fieldValue.toString());
     }
 

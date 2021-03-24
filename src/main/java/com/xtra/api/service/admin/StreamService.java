@@ -95,7 +95,7 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     //@todo possible database optimizations necessary
     private List<Server> getStreamServers(Long id, List<Long> serverIds) {
         List<Server> servers;
-        var stream = repository.findById(id).orElseThrow(entityNotFoundException("id", id));
+        var stream = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("id", id));
         if (serverIds == null) {
             servers = stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
         } else servers = serverService.findByIdIn(serverIds);

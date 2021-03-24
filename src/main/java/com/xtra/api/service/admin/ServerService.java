@@ -85,7 +85,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         Mono<Boolean> result = this.webClient
                 .get()
                 .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
-                        + "/streams/start/" + channelId + "/?serverId=" + server.getId()))
+                        + "/streams/" + channelId + "/start"))
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
@@ -100,7 +100,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         Mono<Boolean> result = this.webClient
                 .get()
                 .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
-                        + "/streams/restart/" + channelId + "/?serverId=" + server.getId()))
+                        + "/streams/" + channelId + "/restart"))
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
@@ -115,7 +115,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         Mono<Boolean> result = this.webClient
                 .get()
                 .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
-                        + "/streams/stop/" + channelId + "/?serverId=" + server.getId()))
+                        + "/streams/" + channelId + "/stop"))
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
