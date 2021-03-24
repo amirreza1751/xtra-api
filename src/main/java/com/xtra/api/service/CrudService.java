@@ -27,7 +27,7 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
 
     public T findByIdOrFail(ID id) {
         var result = repository.findById(id);
-        return result.orElseThrow(() -> new EntityNotFoundException(entityName));
+        return result.orElseThrow(() -> new EntityNotFoundException(entityName, id));
     }
 
     protected abstract Page<T> findWithSearch(Pageable page, String search);

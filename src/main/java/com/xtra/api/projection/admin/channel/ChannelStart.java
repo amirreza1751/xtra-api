@@ -18,5 +18,4 @@ public class ChannelStart {
     private String streamToken;
 
     private List<String> streamInputs;
-    private Set<StreamServer> streamServers;
 }

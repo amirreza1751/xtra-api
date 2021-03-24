@@ -208,7 +208,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
     public void setEpgRecord(Long id, EpgChannelId epgChannelId) {
-        var epgChannel = epgChannelRepository.findById(epgChannelId).orElseThrow(() -> new EntityNotFoundException("Epg channel not found!"));
+        var epgChannel = epgChannelRepository.findById(epgChannelId).orElseThrow(() -> new EntityNotFoundException("Epg channel", epgChannelId));
         var channel = findByIdOrFail(id);
         channel.setEpgChannel(epgChannel);
         repository.save(channel);
