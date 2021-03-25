@@ -12,10 +12,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
 @Service
+@Validated
 public class AdminLineServiceImpl extends LineService {
     private final AdminLineMapper lineMapper;
 
@@ -34,7 +37,7 @@ public class AdminLineServiceImpl extends LineService {
         return lineMapper.convertToView(findByIdOrFail(id));
     }
 
-    public LineView add(LineInsertView lineInsertView) {
+    public LineView add(@Valid LineInsertView lineInsertView) {
         return lineMapper.convertToView(insert(lineMapper.convertToEntity(lineInsertView)));
     }
 
