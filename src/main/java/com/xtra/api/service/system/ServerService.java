@@ -24,8 +24,10 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         this.channelStartMapper = channelStartMapper;
     }
 
-    public ChannelStart getChannelForServer(HttpServletRequest request, Long channelId) {
-        var server = repository.findByIpAndCorePort(request.getRemoteAddr(), String.valueOf(request.getRemotePort())).orElseThrow(() -> new RuntimeException("server was not found!!!"));
+    public ChannelStart getChannelForServer(HttpServletRequest request, Long channelId, String port) {
+        String a = request.getRemoteAddr();
+        String b = String.valueOf(request.getRemotePort());
+        var server = repository.findByIpAndCorePort(request.getRemoteAddr(), port).orElseThrow(() -> new RuntimeException("server was not found!!!"));
         var optionalStreamServer = server.getStreamServers().stream().filter(streamServer -> streamServer.getStream().getId().equals(channelId)).findFirst();
         if (optionalStreamServer.isPresent()) {
             var streamServer = optionalStreamServer.get();

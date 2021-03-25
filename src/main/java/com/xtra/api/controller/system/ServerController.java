@@ -5,10 +5,7 @@ import com.xtra.api.projection.admin.channel.ChannelStart;
 import com.xtra.api.service.system.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,8 +22,8 @@ public class ServerController {
 
     //Fetch channel details to start streaming (request origin: core)
     @GetMapping("/channels/{channelId}")
-    public ResponseEntity<ChannelStart> getChannel(@PathVariable Long channelId, HttpServletRequest request) {
-        return ResponseEntity.ok(serverService.getChannelForServer(request, channelId));
+    public ResponseEntity<ChannelStart> getChannel(@PathVariable Long channelId, HttpServletRequest request, @RequestParam String port) {
+        return ResponseEntity.ok(serverService.getChannelForServer(request, channelId, port));
     }
 
     @GetMapping("/channels")
