@@ -53,7 +53,7 @@ public abstract class CollectionMapper {
         collection.setId(input.getId());
         collection.setName(input.getName());
         collection.setType(input.getType());
-        collection.setCategory(categoryRepository.findById(input.getCategoryName()).orElseThrow(() -> new EntityNotFoundException("category")));
+        collection.setCategory(categoryRepository.findById(input.getCategoryName()).orElseThrow(() -> new EntityNotFoundException("Category", "Name", input.getCategoryName())));
         int i;
         switch (collection.getType()) {
             case SERIES:

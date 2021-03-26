@@ -42,7 +42,7 @@ public abstract class AdminLineMapper {
 
     Role fetchRole(Long roleId) {
         if (roleId != null)
-            return roleRepository.findById(roleId).orElseThrow(() -> new EntityNotFoundException("Role"));
+            return roleRepository.findById(roleId).orElseThrow(() -> new EntityNotFoundException("Role", roleId));
         else
             return null;
     }

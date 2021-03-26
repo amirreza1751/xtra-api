@@ -16,25 +16,21 @@ public class EntityNotFoundException extends RuntimeException {
     private String details;
 
     public EntityNotFoundException() {
+        details = "An entity was not found!";
     }
 
-    public EntityNotFoundException(String message) {
-        super("Entity Not Found!");
-        details = message;
+    public EntityNotFoundException(String entityName) {
+        details = entityName + " was not found!";
     }
 
     public EntityNotFoundException(String entityName, Object id) {
         super("Entity Not Found!");
-        details = generateMessage(entityName, id.toString());
+        details = entityName + " was not found for id = " + id + "!";
     }
 
     public EntityNotFoundException(String entityName, String fieldName, String value) {
         super("Entity Not Found!");
-        details = entityName + " was not found for " + fieldName + " = " + value;
-    }
-
-    private String generateMessage(String entityName, String id) {
-        return entityName + " was not found for id = " + id;
+        details = entityName + " was not found for " + fieldName + " = " + value + "!";
     }
 
 }

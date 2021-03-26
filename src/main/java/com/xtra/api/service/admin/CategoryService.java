@@ -37,6 +37,4 @@ public class CategoryService extends CrudService<Category, String, CategoryRepos
         return categoryMapper.convertToView(insert(categoryMapper.toEntity(insertView)));
     }
 
-    public void deleteById(String id) {
-    }
 }

@@ -26,7 +26,6 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final ServerService serverService;
     private final LoadBalancingService loadBalancingService;
-    private final ChannelStartMapper channelStartMapper;
     private final ChannelMapper channelMapper;
     private final EpgChannelRepository epgChannelRepository;
     private final StreamInputRepository streamInputRepository;
@@ -37,7 +36,6 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         super(repository, "Channel", serverService);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
-        this.channelStartMapper = channelStartMapper;
         this.channelMapper = channelMapper;
         this.epgChannelRepository = epgChannelRepository;
         this.streamInputRepository = streamInputRepository;
@@ -198,17 +196,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return this.findByIdOrFail(channelId);
     }
 
-    public ChannelList getBatchChannel(List<Long> streamIds) {
-        List<Channel> channels = repository.findByIdIn(streamIds);
-        List<ChannelStart> channelStarts = new ArrayList<>();
-        channels.forEach(channel -> channelStarts.add(channelStartMapper.convertToDto(channel)));
-        ChannelList channelList = new ChannelList();
-        channelList.setChannelList(channelStarts);
-        return channelList;
-    }
-
     public void setEpgRecord(Long id, EpgChannelId epgChannelId) {
-        var epgChannel = epgChannelRepository.findById(epgChannelId).orElseThrow(() -> new EntityNotFoundException("Epg channel not found!"));
+        var epgChannel = epgChannelRepository.findById(epgChannelId).orElseThrow(() -> new EntityNotFoundException("Epg channel", epgChannelId));
         var channel = findByIdOrFail(id);
         channel.setEpgChannel(epgChannel);
         repository.save(channel);

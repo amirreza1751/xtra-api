@@ -32,6 +32,7 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -150,7 +151,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
 
 
     public String sendPlayRequest(String stream_token, String line_token, Server server) {
-        return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/streams?line_token=" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
+        return new RestTemplate().getForObject(getServerAddress(server) + "/streams?line_token=" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
     }
 
     public Optional<Server> findByIpAndCorePort(String ip, String corePort) {
@@ -175,7 +176,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
             try {
                 if (server.getIp() == null || server.getCorePort() == null)
                     return;
-                Resource r = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/resources/?interfaceName=" + server.getInterfaceName(), Resource.class);
+                Resource r = new RestTemplate().getForObject(getServerAddress(server) + "/servers/resources/?interfaceName=" + server.getInterfaceName(), Resource.class);
                 if (r != null) {
                     Resource resource = new Resource();
                     if (server.getResource() != null) {
@@ -208,47 +209,22 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
     }
 
     public Boolean startAllChannelsOnServer(Long serverId) {
-        var srv = repository.findById(serverId);
-        Server server = new Server();
-        if (srv.isPresent()) {
-            server = srv.get();
-        }
-        StringJoiner joiner = new StringJoiner(",");
-        server.getStreamServers().forEach(streamServer -> {
-            joiner.add(streamServer.getStream().getId().toString());
-        });
-        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-start/?serverId=" + serverId + "&streamIds=" + joiner.toString(), Boolean.class);
+        var server = findByIdOrFail(serverId);
+        new RestTemplate().getForObject(getServerAddress(server) + "/streams/start", Boolean.class);
         return true;
     }
 
     public Boolean stopAllChannelsOnServer(Long serverId) {
-        var srv = repository.findById(serverId);
-        Server server = new Server();
-        if (srv.isPresent()) {
-            server = srv.get();
-        }
-        StringJoiner joiner = new StringJoiner(",");
-        server.getStreamServers().forEach(streamServer -> {
-            joiner.add(streamServer.getStream().getId().toString());
-        });
-        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-stop/?streamIds=" + joiner.toString(), Boolean.class);
+        var server = findByIdOrFail(serverId);
+        new RestTemplate().getForObject(getServerAddress(server) + "/streams/stop", Boolean.class);
         return true;
     }
 
     public Boolean restartAllChannelsOnServer(Long serverId) {
-        var srv = repository.findById(serverId);
-        Server server = new Server();
-        if (srv.isPresent()) {
-            server = srv.get();
-        }
-        StringJoiner joiner = new StringJoiner(",");
-        server.getStreamServers().forEach(streamServer -> {
-            joiner.add(streamServer.getStream().getId().toString());
-        });
-        new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/servers/streams/batch-restart/?serverId=" + serverId + "&streamIds=" + joiner.toString(), Boolean.class);
+        var server = findByIdOrFail(serverId);
+        new RestTemplate().getForObject(getServerAddress(server) + "/streams/restart", Boolean.class);
         return true;
     }
-
 
     @Override
     public Page<SimpleServerView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -269,4 +245,11 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
     public ServerView save(Long id, ServerView server) {
         return serverMapper.convertToView(updateOrFail(id, serverMapper.convertToEntity(server)));
     }
+
+    private String getServerAddress(Server server) {
+        //@todo different protocols - use dns if present
+        return "http://" + server.getIp() + ":" + server.getCorePort();
+    }
+
+
 }

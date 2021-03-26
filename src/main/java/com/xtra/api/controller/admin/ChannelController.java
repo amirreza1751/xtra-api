@@ -23,13 +23,11 @@ import java.util.List;
 public class ChannelController {
     private final ChannelService channelService;
     private final ChannelInfoMapper channelInfoMapper;
-    private final ChannelStartMapper channelStartMapper;
 
     @Autowired
-    public ChannelController(ChannelService channelService, ChannelInfoMapper channelInfoMapper, ChannelStartMapper channelStartMapper) {
+    public ChannelController(ChannelService channelService, ChannelInfoMapper channelInfoMapper) {
         this.channelService = channelService;
         this.channelInfoMapper = channelInfoMapper;
-        this.channelStartMapper = channelStartMapper;
     }
 
     // Stream CRUD
@@ -136,16 +134,6 @@ public class ChannelController {
     @GetMapping("/{id}/info")
     public ResponseEntity<ChannelInfo> channelInfo(@PathVariable Long id) {
         return ResponseEntity.ok(channelInfoMapper.convertToDto(channelService.channelInfo(id)));
-    }
-
-    @GetMapping("/{id}/to-start") //get channel object to start streaming (request origin: core)
-    public ResponseEntity<ChannelStart> channelStart(@PathVariable Long id) {
-        return ResponseEntity.ok(channelStartMapper.convertToDto(channelService.channelStart(id)));
-    }
-
-    @GetMapping("/batch-get")
-    public ResponseEntity<ChannelList> getBatchChannel(@RequestParam List<Long> streamIds) {
-        return ResponseEntity.ok(channelService.getBatchChannel(streamIds));
     }
 
     @PatchMapping("{id}/epg-channel")
