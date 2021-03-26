@@ -7,13 +7,16 @@ import com.xtra.api.repository.UserRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,6 +52,8 @@ public class UserService extends CrudService<User, Long, UserRepository> {
 
     public Map<String, Object> verifyUser(Authentication auth) {
         var dbUser = repository.findByUsername(auth.getName()).orElseThrow();
+        if (dbUser.isBanned())
+            throw new AuthenticationServiceException("User is Banned!");
         var userData = new LinkedHashMap<String, Object>();
         userData.put("type", dbUser.getUserType().toString());
         userData.put("permissions", auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
