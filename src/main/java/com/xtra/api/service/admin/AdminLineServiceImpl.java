@@ -17,6 +17,8 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import java.util.Optional;
 
+import static org.springframework.beans.BeanUtils.copyProperties;
+
 @Service
 @Validated
 public class AdminLineServiceImpl extends LineService {
@@ -59,6 +61,12 @@ public class AdminLineServiceImpl extends LineService {
         repository.save(line);
     }
 
+    @Override
+    public Line updateOrFail(Long id, Line newLine) {
+        Line oldLine = findByIdOrFail(id);
+        copyProperties(newLine, oldLine, "id","lineToken","currentConnections");
+        return repository.save(oldLine);
+    }
 
     public Optional<Line> findById(Long lineId) {
         return repository.findById(lineId);
