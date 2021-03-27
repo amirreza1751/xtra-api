@@ -62,7 +62,6 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
         }
         while (repository.findByLineToken(token).isPresent());
         line.setLineToken(token);
-        line.setLineToken(token);*/
         return repository.save(line);
     }
 
