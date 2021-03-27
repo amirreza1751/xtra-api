@@ -29,7 +29,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.mariadb.jdbc:mariadb-java-client'
     implementation 'org.projectlombok:lombok'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.4.5'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.5.6'
+    implementation 'org.springdoc:springdoc-openapi-data-rest:1.5.6'
     implementation 'org.apache.commons:commons-lang3:3.11'
     implementation 'org.apache.commons:commons-collections4:4.4'
     implementation 'commons-codec:commons-codec:1.15'
@@ -44,17 +45,12 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.0.Final'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation("org.assertj:assertj-core:3.11.1")
+    testImplementation('org.mockito:mockito-core:3.8.0')
+    testImplementation('org.mockito:mockito-junit-jupiter:3.7.7')
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    // https://mvnrepository.com/artifact/org.assertj/assertj-core
-    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
-//    // https://mvnrepository.com/artifact/org.mockito/mockito-all
-//    testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
-    // https://mvnrepository.com/artifact/org.mockito/mockito-core
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
-    // https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
-    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.7.7'
+
 
 }
 
