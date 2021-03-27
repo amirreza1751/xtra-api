@@ -2,6 +2,8 @@ package com.xtra.api.util;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -9,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.zip.GZIPInputStream;
 
 public class Utilities {
@@ -49,5 +52,12 @@ public class Utilities {
             e.printStackTrace();
         }
 
+    }
+
+    public static void copyClassProperties(Object src, Object trg, Iterable<Field> props) {
+        BeanWrapper srcWrap = PropertyAccessorFactory.forBeanPropertyAccess(src);
+        BeanWrapper trgWrap = PropertyAccessorFactory.forBeanPropertyAccess(trg);
+
+        props.forEach(p -> trgWrap.setPropertyValue(p.getName(), srcWrap.getPropertyValue(p.getName())));
     }
 }
