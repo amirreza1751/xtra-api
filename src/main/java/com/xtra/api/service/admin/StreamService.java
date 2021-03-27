@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -79,7 +80,20 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     }
 
     public boolean stopOrFail(Long id, List<Long> serverIds) {
+        Optional<S> ch = repository.findById(id);
         for (Server server : getStreamServers(id, serverIds)) {
+            if (ch.isPresent()){
+                S channel = ch.get();
+                Set<StreamServer> streamServers = channel.getStreamServers();
+                for (StreamServer streamServer : streamServers){
+                    if (streamServer.getServer().getId().equals(server.getId())) {
+                        streamServer.setStreamInfo(new StreamInfo("0:00:00", "", "", "", ""));
+                        streamServer.setProgressInfo(new ProgressInfo("", "", ""));
+                    }
+                }
+                channel.setStreamServers(streamServers);
+                repository.save(channel);
+            }
             serverService.sendStopRequest(id, server);
         }
         return true;
