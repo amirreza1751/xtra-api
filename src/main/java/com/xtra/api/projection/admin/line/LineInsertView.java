@@ -3,6 +3,7 @@ package com.xtra.api.projection.admin.line;
 import com.xtra.api.model.StreamProtocol;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -11,8 +12,9 @@ import java.util.List;
 public class LineInsertView {
     protected String username;
     protected String password;
+    @NotNull(message = "Role is mandatory")
     private Long roleId;
-    private String lineToken;
+    @NotNull(message = "Expire Date is mandatory")
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;

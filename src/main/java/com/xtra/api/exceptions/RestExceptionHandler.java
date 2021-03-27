@@ -11,6 +11,8 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
+
 
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -39,6 +41,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         String path = ((ServletWebRequest) request).getRequest().getRequestURI();
         ApiError apiError = new ApiError(path, ex.getErrorCode(), ex.getMessage(), "");
         return buildResponseEntity(apiError, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<?> handleValidationExceptions(ConstraintViolationException ex,WebRequest request){
+        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
+        ApiError apiError = new ApiError(path, "", "Input validation failed!", ex.getConstraintViolations());
+        return buildResponseEntity(apiError, HttpStatus.BAD_REQUEST);
     }
 
     /*@ExceptionHandler(MethodArgumentNotValidException.class)
