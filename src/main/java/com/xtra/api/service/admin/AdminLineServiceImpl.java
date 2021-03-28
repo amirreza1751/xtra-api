@@ -77,10 +77,6 @@ public class AdminLineServiceImpl extends LineService {
         return repository.findById(lineId);
     }
 
-    @Override
-    protected Page<Line> findWithSearch(Pageable page, String search) {
-        return repository.findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(search, search, search, page);
-    }
 
     public Map<String, String> downloadLine(Long id) {
         Map<String, String> data = new HashMap<>();
