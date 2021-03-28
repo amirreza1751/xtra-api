@@ -5,9 +5,10 @@ import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.service.admin.AdminLineServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/lines")
@@ -64,6 +65,17 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-
+    @GetMapping("/download/{id}")
+    public ResponseEntity<String> AdminDownloadLine(@PathVariable Long id) {
+        Map<String, String> data = lineService.downloadLine(id);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        return ResponseEntity.ok()
+                .headers(responseHeaders).contentType(MediaType.valueOf("application/x-mpegurl"))
+                .headers(responseHeaders).contentLength(Long.parseLong(String.valueOf(data.get("playlist").length())))
+                .headers(responseHeaders).cacheControl(CacheControl.noCache())
+                .headers(responseHeaders).cacheControl(CacheControl.noStore())
+                .header("Content-Disposition", "inline; filename=" + "\"" + data.get("fileName") + "\"")
+                .body(data.get("playlist"));
+    }
 
 }

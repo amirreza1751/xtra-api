@@ -21,7 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("dev")
+@DataJpaTest
 public class ChannelTest {
 
     @Autowired
@@ -49,7 +51,7 @@ public class ChannelTest {
         stream_inputs.put("http://test.com");
 
         JSONObject channel = new JSONObject();
-        channel.put("name", "amirakk22");
+        channel.put("name", "amirakk25");
         channel.put("logo", "http://tes.com");
         channel.put("stream_inputs", stream_inputs);
 
@@ -104,6 +106,5 @@ public class ChannelTest {
         this.mockMvc.perform(delete("/channels/" + id).contentType("application/json")).andDo(print())
                 .andExpect(status().is2xxSuccessful());
         assertThat(channelRepository.findById(id).isEmpty());
-
     }
 }

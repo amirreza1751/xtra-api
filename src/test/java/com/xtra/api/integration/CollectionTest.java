@@ -70,7 +70,6 @@ public class CollectionTest {
         saveCollection.setName("test2");
         JSONObject jo = new JSONObject(saveCollection);
 
-
         this.mockMvc.perform(patch("/collections/" + id).content(jo.toString()).contentType("application/json")).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))

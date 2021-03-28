@@ -14,6 +14,7 @@ import java.util.List;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
 import static com.xtra.api.util.Utilities.wrapSearchString;
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 public abstract class LineService extends CrudService<Line, Long, LineRepository> {
     private final LineActivityRepository lineActivityRepository;
@@ -69,6 +70,31 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
         }
         while (repository.findByLineToken(token).isPresent());
         line.setLineToken(token);
+        return repository.save(line);
+    }
+
+    @Override
+    public Line updateOrFail(Long id, Line newLine) {
+        var line = findByIdOrFail(id);
+
+        String lineUsername = newLine.getUsername();
+        if (lineUsername == null || StringUtils.isEmpty(lineUsername)) {
+            var isUnique = false;
+            var username = "";
+            while (!isUnique) {
+                username = generateRandomString(8, 12, true);
+                if (!repository.existsByUsername(username)) {
+                    isUnique = true;
+                }
+            }
+            line.setUsername(username);
+        } else {
+            if (repository.existsByUsername(lineUsername) && !lineUsername.equals(line.getUsername()))
+                throw new RuntimeException("lineUsername already exists");
+        }
+        newLine.setPassword(bCryptPasswordEncoder.encode(newLine.getPassword()));
+        copyProperties(newLine, line, "id");
+
         return repository.save(line);
     }
 }
