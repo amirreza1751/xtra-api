@@ -26,7 +26,7 @@ public class LineInsertView {
     private String resellerNotes;
 
     private List<StreamProtocol> allowedOutputs;
-    private Long owner;
+    private Long ownerId;
     private LinkedHashSet<Long> collections;
 
     /* Location Based Permissions */

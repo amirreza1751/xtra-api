@@ -13,7 +13,6 @@ import java.util.List;
 public class LineView implements BaseView {
     private Long id;
     private String username;
-    private String password;
     private Long roleId;
     private String lineToken;
     @JsonFormat

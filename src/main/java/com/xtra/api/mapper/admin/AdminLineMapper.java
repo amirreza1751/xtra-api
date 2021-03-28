@@ -32,6 +32,7 @@ public abstract class AdminLineMapper {
 
     @Mapping(source = "collections", target = "defaultDownloadList")
     @Mapping(source = "roleId", target = "role")
+    @Mapping(source = "ownerId", target = "owner")
     public abstract Line convertToEntity(LineInsertView insertView);
 
     Reseller convertFromId(Long ownerId) {
@@ -67,6 +68,7 @@ public abstract class AdminLineMapper {
 
     @Mapping(source = "defaultDownloadList", target = "collections")
     @Mapping(source = "role.id", target = "roleId")
+    @Mapping(source = "owner.username", target = "ownerUsername")
     public abstract LineView convertToView(Line line);
 
     List<DlCollectionView> convertDownloadListToDlCollectionView(DownloadList downloadList) {
