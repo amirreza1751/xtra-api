@@ -7,8 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class DownloadListService extends com.xtra.api.service.DownloadListService {
 
@@ -17,7 +15,7 @@ public class DownloadListService extends com.xtra.api.service.DownloadListServic
     }
 
     @Override
-    protected Page<DownloadList> findWithSearch(Pageable page, String search) {
+    protected Page<DownloadList> findWithSearch(String search, Pageable page) {
         return null;
     }
 

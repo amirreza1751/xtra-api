@@ -8,8 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.function.Supplier;
-
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>> {
@@ -30,14 +28,14 @@ public abstract class CrudService<T, ID, Repository extends JpaRepository<T, ID>
         return result.orElseThrow(() -> new EntityNotFoundException(entityName, id));
     }
 
-    protected abstract Page<T> findWithSearch(Pageable page, String search);
+    protected abstract Page<T> findWithSearch(String search, Pageable page);
 
     public Page<T> findAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
         if (StringUtils.isEmpty(search))
             return repository.findAll(page);
         else
-            return findWithSearch(page, search);
+            return findWithSearch(search, page);
     }
 
     public T insert(T object) {

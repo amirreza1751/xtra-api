@@ -30,7 +30,7 @@ public class DownloadListServiceImpl extends DownloadListService {
     }
 
     @Override
-    protected Page<DownloadList> findWithSearch(Pageable page, String search) {
+    protected Page<DownloadList> findWithSearch(String search, Pageable page) {
         return null;
     }
 

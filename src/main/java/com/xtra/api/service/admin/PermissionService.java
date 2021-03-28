@@ -21,7 +21,7 @@ public class PermissionService extends CrudService<Permission, PermissionId, Per
     }
 
     @Override
-    protected Page<Permission> findWithSearch(Pageable page, String search) {
+    protected Page<Permission> findWithSearch(String search, Pageable page) {
         return null;
     }
 

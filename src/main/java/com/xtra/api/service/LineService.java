@@ -4,6 +4,8 @@ import com.xtra.api.model.Line;
 import com.xtra.api.model.LineActivity;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
+import static com.xtra.api.util.Utilities.wrapSearchString;
 
 public abstract class LineService extends CrudService<Line, Long, LineRepository> {
     private final LineActivityRepository lineActivityRepository;
@@ -22,6 +25,11 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    @Override
+    protected Page<Line> findWithSearch(String search, Pageable page) {
+        search = wrapSearchString(search);
+        return repository.findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(search, search, search, page);
+    }
 
     public void killAllConnections(Long id) {
         if (existsById(id)) {

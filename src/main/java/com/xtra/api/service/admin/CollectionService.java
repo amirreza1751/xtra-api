@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
@@ -36,8 +37,9 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
     }
 
     @Override
-    protected Page<Collection> findWithSearch(Pageable page, String search) {
-        return null;
+    protected Page<Collection> findWithSearch(String search, Pageable page) {
+        search = wrapSearchString(search);
+        return repository.findAllByNameLike(search, page);
     }
 
     @Override

@@ -24,7 +24,7 @@ public class  PackageService extends CrudService<Package, Long, PackageRepositor
     }
 
     @Override
-    protected Page<Package> findWithSearch(Pageable page, String search) {
+    protected Page<Package> findWithSearch(String search, Pageable page) {
         return null;
     }
 

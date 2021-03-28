@@ -44,7 +44,7 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
     }
 
     @Override
-    protected Page<EpgFile> findWithSearch(Pageable page, String search) {
+    protected Page<EpgFile> findWithSearch(String search, Pageable page) {
         return null;
     }
 

@@ -17,7 +17,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     }
 
     @Override
-    protected Page<Series> findWithSearch(Pageable page, String search) {
+    protected Page<Series> findWithSearch(String search, Pageable page) {
         return null;
     }
 }

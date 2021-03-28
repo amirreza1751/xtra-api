@@ -30,11 +30,6 @@ public class LineLineServiceImpl extends LineService {
         this.lineMapper = lineMapper;
     }
 
-    @Override
-    protected Page<Line> findWithSearch(Pageable page, String search) {
-        return null;
-    }
-
     public LineView getById(Long id) {
         return lineMapper.convertToView(findByIdOrFail(id));
     }

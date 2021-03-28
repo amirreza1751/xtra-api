@@ -106,12 +106,7 @@ public class ResellerLineServiceImpl extends LineService {
         if (StringUtils.isEmpty(search))
             return repository.findAllByOwner(owner, page);
         else
-            return findWithSearch(page, search);
-    }
-
-    @Override
-    protected Page<Line> findWithSearch(Pageable page, String search) {
-        return null;
+            return findWithSearch(search, page);
     }
 
 }

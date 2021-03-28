@@ -19,7 +19,6 @@ public class Utilities {
         return "%" + text + "%";
     }
 
-
     public static String generateRandomString(int minSize, int maxSize, boolean useReadableCharacters) {
         String characters = "ABCDEFGHJKMNPQRSTUVWXYZ";
         if (useReadableCharacters) {

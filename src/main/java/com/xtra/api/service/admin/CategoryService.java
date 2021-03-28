@@ -25,7 +25,7 @@ public class CategoryService extends CrudService<Category, String, CategoryRepos
     }
 
     @Override
-    protected Page<Category> findWithSearch(Pageable page, String search) {
+    protected Page<Category> findWithSearch(String search, Pageable page) {
         return null;
     }
 

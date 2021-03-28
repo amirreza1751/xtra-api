@@ -24,7 +24,7 @@ public class SettingService extends CrudService<Setting, String, SettingReposito
     }
 
     @Override
-    protected Page<Setting> findWithSearch(Pageable page, String search) {
+    protected Page<Setting> findWithSearch(String search, Pageable page) {
         return null;
     }
 

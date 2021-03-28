@@ -28,7 +28,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     }
 
     @Override
-    public Page<Movie> findWithSearch(Pageable pageable, String search) {
+    public Page<Movie> findWithSearch(String search, Pageable pageable) {
         return repository.findByNameLikeOrInfoPlotLikeOrInfoCastLikeOrInfoDirectorLikeOrInfoGenresLikeOrInfoCountryLike(search, search, search, search, search, search, pageable);
     }
 

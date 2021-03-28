@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
+import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -51,8 +52,9 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
     @Override
-    protected Page<Channel> findWithSearch(Pageable page, String search) {
-        return repository.findByNameLike(search, page);
+    protected Page<Channel> findWithSearch(String search, Pageable page) {
+        search = wrapSearchString(search);
+        return repository.findByNameLikeOrNotesLike(search, search, page);
     }
 
     public ChannelView add(ChannelInsertView insertView, boolean start) {

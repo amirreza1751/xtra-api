@@ -21,7 +21,7 @@ public class RoleService extends CrudService<Role, Long, RoleRepository> {
     }
 
     @Override
-    protected Page<Role> findWithSearch(Pageable page, String search) {
+    protected Page<Role> findWithSearch(String search, Pageable page) {
         return null;
     }
 

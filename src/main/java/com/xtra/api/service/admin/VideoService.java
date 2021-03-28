@@ -19,7 +19,7 @@ public class VideoService extends CrudService<Video, Long, VideoRepository> {
     }
 
     @Override
-    protected Page<Video> findWithSearch(Pageable page, String search) {
+    protected Page<Video> findWithSearch(String search, Pageable page) {
         return null;
     }
 

@@ -32,11 +32,9 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -145,7 +143,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
 
 
     @Override
-    protected Page<Server> findWithSearch(Pageable page, String search) {
+    protected Page<Server> findWithSearch(String search, Pageable page) {
         return null;
     }
 

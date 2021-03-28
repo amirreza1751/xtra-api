@@ -37,7 +37,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
     }
 
     @Override
-    protected Page<Reseller> findWithSearch(Pageable page, String search) {
+    protected Page<Reseller> findWithSearch(String search, Pageable page) {
         return null;
     }
 

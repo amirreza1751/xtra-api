@@ -28,7 +28,7 @@ public class UserService extends CrudService<User, Long, UserRepository> {
     }
 
     @Override
-    protected Page<User> findWithSearch(Pageable page, String search) {
+    protected Page<User> findWithSearch(String search, Pageable page) {
         return null;
     }
 

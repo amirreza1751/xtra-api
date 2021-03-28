@@ -39,7 +39,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     @Override
-    protected Page<Server> findWithSearch(Pageable page, String search) {
+    protected Page<Server> findWithSearch(String search, Pageable page) {
         return null;
     }
 }

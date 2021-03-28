@@ -30,8 +30,8 @@ public class AdminService extends CrudService<Admin, Long, AdminRepository> {
     }
 
     @Override
-    protected Page<Admin> findWithSearch(Pageable page, String search) {
-        return null;
+    protected Page<Admin> findWithSearch(String search, Pageable page) {
+        return repository.findAllByUsernameLike(search, page);
     }
 
     @Override
