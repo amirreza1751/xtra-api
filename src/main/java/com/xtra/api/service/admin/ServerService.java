@@ -174,7 +174,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
             try {
                 if (server.getIp() == null || server.getCorePort() == null)
                     return;
-                Resource r = new RestTemplate().getForObject(getServerAddress(server) + "/servers/resources/?interfaceName=" + server.getInterfaceName(), Resource.class);
+                Resource r = new RestTemplate().getForObject(getServerAddress(server) + "/resources/?interfaceName=" + server.getInterfaceName(), Resource.class);
                 if (r != null) {
                     Resource resource = new Resource();
                     if (server.getResource() != null) {
