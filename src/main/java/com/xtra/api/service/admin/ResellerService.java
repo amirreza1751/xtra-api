@@ -34,7 +34,7 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
     @Override
     protected Page<Reseller> findWithSearch(String search, Pageable page) {
         search = wrapSearchString(search);
-        return repository.findAllByNameLike(search, page);
+        return repository.findAllByUsernameLike(search, page);
     }
 
     @Override

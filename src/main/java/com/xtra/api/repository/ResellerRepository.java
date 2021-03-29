@@ -16,7 +16,7 @@ public interface ResellerRepository extends JpaRepository<Reseller, Long> {
 
     Boolean existsByIdAndOwner(Long id, Reseller owner);
 
-    Page<Reseller> findAllByNameLike(String name, Pageable pageable);
+    Page<Reseller> findAllByUsernameLike(String username, Pageable pageable);
 
     void deleteByIdAndOwner(Long id, Reseller owner);
 
