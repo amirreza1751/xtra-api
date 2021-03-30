@@ -26,8 +26,8 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
         this.serverService = serverService;
     }
 
-    public Optional<S> findById(Long id) {
-        return repository.findById(id);
+    public S findById(Long id) {
+        return repository.findById(id).orElseThrow(() ->new EntityNotFoundException());
     }
 
     public Stream findByTokenOrFail(String token) {

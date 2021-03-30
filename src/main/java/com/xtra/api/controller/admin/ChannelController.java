@@ -1,13 +1,13 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.mapper.admin.ChannelInfoMapper;
-import com.xtra.api.mapper.admin.ChannelStartMapper;
 
-import com.xtra.api.model.ChannelList;
 import com.xtra.api.model.EpgChannelId;
+import com.xtra.api.projection.admin.ChangingServerPair;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.service.admin.ChannelService;
+import com.xtra.api.service.admin.StreamServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
@@ -22,11 +22,13 @@ import java.util.List;
 @RequestMapping("/channels")
 public class ChannelController {
     private final ChannelService channelService;
+    private final StreamServerService streamServerService;
     private final ChannelInfoMapper channelInfoMapper;
 
     @Autowired
-    public ChannelController(ChannelService channelService, ChannelInfoMapper channelInfoMapper) {
+    public ChannelController(ChannelService channelService, StreamServerService streamServerService, ChannelInfoMapper channelInfoMapper) {
         this.channelService = channelService;
+        this.streamServerService = streamServerService;
         this.channelInfoMapper = channelInfoMapper;
     }
 
@@ -149,4 +151,9 @@ public class ChannelController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/tools/server")
+    public ResponseEntity<?> changeServer(@RequestBody ChangingServerPair changingServerPair){
+        streamServerService.changeServer(changingServerPair);
+        return ResponseEntity.ok().build();
+    }
 }

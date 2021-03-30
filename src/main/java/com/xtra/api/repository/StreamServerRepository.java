@@ -14,4 +14,6 @@ public interface StreamServerRepository extends JpaRepository<StreamServer, Stre
 
     @Override
     void delete(StreamServer entity);
+
+    List<StreamServer> findAllByServerId(long serverId);
 }
