@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT, uses = RoleMapper.class)
+@Mapper(componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT,
+        uses = RoleMapper.class)
 public abstract class ResellerMapper {
 
     @Autowired
@@ -31,12 +33,12 @@ public abstract class ResellerMapper {
 
     public abstract UserSimpleView convertToSimpleView(Reseller reseller);
 
+    @Mapping(source = "owner.username", target = "ownerUsername")
     public abstract ResellerView convertToView(Reseller reseller);
 
-    public abstract SubresellerView convertToSubresellerView(Reseller reseller);
-
-    @Mapping(source = "owner.username", target = "owner")
     public abstract SubresellerSimplified convertToSimplifiedSubreseller(Reseller reseller);
+
+    public abstract SubresellerView convertToSubresellerView(Reseller reseller);
 
     Set<Long> convertToIdSet(List<DownloadList> downloadLists) {
         if (downloadLists == null)
@@ -45,12 +47,6 @@ public abstract class ResellerMapper {
     }
 
     public abstract Reseller convertToEntity(ResellerInsertView insertView);
-
-    Long convertToId(Reseller reseller) {
-        if (reseller == null)
-            return null;
-        return reseller.getId();
-    }
 
     Role convertToId(Long roleId) {
         if (roleId == null)

@@ -18,5 +18,5 @@ public class ResellerView extends UserView {
     private ZonedDateTime lastLoginDate;
     private String lastLoginIp;
     private Set<Long> customDownloadLists;
-    private Long owner;
+    private String ownerUsername;
 }
