@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
@@ -32,7 +33,8 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
 
     @Override
     protected Page<Reseller> findWithSearch(String search, Pageable page) {
-        return null;
+        search = wrapSearchString(search);
+        return repository.findAllByUsernameLike(search, page);
     }
 
     @Override
