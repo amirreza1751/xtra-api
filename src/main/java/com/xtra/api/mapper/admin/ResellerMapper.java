@@ -34,7 +34,7 @@ public abstract class ResellerMapper {
 
     public abstract UserSimpleView convertToSimpleView(Reseller reseller);
 
-    @Mapping(source = "owner.username", target = "ownerUsername")
+    @Mapping(source = "owner.id", target = "ownerId")
     public abstract ResellerView convertToView(Reseller reseller);
 
     @Mapping(source = "owner.username", target = "ownerUsername")
