@@ -55,6 +55,8 @@ public class UserService extends CrudService<User, Long, UserRepository> {
         if (dbUser.isBanned())
             throw new AuthenticationServiceException("User is Banned!");
         var userData = new LinkedHashMap<String, Object>();
+        userData.put("username", dbUser.getUsername());
+        userData.put("email", dbUser.getEmail());
         userData.put("type", dbUser.getUserType().toString());
         userData.put("permissions", auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
         return userData;
