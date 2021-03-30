@@ -6,6 +6,7 @@ import com.xtra.api.model.Reseller;
 import com.xtra.api.model.Role;
 import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
+import com.xtra.api.projection.admin.user.reseller.ResellerListView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
 import com.xtra.api.projection.reseller.subreseller.SubresellerSimplified;
@@ -36,6 +37,10 @@ public abstract class ResellerMapper {
     @Mapping(source = "owner.username", target = "ownerUsername")
     public abstract ResellerView convertToView(Reseller reseller);
 
+    @Mapping(source = "owner.username", target = "ownerUsername")
+    public abstract ResellerListView convertToListView(Reseller reseller);
+
+    //Subreseller conversion
     public abstract SubresellerSimplified convertToSimplifiedSubreseller(Reseller reseller);
 
     public abstract SubresellerView convertToSubresellerView(Reseller reseller);

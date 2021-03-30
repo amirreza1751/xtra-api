@@ -4,6 +4,7 @@ import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
+import com.xtra.api.projection.admin.user.reseller.ResellerListView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.service.admin.ResellerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,29 +17,27 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/resellers")
 public class ResellerController {
     ResellerService resellerService;
-    ResellerMapper resellerMapper;
 
     @Autowired
     public ResellerController(ResellerService resellerService, ResellerMapper resellerMapper) {
         this.resellerService = resellerService;
-        this.resellerMapper = resellerMapper;
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<ResellerView>> getResellers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                                           @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(resellerService.findAll(search, pageNo, pageSize, sortBy, sortDir).map(resellerMapper::convertToView));
+    public ResponseEntity<Page<ResellerListView>> getResellers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                                               @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+        return ResponseEntity.ok(resellerService.getList(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/list")
     public ResponseEntity<Page<UserSimpleView>> getResellersSimpleList(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                                                        @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(resellerService.findAll(search, pageNo, pageSize, sortBy, sortDir).map(resellerMapper::convertToSimpleView));
+        return ResponseEntity.ok(resellerService.getSimpleList(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResellerView> getReseller(@PathVariable Long id) {
-        return ResponseEntity.ok(resellerMapper.convertToView(resellerService.findByIdOrFail(id)));
+        return ResponseEntity.ok(resellerService.getReseller(id));
     }
 
     @PostMapping("")

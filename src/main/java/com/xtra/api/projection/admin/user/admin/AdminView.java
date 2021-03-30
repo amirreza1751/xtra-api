@@ -10,8 +10,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class AdminView extends UserView {
-    protected long id;
-
     protected String firstname;
     protected String lastname;
 }

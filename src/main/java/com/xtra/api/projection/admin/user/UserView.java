@@ -9,14 +9,9 @@ import lombok.Data;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UserView {
-    protected long id;
-
+    protected Long id;
     protected String username;
-
     protected String email;
-    protected String _2FASec;
     protected boolean isBanned;
-    protected UserType userType;
-
     protected RoleView role;
 }
