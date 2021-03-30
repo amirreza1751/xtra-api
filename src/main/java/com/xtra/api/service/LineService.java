@@ -2,6 +2,7 @@ package com.xtra.api.service;
 
 import com.xtra.api.model.Line;
 import com.xtra.api.model.LineActivity;
+import com.xtra.api.model.UserType;
 import com.xtra.api.repository.LineActivityRepository;
 import com.xtra.api.repository.LineRepository;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -47,6 +50,9 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
 
     @Override
     public Line insert(Line line) {
+        if (line.getRole().getType() != UserType.LINE) {
+            throw new RuntimeException("role not suitable for line");
+        }
         String lineUsername = line.getUsername();
         if (lineUsername == null || StringUtils.isEmpty(lineUsername)) {
             var isUnique = false;
@@ -60,6 +66,7 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
             line.setUsername(username);
         } else {
             if (repository.existsByUsername(lineUsername))
+                //@todo change exception type
                 throw new RuntimeException("line Username already exists");
         }
         line.setPassword(bCryptPasswordEncoder.encode(line.getPassword()));
