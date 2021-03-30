@@ -14,10 +14,10 @@ public class StreamServerService {
     final StreamService streamService;
     final ServerService serverService;
 
-    public StreamServerService(StreamServerRepository repository, StreamService streamService, ServerService serverService, ServerService serverService1){
+    public StreamServerService(StreamServerRepository repository, StreamService streamService, ServerService serverService){
         this.repository = repository;
         this.streamService = streamService;
-        this.serverService = serverService1;
+        this.serverService = serverService;
     }
     public void changeServer(ChangingServerPair changingServerPair){
         var oldStreamServerList = repository.findAllByServerId(changingServerPair.getOldServerID());
