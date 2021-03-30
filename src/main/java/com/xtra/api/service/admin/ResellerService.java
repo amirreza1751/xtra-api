@@ -2,6 +2,7 @@ package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.model.Reseller;
+import com.xtra.api.model.UserType;
 import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
@@ -51,7 +52,10 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         if (insertView.getRole() == null) toIgnore.add("roleId");
         if (insertView.getPassword() == null) toIgnore.add("password");
         else insertView.setPassword(bCryptPasswordEncoder.encode(insertView.getPassword()));
-        copyProperties(resellerMapper.convertToEntity(insertView), existingReseller, toIgnore.toArray(new String[0]));
+        var reseller = resellerMapper.convertToEntity(insertView);
+        if (reseller.getRole().getType() != UserType.RESELLER)
+            throw new RuntimeException("user role not suitable");
+        copyProperties(reseller, existingReseller, toIgnore.toArray(new String[0]));
         return resellerMapper.convertToView(repository.save(existingReseller));
     }
 

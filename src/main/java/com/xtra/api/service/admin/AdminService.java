@@ -2,6 +2,7 @@ package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.AdminMapper;
 import com.xtra.api.model.Admin;
+import com.xtra.api.model.UserType;
 import com.xtra.api.projection.admin.user.admin.AdminInsertView;
 import com.xtra.api.projection.admin.user.admin.AdminView;
 import com.xtra.api.repository.AdminRepository;
@@ -47,7 +48,10 @@ public class AdminService extends CrudService<Admin, Long, AdminRepository> {
         if (insertView.getRole() == null) toIgnore.add("roleId");
         if (insertView.getPassword() == null) toIgnore.add("password");
         else insertView.setPassword(bCryptPasswordEncoder.encode(insertView.getPassword()));
-        copyProperties(adminMapper.convertToEntity(insertView), existingAdmin, toIgnore.toArray(new String[0]));
+        var admin = adminMapper.convertToEntity(insertView);
+        if (admin.getRole().getType() != UserType.ADMIN)
+            throw new RuntimeException("user role not suitable");
+        copyProperties(admin, existingAdmin, toIgnore.toArray(new String[0]));
         return adminMapper.convertToView(repository.save(existingAdmin));
     }
 
