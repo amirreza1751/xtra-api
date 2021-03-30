@@ -13,5 +13,5 @@ public class ResellerInsertView extends UserInsertView {
     private String notes;
     private String lang;
 
-    private Long owner;
+    private Long ownerId;
 }
