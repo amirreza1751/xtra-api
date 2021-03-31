@@ -13,5 +13,5 @@ public class UserView {
     protected String username;
     protected String email;
     protected boolean isBanned;
-    protected RoleView role;
+    protected Long roleId;
 }

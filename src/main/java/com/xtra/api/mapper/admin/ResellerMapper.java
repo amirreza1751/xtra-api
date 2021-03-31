@@ -35,6 +35,8 @@ public abstract class ResellerMapper {
     public abstract UserSimpleView convertToSimpleView(Reseller reseller);
 
     @Mapping(source = "owner.id", target = "ownerId")
+    @Mapping(source = "role.id", target = "roleId")
+    @Mapping(source = "customDownloadLists", target = "customDownloadListIds")
     public abstract ResellerView convertToView(Reseller reseller);
 
     @Mapping(source = "owner.username", target = "ownerUsername")
@@ -51,6 +53,7 @@ public abstract class ResellerMapper {
         return downloadLists.stream().map(DownloadList::getId).collect(Collectors.toSet());
     }
 
+    @Mapping(source = "ownerId", target = "owner")
     public abstract Reseller convertToEntity(ResellerInsertView insertView);
 
     Role convertToId(Long roleId) {

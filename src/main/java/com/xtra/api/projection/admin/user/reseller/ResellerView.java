@@ -21,6 +21,6 @@ public class ResellerView extends UserView {
             (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime lastLoginDate;
     private String lastLoginIp;
-    private Set<Long> customDownloadLists;
+    private Set<Long> customDownloadListIds;
     private Long ownerId;
 }
