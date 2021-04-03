@@ -57,7 +57,7 @@ public class Stream {
     private Set<StreamServer> streamServers;
 
 
-    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private Set<CollectionStream> collectionAssigns;
 
     @ElementCollection
