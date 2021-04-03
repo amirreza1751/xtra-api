@@ -4,9 +4,11 @@ import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ChannelMapper;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
 import com.xtra.api.model.*;
+import com.xtra.api.model.Collection;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.repository.ChannelRepository;
+import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.EpgChannelRepository;
 import com.xtra.api.repository.StreamInputRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository, StreamInputRepository streamInputRepository) {
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository, StreamInputRepository streamInputRepository, CollectionRepository collectionRepository) {
         super(repository, "Channel", serverService);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
@@ -85,6 +87,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     public void saveAll(ChannelBatchInsertView channelBatchInsertView, boolean restart) {
         var channelIds = channelBatchInsertView.getChannelIds();
         var serverIds = channelBatchInsertView.getServerIds();
+        var collectionIds = channelBatchInsertView.getCollectionIds();
+
         if (channelIds != null) {
             for (Long channelId : channelIds) {
                 var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
@@ -100,9 +104,19 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
                 if (channelBatchInsertView.getRtmpOutput() != null)
                     channel.setRtmpOutput(Boolean.parseBoolean(channelBatchInsertView.getRtmpOutput()));
 
-                Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channel);
-                channel.getStreamServers().retainAll(streamServers);
-                channel.getStreamServers().addAll(streamServers);
+                if (collectionIds.size() > 0) {
+                    Set<CollectionStream> collectionStreamSet = channelMapper.convertToCollections(collectionIds, channel);
+                    if (!channelBatchInsertView.getKeepCollections())
+                        channel.getCollectionAssigns().retainAll(collectionStreamSet);
+                    channel.getCollectionAssigns().addAll(collectionStreamSet);
+                }
+
+                if (serverIds.size() > 0) {
+                    Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channel);
+                    if (!channelBatchInsertView.getKeepServers())
+                        channel.getStreamServers().retainAll(streamServers);
+                    channel.getStreamServers().addAll(streamServers);
+                }
 
                 repository.save(channel);
             }

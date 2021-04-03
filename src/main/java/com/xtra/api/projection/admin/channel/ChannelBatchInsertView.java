@@ -18,4 +18,8 @@ public class ChannelBatchInsertView {
 
     private Set<Long> channelIds;
     private Set<Long> serverIds;
+    private Set<Long> collectionIds;
+
+    private Boolean keepServers;
+    private Boolean keepCollections;
 }

@@ -32,4 +32,8 @@ public class CollectionStream {
         id = new CollectionStreamId();
     }
 
+    public CollectionStream(Collection collection, Stream stream) {
+        id = new CollectionStreamId(collection.getId(), stream.getId());
+    }
+
 }
