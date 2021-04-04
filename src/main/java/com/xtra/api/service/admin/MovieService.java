@@ -1,7 +1,11 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.mapper.admin.MovieMapper;
 import com.xtra.api.model.*;
+import com.xtra.api.projection.admin.movie.MovieBatchUpdateView;
+import com.xtra.api.projection.admin.movie.MovieInsertView;
+import com.xtra.api.projection.admin.movie.MovieView;
 import com.xtra.api.repository.MovieRepository;
 import com.xtra.api.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +23,14 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
     private final ServerService serverService;
     private final VideoRepository videoRepository;
+    private final MovieMapper movieMapper;
 
     @Autowired
-    protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository) {
+    protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository, MovieMapper movieMapper) {
         super(repository);
         this.serverService = serverService;
         this.videoRepository = videoRepository;
+        this.movieMapper = movieMapper;
     }
 
     @Override
@@ -32,17 +38,51 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return repository.findByNameLikeOrInfoPlotLikeOrInfoCastLikeOrInfoDirectorLikeOrInfoGenresLikeOrInfoCountryLike(search, search, search, search, search, search, pageable);
     }
 
-    public Movie add(Movie movie, boolean encode) {
+    public MovieView add(MovieInsertView insertView, boolean encode) {
+        return movieMapper.convertToView(insert(movieMapper.convertToEntity(insertView), encode));
+    }
+
+    public Movie insert(Movie movie, boolean encode) {
         String token;
         do {
             token = generateRandomString(8, 12, false);
         } while (repository.findByToken(token).isPresent());
         movie.setToken(token);
+        var savedEntity = repository.save(movie);
 
         if (encode) {
             serverService.sendEncodeRequest(movie.getVideos().stream().findFirst().get());
         }
-        return super.insert(movie);
+
+        return savedEntity;
+    }
+
+    public void saveAll(MovieBatchUpdateView movieBatchUpdateView, boolean encode) {
+        var movieIds = movieBatchUpdateView.getMovieIds();
+        var serverIds = movieBatchUpdateView.getServerIds();
+        var collectionIds = movieBatchUpdateView.getCollectionIds();
+
+        if (movieIds != null) {
+            for (Long movieId : movieIds) {
+                var movie = repository.findById(movieId).orElseThrow(() -> new EntityNotFoundException("Movie", movieId.toString()));
+
+//                if (collectionIds.size() > 0) {
+//                    Set<CollectionStream> collectionStreamSet = channelMapper.convertToCollections(collectionIds, channel);
+//                    if (!movieBatchUpdateView.getKeepCollections())
+//                        movie.getCollectionAssigns().retainAll(collectionStreamSet);
+//                    movie.getCollectionAssigns().addAll(collectionStreamSet);
+//                }
+//
+//                if (serverIds.size() > 0) {
+//                    Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channel);
+//                    if (!movieBatchUpdateView.getKeepServers())
+//                        channel.getStreamServers().retainAll(streamServers);
+//                    channel.getStreamServers().addAll(streamServers);
+//                }
+
+                repository.save(movie);
+            }
+        }
     }
 
     public List<Subtitle> updateSubtitles(Long id, Long vidId, List<Subtitle> subtitles) {

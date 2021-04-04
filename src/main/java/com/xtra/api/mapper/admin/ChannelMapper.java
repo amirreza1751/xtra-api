@@ -91,6 +91,20 @@ public abstract class ChannelMapper {
         return streamServers;
     }
 
+    public Set<CollectionStream> convertToCollections(Set<Long> ids, Channel channel) {
+        Set<CollectionStream> collectionStreamSet = new HashSet<>();
+
+        for (Long id : ids) {
+            CollectionStream collectionStream = new CollectionStream(new CollectionStreamId(id, channel.getId()));
+            var collection = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Collection", id.toString()));
+            collectionStream.setStream(channel);
+            collectionStream.setCollection(collection);
+            collectionStreamSet.add(collectionStream);
+        }
+
+        return collectionStreamSet;
+    }
+
     public Set<Long> convertToCollectionIds(Set<CollectionStream> collectionStreams) {
         if (collectionStreams == null) return null;
         return collectionStreams.stream().map(collectionStream -> collectionStream.getCollection().getId()).collect(Collectors.toSet());

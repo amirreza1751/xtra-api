@@ -1,6 +1,11 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.model.*;
+import com.xtra.api.projection.admin.channel.ChannelBatchDeleteView;
+import com.xtra.api.projection.admin.channel.ChannelBatchInsertView;
+import com.xtra.api.projection.admin.movie.MovieBatchUpdateView;
+import com.xtra.api.projection.admin.movie.MovieInsertView;
+import com.xtra.api.projection.admin.movie.MovieView;
 import com.xtra.api.service.admin.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,7 +39,7 @@ public class MovieController {
     }
 
     @PostMapping(value = {"", "/{encode}"})
-    public ResponseEntity<Movie> addMovie(@RequestBody Movie movie, @PathVariable(required = false) boolean encode) {
+    public ResponseEntity<MovieView> addMovie(@RequestBody MovieInsertView movie, @PathVariable(required = false) boolean encode) {
         return ResponseEntity.ok(movieService.add(movie, encode));
     }
 
@@ -46,6 +51,19 @@ public class MovieController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
         movieService.deleteOrFail(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // Batch Actions
+    @PatchMapping(value = {"/batch", "/batch/{encode}"})
+    public ResponseEntity<?> updateMovies(@RequestBody MovieBatchUpdateView movieView, @PathVariable(required = false) boolean encode) {
+        movieService.saveAll(movieView, encode);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/batch")
+    public ResponseEntity<?> deleteChannels(@RequestBody ChannelBatchDeleteView channelView) {
+//        channelService.deleteAll(channelView);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

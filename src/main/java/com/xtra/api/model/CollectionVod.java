@@ -9,7 +9,6 @@ import javax.persistence.*;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@NoArgsConstructor
 public class CollectionVod {
 
     @EmbeddedId
@@ -29,5 +28,9 @@ public class CollectionVod {
 
     public CollectionVod(CollectionVodId id) {
         this.id = id;
+    }
+
+    public CollectionVod() {
+        id = new CollectionVodId();
     }
 }
