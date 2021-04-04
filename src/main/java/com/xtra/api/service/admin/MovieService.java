@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
 
@@ -66,19 +67,23 @@ public class MovieService extends VodService<Movie, MovieRepository> {
             for (Long movieId : movieIds) {
                 var movie = repository.findById(movieId).orElseThrow(() -> new EntityNotFoundException("Movie", movieId.toString()));
 
-//                if (collectionIds.size() > 0) {
-//                    Set<CollectionStream> collectionStreamSet = channelMapper.convertToCollections(collectionIds, channel);
-//                    if (!movieBatchUpdateView.getKeepCollections())
-//                        movie.getCollectionAssigns().retainAll(collectionStreamSet);
-//                    movie.getCollectionAssigns().addAll(collectionStreamSet);
-//                }
-//
-//                if (serverIds.size() > 0) {
-//                    Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channel);
-//                    if (!movieBatchUpdateView.getKeepServers())
-//                        channel.getStreamServers().retainAll(streamServers);
-//                    channel.getStreamServers().addAll(streamServers);
-//                }
+                if (collectionIds.size() > 0) {
+                    Set<CollectionVod> collectionMovieSet = movieMapper.convertToCollections(collectionIds, movie);
+                    if (!movieBatchUpdateView.getKeepCollections())
+                        movie.getCollectionAssigns().retainAll(collectionMovieSet);
+                    movie.getCollectionAssigns().addAll(collectionMovieSet);
+                }
+
+                if (serverIds.size() > 0) {
+                    Set<ServerVod> serverVods = movieMapper.convertToServers(serverIds, movie);
+                    if (!movieBatchUpdateView.getKeepServers())
+                        movie.getServerVods().retainAll(serverVods);
+                    movie.getServerVods().addAll(serverVods);
+                }
+
+                if (encode) {
+                    serverService.sendEncodeRequest(movie.getVideos().stream().findFirst().get());
+                }
 
                 repository.save(movie);
             }

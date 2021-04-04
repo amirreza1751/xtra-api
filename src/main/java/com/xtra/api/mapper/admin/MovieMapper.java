@@ -77,5 +77,33 @@ public abstract class MovieMapper {
         return serverVods.stream().map(serverVod -> serverVod.getServer().getId()).collect(Collectors.toSet());
     }
 
+    public Set<ServerVod> convertToServers(Set<Long> ids, Movie movie) {
+        Set<ServerVod> serverVods = new HashSet<>();
+
+        for (Long id : ids) {
+            ServerVod serverVod = new ServerVod(new ServerVodId(id, movie.getId()));
+            var server = serverRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Server", id.toString()));
+            serverVod.setVod(movie);
+            serverVod.setServer(server);
+            serverVods.add(serverVod);
+        }
+
+        return serverVods;
+    }
+
+    public Set<CollectionVod> convertToCollections(Set<Long> ids, Movie movie) {
+        Set<CollectionVod> collectionVodSet = new HashSet<>();
+
+        for (Long id : ids) {
+            CollectionVod collectionVod = new CollectionVod(new CollectionVodId(id, movie.getId()));
+            var collection = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Collection", id.toString()));
+            collectionVod.setVod(movie);
+            collectionVod.setCollection(collection);
+            collectionVodSet.add(collectionVod);
+        }
+
+        return collectionVodSet;
+    }
+
 
 }
