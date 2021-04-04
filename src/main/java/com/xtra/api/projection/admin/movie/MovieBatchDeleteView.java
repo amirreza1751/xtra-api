@@ -1,4 +1,4 @@
-package com.xtra.api.projection.admin.channel;
+package com.xtra.api.projection.admin.movie;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -9,6 +9,6 @@ import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ChannelBatchDeleteView {
-    private Set<Long> channelIds;
+public class MovieBatchDeleteView {
+    private Set<Long> movieIds;
 }

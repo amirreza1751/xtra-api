@@ -3,6 +3,7 @@ package com.xtra.api.controller.admin;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.channel.ChannelBatchDeleteView;
 import com.xtra.api.projection.admin.channel.ChannelBatchInsertView;
+import com.xtra.api.projection.admin.movie.MovieBatchDeleteView;
 import com.xtra.api.projection.admin.movie.MovieBatchUpdateView;
 import com.xtra.api.projection.admin.movie.MovieInsertView;
 import com.xtra.api.projection.admin.movie.MovieView;
@@ -62,8 +63,8 @@ public class MovieController {
     }
 
     @DeleteMapping("/batch")
-    public ResponseEntity<?> deleteChannels(@RequestBody ChannelBatchDeleteView channelView) {
-//        channelService.deleteAll(channelView);
+    public ResponseEntity<?> deleteChannels(@RequestBody MovieBatchDeleteView movieView) {
+        movieService.deleteAll(movieView);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
