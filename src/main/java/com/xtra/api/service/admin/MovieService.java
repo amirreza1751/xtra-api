@@ -3,6 +3,8 @@ package com.xtra.api.service.admin;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.MovieMapper;
 import com.xtra.api.model.*;
+import com.xtra.api.projection.admin.channel.ChannelBatchDeleteView;
+import com.xtra.api.projection.admin.movie.MovieBatchDeleteView;
 import com.xtra.api.projection.admin.movie.MovieBatchUpdateView;
 import com.xtra.api.projection.admin.movie.MovieInsertView;
 import com.xtra.api.projection.admin.movie.MovieView;
@@ -86,6 +88,15 @@ public class MovieService extends VodService<Movie, MovieRepository> {
                 }
 
                 repository.save(movie);
+            }
+        }
+    }
+
+    public void deleteAll(MovieBatchDeleteView movieView) {
+        var movieIds = movieView.getMovieIds();
+        if (movieIds != null) {
+            for (Long movieId : movieIds) {
+                deleteOrFail(movieId);
             }
         }
     }
