@@ -54,6 +54,8 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
 
     @Override
     public Reseller insert(Reseller reseller) {
+        if (reseller.getRole().getType() != UserType.RESELLER)
+            throw new RuntimeException("user role not suitable");
         reseller.setPassword(bCryptPasswordEncoder.encode(reseller.getPassword()));
         return super.insert(reseller);
     }
