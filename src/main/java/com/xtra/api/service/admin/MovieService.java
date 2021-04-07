@@ -61,35 +61,35 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     }
 
     public void saveAll(MovieBatchUpdateView movieBatchUpdateView, boolean encode) {
-        var movieIds = movieBatchUpdateView.getMovieIds();
-        var serverIds = movieBatchUpdateView.getServerIds();
-        var collectionIds = movieBatchUpdateView.getCollectionIds();
-
-        if (movieIds != null) {
-            for (Long movieId : movieIds) {
-                var movie = repository.findById(movieId).orElseThrow(() -> new EntityNotFoundException("Movie", movieId.toString()));
-
-                if (collectionIds.size() > 0) {
-                    Set<CollectionVod> collectionMovieSet = movieMapper.convertToCollections(collectionIds, movie);
-                    if (!movieBatchUpdateView.getKeepCollections())
-                        movie.getCollectionAssigns().retainAll(collectionMovieSet);
-                    movie.getCollectionAssigns().addAll(collectionMovieSet);
-                }
-
-                if (serverIds.size() > 0) {
-                    Set<ServerVod> serverVods = movieMapper.convertToServers(serverIds, movie);
-                    if (!movieBatchUpdateView.getKeepServers())
-                        movie.getServerVods().retainAll(serverVods);
-                    movie.getServerVods().addAll(serverVods);
-                }
-
-                if (encode) {
-                    serverService.sendEncodeRequest(movie.getVideos().stream().findFirst().get());
-                }
-
-                repository.save(movie);
-            }
-        }
+//        var movieIds = movieBatchUpdateView.getMovieIds();
+//        var serverIds = movieBatchUpdateView.getServerIds();
+//        var collectionIds = movieBatchUpdateView.getCollectionIds();
+//
+//        if (movieIds != null) {
+//            for (Long movieId : movieIds) {
+//                var movie = repository.findById(movieId).orElseThrow(() -> new EntityNotFoundException("Movie", movieId.toString()));
+//
+//                if (collectionIds.size() > 0) {
+//                    Set<CollectionVod> collectionMovieSet = movieMapper.convertToCollections(collectionIds, movie);
+//                    if (!movieBatchUpdateView.getKeepCollections())
+//                        movie.getCollectionAssigns().retainAll(collectionMovieSet);
+//                    movie.getCollectionAssigns().addAll(collectionMovieSet);
+//                }
+//
+//                if (serverIds.size() > 0) {
+//                    Set<ServerVod> serverVods = movieMapper.convertToServers(serverIds, movie);
+//                    if (!movieBatchUpdateView.getKeepServers())
+//                        movie.getServerVods().retainAll(serverVods);
+//                    movie.getServerVods().addAll(serverVods);
+//                }
+//
+//                if (encode) {
+//                    serverService.sendEncodeRequest(movie.getVideos().stream().findFirst().get());
+//                }
+//
+//                repository.save(movie);
+//            }
+//        }
     }
 
     public void deleteAll(MovieBatchDeleteView movieView) {

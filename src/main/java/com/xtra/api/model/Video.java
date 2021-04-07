@@ -1,10 +1,12 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -25,4 +27,7 @@ public class Video {
 
     @OneToOne(cascade = CascadeType.ALL)
     private VideoInfo videoInfo;
+
+    @OneToMany(mappedBy = "video", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private Set<VideoServer> videoServers;
 }

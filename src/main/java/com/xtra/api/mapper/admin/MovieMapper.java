@@ -32,7 +32,7 @@ public abstract class MovieMapper {
 
     public abstract Movie convertToEntity(MovieInsertView movieView);
 
-    @Mapping(source = "serverVods", target = "servers")
+//    @Mapping(source = "videos.videoServers.serverId", target = "servers")
     @Mapping(source = "collectionAssigns", target = "collections")
     public abstract MovieView convertToView(Movie movie);
 
@@ -40,15 +40,17 @@ public abstract class MovieMapper {
     void convertServerIdsAndCollectionIds(final MovieInsertView movieView, @MappingTarget final Movie movie) {
         var serverIds = movieView.getServers();
         if (serverIds != null) {
-            Set<ServerVod> serverVods = new HashSet<>();
-            for (Long serverId : serverIds) {
-                var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
-                ServerVod serverVod = new ServerVod(new ServerVodId(serverId, null));
-                serverVod.setServer(server);
-                serverVod.setVod(movie);
-                serverVods.add(serverVod);
+            Set<VideoServer> videoServers = new HashSet<>();
+            for (Video video : movie.getVideos()) {
+                for (Long serverId : serverIds) {
+                    var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
+                    VideoServer videoServer = new VideoServer(new VideoServerId(null, serverId));
+                    videoServer.setServer(server);
+                    videoServer.setVideo(video);
+                    videoServers.add(videoServer);
+                }
+                video.setVideoServers(videoServers);
             }
-            movie.setServerVods(serverVods);
         }
 
         var collectionIds = movieView.getCollections();
@@ -77,18 +79,20 @@ public abstract class MovieMapper {
         return serverVods.stream().map(serverVod -> serverVod.getServer().getId()).collect(Collectors.toSet());
     }
 
-    public Set<ServerVod> convertToServers(Set<Long> ids, Movie movie) {
-        Set<ServerVod> serverVods = new HashSet<>();
-
-        for (Long id : ids) {
-            ServerVod serverVod = new ServerVod(new ServerVodId(id, movie.getId()));
-            var server = serverRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Server", id.toString()));
-            serverVod.setVod(movie);
-            serverVod.setServer(server);
-            serverVods.add(serverVod);
+    public Set<VideoServer> convertToServers(Set<Long> ids, Movie movie) {
+        Set<VideoServer> videoServers = new HashSet<>();
+        for (Video video : movie.getVideos()) {
+            for (Long serverId : ids) {
+                VideoServer videoServer = new VideoServer(new VideoServerId(video.getId(), serverId));
+                var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
+                videoServer.setServer(server);
+                videoServer.setVideo(video);
+                videoServers.add(videoServer);
+            }
+            video.setVideoServers(videoServers);
         }
 
-        return serverVods;
+        return videoServers;
     }
 
     public Set<CollectionVod> convertToCollections(Set<Long> ids, Movie movie) {
