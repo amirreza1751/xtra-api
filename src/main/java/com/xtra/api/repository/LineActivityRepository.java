@@ -3,6 +3,8 @@ package com.xtra.api.repository;
 
 import com.xtra.api.model.LineActivity;
 import com.xtra.api.model.LineActivityId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -17,4 +19,6 @@ public interface LineActivityRepository extends JpaRepository<LineActivity, Line
 
     List<LineActivity> findAllByIdLineId(Long lineId);
 
+    @Override
+    Page<LineActivity> findAll(Pageable pageable);
 }
