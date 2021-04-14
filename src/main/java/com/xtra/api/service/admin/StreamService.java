@@ -1,16 +1,13 @@
 package com.xtra.api.service.admin;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.ProgressInfoDto;
-import com.xtra.api.projection.admin.StreamInfoDto;
+import com.xtra.api.projection.system.StreamDetailsView;
 import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.service.CrudService;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.LinkedHashMap;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -20,10 +17,12 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 public abstract class StreamService<S extends Stream, R extends StreamRepository<S>> extends CrudService<S, Long, R> {
     private final ServerService serverService;
+    private final StreamMapper streamMapper;
 
-    protected StreamService(R repository, String className, ServerService serverService) {
+    protected StreamService(R repository, String className, ServerService serverService, StreamMapper streamMapper) {
         super(repository, className);
         this.serverService = serverService;
+        this.streamMapper = streamMapper;
     }
 
     public S findById(Long id) {
@@ -38,40 +37,6 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
         return findByTokenOrFail(token).getId();
     }
 
-
-    public void infoBatchUpdate(LinkedHashMap<String, Object> infos, String portNumber, HttpServletRequest request) {
-        Optional<Server> srv = serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber);
-        Server server = new Server();
-        if (srv.isPresent()) {
-            server = srv.get();
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        List<StreamInfoDto> streamInfos = mapper.convertValue(infos.get("streamInfoList"), new TypeReference<>() {
-        });
-        List<ProgressInfoDto> progressInfos = mapper.convertValue(infos.get("progressInfoList"), new TypeReference<>() {
-        });
-
-        //amir
-        StreamServer streamServer;
-        for (StreamInfoDto streamInfoDto : streamInfos) {
-            streamServer = serverService.findStreamServerById(new StreamServerId(streamInfoDto.getStreamId(), server.getId())).get();
-            StreamInfo tempInfo = streamServer.getStreamInfo() != null ? streamServer.getStreamInfo() : new StreamInfo();
-            copyProperties(streamInfoDto, tempInfo, "id", "streamServer", "streamId");
-            streamServer.setStreamInfo(tempInfo);
-            serverService.saveStreamServer(streamServer);
-        }
-
-        for (ProgressInfoDto progressInfoDto : progressInfos) {
-            streamServer = serverService.findStreamServerById(new StreamServerId(progressInfoDto.getStreamId(), server.getId())).get();
-            ProgressInfo tempProgress = streamServer.getProgressInfo() != null ? streamServer.getProgressInfo() : new ProgressInfo();
-            copyProperties(progressInfoDto, tempProgress, "id", "streamServer", "streamId");
-            streamServer.setProgressInfo(tempProgress);
-            serverService.saveStreamServer(streamServer);
-        }
-        //amir
-    }
-
-
     public boolean startOrFail(Long id, List<Long> serverIds) {
         for (Server server : getStreamServers(id, serverIds)) {
             serverService.sendStartRequest(id, server);
@@ -82,13 +47,12 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     public boolean stopOrFail(Long id, List<Long> serverIds) {
         Optional<S> ch = repository.findById(id);
         for (Server server : getStreamServers(id, serverIds)) {
-            if (ch.isPresent()){
+            if (ch.isPresent()) {
                 S channel = ch.get();
                 Set<StreamServer> streamServers = channel.getStreamServers();
-                for (StreamServer streamServer : streamServers){
+                for (StreamServer streamServer : streamServers) {
                     if (streamServer.getServer().getId().equals(server.getId())) {
-                        streamServer.setStreamInfo(new StreamInfo("0:00:00", "", "", "", ""));
-                        streamServer.setProgressInfo(new ProgressInfo("", "", ""));
+                        streamServer.setStreamDetails(new StreamDetails());
                     }
                 }
                 channel.setStreamServers(streamServers);
@@ -114,5 +78,16 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
             servers = stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
         } else servers = serverService.findByIdIn(serverIds);
         return servers;
+    }
+
+    @Transactional
+    public void updateStreamStatuses(String serverAddress, String serverPort, List<StreamDetailsView> statuses) {
+        serverService.findByIpAndCorePort(serverAddress, serverPort).ifPresent(server -> {
+            for (var status : statuses) {
+                var streamServer = serverService.findStreamServerById(new StreamServerId(status.getStreamId(), server.getId())).orElseThrow();
+                copyProperties(streamMapper.convertToEntity(status), streamServer.getStreamDetails(), "id");
+                serverService.saveStreamServer(streamServer);
+            }
+        });
     }
 }

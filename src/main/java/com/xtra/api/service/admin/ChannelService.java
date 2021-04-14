@@ -3,12 +3,12 @@ package com.xtra.api.service.admin;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ChannelMapper;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
+import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.*;
-import com.xtra.api.model.Collection;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
+import com.xtra.api.projection.system.StreamDetailsView;
 import com.xtra.api.repository.ChannelRepository;
-import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.EpgChannelRepository;
 import com.xtra.api.repository.StreamInputRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +35,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository, StreamInputRepository streamInputRepository, CollectionRepository collectionRepository) {
-        super(repository, "Channel", serverService);
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository, StreamInputRepository streamInputRepository, StreamMapper streamMapper) {
+        super(repository, "Channel", serverService, streamMapper);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
         this.channelMapper = channelMapper;
@@ -204,8 +204,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return nextSource;
     }
 
-    public Channel channelInfo(Long channelId) {
-        return this.findByIdOrFail(channelId);
+    public ChannelInfo getChannelInfo(Long channelId) {
+        return channelMapper.convertToChannelInfo(findByIdOrFail(channelId));
     }
 
     public Channel channelStart(Long channelId) {

@@ -22,11 +22,8 @@ public class StreamServer {
     @MapsId("serverId")
     Server server;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    StreamInfo streamInfo;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    ProgressInfo progressInfo;
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    StreamDetails streamDetails;
 
     public StreamServer() {
     }

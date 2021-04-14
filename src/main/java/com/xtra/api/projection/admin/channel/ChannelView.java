@@ -36,6 +36,6 @@ public class ChannelView {
     private Set<Long> servers;
     private Set<Long> collections;
 
-    private List<MergedChannelInfo> infos;
+    private List<ChannelServerInfo> infos;
     private EpgDetails epgDetails;
 }
