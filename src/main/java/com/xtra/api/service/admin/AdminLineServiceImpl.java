@@ -4,12 +4,11 @@ import com.xtra.api.mapper.admin.AdminLineMapper;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.line.LineInsertView;
 import com.xtra.api.projection.admin.line.LineView;
-import com.xtra.api.repository.LineActivityRepository;
+import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -20,8 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.xtra.api.service.system.UserAuthService.getCurrentLine;
-
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
@@ -30,9 +27,9 @@ public class AdminLineServiceImpl extends LineService {
     private final AdminLineMapper lineMapper;
 
     @Autowired
-    public AdminLineServiceImpl(LineRepository repository, LineActivityRepository lineActivityRepository, AdminLineMapper lineMapper
+    public AdminLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper
             , BCryptPasswordEncoder bCryptPasswordEncoder) {
-        super(repository, lineActivityRepository, bCryptPasswordEncoder);
+        super(repository, connectionRepository, bCryptPasswordEncoder);
         this.lineMapper = lineMapper;
     }
 

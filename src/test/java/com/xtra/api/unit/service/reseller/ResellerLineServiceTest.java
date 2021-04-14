@@ -4,7 +4,7 @@ import com.xtra.api.mapper.reseller.ResellerLineMapper;
 import com.xtra.api.model.Line;
 import com.xtra.api.model.Package;
 import com.xtra.api.model.Reseller;
-import com.xtra.api.repository.LineActivityRepository;
+import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.service.admin.PackageService;
 import com.xtra.api.service.reseller.ResellerLineServiceImpl;
@@ -29,7 +29,7 @@ public class ResellerLineServiceTest {
     @Mock
     ResellerLineMapper lineMapper;
     @Mock
-    LineActivityRepository lineActivityRepository;
+    ConnectionRepository connectionRepository;
     @Mock
     PackageService packageService;
     @Mock

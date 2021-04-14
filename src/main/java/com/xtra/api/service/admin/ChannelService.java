@@ -135,7 +135,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     public Channel update(Long id, Channel channel, boolean restart) {
         //@todo check validation check
         Channel oldChannel = findByIdOrFail(id);
-        copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "lineActivities", "streamServers", "streamCollections");
+        copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "connections", "streamServers", "streamCollections");
 
         //remove old servers from channel and add new ones
         if (oldChannel.getStreamServers() != null) {

@@ -7,7 +7,7 @@ import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
-import com.xtra.api.repository.LineActivityRepository;
+import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.repository.StreamServerRepository;
 import com.xtra.api.service.CrudService;
@@ -43,7 +43,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @EnableScheduling
 @Service
 public class ServerService extends CrudService<Server, Long, ServerRepository> implements MappingService<Server, ServerView, SimpleServerView> {
-    private final LineActivityRepository lineActivityRepository;
+    private final ConnectionRepository connectionRepository;
     private final StreamServerRepository streamServerRepository;
     private final ServerMapper serverMapper;
     private final WebClient webClient;
@@ -54,9 +54,9 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
     private String corePort;
 
     @Autowired
-    protected ServerService(ServerRepository repository, LineActivityRepository lineActivityRepository, StreamServerRepository streamServerRepository, ServerMapper serverMapper, WebClient.Builder webClientBuilder) {
+    protected ServerService(ServerRepository repository, ConnectionRepository connectionRepository, StreamServerRepository streamServerRepository, ServerMapper serverMapper, WebClient.Builder webClientBuilder) {
         super(repository, "Server");
-        this.lineActivityRepository = lineActivityRepository;
+        this.connectionRepository = connectionRepository;
         this.streamServerRepository = streamServerRepository;
         this.serverMapper = serverMapper;
         TcpClient tcpClient = TcpClient.create()
@@ -181,7 +181,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
                         resource = server.getResource();
                     }
                     copyProperties(r, resource, "id", "server");
-                    resource.setConnections(lineActivityRepository.countAllByIdServerId(server.getId()));
+                    resource.setConnections(connectionRepository.countAllByIdServerId(server.getId()));
                     server.setResource(resource);
                     repository.save(server);
                 } else
@@ -194,7 +194,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
 
     public int getServerConnectionsCount(Long serverId) {
         if (this.existsById(serverId)) {
-            return lineActivityRepository.countAllByIdServerId(serverId);
+            return connectionRepository.countAllByIdServerId(serverId);
         } else throw new RuntimeException("Server Not Found.");
     }
 

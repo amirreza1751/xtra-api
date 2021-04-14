@@ -11,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
-public class LineActivityId implements Serializable {
+public class ConnectionId implements Serializable {
     private Long lineId;
     private Long streamId;
     private Long serverId;

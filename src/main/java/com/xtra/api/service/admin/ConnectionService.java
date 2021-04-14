@@ -3,12 +3,11 @@ package com.xtra.api.service.admin;
 import com.maxmind.geoip2.model.CityResponse;
 import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ConnectionMapper;
-import com.xtra.api.model.LineActivity;
-import com.xtra.api.model.LineActivityId;
-import com.xtra.api.model.Stream;
+import com.xtra.api.model.Connection;
+import com.xtra.api.model.ConnectionId;
 import com.xtra.api.projection.admin.ConnectionIdView;
 import com.xtra.api.projection.admin.ConnectionView;
-import com.xtra.api.repository.LineActivityRepository;
+import com.xtra.api.repository.ConnectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +23,8 @@ import java.util.Optional;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
-public class LineActivityService{
-    final private LineActivityRepository lineActivityRepository;
+public class ConnectionService {
+    final private ConnectionRepository connectionRepository;
     final private AdminLineServiceImpl adminLineService;
     final private StreamService streamService;
     private final ServerService serverService;
@@ -33,8 +32,8 @@ public class LineActivityService{
     private final ConnectionMapper connectionMapper;
 
     @Autowired
-    public LineActivityService(LineActivityRepository lineActivityRepository, AdminLineServiceImpl adminLineService, StreamService streamService, ServerService serverService, GeoIpService geoIpService, ConnectionMapper connectionMapper){
-        this.lineActivityRepository = lineActivityRepository;
+    public ConnectionService(ConnectionRepository connectionRepository, AdminLineServiceImpl adminLineService, StreamService streamService, ServerService serverService, GeoIpService geoIpService, ConnectionMapper connectionMapper) {
+        this.connectionRepository = connectionRepository;
         this.adminLineService = adminLineService;
         this.streamService = streamService;
         this.serverService = serverService;
@@ -42,15 +41,15 @@ public class LineActivityService{
         this.connectionMapper = connectionMapper;
     }
 
-    public void deleteLineActivity(LineActivityId activityId) {
-        lineActivityRepository.deleteById(activityId);
+    public void deleteConnection(ConnectionId activityId) {
+        connectionRepository.deleteById(activityId);
     }
 
-//    @Transactional
-    public void batchCreateOrUpdate(List<LineActivity> lineActivities, String portNumber, HttpServletRequest request) {
-        for (var activity : lineActivities) {
+    //    @Transactional
+    public void batchCreateOrUpdate(List<Connection> connections, String portNumber, HttpServletRequest request) {
+        for (var activity : connections) {
             //@todo find out how null values get passed
-            var existingActivity = lineActivityRepository.findById(new LineActivityId(activity.getId().getLineId(), activity.getId().getStreamId(), serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber).get().getId(), activity.getId().getUserIp()));
+            var existingActivity = connectionRepository.findById(new ConnectionId(activity.getId().getLineId(), activity.getId().getStreamId(), serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber).get().getId(), activity.getId().getUserIp()));
             if (existingActivity.isEmpty()) {
                 var lineById = adminLineService.findById(activity.getId().getLineId());
                 if (lineById.isEmpty())
@@ -67,7 +66,7 @@ public class LineActivityService{
                     continue;
                 activity.setServer(serverById.get());
                 activity = this.setIpInformation(activity.getId().getUserIp(), activity);
-                lineActivityRepository.save(activity);
+                connectionRepository.save(activity);
 
             } else {
                 var oldActivity = existingActivity.get();
@@ -88,7 +87,7 @@ public class LineActivityService{
                     continue;
                 oldActivity.setServer(serverById.get());
                 oldActivity = this.setIpInformation(activity.getId().getUserIp(), oldActivity);
-                lineActivityRepository.save(oldActivity);
+                connectionRepository.save(oldActivity);
 
             }
 
@@ -96,35 +95,36 @@ public class LineActivityService{
     }
 
     @Transactional
-    public void batchDelete(List<LineActivity> lineActivities) {
-        for (var activity : lineActivities) {
-            lineActivityRepository.deleteById(activity.getId());
+    public void batchDelete(List<Connection> connections) {
+        for (var activity : connections) {
+            connectionRepository.deleteById(activity.getId());
         }
     }
 
-    public LineActivity setIpInformation(String ip, LineActivity activity){
+    public Connection setIpInformation(String ip, Connection activity) {
         Optional<CityResponse> cityResponse = geoIpService.getIpInformation(ip);
         try {
             activity.setCountry(cityResponse.map(result -> result.getCountry().getName()).orElse("Unknown Country"));
             activity.setCity(cityResponse.map(result -> result.getCity().getName()).orElse("Unknown City"));
             activity.setIsoCode(cityResponse.map(result -> result.getCountry().getIsoCode()).orElse("Unknown ISO Code"));
             activity.setIsp(cityResponse.map(result -> result.getTraits().getIsp()).orElse("Unknown ISP"));
-        } catch (NullPointerException ignored){}
+        } catch (NullPointerException ignored) {
+        }
         return activity;
     }
 
-    public Page<ConnectionView> activeConnections(int pageNo, int pageSize, String sortBy, String sortDir){
+    public Page<ConnectionView> getActiveConnections(int pageNo, int pageSize, String sortBy, String sortDir) {
         return findAll(pageNo, pageSize, sortBy, sortDir).map(connectionMapper::convertToView);
     }
 
-    public void endConnection(ConnectionIdView connectionIdView){
-        LineActivityId lineActivityId = connectionMapper.convertToEntity(connectionIdView);
-        var lineActivity= lineActivityRepository.findById(lineActivityId).orElseThrow(EntityNotFoundException::new);
-        lineActivity.setHlsEnded(true);
-        lineActivityRepository.save(lineActivity);
+    public void endConnection(ConnectionIdView connectionIdView) {
+        ConnectionId connectionId = connectionMapper.convertToEntity(connectionIdView);
+        var connection = connectionRepository.findById(connectionId).orElseThrow(EntityNotFoundException::new);
+        connection.setHlsEnded(true);
+        connectionRepository.save(connection);
     }
 
-    private Page<LineActivity> findAll(int pageNo, int pageSize, String sortBy, String sortDir) {
+    private Page<Connection> findAll(int pageNo, int pageSize, String sortBy, String sortDir) {
         Pageable page;
         Sort.Order order;
         if (sortBy != null && !sortBy.equals("")) {
@@ -136,6 +136,6 @@ public class LineActivityService{
         } else {
             page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc("id")));
         }
-        return lineActivityRepository.findAll(page);
+        return connectionRepository.findAll(page);
     }
 }

@@ -1,7 +1,7 @@
 package com.xtra.api.unit.service;
 
 import com.xtra.api.model.Line;
-import com.xtra.api.repository.LineActivityRepository;
+import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.service.LineService;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ public class LineServiceTest {
     @Mock
     private LineRepository lineRepository;
     @Mock
-    private LineActivityRepository lineActivityRepository;
+    private ConnectionRepository connectionRepository;
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -27,7 +27,7 @@ public class LineServiceTest {
         Mockito.doReturn(false).when(lineRepository).existsByUsername(Mockito.anyString());
 
         LineService lineService = Mockito.mock(
-                LineService.class, Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS).useConstructor(lineRepository, lineActivityRepository, bCryptPasswordEncoder)
+                LineService.class, Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS).useConstructor(lineRepository, connectionRepository, bCryptPasswordEncoder)
         );
         Line line = new Line();
         line.setPassword("testPassword");

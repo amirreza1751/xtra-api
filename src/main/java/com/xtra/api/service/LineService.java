@@ -1,17 +1,15 @@
 package com.xtra.api.service;
 
 import com.xtra.api.model.Line;
-import com.xtra.api.model.LineActivity;
+import com.xtra.api.model.Connection;
 import com.xtra.api.model.UserType;
-import com.xtra.api.repository.LineActivityRepository;
+import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,12 +18,12 @@ import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 public abstract class LineService extends CrudService<Line, Long, LineRepository> {
-    private final LineActivityRepository lineActivityRepository;
+    private final ConnectionRepository connectionRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    protected LineService(LineRepository repository, LineActivityRepository lineActivityRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    protected LineService(LineRepository repository, ConnectionRepository connectionRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         super(repository, "Line");
-        this.lineActivityRepository = lineActivityRepository;
+        this.connectionRepository = connectionRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
@@ -37,12 +35,12 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
 
     public void killAllConnections(Long id) {
         if (existsById(id)) {
-            List<LineActivity> lineActivities = lineActivityRepository.findAllByIdLineId(id);
-            if (!lineActivities.isEmpty()) {
-                lineActivities.forEach((activity) -> {
+            List<Connection> connections = connectionRepository.findAllByIdLineId(id);
+            if (!connections.isEmpty()) {
+                connections.forEach((activity) -> {
                     activity.setHlsEnded(true);
                     activity.setEndDate(LocalDateTime.now());
-                    lineActivityRepository.save(activity);
+                    connectionRepository.save(activity);
                 });
             }
         }

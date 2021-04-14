@@ -53,7 +53,7 @@ public class Line extends User {
 
     @OneToMany(mappedBy = "line")
     @ToString.Exclude
-    private List<LineActivity> activities = new ArrayList<>();
+    private List<Connection> activities = new ArrayList<>();
 
     public int getCurrentConnections() {
         return activities.size();

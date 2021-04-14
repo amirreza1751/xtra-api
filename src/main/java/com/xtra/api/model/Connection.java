@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 @Data
 @ToString(exclude = {"line", "stream", "server"})
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LineActivity {
+public class Connection {
 
     @EmbeddedId
-    private LineActivityId id = new LineActivityId();
+    private ConnectionId id = new ConnectionId();
 
     @ManyToOne
     @MapsId("lineId")

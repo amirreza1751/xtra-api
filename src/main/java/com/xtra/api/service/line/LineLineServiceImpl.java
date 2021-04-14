@@ -4,12 +4,10 @@ import com.xtra.api.mapper.line.LineLineMapper;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.line.line.LineInsertView;
 import com.xtra.api.projection.line.line.LineView;
-import com.xtra.api.repository.LineActivityRepository;
+import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +22,9 @@ public class LineLineServiceImpl extends LineService {
     private final LineLineMapper lineMapper;
 
     @Autowired
-    protected LineLineServiceImpl(LineRepository repository, LineLineMapper lineMapper, LineActivityRepository lineActivityRepository
+    protected LineLineServiceImpl(LineRepository repository, LineLineMapper lineMapper, ConnectionRepository connectionRepository
             , BCryptPasswordEncoder bCryptPasswordEncoder) {
-        super(repository, lineActivityRepository, bCryptPasswordEncoder);
+        super(repository, connectionRepository, bCryptPasswordEncoder);
         this.lineMapper = lineMapper;
     }
 

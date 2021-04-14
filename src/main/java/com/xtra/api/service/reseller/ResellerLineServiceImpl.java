@@ -8,14 +8,13 @@ import com.xtra.api.model.Package;
 import com.xtra.api.model.Reseller;
 import com.xtra.api.projection.reseller.line.LineCreateView;
 import com.xtra.api.projection.reseller.line.LineView;
-import com.xtra.api.repository.LineActivityRepository;
+import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.PackageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,9 +30,9 @@ public class ResellerLineServiceImpl extends LineService {
     private final PackageService packageService;
 
     @Autowired
-    protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, LineActivityRepository lineActivityRepository, PackageService packageService
+    protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, ConnectionRepository connectionRepository, PackageService packageService
             , BCryptPasswordEncoder bCryptPasswordEncoder) {
-        super(repository, lineActivityRepository, bCryptPasswordEncoder);
+        super(repository, connectionRepository, bCryptPasswordEncoder);
         this.lineMapper = lineMapper;
         this.packageService = packageService;
     }

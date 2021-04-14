@@ -15,7 +15,6 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -64,7 +63,7 @@ public class Stream {
     private List<String> streamInputs;
 
     @OneToMany(mappedBy = "stream")
-    private List<LineActivity> lineActivities;
+    private List<Connection> connections;
 
     @OneToOne
     private EpgChannel epgChannel;
@@ -73,7 +72,7 @@ public class Stream {
 
 
     public int getCurrentConnections() {
-        return lineActivities.size();
+        return connections.size();
     }
 
     //Timestamps

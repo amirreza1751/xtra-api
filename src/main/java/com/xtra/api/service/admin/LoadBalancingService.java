@@ -2,7 +2,7 @@ package com.xtra.api.service.admin;
 
 import com.xtra.api.model.Server;
 import com.xtra.api.model.Stream;
-import com.xtra.api.repository.LineActivityRepository;
+import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.StreamRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +12,11 @@ import java.util.Collections;
 @Service
 public class LoadBalancingService {
     private final StreamRepository streamRepository;
-    private final LineActivityRepository lineActivityRepository;
+    private final ConnectionRepository connectionRepository;
 
-    public LoadBalancingService(StreamRepository streamRepository, LineActivityRepository lineActivityRepository) {
+    public LoadBalancingService(StreamRepository streamRepository, ConnectionRepository connectionRepository) {
         this.streamRepository = streamRepository;
-        this.lineActivityRepository = lineActivityRepository;
+        this.connectionRepository = connectionRepository;
     }
 
     public ArrayList<Server> findAvailableServers(String stream_token) {
@@ -29,7 +29,7 @@ public class LoadBalancingService {
     private final ArrayList<Integer> connections = new ArrayList<>();
 
     public Server findLeastConnServer(ArrayList<Server> servers) {
-        servers.forEach(server -> connections.add(lineActivityRepository.countAllByIdServerId(server.getId())));
+        servers.forEach(server -> connections.add(connectionRepository.countAllByIdServerId(server.getId())));
          return servers.get(connections.indexOf(Collections.min(connections)));
     }
 }
