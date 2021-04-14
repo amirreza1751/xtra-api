@@ -1,11 +1,19 @@
 package com.xtra.api.service.admin;
 
 import com.maxmind.geoip2.model.CityResponse;
+import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.mapper.admin.ConnectionMapper;
 import com.xtra.api.model.LineActivity;
 import com.xtra.api.model.LineActivityId;
 import com.xtra.api.model.Stream;
+import com.xtra.api.projection.admin.ConnectionIdView;
+import com.xtra.api.projection.admin.ConnectionView;
 import com.xtra.api.repository.LineActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,20 +24,22 @@ import java.util.Optional;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
-public class LineActivityService {
+public class LineActivityService{
     final private LineActivityRepository lineActivityRepository;
     final private AdminLineServiceImpl adminLineService;
     final private StreamService streamService;
     private final ServerService serverService;
     private final GeoIpService geoIpService;
+    private final ConnectionMapper connectionMapper;
 
     @Autowired
-    public LineActivityService(LineActivityRepository lineActivityRepository, AdminLineServiceImpl adminLineService, StreamService streamService, ServerService serverService, GeoIpService geoIpService) {
+    public LineActivityService(LineActivityRepository lineActivityRepository, AdminLineServiceImpl adminLineService, StreamService streamService, ServerService serverService, GeoIpService geoIpService, ConnectionMapper connectionMapper){
         this.lineActivityRepository = lineActivityRepository;
         this.adminLineService = adminLineService;
         this.streamService = streamService;
         this.serverService = serverService;
         this.geoIpService = geoIpService;
+        this.connectionMapper = connectionMapper;
     }
 
     public void deleteLineActivity(LineActivityId activityId) {
@@ -47,9 +57,10 @@ public class LineActivityService {
                     continue;
                 activity.setLine(lineById.get());
                 var streamById = streamService.findById(activity.getId().getStreamId());
-                if (streamById.isEmpty())
-                    continue;
-                activity.setStream((Stream) streamById.get());
+//                if (streamById.isEmpty())
+//                    continue;
+//                activity.setStream((Stream) streamById.get());
+                activity.setStream(streamById);
 
                 var serverById = serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber);
                 if (serverById.isEmpty())
@@ -62,9 +73,10 @@ public class LineActivityService {
                 var oldActivity = existingActivity.get();
                 copyProperties(activity, oldActivity, "id", "line", "stream", "server");
                 var streamById = streamService.findById(activity.getId().getStreamId());
-                if (streamById.isEmpty())
-                    continue;
-                oldActivity.setStream((Stream) streamById.get());
+//                if (streamById.isEmpty())
+//                    continue;
+//                oldActivity.setStream((Stream) streamById.get());
+                oldActivity.setStream(streamById);
 
                 var lineById = adminLineService.findById(activity.getId().getLineId());
                 if (lineById.isEmpty())
@@ -101,4 +113,29 @@ public class LineActivityService {
         return activity;
     }
 
+    public Page<ConnectionView> activeConnections(int pageNo, int pageSize, String sortBy, String sortDir){
+        return findAll(pageNo, pageSize, sortBy, sortDir).map(connectionMapper::convertToView);
+    }
+
+    public void endConnection(ConnectionIdView connectionIdView){
+        LineActivityId lineActivityId = connectionMapper.convertToEntity(connectionIdView);
+        var lineActivity= lineActivityRepository.findById(lineActivityId).orElseThrow(EntityNotFoundException::new);
+        lineActivity.setHlsEnded(true);
+        lineActivityRepository.save(lineActivity);
+    }
+
+    private Page<LineActivity> findAll(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Pageable page;
+        Sort.Order order;
+        if (sortBy != null && !sortBy.equals("")) {
+            if (sortDir != null && sortDir.equalsIgnoreCase("desc"))
+                order = Sort.Order.desc(sortBy);
+            else
+                order = Sort.Order.asc(sortBy);
+            page = PageRequest.of(pageNo, pageSize, Sort.by(order));
+        } else {
+            page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc("id")));
+        }
+        return lineActivityRepository.findAll(page);
+    }
 }
