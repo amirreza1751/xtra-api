@@ -11,7 +11,7 @@ import java.util.Set;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class RoleView {
-    private long id;
+    private Long id;
     private String name;
     private String color;
 

@@ -3,6 +3,7 @@ package com.xtra.api.mapper.admin;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.PermissionView;
 import com.xtra.api.projection.admin.role.RoleInsertView;
+import com.xtra.api.projection.admin.role.RoleListItem;
 import com.xtra.api.projection.admin.role.RoleView;
 import com.xtra.api.service.admin.PermissionService;
 import org.mapstruct.AfterMapping;
@@ -41,4 +42,6 @@ public abstract class RoleMapper {
         }
         role.setPermissions(permissions);
     }
+
+    public abstract RoleListItem toListItem(Role role);
 }
