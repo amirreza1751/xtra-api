@@ -1,28 +1,33 @@
 package com.xtra.api.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class ProgressInfo {
+@AllArgsConstructor
+public class StreamDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String uptime;
+    private String currentInput;
+    private String resolution;
+    private String videoCodec;
+    private String audioCodec;
     private String speed;
     private String frameRate;
-
-    public ProgressInfo(String speed, String frameRate, String bitrate) {
-        this.speed = speed;
-        this.frameRate = frameRate;
-        this.bitrate = bitrate;
-    }
-
     private String bitrate;
 
-    @OneToOne(mappedBy = "progressInfo", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @OneToOne(mappedBy = "streamDetails")
     private StreamServer streamServer;
+
 }
+
+

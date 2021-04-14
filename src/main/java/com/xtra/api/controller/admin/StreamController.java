@@ -20,13 +20,6 @@ public class StreamController {
         this.streamService = streamService;
     }
 
-    @PatchMapping("/stream_info/batch")
-    @Transactional
-    public ResponseEntity<?> batchUpdateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos, @RequestParam String portNumber, HttpServletRequest request) {
-        streamService.infoBatchUpdate(infos, portNumber, request);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
     @GetMapping("/get_id/{stream_token}")
     public ResponseEntity<Long> getStreamIdByToken(@PathVariable("stream_token") String streamToken) {
         return ResponseEntity.ok(streamService.findIdByToken(streamToken));

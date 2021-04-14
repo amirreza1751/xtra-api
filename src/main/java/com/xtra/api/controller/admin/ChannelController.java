@@ -1,9 +1,5 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.mapper.admin.ChannelInfoMapper;
-import com.xtra.api.mapper.admin.ChannelStartMapper;
-
-import com.xtra.api.model.ChannelList;
 import com.xtra.api.model.EpgChannelId;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
@@ -14,7 +10,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.LinkedHashMap;
 
 import java.util.List;
 
@@ -22,12 +17,10 @@ import java.util.List;
 @RequestMapping("/channels")
 public class ChannelController {
     private final ChannelService channelService;
-    private final ChannelInfoMapper channelInfoMapper;
 
     @Autowired
-    public ChannelController(ChannelService channelService, ChannelInfoMapper channelInfoMapper) {
+    public ChannelController(ChannelService channelService) {
         this.channelService = channelService;
-        this.channelInfoMapper = channelInfoMapper;
     }
 
     // Stream CRUD
@@ -96,12 +89,6 @@ public class ChannelController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-    @PostMapping("/stream_info/batch")
-    public ResponseEntity<?> batchUpdateStreamInfo(@RequestBody LinkedHashMap<String, Object> infos, @RequestParam String portNumber, HttpServletRequest request) {
-        channelService.infoBatchUpdate(infos, portNumber, request);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
     @GetMapping("/get_id/{stream_token}")
     public ResponseEntity<Long> getStreamIdByToken(@PathVariable("stream_token") String streamToken) {
         return ResponseEntity.ok(channelService.findIdByToken(streamToken));
@@ -133,7 +120,7 @@ public class ChannelController {
 
     @GetMapping("/{id}/info")
     public ResponseEntity<ChannelInfo> channelInfo(@PathVariable Long id) {
-        return ResponseEntity.ok(channelInfoMapper.convertToDto(channelService.channelInfo(id)));
+        return ResponseEntity.ok(channelService.getChannelInfo(id));
     }
 
     @PatchMapping("{id}/epg-channel")

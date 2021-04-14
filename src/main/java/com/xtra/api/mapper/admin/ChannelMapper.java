@@ -4,8 +4,9 @@ import com.xtra.api.exceptions.EntityNotFoundException;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.channel.ChannelInfo;
 import com.xtra.api.projection.admin.channel.ChannelInsertView;
+import com.xtra.api.projection.admin.channel.ChannelServerInfo;
 import com.xtra.api.projection.admin.channel.ChannelView;
-import com.xtra.api.projection.admin.channel.MergedChannelInfo;
+import com.xtra.api.projection.system.StreamDetailsView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
 import com.xtra.api.repository.EpgChannelRepository;
@@ -113,10 +114,10 @@ public abstract class ChannelMapper {
     @Mapping(source = "streamServers", target = "channelInfos")
     public abstract ChannelInfo convertToChannelInfo(Channel channel);
 
-    public Set<MergedChannelInfo> convertToInfosMap(Set<StreamServer> streamServers) {
+    public abstract ChannelServerInfo toStreamDetailsView(StreamDetails streamDetails);
+
+    public Set<ChannelServerInfo> convertToInfosMap(Set<StreamServer> streamServers) {
         if (streamServers == null) return null;
-        Set<MergedChannelInfo> infos = new HashSet<>();
-        streamServers.forEach(streamServer -> infos.add(new MergedChannelInfo(streamServer.getStreamInfo(), streamServer.getProgressInfo())));
-        return infos;
+        return streamServers.stream().map(streamServer -> toStreamDetailsView(streamServer.getStreamDetails())).collect(Collectors.toSet());
     }
 }
