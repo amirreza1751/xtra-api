@@ -24,6 +24,4 @@ public class Vod {
     @OneToMany(mappedBy = "vod", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private Set<CollectionVod> collectionAssigns;
 
-    @OneToMany(mappedBy = "vod", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private Set<ServerVod> serverVods;
 }
