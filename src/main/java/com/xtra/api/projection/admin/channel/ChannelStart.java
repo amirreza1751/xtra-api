@@ -6,6 +6,7 @@ import com.xtra.api.model.StreamServer;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -19,4 +20,10 @@ public class ChannelStart {
     private int selectedSource;
 
     private List<String> streamInputs;
+
+    //advanced stream options
+    private Map<String, String> inputKeyValues;
+    private Map<String, String> outputKeyValues;
+    private Set<String> inputFlags;
+    private Set<String> outputFlags;
 }
