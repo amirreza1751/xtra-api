@@ -1,6 +1,6 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.DownloadList;
 import com.xtra.api.model.Reseller;
 import com.xtra.api.model.Role;

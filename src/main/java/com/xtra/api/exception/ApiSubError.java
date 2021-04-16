@@ -1,4 +1,4 @@
-package com.xtra.api.exceptions;
+package com.xtra.api.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

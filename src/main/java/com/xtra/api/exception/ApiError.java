@@ -1,4 +1,4 @@
-package com.xtra.api.exceptions;
+package com.xtra.api.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;

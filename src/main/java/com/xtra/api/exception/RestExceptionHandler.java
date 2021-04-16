@@ -1,4 +1,4 @@
-package com.xtra.api.exceptions;
+package com.xtra.api.exception;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

@@ -1,13 +1,10 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.channel.ChannelInsertView;
-import com.xtra.api.projection.admin.channel.ChannelView;
 import com.xtra.api.projection.admin.movie.MovieInsertView;
 import com.xtra.api.projection.admin.movie.MovieView;
 import com.xtra.api.repository.CollectionRepository;
-import com.xtra.api.repository.CollectionStreamRepository;
 import com.xtra.api.repository.CollectionVodRepository;
 import com.xtra.api.repository.ServerRepository;
 import org.mapstruct.AfterMapping;
