@@ -29,20 +29,20 @@ public class ApiError {
         timestamp = LocalDateTime.now();
     }
 
-    ApiError(Throwable ex) {
+    public ApiError(Throwable ex) {
         this();
         this.message = "Unexpected error";
         this.details = ex.getLocalizedMessage();
     }
 
-    ApiError(String message, Throwable ex, String path) {
+    public ApiError(String message, Throwable ex, String path) {
         this();
         this.message = message;
         this.details = ex.getLocalizedMessage();
         this.path = path;
     }
 
-    ApiError(String path, String errorCode, String message, String details) {
+    public ApiError(String path, String errorCode, String message, String details) {
         this();
         this.message = message;
         this.errorCode = errorCode;
@@ -50,7 +50,7 @@ public class ApiError {
         this.path = path;
     }
 
-    ApiError(String path, String errorCode, String message, Set<ConstraintViolation<?>> violations) {
+    public ApiError(String path, String errorCode, String message, Set<ConstraintViolation<?>> violations) {
         this();
         this.message = message;
         this.errorCode = errorCode;

@@ -1,5 +1,8 @@
-package com.xtra.api.exception;
+package com.xtra.api.exception.handler;
 
+import com.xtra.api.exception.ActionNotAllowedException;
+import com.xtra.api.exception.ApiError;
+import com.xtra.api.exception.EntityNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
