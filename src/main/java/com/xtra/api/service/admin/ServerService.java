@@ -1,6 +1,6 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.MappingService;
 import com.xtra.api.mapper.admin.ServerMapper;
 import com.xtra.api.model.*;

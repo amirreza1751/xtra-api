@@ -28,7 +28,7 @@ public class LineView implements BaseView {
     private String resellerNotes;
 
     private List<StreamProtocol> allowedOutputs;
-    private String ownerUsername;
+    private Long ownerId;
     private List<DlCollectionView> collections;
 
     private boolean isCountryLocked = false;

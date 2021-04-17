@@ -1,6 +1,6 @@
 package com.xtra.api.service.system;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
 import com.xtra.api.model.Channel;
 import com.xtra.api.model.ChannelList;

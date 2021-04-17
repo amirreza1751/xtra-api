@@ -1,6 +1,6 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.MediaPair;
 import com.xtra.api.projection.admin.collection.CollectionInsertView;
@@ -10,9 +10,7 @@ import com.xtra.api.repository.CategoryRepository;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")

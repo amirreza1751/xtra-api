@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/line_activities")
+@RequestMapping("/connections")
 public class ConnectionController {
     final private ConnectionService connectionService;
 

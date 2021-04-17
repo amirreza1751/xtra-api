@@ -1,15 +1,13 @@
 package com.xtra.api.mapper.reseller;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.DownloadList;
 import com.xtra.api.model.DownloadListCollection;
 import com.xtra.api.model.Line;
-import com.xtra.api.model.Reseller;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.projection.reseller.line.LineCreateView;
 import com.xtra.api.repository.CollectionRepository;
-import com.xtra.api.service.admin.UserService;
 import org.apache.commons.lang3.RandomUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

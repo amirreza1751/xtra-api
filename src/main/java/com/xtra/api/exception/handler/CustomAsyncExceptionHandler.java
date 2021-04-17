@@ -1,4 +1,4 @@
-package com.xtra.api.exceptions;
+package com.xtra.api.exception.handler;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 

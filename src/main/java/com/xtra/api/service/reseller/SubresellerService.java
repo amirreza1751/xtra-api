@@ -1,7 +1,7 @@
 package com.xtra.api.service.reseller;
 
-import com.xtra.api.exceptions.ActionNotAllowedException;
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.ActionNotAllowedException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.mapper.reseller.CreditChangeMapper;
 import com.xtra.api.model.Reseller;
