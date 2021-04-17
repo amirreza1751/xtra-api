@@ -1,5 +1,8 @@
 package com.xtra.api.controller.admin;
 
+import com.xtra.api.projection.admin.channel.ChannelBatchDeleteView;
+import com.xtra.api.projection.admin.line.LineBatchDeleteView;
+import com.xtra.api.projection.admin.line.LineBatchInsertView;
 import com.xtra.api.projection.admin.line.LineInsertView;
 import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.service.admin.AdminLineServiceImpl;
@@ -44,6 +47,18 @@ public class LineController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteLine(@PathVariable Long id) {
         lineService.deleteOrFail(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PatchMapping("/batch")
+    public ResponseEntity<?> updateLines(@RequestBody LineBatchInsertView insertView){
+        lineService.saveAll(insertView);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/batch")
+    public ResponseEntity<?> deleteChannels(@RequestBody LineBatchDeleteView view) {
+        lineService.deleteAll(view);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
