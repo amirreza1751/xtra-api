@@ -17,13 +17,13 @@ public class LineProfileController {
         this.lineService = lineService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<LineView> getLineProfile(@PathVariable Long id) {
-        return ResponseEntity.ok(lineService.getById(id));
+    @GetMapping("")
+    public ResponseEntity<LineView> getLineProfile() {
+        return ResponseEntity.ok(lineService.getLoggedInLine());
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<LineView> updateLineProfile(@PathVariable Long id, @RequestBody LineInsertView insertView) {
-        return ResponseEntity.ok(lineService.save(id, insertView));
+    @PatchMapping("")
+    public ResponseEntity<LineView> updateLineProfile(@RequestBody LineInsertView insertView) {
+        return ResponseEntity.ok(lineService.save(insertView));
     }
 }

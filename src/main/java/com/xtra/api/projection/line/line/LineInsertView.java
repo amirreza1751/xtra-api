@@ -9,9 +9,7 @@ import java.util.List;
 
 @Data
 public class LineInsertView {
-    protected String username;
     protected String password;
-    private LinkedHashSet<Long> collections;
 
     /* Location Based Permissions */
     private boolean isCountryLocked = false;

@@ -16,24 +16,36 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.xtra.api.service.system.UserAuthService.getCurrentLine;
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 public class LineLineServiceImpl extends LineService {
     private final LineLineMapper lineMapper;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     protected LineLineServiceImpl(LineRepository repository, LineLineMapper lineMapper, ConnectionRepository connectionRepository
-            , BCryptPasswordEncoder bCryptPasswordEncoder) {
+            , BCryptPasswordEncoder bCryptPasswordEncoder, BCryptPasswordEncoder bCryptPasswordEncoder1) {
         super(repository, connectionRepository, bCryptPasswordEncoder);
         this.lineMapper = lineMapper;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder1;
     }
 
     public LineView getById(Long id) {
         return lineMapper.convertToView(findByIdOrFail(id));
     }
 
-    public LineView save(Long id, LineInsertView lineInsertView) {
-        return lineMapper.convertToView(updateOrFail(id, lineMapper.convertToEntity(lineInsertView)));
+    public LineView getLoggedInLine() {
+        return lineMapper.convertToView(getCurrentLine());
+    }
+
+    public LineView save(LineInsertView lineInsertView) {
+        Line line = getCurrentLine();
+        if (line.getPassword() != null && !line.getPassword().equals(""))
+            line.setPassword(bCryptPasswordEncoder.encode(lineInsertView.getPassword()));
+
+        repository.save(line);
+        return lineMapper.convertToView(line);
     }
 
     public Map<String, String> downloadLine() {
