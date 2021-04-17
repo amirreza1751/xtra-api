@@ -1,6 +1,6 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.SettingMapper;
 import com.xtra.api.model.Setting;
 import com.xtra.api.projection.admin.SettingView;

@@ -1,9 +1,8 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.MovieMapper;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.channel.ChannelBatchDeleteView;
 import com.xtra.api.projection.admin.movie.MovieBatchDeleteView;
 import com.xtra.api.projection.admin.movie.MovieBatchUpdateView;
 import com.xtra.api.projection.admin.movie.MovieInsertView;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
 

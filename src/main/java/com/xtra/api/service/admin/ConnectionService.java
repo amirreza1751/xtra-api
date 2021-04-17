@@ -1,7 +1,7 @@
 package com.xtra.api.service.admin;
 
 import com.maxmind.geoip2.model.CityResponse;
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ConnectionMapper;
 import com.xtra.api.model.Connection;
 import com.xtra.api.model.ConnectionId;

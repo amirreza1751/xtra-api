@@ -1,6 +1,6 @@
 package com.xtra.api.service.reseller;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.DownloadListMapper;
 import com.xtra.api.model.DownloadList;
 import com.xtra.api.projection.admin.downloadlist.DownloadListInsertView;

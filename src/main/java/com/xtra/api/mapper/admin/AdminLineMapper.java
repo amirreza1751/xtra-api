@@ -1,6 +1,6 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.exceptions.EntityNotFoundException;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
 import com.xtra.api.projection.admin.line.LineInsertView;
@@ -68,7 +68,7 @@ public abstract class AdminLineMapper {
 
     @Mapping(source = "defaultDownloadList", target = "collections")
     @Mapping(source = "role.id", target = "roleId")
-    @Mapping(source = "owner.username", target = "ownerUsername")
+    @Mapping(source = "owner.id", target = "ownerId")
     public abstract LineView convertToView(Line line);
 
     List<DlCollectionView> convertDownloadListToDlCollectionView(DownloadList downloadList) {

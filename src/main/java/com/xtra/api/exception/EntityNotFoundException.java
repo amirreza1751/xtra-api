@@ -1,14 +1,7 @@
-package com.xtra.api.exceptions;
+package com.xtra.api.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.IntStream;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
