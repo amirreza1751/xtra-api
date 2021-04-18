@@ -53,20 +53,20 @@ public abstract class ChannelMapper {
             channel.setStreamServers(streamServers);
         }
 
-        var collectionIds = channelView.getCollections();
-        if (collectionIds != null) {
-            Set<CollectionStream> collectionStreams = new HashSet<>();
-            for (var id : collectionIds) {
-                var collectionStream = new CollectionStream();
-                var orderCount = collectionStreamRepository.countAllByIdCollectionId(id);
-                collectionStream.setOrder(orderCount + 1);
-                var col = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("collection", id.toString()));
-                collectionStream.setCollection(col);
-                collectionStream.setStream(channel);
-                collectionStreams.add(collectionStream);
-            }
-            channel.setCollectionAssigns(collectionStreams);
-        }
+//        var collectionIds = channelView.getCollections();
+//        if (collectionIds != null) {
+//            Set<CollectionStream> collectionStreams = new HashSet<>();
+//            for (var id : collectionIds) {
+//                var collectionStream = new CollectionStream();
+//                var orderCount = collectionStreamRepository.countAllByIdCollectionId(id);
+//                collectionStream.setOrder(orderCount + 1);
+//                var col = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("collection", id.toString()));
+//                collectionStream.setCollection(col);
+//                collectionStream.setStream(channel);
+//                collectionStreams.add(collectionStream);
+//            }
+//            channel.setCollectionAssigns(collectionStreams);
+//        }
     }
 
     @Mapping(source = "streamServers", target = "servers")
