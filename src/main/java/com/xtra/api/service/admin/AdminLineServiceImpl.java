@@ -1,7 +1,10 @@
 package com.xtra.api.service.admin;
 
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.AdminLineMapper;
 import com.xtra.api.model.*;
+import com.xtra.api.projection.admin.line.LineBatchDeleteView;
+import com.xtra.api.projection.admin.line.LineBatchInsertView;
 import com.xtra.api.projection.admin.line.LineInsertView;
 import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.repository.ConnectionRepository;
@@ -47,6 +50,48 @@ public class AdminLineServiceImpl extends LineService {
 
     public LineView save(Long id, LineInsertView lineInsertView) {
         return lineMapper.convertToView(updateOrFail(id, lineMapper.convertToEntity(lineInsertView)));
+    }
+
+    public void saveAll(LineBatchInsertView insertView) {
+        var lineIds = insertView.getLineIds();
+
+        if (lineIds != null) {
+            for (Long lineId : lineIds) {
+                Line line = repository.findById(lineId).orElseThrow(() -> new EntityNotFoundException("Line", lineId.toString()));
+
+                if (insertView.getNeverExpire() != null && !insertView.getNeverExpire().equals(""))
+                    line.setNeverExpire(Boolean.parseBoolean(insertView.getNeverExpire()));
+
+                if (insertView.getMaxConnections() > 0)
+                    line.setMaxConnections(insertView.getMaxConnections());
+
+                if (insertView.getIsTrial() != null && !insertView.getIsTrial().equals(""))
+                    line.setTrial(Boolean.parseBoolean(insertView.getIsTrial()));
+
+                if (insertView.getIsBanned() != null && !insertView.getIsBanned().equals(""))
+                    line.setBanned(Boolean.parseBoolean(insertView.getIsBanned()));
+
+                if (insertView.getIsBlocked() != null && !insertView.getIsBlocked().equals(""))
+                    line.setBlocked(Boolean.parseBoolean(insertView.getIsBlocked()));
+
+                if (insertView.getAdminNotes() != null && !insertView.getAdminNotes().equals(""))
+                    line.setAdminNotes(insertView.getAdminNotes());
+
+                if (insertView.getAllowedOutputs().size() > 0)
+                    line.setAllowedOutputs(insertView.getAllowedOutputs());
+
+                repository.save(line);
+            }
+        }
+    }
+
+    public void deleteAll(LineBatchDeleteView view) {
+        var lineIds = view.getLineIds();
+        if (lineIds != null) {
+            for (Long lineId : lineIds) {
+                deleteOrFail(lineId);
+            }
+        }
     }
 
     public void updateLineBlock(Long id, boolean blocked) {
