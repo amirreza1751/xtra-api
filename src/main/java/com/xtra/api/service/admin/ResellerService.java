@@ -4,6 +4,7 @@ import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.model.Reseller;
 import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
+import com.xtra.api.projection.admin.user.reseller.ResellerSignUpView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.service.CrudService;
@@ -67,5 +68,9 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         existingReseller.setCredits(credits.getCredits());
         //@todo log the credit change with reason
         repository.save(existingReseller);
+    }
+
+    public void signUp(ResellerSignUpView resellerSignUpView){
+        insert(resellerMapper.convertToEntity(resellerSignUpView));
     }
 }

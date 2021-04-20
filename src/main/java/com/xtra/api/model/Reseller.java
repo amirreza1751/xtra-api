@@ -17,6 +17,8 @@ public class Reseller extends User {
     private String resellerDns;
     private String notes;
     private String lang;
+    private String mainMarket;
+    private String telegramId;
 
     @OneToMany(mappedBy = "owner")
     private List<DownloadList> customDownloadLists;

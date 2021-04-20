@@ -4,6 +4,7 @@ import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
+import com.xtra.api.projection.admin.user.reseller.ResellerSignUpView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.service.admin.ResellerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,5 +62,11 @@ public class ResellerController {
     public ResponseEntity<?> deleteReseller(@PathVariable Long id) {
         resellerService.deleteOrFail(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> signUpReseller(@RequestBody ResellerSignUpView resellerSignUpView){
+        resellerService.signUp(resellerSignUpView);
+        return ResponseEntity.ok().build();
     }
 }
