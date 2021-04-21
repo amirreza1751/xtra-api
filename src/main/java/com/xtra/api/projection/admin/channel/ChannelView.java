@@ -20,17 +20,10 @@ public class ChannelView {
     private String logo;
     private StreamType streamType;
     private String streamToken;
-    private boolean readNative = false;
-    private boolean streamAll = false;
-    private boolean directSource = false;
-    private boolean genTimestamps = false;
-    private boolean rtmpOutput = false;
-    private String userAgent;
     private String notes;
 
     private Set<DayOfWeek> daysToRestart;
     private LocalTime timeToRestart;
-    private String customFFMPEG;
     private List<String> streamInputs;
 
     private Set<Long> servers;

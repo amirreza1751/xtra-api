@@ -34,12 +34,6 @@ public class Stream {
     private String logo;
     private StreamType streamType;
     private String streamToken;
-    private boolean readNative = false;
-    private boolean streamAll = false;
-    private boolean directSource = false;
-    private boolean genTimestamps = false;
-    private boolean rtmpOutput = false;
-    private String userAgent;
     private String notes;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -50,7 +44,6 @@ public class Stream {
 
     @ManyToOne
     private TranscodeProfile transcodeProfile;
-    private String customFFMPEG;
 
     @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private Set<StreamServer> streamServers;
@@ -68,7 +61,7 @@ public class Stream {
     @OneToOne
     private EpgChannel epgChannel;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = {CascadeType.MERGE})
     private AdvancedStreamOptions advancedStreamOptions;
 
     private int currentConnections = 0;
