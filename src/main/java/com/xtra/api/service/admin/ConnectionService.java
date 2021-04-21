@@ -46,10 +46,10 @@ public class ConnectionService {
     }
 
     //    @Transactional
-    public void batchCreateOrUpdate(List<Connection> connections, String portNumber, HttpServletRequest request) {
+    public void batchCreateOrUpdate(List<Connection> connections, String token) {
         for (var activity : connections) {
             //@todo find out how null values get passed
-            var existingActivity = connectionRepository.findById(new ConnectionId(activity.getId().getLineId(), activity.getId().getStreamId(), serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber).get().getId(), activity.getId().getUserIp()));
+            var existingActivity = connectionRepository.findById(new ConnectionId(activity.getId().getLineId(), activity.getId().getStreamId(), serverService.findByServerToken(token).get().getId(), activity.getId().getUserIp()));
             if (existingActivity.isEmpty()) {
                 var lineById = adminLineService.findById(activity.getId().getLineId());
                 if (lineById.isEmpty())
@@ -61,7 +61,7 @@ public class ConnectionService {
 //                activity.setStream((Stream) streamById.get());
                 activity.setStream(streamById);
 
-                var serverById = serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber);
+                var serverById = serverService.findByServerToken(token);
                 if (serverById.isEmpty())
                     continue;
                 activity.setServer(serverById.get());
@@ -82,7 +82,7 @@ public class ConnectionService {
                     continue;
                 oldActivity.setLine(lineById.get());
 
-                var serverById = serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber);
+                var serverById = serverService.findByServerToken(token);
                 if (serverById.isEmpty())
                     continue;
                 oldActivity.setServer(serverById.get());

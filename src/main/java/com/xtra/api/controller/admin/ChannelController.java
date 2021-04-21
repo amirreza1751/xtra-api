@@ -1,4 +1,5 @@
 package com.xtra.api.controller.admin;
+
 import com.xtra.api.model.EpgChannelId;
 import com.xtra.api.projection.admin.ChangingServerPair;
 import com.xtra.api.projection.admin.StreamInputPair;
@@ -117,8 +118,10 @@ public class ChannelController {
     }
 
     @GetMapping("/{id}/change-source")
-    public ResponseEntity<Integer> changeSource(@PathVariable Long id, @RequestParam String portNumber, HttpServletRequest request) {
-        return ResponseEntity.ok(channelService.changeSource(id, portNumber, request));
+    public ResponseEntity<Integer> changeSource(@PathVariable Long id, @RequestHeader(value = "token", required = false) String token) {
+        if (token == null)
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        return ResponseEntity.ok(channelService.changeSource(id, token));
     }
 
     @GetMapping("/{id}/info")
@@ -128,19 +131,19 @@ public class ChannelController {
 
     @PatchMapping("{id}/epg-channel")
     public ResponseEntity<?> setEpgRecord(@PathVariable Long id, @RequestBody EpgChannelId epgChannelId) {
-        channelService.setEpgRecord(id,epgChannelId);
+        channelService.setEpgRecord(id, epgChannelId);
         return ResponseEntity.ok().build();
     }
 
     //Stream Tools
     @PatchMapping("/tools/dns")
-    public ResponseEntity<?> changeDns(@RequestBody StreamInputPair streamInputPair){
+    public ResponseEntity<?> changeDns(@RequestBody StreamInputPair streamInputPair) {
         channelService.changeDns(streamInputPair);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/tools/server")
-    public ResponseEntity<?> changeServer(@RequestBody ChangingServerPair changingServerPair){
+    public ResponseEntity<?> changeServer(@RequestBody ChangingServerPair changingServerPair) {
         streamServerService.changeServer(changingServerPair);
         return ResponseEntity.ok().build();
     }

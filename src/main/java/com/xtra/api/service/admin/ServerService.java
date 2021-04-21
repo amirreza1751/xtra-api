@@ -7,6 +7,7 @@ import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
+import com.xtra.api.projection.system.CoreConfiguration;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.repository.StreamServerRepository;
@@ -35,6 +36,7 @@ import reactor.netty.tcp.TcpClient;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -125,6 +127,19 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         );
     }
 
+    public Boolean sendUpdateConfigRequest(Server server, CoreConfiguration configuration) {
+        return this.webClient
+                .post()
+                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/config"))
+                .body(Mono.just(configuration), CoreConfiguration.class)
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Boolean.class).block();
+
+    }
+
     public Optional<Server> findByName(String search) {
         return repository.findByName(search);
     }
@@ -152,8 +167,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         return new RestTemplate().getForObject(getServerAddress(server) + "/streams?line_token=" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
     }
 
-    public Optional<Server> findByIpAndCorePort(String ip, String corePort) {
-        return repository.findByIpAndCorePort(ip, corePort);
+    public Optional<Server> findByServerToken(String token) {
+        return repository.findByToken(token);
     }
 
     public List<Server> findByIdIn(List<Long> ids) {
@@ -235,8 +250,15 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
     }
 
     @Override
-    public ServerView add(ServerView server) {
-        return serverMapper.convertToView(insert(serverMapper.convertToEntity(server)));
+    public ServerView add(ServerView serverView) {
+        var server = serverMapper.convertToEntity(serverView);
+        UUID uuid = UUID.randomUUID();
+        server.setToken(uuid.toString());
+        var config = new CoreConfiguration("token", uuid.toString());
+        if (!sendUpdateConfigRequest(server, config)) {
+            throw new RuntimeException("could not contact server");
+        }
+        return serverMapper.convertToView(insert(server));
     }
 
     @Override
@@ -249,5 +271,10 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         return "http://" + server.getIp() + ":" + server.getCorePort();
     }
 
-
+    @Override
+    public Server updateOrFail(Long id, Server newServer) {
+        Server oldObject = findByIdOrFail(id);
+        copyProperties(newServer, oldObject, "id", "token");
+        return repository.save(oldObject);
+    }
 }

@@ -37,8 +37,10 @@ public class ConnectionController {
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<?> batchCreateOrUpdateConnections(@RequestBody List<Connection> connections, @RequestParam String portNumber, HttpServletRequest request) {
-        connectionService.batchCreateOrUpdate(connections, portNumber, request);
+    public ResponseEntity<?> batchCreateOrUpdateConnections(@RequestBody List<Connection> connections, @RequestHeader(value = "token", required = false) String token) {
+        if (token == null)
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        connectionService.batchCreateOrUpdate(connections, token);
         return ResponseEntity.ok().build();
     }
 

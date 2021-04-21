@@ -18,6 +18,7 @@ public class Server {
     private String corePort;
     private String nginxPort;
     private String interfaceName;
+    private String token;
 
     @OneToMany(mappedBy = "server", cascade = CascadeType.MERGE)
     @ToString.Exclude

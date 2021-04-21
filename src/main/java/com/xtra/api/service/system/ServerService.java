@@ -24,8 +24,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         this.channelStartMapper = channelStartMapper;
     }
 
-    public ChannelStart getChannelForServer(HttpServletRequest request, Long channelId, String port) {
-        var server = repository.findByIpAndCorePort(request.getRemoteAddr(), port).orElseThrow(() -> new RuntimeException("server was not found!!!"));
+    public ChannelStart getChannelForServer(Long channelId, String token) {
+        var server = repository.findByToken(token).orElseThrow(() -> new RuntimeException("server was not found!!!"));
         var optionalStreamServer = server.getStreamServers().stream().filter(streamServer -> streamServer.getStream().getId().equals(channelId)).findFirst();
         if (optionalStreamServer.isPresent()) {
             var streamServer = optionalStreamServer.get();
@@ -33,8 +33,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         } else throw new EntityNotFoundException("Channel", channelId);
     }
 
-    public ChannelList getAllChannelsForServer(HttpServletRequest request) {
-        var server = repository.findByIpAndCorePort(request.getRemoteAddr(), String.valueOf(request.getRemotePort())).orElseThrow(() -> new RuntimeException("server was not found!!!"));
+    public ChannelList getAllChannelsForServer(String token) {
+        var server = repository.findByToken(token).orElseThrow(() -> new RuntimeException("server was not found!!!"));
         return new ChannelList(server.getStreamServers().stream().map(streamServer -> channelStartMapper.convertToDto((Channel) streamServer.getStream(), streamServer.getSelectedSource())).collect(Collectors.toList()));
     }
 

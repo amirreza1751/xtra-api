@@ -182,8 +182,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return serverService.sendPlayRequest(stream_token, line_token, server);
     }
 
-    public int changeSource(Long streamId, String portNumber, HttpServletRequest request) {
-        Optional<Server> srv = serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber);
+    public int changeSource(Long streamId, String token) {
+        Optional<Server> srv = serverService.findByServerToken(token);
         if (srv.isEmpty()) {
             throw new RuntimeException("Server is invalid. Check your ip and port.");
         }
