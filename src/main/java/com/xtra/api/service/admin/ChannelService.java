@@ -171,6 +171,16 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     public String playChannel(String stream_token, String line_token, HttpServletRequest request) {
         ArrayList<Server> servers = loadBalancingService.findAvailableServers(stream_token);
         Server server = loadBalancingService.findLeastConnServer(servers);
+
+        /*This forEach below checks that if the requested stream
+        is on-demand and offline at the same time, a start request will be sent to the related server.*/
+
+        server.getStreamServers().forEach(streamServer -> {
+            if (streamServer.getStream().getStreamToken().equals(stream_token)
+                /*&& streamServer.getIsOnDemand() && streamServer.getStreamStatus.equals("offline")*/) {
+                serverService.sendStartRequest(streamServer.getId().getStreamId(), server);
+            }
+        });
         return serverService.sendPlayRequest(stream_token, line_token, server);
     }
 
