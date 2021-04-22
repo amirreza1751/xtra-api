@@ -1,5 +1,6 @@
 package com.xtra.api.projection.system;
 
+import com.xtra.api.model.StreamStatus;
 import lombok.Data;
 
 @Data
@@ -13,4 +14,5 @@ public class StreamDetailsView {
     private String speed;
     private String frameRate;
     private String bitrate;
+    private StreamStatus streamStatus;
 }

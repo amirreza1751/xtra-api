@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -247,6 +248,17 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
     private String getServerAddress(Server server) {
         //@todo different protocols - use dns if present
         return "http://" + server.getIp() + ":" + server.getCorePort();
+    }
+
+    public <T> T sendPostRequest(String uri, Class<T> tClass, Object data) {
+        ResponseEntity<T> result;
+        try {
+            result = new RestTemplate().postForEntity(uri, data, tClass);
+        } catch (HttpClientErrorException | NullPointerException exception) {
+            System.out.println(exception.getMessage());
+            return null;
+        }
+        return result.getBody();
     }
 
 

@@ -26,7 +26,6 @@ public class StreamServer {
     StreamDetails streamDetails;
 
     private Boolean isOnDemand;
-    private String streamStatus;
 
     public StreamServer() {
     }

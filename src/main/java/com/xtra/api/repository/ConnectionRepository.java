@@ -21,4 +21,6 @@ public interface ConnectionRepository extends JpaRepository<Connection, Connecti
 
     @Override
     Page<Connection> findAll(Pageable pageable);
+
+    int countAllByIdServerIdAndIdStreamId(Long serverId, Long streamId);
 }
