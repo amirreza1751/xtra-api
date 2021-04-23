@@ -3,6 +3,7 @@ package com.xtra.api.exception.handler;
 import com.xtra.api.exception.ActionNotAllowedException;
 import com.xtra.api.exception.ApiError;
 import com.xtra.api.exception.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +51,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<?> handleValidationExceptions(ConstraintViolationException ex,WebRequest request){
         String path = ((ServletWebRequest) request).getRequest().getRequestURI();
         ApiError apiError = new ApiError(path, "", "Input validation failed!", ex.getConstraintViolations());
+        return buildResponseEntity(apiError, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<?> handleDuplicationExceptions(DataIntegrityViolationException ex, WebRequest request){
+        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
+        ApiError apiError = new ApiError(path, "", "Duplicate Error!", "");
         return buildResponseEntity(apiError, HttpStatus.BAD_REQUEST);
     }
 

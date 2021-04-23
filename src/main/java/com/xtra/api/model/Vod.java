@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Entity
@@ -17,7 +18,7 @@ public class Vod {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @NotBlank
+    @NotNull(message = "Vod Name Is Required.")
     private String name;
     private String token;
 

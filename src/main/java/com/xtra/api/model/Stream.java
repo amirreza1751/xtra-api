@@ -5,8 +5,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.DayOfWeek;
@@ -26,11 +28,10 @@ public class Stream {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
-
-    @NotNull
-    @Size(min = 5, message = "The Name must be at least 5 characters")
-    @Column(unique = true)
+    @NotNull(message = "Stream Name must not be null")
+    @Size(min = 3, message = "The Name must be at least 5 characters")
     private String name;
+    @URL(message = "Logo must be a valid URL")
     private String logo;
     private StreamType streamType;
     private String streamToken;

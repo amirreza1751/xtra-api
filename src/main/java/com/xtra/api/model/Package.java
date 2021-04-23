@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.Period;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,7 @@ public class Package {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull(message = "Package Name Is Required.")
     private String name;
     private boolean isTrial = false;
     private int credits;
