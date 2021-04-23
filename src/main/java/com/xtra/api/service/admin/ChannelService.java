@@ -92,16 +92,16 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
             for (Long channelId : channelIds) {
                 var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
 
-                if (channelBatchInsertView.getReadNative() != null)
-                    channel.setReadNative(Boolean.parseBoolean(channelBatchInsertView.getReadNative()));
-                if (channelBatchInsertView.getStreamAll() != null)
-                    channel.setStreamAll(Boolean.parseBoolean(channelBatchInsertView.getStreamAll()));
-                if (channelBatchInsertView.getDirectSource() != null)
-                    channel.setDirectSource(Boolean.parseBoolean(channelBatchInsertView.getDirectSource()));
-                if (channelBatchInsertView.getGenTimestamps() != null)
-                    channel.setGenTimestamps(Boolean.parseBoolean(channelBatchInsertView.getGenTimestamps()));
-                if (channelBatchInsertView.getRtmpOutput() != null)
-                    channel.setRtmpOutput(Boolean.parseBoolean(channelBatchInsertView.getRtmpOutput()));
+//                if (channelBatchInsertView.getReadNative() != null)
+//                    channel.setReadNative(Boolean.parseBoolean(channelBatchInsertView.getReadNative()));
+//                if (channelBatchInsertView.getStreamAll() != null)
+//                    channel.setStreamAll(Boolean.parseBoolean(channelBatchInsertView.getStreamAll()));
+//                if (channelBatchInsertView.getDirectSource() != null)
+//                    channel.setDirectSource(Boolean.parseBoolean(channelBatchInsertView.getDirectSource()));
+//                if (channelBatchInsertView.getGenTimestamps() != null)
+//                    channel.setGenTimestamps(Boolean.parseBoolean(channelBatchInsertView.getGenTimestamps()));
+//                if (channelBatchInsertView.getRtmpOutput() != null)
+//                    channel.setRtmpOutput(Boolean.parseBoolean(channelBatchInsertView.getRtmpOutput()));
 
                 if (collectionIds.size() > 0) {
                     Set<CollectionStream> collectionStreamSet = channelMapper.convertToCollections(collectionIds, channel);
@@ -134,18 +134,18 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     public Channel update(Long id, Channel channel, boolean restart) {
         //@todo check validation check
         Channel oldChannel = findByIdOrFail(id);
-        copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "connections", "streamServers", "streamCollections");
+        copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "collections", "lineActivities", "streamServers", "collectionAssigns", "advancedStreamOptions");
 
         //remove old servers from channel and add new ones
-        if (oldChannel.getStreamServers() != null) {
+        if (channel.getStreamServers() != null) {
             oldChannel.getStreamServers().clear();
             oldChannel.getStreamServers().addAll(channel.getStreamServers().stream().peek(streamServer -> {
                 streamServer.setId(new StreamServerId(oldChannel.getId(), streamServer.getServer().getId()));
                 streamServer.setStream(oldChannel);
             }).collect(Collectors.toSet()));
         }
-        //remove old collections from channel and add new ones
-        if (oldChannel.getCollectionAssigns() != null) {
+//        //remove old collections from channel and add new ones
+        if (channel.getCollectionAssigns() != null) {
             oldChannel.getCollectionAssigns().clear();
             oldChannel.getCollectionAssigns().addAll(channel.getCollectionAssigns().stream().peek(collectionStream -> {
                 collectionStream.setId(new CollectionStreamId(collectionStream.getCollection().getId(), oldChannel.getId()));
@@ -153,7 +153,15 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
             }).collect(Collectors.toSet()));
         }
 
-        oldChannel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
+        if (channel.getStreamInputs() != null){
+            oldChannel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
+        }
+
+        if (channel.getAdvancedStreamOptions() != null){
+            var oldOptions = oldChannel.getAdvancedStreamOptions();
+            copyProperties(channel.getAdvancedStreamOptions(), oldOptions, "id");
+            oldChannel.setAdvancedStreamOptions(oldOptions);
+        }
         var savedEntity = repository.save(oldChannel);
         if (savedEntity.getStreamServers() != null) {
             var serverIds = savedEntity.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
@@ -174,8 +182,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return serverService.sendPlayRequest(stream_token, line_token, server);
     }
 
-    public int changeSource(Long streamId, String portNumber, HttpServletRequest request) {
-        Optional<Server> srv = serverService.findByIpAndCorePort(request.getRemoteAddr(), portNumber);
+    public int changeSource(Long streamId, String token) {
+        Optional<Server> srv = serverService.findByServerToken(token);
         if (srv.isEmpty()) {
             throw new RuntimeException("Server is invalid. Check your ip and port.");
         }

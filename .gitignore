@@ -31,3 +31,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### JREBEL ####
+/src/main/resources/rebel.xml

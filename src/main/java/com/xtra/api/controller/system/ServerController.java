@@ -4,6 +4,7 @@ import com.xtra.api.model.ChannelList;
 import com.xtra.api.projection.admin.channel.ChannelStart;
 import com.xtra.api.service.system.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +23,16 @@ public class ServerController {
 
     //Fetch channel details to start streaming (request origin: core)
     @GetMapping("/channels/{channelId}")
-    public ResponseEntity<ChannelStart> getChannel(@PathVariable Long channelId, HttpServletRequest request, @RequestParam String port) {
-        return ResponseEntity.ok(serverService.getChannelForServer(request, channelId, port));
+    public ResponseEntity<ChannelStart> getChannel(@PathVariable Long channelId, @RequestHeader(value = "token", required = false) String token) {
+        if (token == null)
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        return ResponseEntity.ok(serverService.getChannelForServer(channelId, token));
     }
 
     @GetMapping("/channels")
-    public ResponseEntity<ChannelList> getBatchChannel(HttpServletRequest request) {
-        return ResponseEntity.ok(serverService.getAllChannelsForServer(request));
+    public ResponseEntity<ChannelList> getBatchChannel(@RequestHeader(value = "token", required = false) String token) {
+        if (token == null)
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        return ResponseEntity.ok(serverService.getAllChannelsForServer(token));
     }
 }

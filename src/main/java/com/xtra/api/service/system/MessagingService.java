@@ -17,13 +17,12 @@ public class MessagingService {
     }
 
     @RabbitListener(queues = "streamStatus")
-    public void listen(@Header(value = "server_address", required = false) String serverAddress,
-                       @Header(value = "server_port", required = false) String serverPort,
+    public void listen(@Header(value = "token", required = false) String token,
                        List<StreamDetailsView> statuses) {
-        if (serverAddress == null || serverPort == null) {
+        if (token == null) {
             System.out.println("server identity invalid");
             return;
         }
-        streamService.updateStreamStatuses(serverAddress, serverPort, statuses);
+        streamService.updateStreamStatuses(token, statuses);
     }
 }

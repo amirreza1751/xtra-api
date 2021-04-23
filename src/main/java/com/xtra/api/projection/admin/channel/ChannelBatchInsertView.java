@@ -10,11 +10,6 @@ import java.util.Set;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ChannelBatchInsertView {
-    private String readNative;
-    private String streamAll;
-    private String directSource;
-    private String genTimestamps;
-    private String rtmpOutput;
 
     private Set<Long> channelIds;
     private Set<Long> serverIds;

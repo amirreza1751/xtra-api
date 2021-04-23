@@ -26,7 +26,7 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     }
 
     public S findById(Long id) {
-        return repository.findById(id).orElseThrow(() ->new EntityNotFoundException());
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException());
     }
 
     public Stream findByTokenOrFail(String token) {
@@ -81,10 +81,13 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     }
 
     @Transactional
-    public void updateStreamStatuses(String serverAddress, String serverPort, List<StreamDetailsView> statuses) {
-        serverService.findByIpAndCorePort(serverAddress, serverPort).ifPresent(server -> {
+    public void updateStreamStatuses(String token, List<StreamDetailsView> statuses) {
+        serverService.findByServerToken(token).ifPresent(server -> {
             for (var status : statuses) {
                 var streamServer = serverService.findStreamServerById(new StreamServerId(status.getStreamId(), server.getId())).orElseThrow();
+                if (streamServer.getStreamDetails() == null) {
+                    streamServer.setStreamDetails(new StreamDetails());
+                }
                 copyProperties(streamMapper.convertToEntity(status), streamServer.getStreamDetails(), "id");
                 serverService.saveStreamServer(streamServer);
             }
