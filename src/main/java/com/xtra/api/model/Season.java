@@ -17,6 +17,6 @@ public class Season {
     private int NoOfEpisodes;
     private LocalDate airDate;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Episode> episodes;
 }

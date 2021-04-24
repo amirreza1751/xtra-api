@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class CollectionVod {
-
     @EmbeddedId
     @EqualsAndHashCode.Include
     private CollectionVodId id;
