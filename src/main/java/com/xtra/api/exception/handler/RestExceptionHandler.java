@@ -58,7 +58,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<?> handleDuplicationExceptions(DataIntegrityViolationException ex, WebRequest request){
         String path = ((ServletWebRequest) request).getRequest().getRequestURI();
         ApiError apiError = new ApiError(path, "", "Duplicate Error!", "");
-        return buildResponseEntity(apiError, HttpStatus.BAD_REQUEST);
+        return buildResponseEntity(apiError, HttpStatus.CONFLICT);
     }
 
     /*@ExceptionHandler(MethodArgumentNotValidException.class)
