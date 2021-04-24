@@ -57,7 +57,7 @@ public abstract class ResellerMapper {
     @Mapping(source = "ownerId", target = "owner")
     public abstract Reseller convertToEntity(ResellerInsertView insertView);
 
-    Role convertToId(Long roleId) {
+    Role convertToRole(Long roleId) {
         if (roleId == null)
             return null;//todo throw exception
         return roleService.findByIdOrFail(roleId);
