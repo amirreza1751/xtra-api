@@ -25,9 +25,9 @@ public class ConnectionController {
         return ResponseEntity.ok(connectionService.getActiveConnections(pageNo, pageSize, sortBy, sortDir));
     }
 
-    @PostMapping("/kill")
-    public ResponseEntity<?> killConnection(ConnectionIdView connectionIdView) {
-        connectionService.endConnection(connectionIdView);
+    @PostMapping("{id}/kill")
+    public ResponseEntity<?> killConnection(@PathVariable("id") Long id) {
+        connectionService.endConnection(id);
         return ResponseEntity.ok().build();
     }
 
@@ -50,9 +50,9 @@ public class ConnectionController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("")
-    public ResponseEntity<?> deleteLineConnection(@RequestBody ConnectionId activityId) {
-        connectionService.deleteConnection(activityId);
+    @DeleteMapping("{id}/kill")
+    public ResponseEntity<?> deleteLineConnection(@PathVariable Long id) {
+        connectionService.deleteConnection(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

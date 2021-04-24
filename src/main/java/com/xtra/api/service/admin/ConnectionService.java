@@ -41,43 +41,44 @@ public class ConnectionService {
         this.connectionMapper = connectionMapper;
     }
 
-    public void deleteConnection(ConnectionId activityId) {
-        connectionRepository.deleteById(activityId);
+    public void deleteConnection(Long id) {
+        connectionRepository.deleteById(id);
     }
 
-    //    @Transactional
+    /*//    @Transactional
     public void batchCreateOrUpdate(List<Connection> connections, String token) {
-        for (var activity : connections) {
+        for (var connection : connections) {
             //@todo find out how null values get passed
-            var existingActivity = connectionRepository.findById(new ConnectionId(activity.getId().getLineId(), activity.getId().getStreamId(), serverService.findByServerToken(token).get().getId(), activity.getId().getUserIp()));
-            if (existingActivity.isEmpty()) {
-                var lineById = adminLineService.findById(activity.getId().getLineId());
+//            var existingConnection = connectionRepository.findById(new ConnectionId(connection.getId().getLineId(), connection.getId().getStreamId(), serverService.findByServerToken(token).get().getId(), connection.getId().getUserIp()));
+            var existingConnection = connectionRepository.findAll().get(0);
+            if (existingConnection.isEmpty()) {
+                var lineById = adminLineService.findById(connection.getLine().getId());
                 if (lineById.isEmpty())
                     continue;
-                activity.setLine(lineById.get());
-                var streamById = streamService.findById(activity.getId().getStreamId());
+                connection.setLine(lineById.get());
+                var streamById = streamService.findById(connection.getStream().getId());
 //                if (streamById.isEmpty())
 //                    continue;
-//                activity.setStream((Stream) streamById.get());
-                activity.setStream(streamById);
+//                connection.setStream((Stream) streamById.get());
+                connection.setStream(streamById);
 
                 var serverById = serverService.findByServerToken(token);
                 if (serverById.isEmpty())
                     continue;
-                activity.setServer(serverById.get());
-                activity = this.setIpInformation(activity.getId().getUserIp(), activity);
-                connectionRepository.save(activity);
+                connection.setServer(serverById.get());
+                connection = this.setIpInformation(connection.getUserIp(), connection);
+                connectionRepository.save(connection);
 
             } else {
-                var oldActivity = existingActivity.get();
-                copyProperties(activity, oldActivity, "id", "line", "stream", "server");
-                var streamById = streamService.findById(activity.getId().getStreamId());
+                var oldActivity = existingConnection.get();
+                copyProperties(connection, oldActivity, "id", "line", "stream", "server");
+                var streamById = streamService.findById(connection.getStream().getId());
 //                if (streamById.isEmpty())
 //                    continue;
 //                oldActivity.setStream((Stream) streamById.get());
                 oldActivity.setStream(streamById);
 
-                var lineById = adminLineService.findById(activity.getId().getLineId());
+                var lineById = adminLineService.findById(connection.getLine().getId());
                 if (lineById.isEmpty())
                     continue;
                 oldActivity.setLine(lineById.get());
@@ -86,12 +87,15 @@ public class ConnectionService {
                 if (serverById.isEmpty())
                     continue;
                 oldActivity.setServer(serverById.get());
-                oldActivity = this.setIpInformation(activity.getId().getUserIp(), oldActivity);
+                oldActivity = this.setIpInformation(connection.getUserIp(), oldActivity);
                 connectionRepository.save(oldActivity);
 
             }
 
         }
+    }
+*/
+    public void batchCreateOrUpdate(List<Connection> connections, String token) {
     }
 
     @Transactional
@@ -117,9 +121,8 @@ public class ConnectionService {
         return findAll(pageNo, pageSize, sortBy, sortDir).map(connectionMapper::convertToView);
     }
 
-    public void endConnection(ConnectionIdView connectionIdView) {
-        ConnectionId connectionId = connectionMapper.convertToEntity(connectionIdView);
-        var connection = connectionRepository.findById(connectionId).orElseThrow(EntityNotFoundException::new);
+    public void endConnection(Long id) {
+        var connection = connectionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         connection.setHlsEnded(true);
         connectionRepository.save(connection);
     }
@@ -138,4 +141,6 @@ public class ConnectionService {
         }
         return connectionRepository.findAll(page);
     }
+
+
 }
