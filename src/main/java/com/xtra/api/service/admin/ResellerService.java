@@ -7,6 +7,7 @@ import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
 import com.xtra.api.projection.admin.user.reseller.ResellerListView;
+import com.xtra.api.projection.admin.user.reseller.ResellerSignUpView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.service.CrudService;
@@ -89,5 +90,7 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         repository.save(existingReseller);
     }
 
-
+    public void signUp(ResellerSignUpView resellerSignUpView){
+        insert(resellerMapper.convertToEntity(resellerSignUpView));
+    }
 }
