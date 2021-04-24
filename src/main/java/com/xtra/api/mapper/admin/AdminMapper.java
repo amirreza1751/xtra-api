@@ -30,9 +30,9 @@ public abstract class AdminMapper {
 
     @AfterMapping
     void addRole(final AdminInsertView view, @MappingTarget final Admin admin) {
-        if (view.getRole() == null)
+        if (view.getRoleId() == null)
             return;//todo throw exception
-        var role = roleService.findByIdOrFail(view.getRole());
+        var role = roleService.findByIdOrFail(view.getRoleId());
         admin.setRole(role);
     }
 

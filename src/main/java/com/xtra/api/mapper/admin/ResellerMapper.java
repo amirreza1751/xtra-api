@@ -55,6 +55,7 @@ public abstract class ResellerMapper {
     }
 
     @Mapping(source = "ownerId", target = "owner")
+    @Mapping(source = "roleId", target = "role")
     public abstract Reseller convertToEntity(ResellerInsertView insertView);
 
     Role convertToRole(Long roleId) {

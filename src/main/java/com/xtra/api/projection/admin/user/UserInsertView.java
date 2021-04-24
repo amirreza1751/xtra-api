@@ -10,5 +10,5 @@ public class UserInsertView {
     protected String _2FASec;
     protected boolean isBanned;
 
-    protected Long role_id;
+    protected Long roleId;
 }

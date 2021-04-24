@@ -66,7 +66,7 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         var existingReseller = findByIdOrFail(id);
         List<String> toIgnore = new ArrayList<>();
         toIgnore.add("id");
-        if (insertView.getRole() == null) toIgnore.add("roleId");
+        if (insertView.getRoleId() == null) toIgnore.add("roleId");
         if (insertView.getPassword() == null) toIgnore.add("password");
         else insertView.setPassword(bCryptPasswordEncoder.encode(insertView.getPassword()));
         var reseller = resellerMapper.convertToEntity(insertView);

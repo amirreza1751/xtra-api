@@ -45,7 +45,7 @@ public class AdminService extends CrudService<Admin, Long, AdminRepository> {
         var existingAdmin = findByIdOrFail(id);
         List<String> toIgnore = new ArrayList<>();
         toIgnore.add("id");
-        if (insertView.getRole() == null) toIgnore.add("roleId");
+        if (insertView.getRoleId() == null) toIgnore.add("roleId");
         if (insertView.getPassword() == null) toIgnore.add("password");
         else insertView.setPassword(bCryptPasswordEncoder.encode(insertView.getPassword()));
         var admin = adminMapper.convertToEntity(insertView);
