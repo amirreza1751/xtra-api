@@ -3,7 +3,6 @@ package com.xtra.api.service.admin;
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.AdminLineMapper;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.channel.ChannelBatchDeleteView;
 import com.xtra.api.projection.admin.line.LineBatchDeleteView;
 import com.xtra.api.projection.admin.line.LineBatchInsertView;
 import com.xtra.api.projection.admin.line.LineInsertView;

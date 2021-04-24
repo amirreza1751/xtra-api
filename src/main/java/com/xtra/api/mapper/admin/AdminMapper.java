@@ -8,6 +8,7 @@ import com.xtra.api.projection.admin.user.admin.AdminView;
 import com.xtra.api.service.admin.RoleService;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,6 +36,7 @@ public abstract class AdminMapper {
         admin.setRole(role);
     }
 
+    @Mapping(source = "admin.role.id", target = "roleId")
     public abstract AdminView convertToView(Admin admin);
 
     Long convertRoleToId(Role role) {

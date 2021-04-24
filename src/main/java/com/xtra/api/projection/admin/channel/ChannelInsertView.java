@@ -2,6 +2,7 @@ package com.xtra.api.projection.admin.channel;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.xtra.api.model.AdvancedStreamOptions;
 import com.xtra.api.model.StreamType;
 import com.xtra.api.projection.admin.epg.EpgDetails;
 import lombok.Data;
@@ -19,20 +20,14 @@ public class ChannelInsertView {
     private String logo;
     private StreamType streamType;
     private String streamToken;
-    private boolean readNative = false;
-    private boolean streamAll = false;
-    private boolean directSource = false;
-    private boolean genTimestamps = false;
-    private boolean rtmpOutput = false;
-    private String userAgent;
     private String notes;
 
     private Set<DayOfWeek> daysToRestart;
     private LocalTime timeToRestart;
-    private String customFFMPEG;
     private List<String> streamInputs;
 
     private Set<Long> servers;
     private Set<Long> collections;
     private EpgDetails epgDetails;
+    private AdvancedStreamOptions advancedStreamOptions;
 }

@@ -12,7 +12,7 @@ package:
   stage: build
   script:
     - export SPRING_PROFILES_ACTIVE=dev
-    - ./gradlew assemble
+    - ./gradlew assemble -Dhttps.proxyHost=fodev.org -Dhttps.proxyPort=8118
     - sudo cp build/libs/*.jar /var/xtra/api.jar
     - sudo systemctl restart xtra-api
   artifacts:
