@@ -17,12 +17,12 @@ public class AdvancedStreamOptions {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    private Boolean generatePts;
-    private Boolean nativeFrames;
-    private Boolean streamAllCodecs;
-    private Boolean allowRecording;
-    private Boolean outputRTMP;
-    private Boolean directSource;
+    private Boolean generatePts = false;
+    private Boolean nativeFrames = false;
+    private Boolean streamAllCodecs = false;
+    private Boolean allowRecording = false;
+    private Boolean outputRTMP = false;
+    private Boolean directSource = false;
 
     private String customChannelSID;
     private String onDemandProbeSize;
