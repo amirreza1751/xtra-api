@@ -43,7 +43,7 @@ public class SeriesController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSeries(@PathVariable Long id) {
-        seriesService.deleteOrFail(id);
+        seriesService.deleteSeries(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

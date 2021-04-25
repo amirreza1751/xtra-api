@@ -19,13 +19,13 @@ public class Video {
     @Enumerated(EnumType.STRING)
     private EncodeStatus encodeStatus;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<Subtitle> subtitles = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<Audio> audios = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private VideoInfo videoInfo;
 
     @OneToMany(mappedBy = "video", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)

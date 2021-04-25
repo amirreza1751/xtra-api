@@ -1,5 +1,7 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -16,10 +18,12 @@ public class CollectionVod {
 
     @MapsId("vodId")
     @ManyToOne
+    @JsonIgnore
     private Vod vod;
 
     @MapsId("collectionId")
     @ManyToOne
+    @JsonBackReference
     private Collection collection;
 
     @Column(name = "`order`")
