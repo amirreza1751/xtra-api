@@ -71,10 +71,10 @@ public abstract class MovieMapper {
         return collectionVods.stream().map(collectionVod -> collectionVod.getCollection().getId()).collect(Collectors.toSet());
     }
 
-    public Set<Long> convertToServerIds(Set<ServerVod> serverVods) {
-        if (serverVods == null) return null;
-        return serverVods.stream().map(serverVod -> serverVod.getServer().getId()).collect(Collectors.toSet());
-    }
+//    public Set<Long> convertToServerIds(Set<ServerVod> serverVods) {
+//        if (serverVods == null) return null;
+//        return serverVods.stream().map(serverVod -> serverVod.getServer().getId()).collect(Collectors.toSet());
+//    }
 
     public Set<VideoServer> convertToServers(Set<Long> ids, Movie movie) {
         Set<VideoServer> videoServers = new HashSet<>();
