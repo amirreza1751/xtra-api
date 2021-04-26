@@ -33,7 +33,7 @@ public class Collection {
 
     @OrderBy("order ASC")
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)
-    @JsonBackReference
+    @JsonManagedReference
     private Set<CollectionVod> vods;
 
     public void addStream(CollectionStream stream) {
