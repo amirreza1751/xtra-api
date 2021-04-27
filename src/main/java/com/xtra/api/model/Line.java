@@ -15,7 +15,7 @@ import java.util.List;
 @Entity
 @Data
 public class Line extends User {
-    private String lineToken;
+    private String token;
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;

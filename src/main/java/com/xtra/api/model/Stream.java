@@ -33,7 +33,7 @@ public class Stream {
     private String name;
     private String logo;
     private StreamType streamType;
-    private String streamToken;
+    private String token;
     private String notes;
 
     @ElementCollection(fetch = FetchType.EAGER)

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ConnectionRepository extends JpaRepository<Connection, Long> {
-    Optional<Connection> findByLineAndServerAndStreamAndUserIp(Line line, Server server, Stream stream, String userIp);
+    Optional<Connection> findByLineIdAndServerIdAndStreamIdAndUserIp(Long lineId, Long serverId, Long streamId, String userIp);
 
     void deleteById(Long id);
 

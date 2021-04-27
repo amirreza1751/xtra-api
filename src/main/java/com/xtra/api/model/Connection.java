@@ -3,6 +3,7 @@ package com.xtra.api.model;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
         uniqueConstraints =
         @UniqueConstraint(columnNames = {"line_id", "stream_id", "server_id", "user_ip"})
 )
+@NoArgsConstructor
 public class Connection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,4 +51,10 @@ public class Connection {
     private String city;
     private String isoCode;
 
+    public Connection(Line line, Stream stream, Server server, String userIp) {
+        this.line = line;
+        this.stream = stream;
+        this.server = server;
+        this.userIp = userIp;
+    }
 }

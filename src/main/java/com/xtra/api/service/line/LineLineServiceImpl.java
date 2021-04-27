@@ -51,13 +51,9 @@ public class LineLineServiceImpl extends LineService {
             Set<CollectionStream> streams = collection.getStreams();
             for (CollectionStream cStream : streams) {
                 Stream stream = cStream.getStream();
-
-                //#EXTINF:-1 tvg-id="" tvg-name="Sport-DE: Eurosport 1 FHD (NULL)" tvg-logo="" group-title="Sports",Sport-DE: Eurosport 1 FHD (NULL)
-                //http://portal.unblkservice1.xyz:8080/mamad1234/mamad123/48876
-                //http://95.217.186.119:8082/api/channels/play/WjHQKChfpjHSc2t/XBSSK1UUenD
                 if (stream.getStreamInputs().size() > 0) {
                     playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\"Sports\",").append(stream.getName()).append("\n");
-                    playlist.append("http://95.217.186.119:8082/api/channels/play/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
+                    playlist.append("http://95.217.186.119:8082/api/channels/play/").append(line.getToken()).append("/").append(stream.getToken()).append("\n");
                 }
 
             }

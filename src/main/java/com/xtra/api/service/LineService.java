@@ -73,8 +73,8 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
         do {
             token = generateRandomString(8, 12, false);
         }
-        while (repository.findByLineToken(token).isPresent());
-        line.setLineToken(token);
+        while (repository.findByToken(token).isPresent());
+        line.setToken(token);
         return repository.save(line);
     }
 

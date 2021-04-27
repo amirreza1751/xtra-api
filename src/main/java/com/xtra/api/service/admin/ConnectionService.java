@@ -7,6 +7,7 @@ import com.xtra.api.model.Connection;
 import com.xtra.api.model.ConnectionId;
 import com.xtra.api.projection.admin.ConnectionIdView;
 import com.xtra.api.projection.admin.ConnectionView;
+import com.xtra.api.projection.system.ConnectionDetails;
 import com.xtra.api.repository.ConnectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -95,12 +96,31 @@ public class ConnectionService {
         }
     }
 */
-    public void batchCreateOrUpdate(List<Connection> connections, String token) {
+    public void updateConnections(String token, List<ConnectionDetails> connectionDetailsList) {
+        var serverByToken = serverService.findByServerToken(token);
+        if (serverByToken.isEmpty())
+            return;
+        var server = serverByToken.get();
+        for (var connectionDetails : connectionDetailsList) {
+            if (connectionDetails.getLineToken() == null || connectionDetails.getStreamToken() == null || connectionDetails.getUserIp() == null)
+                continue;
+            var line = adminLineService.findByTokenOrFail(connectionDetails.getLineToken());
+            var stream = streamService.findByTokenOrFail(connectionDetails.getStreamToken());
+            if (stream == null)
+                continue;
+            var newConnection = new Connection(line, stream, server, connectionDetails.getUserIp());
+            var connection = connectionRepository.findByLineIdAndServerIdAndStreamIdAndUserIp(line.getId(), server.getId(), stream.getId(), connectionDetails.getUserIp()).orElse(newConnection);
+            connection.setStartDate(connectionDetails.getStartDate());
+            connection.setEndDate(connectionDetails.getEndDate());
+            connection.setLastRead(connectionDetails.getLastRead());
+            connection.setHlsEnded(connectionDetails.isHlsEnded());
+            connectionRepository.save(connection);
+        }
     }
 
     @Transactional
-    public void batchDelete(List<Connection> connections) {
-        for (var activity : connections) {
+    public void batchDelete(List<Connection> connectionDetailsList) {
+        for (var activity : connectionDetailsList) {
             connectionRepository.deleteById(activity.getId());
         }
     }
