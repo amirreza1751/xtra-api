@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
 import java.util.List;
 
 @Entity
@@ -17,7 +18,7 @@ public class Reseller extends User {
     private String resellerDns;
     private String notes;
     private String lang;
-    private String mainMarket;
+    private List<String> mainMarket;
     private String telegramId;
 
     @OneToMany(mappedBy = "owner")
