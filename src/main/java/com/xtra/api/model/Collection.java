@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,14 +16,17 @@ public class Collection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank(message = "collection name must not be empty")
     private String name;
 
+    @NotNull(message = "collection type must not be empty")
     @Enumerated(EnumType.STRING)
     private MediaType type;
 
     @OneToMany(mappedBy = "collection", cascade = CascadeType.REMOVE)
     private Set<DownloadListCollection> downloadListCollections;
 
+    @NotNull(message = "collection type must not be empty")
     @ManyToOne(optional = false)
     private Category category;
 

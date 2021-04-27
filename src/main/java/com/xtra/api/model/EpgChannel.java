@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ public class EpgChannel {
     private String icon;
     private String url;
 
-
+    @NotNull(message = "Epg file must not be empty")
     @ManyToOne(cascade = CascadeType.ALL)
     @MapsId("epgId")
     private EpgFile epgFile;
@@ -29,6 +30,7 @@ public class EpgChannel {
     @OneToMany(mappedBy = "epgChannel", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     private Set<Program> programs;
 
+    @NotNull(message = "Epg stream must not be empty")
     @OneToOne(mappedBy = "epgChannel")
     private Stream stream;
 

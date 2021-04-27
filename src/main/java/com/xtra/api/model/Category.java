@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PreRemove;
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
@@ -14,6 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class Category {
     @Id
+    @NotBlank(message = "Category name must not be empty")
     private String name;
 
     @OneToMany(mappedBy = "category")

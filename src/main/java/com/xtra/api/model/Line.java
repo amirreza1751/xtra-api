@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.List;
 @Data
 public class Line extends User {
     private String lineToken;
+
+    @NotNull(message = "line expire date must not be empty")
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;
@@ -45,6 +48,7 @@ public class Line extends User {
     @ManyToOne
     private User referrer;
 
+    @NotNull(message = "line owner must not be empty")
     @ManyToOne
     private Reseller owner;
 

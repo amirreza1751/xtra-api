@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ public class Episode{
     private int episodeNumber;
     private String summary;
 
+    @NotNull(message = "episode videos must not be empty")
     @OneToMany
     private Set<Video> videos;
 }
