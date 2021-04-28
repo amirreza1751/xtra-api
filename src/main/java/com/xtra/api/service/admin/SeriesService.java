@@ -1,12 +1,11 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exception.DuplicateEpisodesException;
+import com.xtra.api.exception.EntityAlreadyExistsException;
 import com.xtra.api.mapper.admin.EpisodeMapper;
 import com.xtra.api.mapper.admin.SeasonMapper;
 import com.xtra.api.mapper.admin.SeriesMapper;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
-import com.xtra.api.projection.admin.movie.MovieInsertView;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
 import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.repository.CollectionVodRepository;
@@ -96,7 +95,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         if (season.isPresent()) {
             var existingEpisode = season.get().getEpisodes().stream().filter(episodeItem -> episodeItem.getEpisodeNumber() == episodeInsertView.getEpisodeNumber()).findFirst();
             if (existingEpisode.isPresent()) {
-                throw new DuplicateEpisodesException(episode.getEpisodeName(), episode.getEpisodeNumber());
+                throw new EntityAlreadyExistsException(episode.getEpisodeName(), episode.getEpisodeNumber());
             } else {
                 List<Episode> existingEpisodes = season.get().getEpisodes();
                 existingEpisodes.add(episode);
@@ -134,7 +133,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             if (oldSeason.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()) { //replacing in the same season
                 for (Episode episodeItem : oldSeason.getEpisodes()){
                     if (episodeToSave.getEpisodeNumber() == episodeItem.getEpisodeNumber() && !episodeId.equals(episodeItem.getId())){
-                        throw new RuntimeException();
+                        throw new EntityAlreadyExistsException();
                     }
                 }
                 copyProperties(episodeToSave, oldEpisode, "id", "videos");
@@ -142,11 +141,14 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                 oldEpisode.setVideos(episodeToSave.getVideos());
             } else { // moving to another existing season
                 oldSeason.getEpisodes().remove(oldEpisode);
+                if (oldSeason.getEpisodes().size() == 0){
+                    series.getSeasons().remove(oldSeason);
+                }
                 var newSeason = series.getSeasons().stream().filter(season -> season.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()).findFirst();
                 if (newSeason.isPresent()) {
                     for (Episode episodeItem : newSeason.get().getEpisodes()){
                         if (episodeToSave.getEpisodeNumber() == episodeItem.getEpisodeNumber() && !episodeId.equals(episodeItem.getId())){
-                            throw new RuntimeException();
+                            throw new EntityAlreadyExistsException();
                         }
                     }
                     List<Episode> episodes = newSeason.get().getEpisodes();
@@ -161,8 +163,25 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                     series.setSeasons(existingSeasons);
                 }
             }
-            repository.save(series);
+            return repository.save(series);
         }
         return series;
+    }
+
+    public void deleteEpisode(Long id, Long episodeId){
+        var series = findByIdOrFail(id);
+        Season seasonIfEmpty = null;
+        Optional<Episode> episodeToDelete;
+        for (Season seasonItem : series.getSeasons()) {
+            episodeToDelete = seasonItem.getEpisodes().stream().filter(episode -> episode.getId().equals(episodeId)).findFirst();
+            if (episodeToDelete.isPresent()){
+                seasonItem.getEpisodes().remove(episodeToDelete.get());
+                seasonIfEmpty = seasonItem;
+            }
+        }
+        if (seasonIfEmpty != null && seasonIfEmpty.getEpisodes().size() == 0){
+            series.getSeasons().remove(seasonIfEmpty);
+        }
+        repository.save(series);
     }
 }
