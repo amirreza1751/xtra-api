@@ -26,6 +26,6 @@ public class Episode{
     private int runtime;
     private float rating;
 
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Video> videos;
 }

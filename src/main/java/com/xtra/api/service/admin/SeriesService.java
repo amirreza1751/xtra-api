@@ -11,6 +11,7 @@ import com.xtra.api.projection.admin.series.SeriesInsertView;
 import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.repository.CollectionVodRepository;
 import com.xtra.api.repository.SeriesRepository;
+import com.xtra.api.repository.VideoRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -30,14 +32,21 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     private final CollectionVodRepository collectionVodRepository;
     private final EpisodeMapper episodeMapper;
     private final SeasonMapper seasonMapper;
+    private final VideoRepository videoRepository;
 
     @Autowired
-    protected SeriesService(SeriesRepository repository, SeriesMapper seriesMapper, CollectionVodRepository collectionVodRepository, EpisodeMapper episodeMapper, SeasonMapper seasonMapper) {
+    protected SeriesService(SeriesRepository repository,
+                            SeriesMapper seriesMapper,
+                            CollectionVodRepository collectionVodRepository,
+                            EpisodeMapper episodeMapper,
+                            SeasonMapper seasonMapper,
+                            VideoRepository videoRepository) {
         super(repository, "Series");
         this.seriesMapper = seriesMapper;
         this.collectionVodRepository = collectionVodRepository;
         this.episodeMapper = episodeMapper;
         this.seasonMapper = seasonMapper;
+        this.videoRepository = videoRepository;
     }
 
     @Override
@@ -45,15 +54,15 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         return null;
     }
 
-    public Series add(SeriesInsertView seriesInsertView){
+    public Series add(SeriesInsertView seriesInsertView) {
         return this.insert(seriesMapper.convertToEntity(seriesInsertView));
     }
 
-    public Series insert(Series series){
+    public Series insert(Series series) {
         return repository.save(series);
     }
 
-    public SeriesView save(Long id, SeriesInsertView seriesInsertView){
+    public SeriesView save(Long id, SeriesInsertView seriesInsertView) {
         return seriesMapper.convertToView(this.update(id, seriesMapper.convertToEntity(seriesInsertView)));
     }
 
@@ -69,38 +78,87 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         }
         return repository.save(oldSeries);
     }
-    public void deleteSeries(Long id){
+
+    public void deleteSeries(Long id) {
         var seriesToDelete = findByIdOrFail(id);
         if (seriesToDelete.getCollectionAssigns() != null) {
             collectionVodRepository.deleteAll();
+            //@todo needs fix
         }
         repository.delete(seriesToDelete);
     }
 
     //Episodes Section
-    public Series addEpisode (Long id, EpisodeInsertView episodeInsertView){
+    public Series addEpisode(Long id, EpisodeInsertView episodeInsertView) {
         Episode episode = episodeMapper.convertToEntity(episodeInsertView);
         var series = findByIdOrFail(id);
-            var season = series.getSeasons().stream().filter(seasonItem -> seasonItem.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()).findFirst();
-            if (season.isPresent()){
-                var existingEpisode = season.get().getEpisodes().stream().filter(episodeItem -> episodeItem.getEpisodeNumber() == episodeInsertView.getEpisodeNumber()).findFirst();
-                if (existingEpisode.isPresent()){
-                    throw new DuplicateEpisodesException(episode.getEpisodeName(), episode.getEpisodeNumber());
-                } else {
-                    List<Episode> existingEpisodes = season.get().getEpisodes();
-                    existingEpisodes.add(episode);
-                    return repository.save(series);
-                }
+        var season = series.getSeasons().stream().filter(seasonItem -> seasonItem.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()).findFirst();
+        if (season.isPresent()) {
+            var existingEpisode = season.get().getEpisodes().stream().filter(episodeItem -> episodeItem.getEpisodeNumber() == episodeInsertView.getEpisodeNumber()).findFirst();
+            if (existingEpisode.isPresent()) {
+                throw new DuplicateEpisodesException(episode.getEpisodeName(), episode.getEpisodeNumber());
             } else {
-                    var newSeason = seasonMapper.convertToEntity(episodeInsertView.getSeason());
-                    List<Episode> episodes = new ArrayList<>();
-                    episodes.add(episode);
-                    newSeason.setEpisodes(episodes);
-                    List<Season> existingSeasons = series.getSeasons();
-                    existingSeasons.add(newSeason);
-                    series.setSeasons(existingSeasons);
-                    repository.save(series);
+                List<Episode> existingEpisodes = season.get().getEpisodes();
+                existingEpisodes.add(episode);
+                return repository.save(series);
             }
+        } else {
+            var newSeason = seasonMapper.convertToEntity(episodeInsertView.getSeason());
+            List<Episode> episodes = new ArrayList<>();
+            episodes.add(episode);
+            newSeason.setEpisodes(episodes);
+            List<Season> existingSeasons = series.getSeasons();
+            existingSeasons.add(newSeason);
+            series.setSeasons(existingSeasons);
+            repository.save(series);
+        }
+        return series;
+    }
+
+    public Series editEpisode(Long id, Long episodeId, EpisodeInsertView episodeInsertView) {
+        Episode episodeToSave = episodeMapper.convertToEntity(episodeInsertView);
+        var series = findByIdOrFail(id);
+        Season oldSeason = null;
+        Episode oldEpisode = null;
+        Optional<Episode> tempEpisode;
+
+        for (Season seasonItem : series.getSeasons()) {
+            tempEpisode = seasonItem.getEpisodes().stream().filter(episode -> episode.getId().equals(episodeId)).findFirst();
+            if (tempEpisode.isPresent()) {
+                oldSeason = seasonItem;
+                oldEpisode = tempEpisode.get();
+            }
+        }
+
+        if (oldSeason != null) {
+//            for (Episode episodeItem : oldSeason.getEpisodes()){
+//                if (episodeItem.getEpisodeNumber() == episodeToSave.getEpisodeNumber() && !episodeItem.getId().equals(episodeToSave.getId())) {
+//                    throw new RuntimeException();
+//                }
+//            }
+            if (oldSeason.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()) { //replacing in the same season
+                copyProperties(episodeToSave, oldEpisode, "id", "videos");
+                oldEpisode.getVideos().clear();
+                oldEpisode.setVideos(episodeToSave.getVideos());
+            } else { // moving to another existing season
+                oldSeason.getEpisodes().remove(oldEpisode);
+                var newSeason = series.getSeasons().stream().filter(season -> season.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()).findFirst();
+                if (newSeason.isPresent()) {
+
+                    List<Episode> episodes = newSeason.get().getEpisodes();
+                    episodes.add(episodeToSave);
+                } else {
+                    var seasonToCreate = seasonMapper.convertToEntity(episodeInsertView.getSeason());
+                    List<Episode> episodes = new ArrayList<>();
+                    episodes.add(episodeToSave);
+                    seasonToCreate.setEpisodes(episodes);
+                    List<Season> existingSeasons = series.getSeasons();
+                    existingSeasons.add(seasonToCreate);
+                    series.setSeasons(existingSeasons);
+                }
+            }
+            repository.save(series);
+        }
         return series;
     }
 }

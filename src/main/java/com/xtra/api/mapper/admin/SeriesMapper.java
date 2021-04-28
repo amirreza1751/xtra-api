@@ -2,7 +2,6 @@ package com.xtra.api.mapper.admin;
 
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.movie.MovieView;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
 import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.repository.CollectionRepository;

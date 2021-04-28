@@ -54,4 +54,9 @@ public class SeriesController {
     public ResponseEntity<Series> addEpisode(@PathVariable Long id, @RequestBody EpisodeInsertView episodeInsertView) {
         return ResponseEntity.ok(seriesService.addEpisode(id, episodeInsertView));
     }
+
+    @PatchMapping("/{id}/episodes/{episodeId}")
+    public ResponseEntity<Series> editEpisode(@PathVariable Long id, @PathVariable Long episodeId, @RequestBody EpisodeInsertView episodeInsertView) {
+        return ResponseEntity.ok(seriesService.editEpisode(id, episodeId, episodeInsertView));
+    }
 }
