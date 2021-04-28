@@ -131,12 +131,12 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         }
 
         if (oldSeason != null) {
-//            for (Episode episodeItem : oldSeason.getEpisodes()){
-//                if (episodeItem.getEpisodeNumber() == episodeToSave.getEpisodeNumber() && !episodeItem.getId().equals(episodeToSave.getId())) {
-//                    throw new RuntimeException();
-//                }
-//            }
             if (oldSeason.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()) { //replacing in the same season
+                for (Episode episodeItem : oldSeason.getEpisodes()){
+                    if (episodeToSave.getEpisodeNumber() == episodeItem.getEpisodeNumber() && !episodeId.equals(episodeItem.getId())){
+                        throw new RuntimeException();
+                    }
+                }
                 copyProperties(episodeToSave, oldEpisode, "id", "videos");
                 oldEpisode.getVideos().clear();
                 oldEpisode.setVideos(episodeToSave.getVideos());
@@ -144,10 +144,14 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                 oldSeason.getEpisodes().remove(oldEpisode);
                 var newSeason = series.getSeasons().stream().filter(season -> season.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()).findFirst();
                 if (newSeason.isPresent()) {
-
+                    for (Episode episodeItem : newSeason.get().getEpisodes()){
+                        if (episodeToSave.getEpisodeNumber() == episodeItem.getEpisodeNumber() && !episodeId.equals(episodeItem.getId())){
+                            throw new RuntimeException();
+                        }
+                    }
                     List<Episode> episodes = newSeason.get().getEpisodes();
                     episodes.add(episodeToSave);
-                } else {
+                } else { //new season has to be created
                     var seasonToCreate = seasonMapper.convertToEntity(episodeInsertView.getSeason());
                     List<Episode> episodes = new ArrayList<>();
                     episodes.add(episodeToSave);
