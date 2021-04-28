@@ -81,8 +81,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     public void deleteSeries(Long id) {
         var seriesToDelete = findByIdOrFail(id);
         if (seriesToDelete.getCollectionAssigns() != null) {
-            collectionVodRepository.deleteAll();
-            //@todo needs fix
+            collectionVodRepository.deleteAll(seriesToDelete.getCollectionAssigns());
         }
         repository.delete(seriesToDelete);
     }
