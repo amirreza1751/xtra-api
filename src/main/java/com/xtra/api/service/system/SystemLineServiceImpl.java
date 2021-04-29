@@ -32,12 +32,12 @@ public class SystemLineServiceImpl extends LineService {
     }
 
     private Line findByTokenOrFail(String token) {
-        return repository.findByToken(token).orElseThrow(() -> new EntityNotFoundException(entityName, "token", token));
+        return repository.findByLineToken(token).orElseThrow(() -> new EntityNotFoundException(entityName, "token", token));
     }
 
 
     public LineStatus isLineEligibleForPlaying(LineAuth lineAuth) {
-        var lineByToken = repository.findByToken(lineAuth.getLineToken());
+        var lineByToken = repository.findByLineToken(lineAuth.getLineToken());
         if (lineByToken.isPresent()) {
             var line = lineByToken.get();
             if (line.isBanned()) {

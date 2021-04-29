@@ -67,9 +67,9 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         String token;
         do {
             token = generateRandomString(10, 16, false);
-        } while (repository.existsChannelByToken(token));
+        } while (repository.existsChannelByStreamToken(token));
 
-        channel.setToken(token);
+        channel.setStreamToken(token);
         channel.setStreamInputs(emptyIfNull(channel.getStreamInputs()).stream().distinct().collect(Collectors.toList()));
         var savedEntity = repository.save(channel);
         var serverIds = emptyIfNull(savedEntity.getStreamServers()).stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());

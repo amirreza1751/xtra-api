@@ -53,7 +53,7 @@ public class LineLineServiceImpl extends LineService {
                 Stream stream = cStream.getStream();
                 if (stream.getStreamInputs().size() > 0) {
                     playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\"Sports\",").append(stream.getName()).append("\n");
-                    playlist.append("http://95.217.186.119:8082/api/channels/play/").append(line.getToken()).append("/").append(stream.getToken()).append("\n");
+                    playlist.append("http://95.217.186.119:8082/api/channels/play/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
                 }
 
             }

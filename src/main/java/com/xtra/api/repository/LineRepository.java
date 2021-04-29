@@ -20,7 +20,7 @@ public interface LineRepository extends JpaRepository<Line, Long> {
 
     boolean existsByUsername(String username);
 
-    Optional<Line> findByToken(String lineToken);
+    Optional<Line> findByLineToken(String lineToken);
 
     boolean existsLineById(Long id);
 

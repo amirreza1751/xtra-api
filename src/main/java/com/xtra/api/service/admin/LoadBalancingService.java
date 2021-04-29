@@ -19,7 +19,7 @@ public class LoadBalancingService {
     }
 
     public ArrayList<Server> findAvailableServers(String stream_token) {
-        Stream stream = (Stream) streamRepository.getByToken(stream_token).get();
+        Stream stream = (Stream) streamRepository.getByStreamToken(stream_token).get();
         ArrayList<Server> result = new ArrayList<>();
         stream.getStreamServers().forEach(streamServer -> result.add(streamServer.getServer()));
         return result;

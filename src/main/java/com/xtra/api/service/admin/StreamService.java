@@ -30,7 +30,7 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     }
 
     public Stream findByTokenOrFail(String token) {
-        return repository.getByToken(token).orElseThrow(() -> new EntityNotFoundException("Stream", token));
+        return repository.getByStreamToken(token).orElseThrow(() -> new EntityNotFoundException("Stream", token));
     }
 
     public Long findIdByToken(String token) {

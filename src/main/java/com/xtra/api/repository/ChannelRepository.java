@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public interface ChannelRepository extends StreamRepository<Channel> {
 
-    boolean existsChannelByToken(String streamToken);
+    boolean existsChannelByStreamToken(String streamToken);
 
     Page<Channel> findByNameLikeOrNotesLike(String name, String notes, Pageable pageable);
 

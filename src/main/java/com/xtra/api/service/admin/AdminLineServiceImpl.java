@@ -146,7 +146,7 @@ public class AdminLineServiceImpl extends LineService {
 
                     if (stream.getStreamInputs().size() > 0) {
                         playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\"Sports\",").append(stream.getName()).append("\n");
-                        playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/channels/play/").append(line.getToken()).append("/").append(stream.getToken()).append("\n");
+                        playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/channels/play/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
                     }
 
                 }
@@ -160,6 +160,6 @@ public class AdminLineServiceImpl extends LineService {
     }
 
     public Line findByTokenOrFail(String lineToken) {
-        return repository.findByToken(lineToken).orElseThrow(() -> new EntityNotFoundException(entityName, "token", lineToken));
+        return repository.findByLineToken(lineToken).orElseThrow(() -> new EntityNotFoundException(entityName, "token", lineToken));
     }
 }
