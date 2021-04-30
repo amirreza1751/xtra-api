@@ -17,6 +17,5 @@ public class MovieView {
     private MovieInfo info;
     private Set<Video> videos;
 
-    private Set<Long> servers;
     private Set<Long> collections;
 }
