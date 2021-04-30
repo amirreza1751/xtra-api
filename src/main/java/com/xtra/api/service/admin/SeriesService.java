@@ -5,6 +5,8 @@ import com.xtra.api.mapper.admin.EpisodeMapper;
 import com.xtra.api.mapper.admin.SeasonMapper;
 import com.xtra.api.mapper.admin.SeriesMapper;
 import com.xtra.api.model.*;
+import com.xtra.api.projection.admin.channel.ChannelInfo;
+import com.xtra.api.projection.admin.channel.ChannelView;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
 import com.xtra.api.projection.admin.series.SeriesView;
@@ -51,6 +53,14 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     @Override
     protected Page<Series> findWithSearch(String search, Pageable page) {
         return null;
+    }
+
+    public Page<SeriesView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(seriesMapper::convertToView);
+    }
+
+    public SeriesView getViewById(Long id) {
+        return seriesMapper.convertToView(findByIdOrFail(id));
     }
 
     public Series add(SeriesInsertView seriesInsertView) {

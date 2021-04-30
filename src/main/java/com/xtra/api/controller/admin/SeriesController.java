@@ -23,14 +23,14 @@ public class SeriesController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<Series>> getAll(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<SeriesView>> getAll(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(seriesService.findAll(search, pageNo, pageSize, sortBy, sortDir));
+        return ResponseEntity.ok(seriesService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Series> getSeries(@PathVariable Long id) {
-        return ResponseEntity.ok(seriesService.findByIdOrFail(id));
+    public ResponseEntity<SeriesView> getSeries(@PathVariable Long id) {
+        return ResponseEntity.ok(seriesService.getViewById(id));
     }
 
     @PostMapping("")

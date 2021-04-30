@@ -2,9 +2,11 @@ package com.xtra.api.projection.admin.series;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.xtra.api.model.Season;
 import com.xtra.api.model.SeriesInfo;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -16,4 +18,5 @@ public class SeriesView {
 
     private SeriesInfo info;
     private Set<Long> collections;
+    private List<Season> seasons;
 }
