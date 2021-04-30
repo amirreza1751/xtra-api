@@ -39,6 +39,7 @@ public abstract class SeriesMapper {
                 var orderCount = collectionVodRepository.countAllByIdCollectionId(id);
                 collectionVod.setOrder(orderCount + 1);
                 var col = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("collection", id.toString()));
+                collectionVod.setId(new CollectionVodId(id, null));
                 collectionVod.setCollection(col);
                 collectionVod.setVod(series);
                 collectionVods.add(collectionVod);
