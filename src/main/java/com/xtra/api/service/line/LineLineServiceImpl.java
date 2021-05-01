@@ -28,14 +28,6 @@ public class LineLineServiceImpl extends LineService {
         this.lineMapper = lineMapper;
     }
 
-    public LineView getById(Long id) {
-        return lineMapper.convertToView(findByIdOrFail(id));
-    }
-
-    public LineView save(Long id, LineInsertView lineInsertView) {
-        return lineMapper.convertToView(updateOrFail(id, lineMapper.convertToEntity(lineInsertView)));
-    }
-
     public Map<String, String> downloadLine() {
         Map<String, String> data = new HashMap<>();
 
@@ -63,5 +55,13 @@ public class LineLineServiceImpl extends LineService {
         data.put("playlist", playlist.toString());
 
         return data;
+    }
+
+    public LineView updateProfile(LineInsertView insertView) {
+        return lineMapper.convertToView(updateOrFail(getCurrentLine().getId(), lineMapper.convertToEntity(insertView)));
+    }
+
+    public LineView getProfile() {
+        return lineMapper.convertToView(getCurrentLine());
     }
 }
