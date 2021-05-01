@@ -60,6 +60,7 @@ public abstract class ChannelMapper {
                 var orderCount = collectionStreamRepository.countAllByIdCollectionId(id);
                 collectionStream.setOrder(orderCount + 1);
                 var col = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("collection", id.toString()));
+                collectionStream.setId(new CollectionStreamId(id, null));
                 collectionStream.setCollection(col);
                 collectionStream.setStream(channel);
                 collectionStreams.add(collectionStream);
