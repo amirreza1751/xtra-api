@@ -2,8 +2,10 @@ package com.xtra.api.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -14,8 +16,16 @@ public class Episode{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int episodeNumber;
-    private String summary;
+    private String episodeName;
+    private String notes;
+    @URL
+    private String imageUrl;
+    @Column(columnDefinition = "TEXT")
+    private String plot;
+    private LocalDate releaseDate;
+    private int runtime;
+    private float rating;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Video> videos;
 }

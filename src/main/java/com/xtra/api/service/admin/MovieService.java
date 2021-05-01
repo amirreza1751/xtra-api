@@ -7,6 +7,7 @@ import com.xtra.api.projection.admin.movie.MovieBatchDeleteView;
 import com.xtra.api.projection.admin.movie.MovieBatchUpdateView;
 import com.xtra.api.projection.admin.movie.MovieInsertView;
 import com.xtra.api.projection.admin.movie.MovieView;
+import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.repository.MovieRepository;
 import com.xtra.api.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,14 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     @Override
     public Page<Movie> findWithSearch(String search, Pageable pageable) {
         return repository.findByNameLikeOrInfoPlotLikeOrInfoCastLikeOrInfoDirectorLikeOrInfoGenresLikeOrInfoCountryLike(search, search, search, search, search, search, pageable);
+    }
+
+    public Page<MovieView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(movieMapper::convertToView);
+    }
+
+    public MovieView getViewById(Long id) {
+        return movieMapper.convertToView(findByIdOrFail(id));
     }
 
     public MovieView add(MovieInsertView insertView, boolean encode) {
