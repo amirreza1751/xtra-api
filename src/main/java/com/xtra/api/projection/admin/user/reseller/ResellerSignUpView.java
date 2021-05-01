@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import com.neovisionaries.i18n.CountryCode;
-import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -13,7 +13,7 @@ public class ResellerSignUpView {
     protected String username;
     protected String password;
     protected String email;
-    private ArrayList<CountryCode> mainMarket;
+    private List<CountryCode> mainMarket;
     private String telegramId;
 
 }
