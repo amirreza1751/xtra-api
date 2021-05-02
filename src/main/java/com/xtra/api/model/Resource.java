@@ -1,12 +1,14 @@
 package com.xtra.api.model;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = {"server"})
 public class Resource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

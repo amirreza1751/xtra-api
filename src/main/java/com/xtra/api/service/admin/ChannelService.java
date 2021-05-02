@@ -179,10 +179,9 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
         server.getStreamServers().forEach(streamServer -> {
 
-            if (streamServer.getStreamDetails()!= null){
+            if (streamServer.getIsOnDemand() != null && streamServer.getIsOnDemand()){
                 if (streamServer.getStream().getStreamToken().equals(stream_token) &&
-                        streamServer.getIsOnDemand() &&
-                        !streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE))
+                        streamServer.getStreamDetails() == null)
                 {
                     serverService.sendStartRequest(streamServer.getId().getStreamId(), server);
                 }
