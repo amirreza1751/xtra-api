@@ -2,7 +2,9 @@ package com.xtra.api.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import com.neovisionaries.i18n.CountryCode;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -17,7 +19,10 @@ public class Reseller extends User {
     private String resellerDns;
     private String notes;
     private String lang;
-    private String mainMarket;
+
+    @ElementCollection
+    private List<CountryCode> mainMarket;
+
     private String telegramId;
 
     @OneToMany(mappedBy = "owner")
