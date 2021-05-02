@@ -7,7 +7,6 @@ import com.xtra.api.repository.StreamRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 @Service
 public class LoadBalancingService {
@@ -29,7 +28,7 @@ public class LoadBalancingService {
     private final ArrayList<Integer> connections = new ArrayList<>();
 
     public Server findLeastConnServer(ArrayList<Server> servers) {
-        servers.forEach(server -> connections.add(connectionRepository.countAllByIdServerId(server.getId())));
-         return servers.get(connections.indexOf(Collections.min(connections)));
+//        servers.forEach(server -> connections.add(connectionRepository.countAllByServerId(server.getId())));
+        return servers.get(0);
     }
 }

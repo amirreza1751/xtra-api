@@ -11,6 +11,7 @@ import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,12 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @Validated
 public class AdminLineServiceImpl extends LineService {
     private final AdminLineMapper lineMapper;
+
+    @Value("${server.address}")
+    private String serverAddress;
+
+    @Value("${server.port}")
+    private String serverPort;
 
     @Autowired
     public AdminLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper
@@ -111,7 +118,7 @@ public class AdminLineServiceImpl extends LineService {
     @Override
     public Line updateOrFail(Long id, Line newLine) {
         Line oldLine = findByIdOrFail(id);
-        copyProperties(newLine, oldLine, "id","lineToken","currentConnections");
+        copyProperties(newLine, oldLine, "id", "lineToken", "currentConnections");
         return repository.save(oldLine);
     }
 
@@ -137,12 +144,9 @@ public class AdminLineServiceImpl extends LineService {
                 for (CollectionStream cStream : streams) {
                     Stream stream = cStream.getStream();
 
-                    //#EXTINF:-1 tvg-id="" tvg-name="Sport-DE: Eurosport 1 FHD (NULL)" tvg-logo="" group-title="Sports",Sport-DE: Eurosport 1 FHD (NULL)
-                    //http://portal.unblkservice1.xyz:8080/mamad1234/mamad123/48876
-                    //http://95.217.186.119:8082/api/channels/play/WjHQKChfpjHSc2t/XBSSK1UUenD
                     if (stream.getStreamInputs().size() > 0) {
                         playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\"Sports\",").append(stream.getName()).append("\n");
-                        playlist.append("http://95.217.186.119:8082/api/channels/play/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
+                        playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/channels/play/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
                     }
 
                 }
@@ -155,4 +159,7 @@ public class AdminLineServiceImpl extends LineService {
         return data;
     }
 
+    public Line findByTokenOrFail(String lineToken) {
+        return repository.findByLineToken(lineToken).orElseThrow(() -> new EntityNotFoundException(entityName, "token", lineToken));
+    }
 }

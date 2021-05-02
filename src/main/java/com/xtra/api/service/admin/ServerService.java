@@ -189,14 +189,14 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
             try {
                 if (server.getIp() == null || server.getCorePort() == null)
                     return;
-                Resource r = new RestTemplate().getForObject(getServerAddress(server) + "/resources/?interfaceName=" + server.getInterfaceName(), Resource.class);
+                Resource r = new RestTemplate().getForObject(getServerAddress(server) + "/resources?interfaceName=" + server.getInterfaceName(), Resource.class);
                 if (r != null) {
                     Resource resource = new Resource();
                     if (server.getResource() != null) {
                         resource = server.getResource();
                     }
                     copyProperties(r, resource, "id", "server");
-                    resource.setConnections(connectionRepository.countAllByIdServerId(server.getId()));
+                    resource.setConnections(connectionRepository.countAllByServerId(server.getId()));
                     server.setResource(resource);
                     repository.save(server);
                 } else
@@ -209,7 +209,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
 
     public int getServerConnectionsCount(Long serverId) {
         if (this.existsById(serverId)) {
-            return connectionRepository.countAllByIdServerId(serverId);
+            return connectionRepository.countAllByServerId(serverId);
         } else throw new RuntimeException("Server Not Found.");
     }
 

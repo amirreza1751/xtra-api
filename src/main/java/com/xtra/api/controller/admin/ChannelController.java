@@ -10,9 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -105,16 +109,10 @@ public class ChannelController {
     }
 
     //Play a Channel
-    @GetMapping("/play/{stream_token}/{line_token}")
-    public ResponseEntity<String> playChannel(@PathVariable String stream_token, @PathVariable String line_token, HttpServletRequest request) {
-        String playlist = channelService.playChannel(stream_token, line_token, request);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        return ResponseEntity.ok()
-                .headers(responseHeaders).contentType(MediaType.valueOf("application/x-mpegurl"))
-                .headers(responseHeaders).contentLength(Long.parseLong(String.valueOf(playlist.length())))
-                .headers(responseHeaders).cacheControl(CacheControl.noCache())
-                .headers(responseHeaders).cacheControl(CacheControl.noStore())
-                .body(playlist);
+    @GetMapping("/play/{line_token}/{stream_token}")
+    public void playChannel(@PathVariable String stream_token, @PathVariable String line_token, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String channelLink = channelService.playChannel(stream_token, line_token, request);
+        response.sendRedirect(channelLink);
     }
 
     @GetMapping("/{id}/change-source")

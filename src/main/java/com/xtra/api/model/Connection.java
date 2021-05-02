@@ -3,34 +3,42 @@ package com.xtra.api.model;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
 @ToString(exclude = {"line", "stream", "server"})
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Table(
+        uniqueConstraints =
+        @UniqueConstraint(columnNames = {"line_id", "stream_id", "server_id", "user_ip"})
+)
+@NoArgsConstructor
 public class Connection {
-
-    @EmbeddedId
-    private ConnectionId id = new ConnectionId();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
-    @MapsId("lineId")
+    @NotNull
     private Line line;
 
     @ManyToOne
-    @MapsId("streamId")
+    @NotNull
     private Stream stream;
 
     @ManyToOne
-    @MapsId("serverId")
+    @NotNull
     private Server server;
+
+    @NotNull
+    @Column(name = "user_ip")
+    private String userIp;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
@@ -43,4 +51,10 @@ public class Connection {
     private String city;
     private String isoCode;
 
+    public Connection(Line line, Stream stream, Server server, String userIp) {
+        this.line = line;
+        this.stream = stream;
+        this.server = server;
+        this.userIp = userIp;
+    }
 }

@@ -84,12 +84,15 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
     public void updateStreamStatuses(String token, List<StreamDetailsView> statuses) {
         serverService.findByServerToken(token).ifPresent(server -> {
             for (var status : statuses) {
-                var streamServer = serverService.findStreamServerById(new StreamServerId(status.getStreamId(), server.getId())).orElseThrow();
-                if (streamServer.getStreamDetails() == null) {
-                    streamServer.setStreamDetails(new StreamDetails());
+                var streamInstance = serverService.findStreamServerById(new StreamServerId(status.getStreamId(), server.getId()));
+                if (streamInstance.isPresent()) {
+                    var streamServer = streamInstance.get();
+                    if (streamServer.getStreamDetails() == null) {
+                        streamServer.setStreamDetails(new StreamDetails());
+                    }
+                    copyProperties(streamMapper.convertToEntity(status), streamServer.getStreamDetails(), "id");
+                    serverService.saveStreamServer(streamServer);
                 }
-                copyProperties(streamMapper.convertToEntity(status), streamServer.getStreamDetails(), "id");
-                serverService.saveStreamServer(streamServer);
             }
         });
     }
