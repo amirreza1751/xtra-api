@@ -178,11 +178,14 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         is on-demand and offline at the same time, a start request will be sent to the related server.*/
 
         server.getStreamServers().forEach(streamServer -> {
-            if (streamServer.getStream().getStreamToken().equals(stream_token) &&
-                    streamServer.getIsOnDemand() &&
-                    !streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE))
-            {
-                serverService.sendStartRequest(streamServer.getId().getStreamId(), server);
+
+            if (streamServer.getStreamDetails()!= null){
+                if (streamServer.getStream().getStreamToken().equals(stream_token) &&
+                        streamServer.getIsOnDemand() &&
+                        !streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE))
+                {
+                    serverService.sendStartRequest(streamServer.getId().getStreamId(), server);
+                }
             }
         });
         return serverService.sendPlayRequest(stream_token, line_token, server);
@@ -255,11 +258,16 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
             for (Server server : servers){
                 for (StreamServer streamServer : server.getStreamServers()){
                     connections = connectionRepository.countAllByIdServerIdAndIdStreamId(server.getId(), streamServer.getStream().getId());
-                    if (streamServer.getIsOnDemand() && connections > 0){
-                        streamIds.add(streamServer.getStream().getId());
+                    if (streamServer.getIsOnDemand() != null && streamServer.getStreamDetails() != null){
+                        if (streamServer.getIsOnDemand() && connections == 0 && streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE)){
+                            streamIds.add(streamServer.getStream().getId());
+                        }
                     }
                 }
-                serverService.sendPostRequest("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/batch-stop", String.class, streamIds);
+                if (streamIds.size() > 0){
+                    serverService.sendPostRequest("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/batch-stop", String.class, streamIds);
+                }
+                streamIds.clear();
             }
         }
     }
