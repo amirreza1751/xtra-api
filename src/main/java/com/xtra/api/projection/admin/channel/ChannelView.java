@@ -23,7 +23,7 @@ public class ChannelView {
     private String notes;
 
     private Set<DayOfWeek> daysToRestart;
-    private LocalTime timeToRestart;
+    private String timeToRestart;
     private List<String> streamInputs;
 
     private Set<Long> servers;
