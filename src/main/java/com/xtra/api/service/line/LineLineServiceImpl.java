@@ -5,13 +5,12 @@ import com.xtra.api.projection.line.line.LineInsertView;
 import com.xtra.api.projection.line.line.LineView;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 import static com.xtra.api.service.system.UserAuthService.getCurrentLine;
 
@@ -21,8 +20,8 @@ public class LineLineServiceImpl extends LineService {
 
     @Autowired
     protected LineLineServiceImpl(LineRepository repository, LineLineMapper lineMapper, ConnectionRepository connectionRepository
-            , BCryptPasswordEncoder bCryptPasswordEncoder) {
-        super(repository, connectionRepository, bCryptPasswordEncoder);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
         this.lineMapper = lineMapper;
     }
 

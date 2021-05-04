@@ -9,9 +9,9 @@ import com.xtra.api.projection.admin.line.LineInsertView;
 import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -33,8 +30,8 @@ public class AdminLineServiceImpl extends LineService {
 
     @Autowired
     public AdminLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper
-            , BCryptPasswordEncoder bCryptPasswordEncoder) {
-        super(repository, connectionRepository, bCryptPasswordEncoder);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
         this.lineMapper = lineMapper;
     }
 
@@ -113,7 +110,7 @@ public class AdminLineServiceImpl extends LineService {
     @Override
     public Line updateOrFail(Long id, Line newLine) {
         Line oldLine = findByIdOrFail(id);
-        copyProperties(newLine, oldLine, "id", "lineToken", "currentConnections");
+        copyProperties(newLine, oldLine, "id", "lineToken", "currentConnections", "role");
         return repository.save(oldLine);
     }
 

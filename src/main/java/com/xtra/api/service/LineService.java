@@ -3,6 +3,7 @@ package com.xtra.api.service;
 import com.xtra.api.model.*;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public abstract class LineService extends CrudService<Line, Long, LineRepository> {
     private final ConnectionRepository connectionRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    private final RoleRepository roleRepository;
 
     @Value("${server.address}")
     private String serverAddress;
@@ -31,10 +32,11 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
     private String serverPort;
 
 
-    protected LineService(LineRepository repository, ConnectionRepository connectionRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    protected LineService(LineRepository repository, ConnectionRepository connectionRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
         super(repository, "Line");
         this.connectionRepository = connectionRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -58,6 +60,8 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
 
     @Override
     public Line insert(Line line) {
+        var role = roleRepository.findByTypeAndName(UserType.LINE, "default").orElseThrow(() -> new RuntimeException("default role not found"));
+        line.setRole(role);
         if (line.getRole().getType() != UserType.LINE) {
             throw new RuntimeException("role not suitable for line");
         }

@@ -13,8 +13,6 @@ public class LineInsertView {
     protected String username;
     @NotNull(message = "Password is mandatory")
     protected String password;
-    @NotNull(message = "Role is mandatory")
-    private Long roleId;
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;

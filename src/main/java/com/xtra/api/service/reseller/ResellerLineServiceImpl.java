@@ -10,6 +10,7 @@ import com.xtra.api.projection.reseller.line.LineCreateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.PackageService;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
-import static com.xtra.api.service.system.UserAuthService.getCurrentLine;
 import static com.xtra.api.service.system.UserAuthService.getCurrentReseller;
 
 @Service
@@ -33,8 +33,8 @@ public class ResellerLineServiceImpl extends LineService {
 
     @Autowired
     protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, ConnectionRepository connectionRepository, PackageService packageService
-            , BCryptPasswordEncoder bCryptPasswordEncoder) {
-        super(repository, connectionRepository, bCryptPasswordEncoder);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
         this.lineMapper = lineMapper;
         this.packageService = packageService;
     }
