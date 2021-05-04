@@ -26,14 +26,6 @@ public class DownloadLineController {
 
     @GetMapping("")
     public ResponseEntity<String> downloadLine() {
-        Map<String, String> data = lineService.downloadLine();
-        HttpHeaders responseHeaders = new HttpHeaders();
-        return ResponseEntity.ok()
-                .headers(responseHeaders).contentType(MediaType.valueOf("application/x-mpegurl"))
-                .headers(responseHeaders).contentLength(Long.parseLong(String.valueOf(data.get("playlist").length())))
-                .headers(responseHeaders).cacheControl(CacheControl.noCache())
-                .headers(responseHeaders).cacheControl(CacheControl.noStore())
-                .header("Content-Disposition", "inline; filename=" + "\"" + data.get("fileName") + "\"")
-                .body(data.get("playlist"));
+        return lineService.downloadLinePlaylist();
     }
 }

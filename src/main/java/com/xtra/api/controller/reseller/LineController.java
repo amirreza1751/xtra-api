@@ -51,6 +51,11 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @GetMapping("{id}/download")
+    public ResponseEntity<String> downloadOwnLine(@PathVariable Long id) {
+        return lineService.downloadLinePlaylist(id);
+    }
+
     @PatchMapping("/{id}/block/{blocked}")
     public ResponseEntity<?> setResellerLineBlocked(@PathVariable Long id, @PathVariable boolean blocked) {
         lineService.updateLineBlock(id, blocked);

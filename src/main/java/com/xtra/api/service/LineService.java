@@ -1,17 +1,19 @@
 package com.xtra.api.service;
 
-import com.xtra.api.model.Line;
-import com.xtra.api.model.Connection;
-import com.xtra.api.model.UserType;
+import com.xtra.api.model.*;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
 import static com.xtra.api.util.Utilities.wrapSearchString;
@@ -20,6 +22,14 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public abstract class LineService extends CrudService<Line, Long, LineRepository> {
     private final ConnectionRepository connectionRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+
+    @Value("${server.address}")
+    private String serverAddress;
+
+    @Value("${server.port}")
+    private String serverPort;
+
 
     protected LineService(LineRepository repository, ConnectionRepository connectionRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         super(repository, "Line");
@@ -85,4 +95,41 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
         copyProperties(newLine, line, "id", "username");
         return repository.save(line);
     }
+
+    public ResponseEntity<String> downloadLinePlaylist(Line line) {
+
+        StringBuilder playlist = new StringBuilder("#EXTM3U\n");
+
+        DownloadList downloadList = line.getDefaultDownloadList();
+        if (downloadList != null) {
+            Set<DownloadListCollection> collections = downloadList.getCollectionsAssign();
+
+            for (DownloadListCollection dlCollection : collections) {
+                Collection collection = dlCollection.getCollection();
+
+                Set<CollectionStream> streams = collection.getStreams();
+                for (CollectionStream cStream : streams) {
+                    Stream stream = cStream.getStream();
+
+                    if (stream.getStreamInputs().size() > 0) {
+                        playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\"Sports\",").append(stream.getName()).append("\n");
+                        playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/channels/play/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
+                    }
+
+                }
+            }
+        }
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(HttpHeaders.CONTENT_TYPE, "application/x-mpegurl");
+        responseHeaders.set(HttpHeaders.CONTENT_LENGTH, String.valueOf(playlist.length()));
+        responseHeaders.set(HttpHeaders.CACHE_CONTROL, "no-cache");
+        responseHeaders.add(HttpHeaders.CACHE_CONTROL, "no-store");
+        responseHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + line.getUsername() + ".m3u8\"");
+
+        return ResponseEntity.ok().
+                headers(responseHeaders)
+                .body(playlist.toString());
+    }
+
 }

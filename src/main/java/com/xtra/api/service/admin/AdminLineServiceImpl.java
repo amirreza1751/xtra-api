@@ -13,6 +13,7 @@ import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -29,12 +30,6 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @Validated
 public class AdminLineServiceImpl extends LineService {
     private final AdminLineMapper lineMapper;
-
-    @Value("${server.address}")
-    private String serverAddress;
-
-    @Value("${server.port}")
-    private String serverPort;
 
     @Autowired
     public AdminLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper
@@ -127,39 +122,11 @@ public class AdminLineServiceImpl extends LineService {
     }
 
 
-    public Map<String, String> downloadLine(Long id) {
-        Map<String, String> data = new HashMap<>();
-
-        StringBuilder playlist = new StringBuilder("#EXTM3U\n");
-
-        Line line = findByIdOrFail(id);
-        DownloadList downloadList = line.getDefaultDownloadList();
-        if (downloadList != null) {
-            Set<DownloadListCollection> collections = downloadList.getCollectionsAssign();
-
-            for (DownloadListCollection dlCollection : collections) {
-                Collection collection = dlCollection.getCollection();
-
-                Set<CollectionStream> streams = collection.getStreams();
-                for (CollectionStream cStream : streams) {
-                    Stream stream = cStream.getStream();
-
-                    if (stream.getStreamInputs().size() > 0) {
-                        playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\"Sports\",").append(stream.getName()).append("\n");
-                        playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/channels/play/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
-                    }
-
-                }
-            }
-        }
-
-        data.put("fileName", line.getUsername() + ".m3u8");
-        data.put("playlist", playlist.toString());
-
-        return data;
-    }
-
     public Line findByTokenOrFail(String lineToken) {
         return repository.findByLineToken(lineToken).orElseThrow(() -> new EntityNotFoundException(entityName, "token", lineToken));
+    }
+
+    public ResponseEntity<String> downloadLinePlaylist(Long lineId) {
+        return downloadLinePlaylist(findByIdOrFail(lineId));
     }
 }

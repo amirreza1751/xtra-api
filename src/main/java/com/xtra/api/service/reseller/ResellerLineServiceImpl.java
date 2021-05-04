@@ -15,12 +15,14 @@ import com.xtra.api.service.admin.PackageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+import static com.xtra.api.service.system.UserAuthService.getCurrentLine;
 import static com.xtra.api.service.system.UserAuthService.getCurrentReseller;
 
 @Service
@@ -108,4 +110,7 @@ public class ResellerLineServiceImpl extends LineService {
             return findWithSearch(search, page);
     }
 
+    public ResponseEntity<String> downloadLinePlaylist(Long lineId) {
+        return downloadLinePlaylist(findLineByOwnerAndIdOrFail(getCurrentReseller(), lineId));
+    }
 }
