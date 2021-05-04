@@ -20,7 +20,7 @@ public class ResellerController {
     ResellerService resellerService;
 
     @Autowired
-    public ResellerController(ResellerService resellerService, ResellerMapper resellerMapper) {
+    public ResellerController(ResellerService resellerService) {
         this.resellerService = resellerService;
     }
 
