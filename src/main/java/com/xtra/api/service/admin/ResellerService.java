@@ -27,12 +27,14 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public class ResellerService extends CrudService<Reseller, Long, ResellerRepository> {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ResellerMapper resellerMapper;
+    private final RoleService roleService;
 
     @Autowired
-    protected ResellerService(ResellerRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, ResellerMapper resellerMapper) {
+    protected ResellerService(ResellerRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, ResellerMapper resellerMapper, RoleService roleService) {
         super(repository, "Reseller");
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.resellerMapper = resellerMapper;
+        this.roleService = roleService;
     }
 
     public Page<UserSimpleView> getSimpleList(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -91,6 +93,8 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
     }
 
     public void signUp(ResellerSignUpView resellerSignUpView){
-        insert(resellerMapper.convertToEntity(resellerSignUpView));
+        Reseller reseller = resellerMapper.convertToEntity(resellerSignUpView);
+        reseller.setRole(roleService.getRoleByNameAndType("default", UserType.RESELLER));
+        insert(reseller);
     }
 }

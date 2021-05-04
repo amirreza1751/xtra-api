@@ -1,6 +1,7 @@
 package com.xtra.api.service.admin;
 
 import com.google.common.collect.Sets;
+import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.RoleMapper;
 import com.xtra.api.model.Role;
 import com.xtra.api.model.UserType;
@@ -78,5 +79,9 @@ public class RoleService extends CrudService<Role, Long, RoleRepository> {
 
     public RoleView findById(Long id) {
         return roleMapper.convertToDto(findByIdOrFail(id));
+    }
+
+    public Role getRoleByNameAndType(String name, UserType userType){
+        return repository.findByTypeAndName(userType, name).orElseThrow(()->new EntityNotFoundException());
     }
 }
