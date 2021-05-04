@@ -21,4 +21,6 @@ public interface ResellerRepository extends JpaRepository<Reseller, Long> {
     void deleteByIdAndOwner(Long id, Reseller owner);
 
     Page<Reseller> findAllByOwner(Reseller owner, Pageable pageable);
+
+    long countByVerifiedFalse();
 }

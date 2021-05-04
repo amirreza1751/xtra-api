@@ -27,4 +27,6 @@ public interface LineRepository extends JpaRepository<Line, Long> {
     boolean existsByOwnerAndId(Reseller owner, Long id);
 
     void deleteLineByOwnerAndId(Reseller owner, Long id);
+
+    long countLineByCurrentConnectionsIsNot(long count);
 }
