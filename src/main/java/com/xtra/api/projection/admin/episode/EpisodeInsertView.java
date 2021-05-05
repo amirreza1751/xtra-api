@@ -2,7 +2,6 @@ package com.xtra.api.projection.admin.episode;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.SeriesInfo;
 import com.xtra.api.projection.admin.season.SeasonInsertView;
 import com.xtra.api.projection.admin.video.VideoInsertView;
 import lombok.Data;
@@ -25,4 +24,5 @@ public class EpisodeInsertView {
 
     private SeasonInsertView season;
     private List<VideoInsertView> videos;
+    private Set<Long> servers;
 }
