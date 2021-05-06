@@ -68,11 +68,6 @@ public class MovieController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/token/{vod_token}/id")
-    public ResponseEntity<Video> getVodIdByToken(@PathVariable("vod_token") String vodToken) {
-        return ResponseEntity.ok(movieService.getByToken(vodToken));
-    }
-
     @GetMapping("/{id}/encode")
     public ResponseEntity<Movie> encodeMovie(@PathVariable Long id) {
         return ResponseEntity.ok(movieService.encode(id));
