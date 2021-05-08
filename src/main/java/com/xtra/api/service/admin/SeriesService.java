@@ -9,6 +9,7 @@ import com.xtra.api.projection.admin.channel.ChannelInfo;
 import com.xtra.api.projection.admin.channel.ChannelView;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
+import com.xtra.api.projection.admin.series.SeriesListView;
 import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.repository.CollectionVodRepository;
 import com.xtra.api.repository.SeriesRepository;
@@ -55,8 +56,8 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         return null;
     }
 
-    public Page<SeriesView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(seriesMapper::convertToView);
+    public Page<SeriesListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(seriesMapper::convertToListView);
     }
 
     public SeriesView getViewById(Long id) {
@@ -108,6 +109,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             } else {
                 List<Episode> existingEpisodes = season.get().getEpisodes();
                 existingEpisodes.add(episode);
+                series = updateEpisodeNumbers(series);
                 return repository.save(series);
             }
         } else {
@@ -118,6 +120,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             List<Season> existingSeasons = series.getSeasons();
             existingSeasons.add(newSeason);
             series.setSeasons(existingSeasons);
+            series = updateEpisodeNumbers(series);
             repository.save(series);
         }
         return series;
@@ -172,6 +175,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                     series.setSeasons(existingSeasons);
                 }
             }
+            series = updateEpisodeNumbers(series);
             return repository.save(series);
         }
         return series;
@@ -191,6 +195,14 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         if (seasonIfEmpty != null && seasonIfEmpty.getEpisodes().size() == 0){
             series.getSeasons().remove(seasonIfEmpty);
         }
+        series = updateEpisodeNumbers(series);
         repository.save(series);
+    }
+
+    public Series updateEpisodeNumbers(Series series){
+        for (Season season : series.getSeasons()){
+            season.setNoOfEpisodes(season.getEpisodes().size());
+        }
+        return series;
     }
 }

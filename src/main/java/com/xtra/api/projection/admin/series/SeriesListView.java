@@ -6,17 +6,16 @@ import com.xtra.api.model.Season;
 import com.xtra.api.model.SeriesInfo;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class SeriesView {
+public class SeriesListView {
     private Long id;
     private String name;
-    private String year;
-
-    private SeriesInfo info;
     private String[] collections;
-    private List<Season> seasons;
+    private int seasons;
+    private int episodes;
+    private LocalDate releaseDate;
 }

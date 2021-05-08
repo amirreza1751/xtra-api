@@ -3,6 +3,7 @@ package com.xtra.api.mapper.admin;
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
+import com.xtra.api.projection.admin.series.SeriesListView;
 import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionVodRepository;
@@ -13,6 +14,7 @@ import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,8 +50,25 @@ public abstract class SeriesMapper {
         }
     }
 
-    public Set<Long> convertToCollectionIds(Set<CollectionVod> collectionVods) {
+    public String[] convertToCollectionIds(Set<CollectionVod> collectionVods) {
         if (collectionVods == null) return null;
-        return collectionVods.stream().map(collectionVod -> collectionVod.getCollection().getId()).collect(Collectors.toSet());
+        return collectionVods.stream().map(collectionVod -> collectionVod.getCollection().getName()).toArray(String[]::new);
+    }
+
+    @Mapping(source = "collectionAssigns", target = "collections")
+    public abstract SeriesListView convertToListView(Series series);
+
+    public int convertToSeasons(List<Season> seasonList){
+        return seasonList.size();
+    }
+
+    @AfterMapping
+    void convertEpisodes(final Series series, @MappingTarget SeriesListView seriesListView){
+        int totalEpisodes = 0;
+        for (Season season : series.getSeasons()){
+            totalEpisodes += season.getNoOfEpisodes();
+        }
+        seriesListView.setEpisodes(totalEpisodes);
+        seriesListView.setReleaseDate(series.getInfo().getReleaseDate());
     }
 }
