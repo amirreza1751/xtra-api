@@ -153,11 +153,11 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
             }).collect(Collectors.toSet()));
         }
 
-        if (channel.getStreamInputs() != null){
+        if (channel.getStreamInputs() != null) {
             oldChannel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
         }
 
-        if (channel.getAdvancedStreamOptions() != null){
+        if (channel.getAdvancedStreamOptions() != null) {
             var oldOptions = oldChannel.getAdvancedStreamOptions();
             copyProperties(channel.getAdvancedStreamOptions(), oldOptions, "id");
             oldChannel.setAdvancedStreamOptions(oldOptions);
@@ -179,7 +179,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     public String playChannel(String stream_token, String line_token, HttpServletRequest request) {
         ArrayList<Server> servers = loadBalancingService.findAvailableServers(stream_token);
         Server server = loadBalancingService.findLeastConnServer(servers);
-        return serverService.sendPlayRequest(stream_token, line_token, server);
+        return "http://" + server.getIp() + ":" + server.getCorePort() + "/live/" + line_token + "/" + stream_token + "/m3u8";
     }
 
     public int changeSource(Long streamId, String token) {

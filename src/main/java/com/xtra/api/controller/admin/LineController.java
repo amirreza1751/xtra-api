@@ -1,6 +1,5 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.projection.admin.channel.ChannelBatchDeleteView;
 import com.xtra.api.projection.admin.line.LineBatchDeleteView;
 import com.xtra.api.projection.admin.line.LineBatchInsertView;
 import com.xtra.api.projection.admin.line.LineInsertView;
@@ -51,7 +50,7 @@ public class LineController {
     }
 
     @PatchMapping("/batch")
-    public ResponseEntity<?> updateLines(@RequestBody LineBatchInsertView insertView){
+    public ResponseEntity<?> updateLines(@RequestBody LineBatchInsertView insertView) {
         lineService.saveAll(insertView);
         return ResponseEntity.ok().build();
     }
@@ -82,15 +81,6 @@ public class LineController {
 
     @GetMapping("/download/{id}")
     public ResponseEntity<String> AdminDownloadLine(@PathVariable Long id) {
-        Map<String, String> data = lineService.downloadLine(id);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        return ResponseEntity.ok()
-                .headers(responseHeaders).contentType(MediaType.valueOf("application/x-mpegurl"))
-                .headers(responseHeaders).contentLength(Long.parseLong(String.valueOf(data.get("playlist").length())))
-                .headers(responseHeaders).cacheControl(CacheControl.noCache())
-                .headers(responseHeaders).cacheControl(CacheControl.noStore())
-                .header("Content-Disposition", "inline; filename=" + "\"" + data.get("fileName") + "\"")
-                .body(data.get("playlist"));
+        return lineService.downloadLinePlaylist(id);
     }
-
 }

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ConnectionView {
 
-    private ConnectionIdView connectionIdView;
+    private Long id;
     private String streamName;
     private String serverName;
     private String lineUsername;

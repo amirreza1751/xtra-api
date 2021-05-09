@@ -17,7 +17,6 @@ public abstract class ConnectionMapper {
     @Mapping(source = "line.username", target = "lineUsername")
     @Mapping(source = "stream.name", target = "streamName")
     @Mapping(source = "server.name", target = "serverName")
-    @Mapping(source = "id", target = "connectionIdView")
     public abstract ConnectionView convertToView(Connection connection);
 
 

@@ -10,11 +10,13 @@ import com.xtra.api.projection.reseller.line.LineCreateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.PackageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,8 +33,8 @@ public class ResellerLineServiceImpl extends LineService {
 
     @Autowired
     protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, ConnectionRepository connectionRepository, PackageService packageService
-            , BCryptPasswordEncoder bCryptPasswordEncoder) {
-        super(repository, connectionRepository, bCryptPasswordEncoder);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
         this.lineMapper = lineMapper;
         this.packageService = packageService;
     }
@@ -108,4 +110,7 @@ public class ResellerLineServiceImpl extends LineService {
             return findWithSearch(search, page);
     }
 
+    public ResponseEntity<String> downloadLinePlaylist(Long lineId) {
+        return downloadLinePlaylist(findLineByOwnerAndIdOrFail(getCurrentReseller(), lineId));
+    }
 }

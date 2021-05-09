@@ -12,6 +12,10 @@ import java.util.Set;
 @Entity
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Table(
+        uniqueConstraints =
+        @UniqueConstraint(columnNames = {"name", "type"})
+)
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

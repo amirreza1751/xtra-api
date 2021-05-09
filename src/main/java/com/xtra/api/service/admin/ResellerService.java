@@ -7,8 +7,10 @@ import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
 import com.xtra.api.projection.admin.user.reseller.ResellerListView;
+import com.xtra.api.projection.admin.user.reseller.ResellerSignUpView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.repository.ResellerRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,12 +28,14 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public class ResellerService extends CrudService<Reseller, Long, ResellerRepository> {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ResellerMapper resellerMapper;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    protected ResellerService(ResellerRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, ResellerMapper resellerMapper) {
+    protected ResellerService(ResellerRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, ResellerMapper resellerMapper, RoleRepository roleRepository) {
         super(repository, "Reseller");
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.resellerMapper = resellerMapper;
+        this.roleRepository = roleRepository;
     }
 
     public Page<UserSimpleView> getSimpleList(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -65,7 +69,7 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         var existingReseller = findByIdOrFail(id);
         List<String> toIgnore = new ArrayList<>();
         toIgnore.add("id");
-        if (insertView.getRole() == null) toIgnore.add("roleId");
+        if (insertView.getRoleId() == null) toIgnore.add("roleId");
         if (insertView.getPassword() == null) toIgnore.add("password");
         else insertView.setPassword(bCryptPasswordEncoder.encode(insertView.getPassword()));
         var reseller = resellerMapper.convertToEntity(insertView);
@@ -89,5 +93,10 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         repository.save(existingReseller);
     }
 
-
+    public void signUp(ResellerSignUpView resellerSignUpView) {
+        var reseller = resellerMapper.convertToEntity(resellerSignUpView);
+        var defaultRole = roleRepository.findByTypeAndName(UserType.RESELLER, "default").orElseThrow(() -> new RuntimeException("default role not found"));
+        reseller.setRole(defaultRole);
+        insert(reseller);
+    }
 }

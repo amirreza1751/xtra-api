@@ -1,19 +1,16 @@
 package com.xtra.api.service.line;
 
 import com.xtra.api.mapper.line.LineLineMapper;
-import com.xtra.api.model.*;
 import com.xtra.api.projection.line.line.LineInsertView;
 import com.xtra.api.projection.line.line.LineView;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import static com.xtra.api.service.system.UserAuthService.getCurrentLine;
 
@@ -23,49 +20,21 @@ public class LineLineServiceImpl extends LineService {
 
     @Autowired
     protected LineLineServiceImpl(LineRepository repository, LineLineMapper lineMapper, ConnectionRepository connectionRepository
-            , BCryptPasswordEncoder bCryptPasswordEncoder) {
-        super(repository, connectionRepository, bCryptPasswordEncoder);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
         this.lineMapper = lineMapper;
     }
 
-    public LineView getById(Long id) {
-        return lineMapper.convertToView(findByIdOrFail(id));
+
+    public LineView updateProfile(LineInsertView insertView) {
+        return lineMapper.convertToView(updateOrFail(getCurrentLine().getId(), lineMapper.convertToEntity(insertView)));
     }
 
-    public LineView save(Long id, LineInsertView lineInsertView) {
-        return lineMapper.convertToView(updateOrFail(id, lineMapper.convertToEntity(lineInsertView)));
+    public LineView getProfile() {
+        return lineMapper.convertToView(getCurrentLine());
     }
 
-    public Map<String, String> downloadLine() {
-        Map<String, String> data = new HashMap<>();
-
-        StringBuilder playlist = new StringBuilder("#EXTM3U\n");
-
-        Line line = getCurrentLine();
-        DownloadList downloadList = line.getDefaultDownloadList();
-        Set<DownloadListCollection> collections = downloadList.getCollectionsAssign();
-
-        for (DownloadListCollection dlCollection : collections) {
-            Collection collection = dlCollection.getCollection();
-
-            Set<CollectionStream> streams = collection.getStreams();
-            for (CollectionStream cStream : streams) {
-                Stream stream = cStream.getStream();
-
-                //#EXTINF:-1 tvg-id="" tvg-name="Sport-DE: Eurosport 1 FHD (NULL)" tvg-logo="" group-title="Sports",Sport-DE: Eurosport 1 FHD (NULL)
-                //http://portal.unblkservice1.xyz:8080/mamad1234/mamad123/48876
-                //http://95.217.186.119:8082/api/channels/play/WjHQKChfpjHSc2t/XBSSK1UUenD
-                if (stream.getStreamInputs().size() > 0) {
-                    playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\"Sports\",").append(stream.getName()).append("\n");
-                    playlist.append("http://95.217.186.119:8082/api/channels/play/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
-                }
-
-            }
-        }
-
-        data.put("fileName", line.getUsername() + ".m3u8");
-        data.put("playlist", playlist.toString());
-
-        return data;
+    public ResponseEntity<String> downloadLinePlaylist() {
+        return downloadLinePlaylist(getCurrentLine());
     }
 }

@@ -8,6 +8,7 @@ import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.projection.system.LineAuth;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
+import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.GeoIpService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,8 @@ public class SystemLineServiceImpl extends LineService {
 
     @Autowired
     public SystemLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper
-            , BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService) {
-        super(repository, connectionRepository, bCryptPasswordEncoder);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService, RoleRepository roleRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
         this.lineMapper = lineMapper;
         this.geoIpService = geoIpService;
     }

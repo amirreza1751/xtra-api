@@ -61,7 +61,7 @@ public class Stream {
     @OneToOne
     private EpgChannel epgChannel;
 
-    @OneToOne(cascade = {CascadeType.MERGE})
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private AdvancedStreamOptions advancedStreamOptions;
 
     private int currentConnections = 0;

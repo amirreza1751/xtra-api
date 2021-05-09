@@ -2,6 +2,7 @@ package com.xtra.api.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,6 +13,7 @@ import java.util.Set;
 @Entity
 @Data
 @NoArgsConstructor
+@ToString(exclude = {"collections"})
 public class Category {
     @Id
     private String name;

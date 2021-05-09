@@ -27,11 +27,8 @@ public abstract class AdminLineMapper {
     private UserService userService;
     @Autowired
     private CollectionRepository collectionRepository;
-    @Autowired
-    private RoleRepository roleRepository;
 
     @Mapping(source = "collections", target = "defaultDownloadList")
-    @Mapping(source = "roleId", target = "role")
     @Mapping(source = "ownerId", target = "owner")
     public abstract Line convertToEntity(LineInsertView insertView);
 
@@ -39,13 +36,6 @@ public abstract class AdminLineMapper {
         if (ownerId == null)
             return null;
         return (Reseller) userService.findByIdOrFail(ownerId);
-    }
-
-    Role fetchRole(Long roleId) {
-        if (roleId != null)
-            return roleRepository.findById(roleId).orElseThrow(() -> new EntityNotFoundException("Role", roleId));
-        else
-            return null;
     }
 
     DownloadList convertCollectionIdsToDownloadList(LinkedHashSet<Long> collectionIds) {

@@ -1,5 +1,7 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.ToString;
 
@@ -9,7 +11,7 @@ import java.util.Set;
 
 @Entity
 @Data
-@ToString(exclude = {"downloadListCollections","streams","vods"})
+@ToString(exclude = {"downloadListCollections","streams","vods", "category"})
 public class Collection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +33,7 @@ public class Collection {
 
     @OrderBy("order ASC")
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)
+    @JsonManagedReference
     private Set<CollectionVod> vods;
 
     public void addStream(CollectionStream stream) {

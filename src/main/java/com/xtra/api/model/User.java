@@ -7,7 +7,7 @@ import javax.validation.constraints.Email;
 import java.time.ZonedDateTime;
 
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 public class User {
     @Id

@@ -13,10 +13,12 @@ public class Season {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String seasonName;
     private int seasonNumber;
     private int NoOfEpisodes;
     private LocalDate airDate;
 
-    @OneToMany
+
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<Episode> episodes;
 }
