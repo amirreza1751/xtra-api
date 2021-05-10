@@ -91,17 +91,9 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         if (channelIds != null) {
             for (Long channelId : channelIds) {
                 var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
+                AdvancedStreamOptions aso = channel.getAdvancedStreamOptions();
 
-//                if (channelBatchInsertView.getReadNative() != null)
-//                    channel.setReadNative(Boolean.parseBoolean(channelBatchInsertView.getReadNative()));
-//                if (channelBatchInsertView.getStreamAll() != null)
-//                    channel.setStreamAll(Boolean.parseBoolean(channelBatchInsertView.getStreamAll()));
-//                if (channelBatchInsertView.getDirectSource() != null)
-//                    channel.setDirectSource(Boolean.parseBoolean(channelBatchInsertView.getDirectSource()));
-//                if (channelBatchInsertView.getGenTimestamps() != null)
-//                    channel.setGenTimestamps(Boolean.parseBoolean(channelBatchInsertView.getGenTimestamps()));
-//                if (channelBatchInsertView.getRtmpOutput() != null)
-//                    channel.setRtmpOutput(Boolean.parseBoolean(channelBatchInsertView.getRtmpOutput()));
+                channel.setAdvancedStreamOptions(channelMapper.setASO(aso, channelBatchInsertView));
 
                 if (collectionIds.size() > 0) {
                     Set<CollectionStream> collectionStreamSet = channelMapper.convertToCollections(collectionIds, channel);

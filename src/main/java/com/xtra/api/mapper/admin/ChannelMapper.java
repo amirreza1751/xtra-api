@@ -2,10 +2,7 @@ package com.xtra.api.mapper.admin;
 
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.channel.ChannelInfo;
-import com.xtra.api.projection.admin.channel.ChannelInsertView;
-import com.xtra.api.projection.admin.channel.ChannelServerInfo;
-import com.xtra.api.projection.admin.channel.ChannelView;
+import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
 import com.xtra.api.repository.EpgChannelRepository;
@@ -119,5 +116,48 @@ public abstract class ChannelMapper {
     public Set<ChannelServerInfo> convertToInfosMap(Set<StreamServer> streamServers) {
         if (streamServers == null) return null;
         return streamServers.stream().map(streamServer -> toStreamDetailsView(streamServer.getStreamDetails())).collect(Collectors.toSet());
+    }
+
+    public AdvancedStreamOptions setASO(AdvancedStreamOptions aso, ChannelBatchInsertView channelBatchInsertView) {
+        if (channelBatchInsertView.getNativeFrames() != null)
+            aso.setNativeFrames(Boolean.parseBoolean(channelBatchInsertView.getNativeFrames()));
+
+        if (channelBatchInsertView.getGeneratePts() != null)
+            aso.setGeneratePts(Boolean.parseBoolean(channelBatchInsertView.getGeneratePts()));
+
+        if (channelBatchInsertView.getStreamAllCodecs() != null)
+            aso.setStreamAllCodecs(Boolean.parseBoolean(channelBatchInsertView.getStreamAllCodecs()));
+
+        if (channelBatchInsertView.getAllowRecording() != null)
+            aso.setAllowRecording(Boolean.parseBoolean(channelBatchInsertView.getAllowRecording()));
+
+        if (channelBatchInsertView.getOutputRTMP() != null)
+            aso.setOutputRTMP(Boolean.parseBoolean(channelBatchInsertView.getOutputRTMP()));
+
+        if (channelBatchInsertView.getDirectSource() != null)
+            aso.setDirectSource(Boolean.parseBoolean(channelBatchInsertView.getDirectSource()));
+
+        if (channelBatchInsertView.getCustomChannelSID() != null)
+            aso.setCustomChannelSID(channelBatchInsertView.getCustomChannelSID());
+
+        if (channelBatchInsertView.getMinuteDelay() != null)
+            aso.setMinuteDelay(channelBatchInsertView.getMinuteDelay());
+
+        if (channelBatchInsertView.getUserAgent() != null)
+            aso.setUserAgent(channelBatchInsertView.getUserAgent());
+
+        if (channelBatchInsertView.getHttpProxy() != null)
+            aso.setHttpProxy(channelBatchInsertView.getHttpProxy());
+
+        if (channelBatchInsertView.getCookie() != null)
+            aso.setCookie(channelBatchInsertView.getCookie());
+
+        if (channelBatchInsertView.getHeaders() != null)
+            aso.setHeaders(channelBatchInsertView.getHeaders());
+
+        if (channelBatchInsertView.getTranscodingProfile() != null)
+            aso.setTranscodingProfile(channelBatchInsertView.getTranscodingProfile());
+
+        return aso;
     }
 }
