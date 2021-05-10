@@ -3,6 +3,8 @@ package com.xtra.api.mapper.admin;
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
+import com.xtra.api.projection.admin.episode.EpisodeListView;
+import com.xtra.api.projection.admin.episode.EpisodeView;
 import com.xtra.api.repository.ServerRepository;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -17,9 +19,11 @@ public abstract class EpisodeMapper {
     @Autowired
     private ServerRepository serverRepository;
 
-    public abstract Episode convertToEntity(EpisodeInsertView episodeInsertView);
+    public abstract EpisodeView convertToView(Episode episode);
 
-    public abstract EpisodeInsertView convertToView(Episode episode);
+    public abstract EpisodeListView convertToListView(Episode episode);
+
+    public abstract Episode convertToEntity(EpisodeInsertView episodeInsertView);
 
     @AfterMapping
     void assignServerIds(final EpisodeInsertView episodeInsertView, @MappingTarget final Episode episode) {
@@ -38,5 +42,6 @@ public abstract class EpisodeMapper {
             }
         }
     }
+
 
 }

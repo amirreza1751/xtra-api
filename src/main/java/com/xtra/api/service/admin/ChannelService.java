@@ -68,6 +68,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         do {
             token = generateRandomString(10, 16, false);
         } while (repository.existsChannelByStreamToken(token));
+        AdvancedStreamOptions advancedStreamOptions = new AdvancedStreamOptions();
 
         channel.setStreamToken(token);
         channel.setStreamInputs(emptyIfNull(channel.getStreamInputs()).stream().distinct().collect(Collectors.toList()));
