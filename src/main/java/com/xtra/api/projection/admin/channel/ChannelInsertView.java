@@ -7,6 +7,8 @@ import com.xtra.api.model.StreamType;
 import com.xtra.api.projection.admin.epg.EpgDetails;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
@@ -16,17 +18,25 @@ import java.util.Set;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ChannelInsertView {
     private Long id;
+    @NotBlank(message = "channel name can not be empty")
     private String name;
+    @NotBlank(message = "channel logo can not be empty")
     private String logo;
+    @NotNull(message = "streamType can not be empty")
     private StreamType streamType;
+    @NotNull(message = "streamToken can not be empty")
     private String streamToken;
     private String notes;
 
+
     private Set<DayOfWeek> daysToRestart;
     private LocalTime timeToRestart;
+    @NotNull(message = "stream Inputs can not be empty")
     private List<String> streamInputs;
 
+    @NotNull(message = "servers can not be empty")
     private Set<Long> servers;
+    @NotNull(message = "collections can not be empty")
     private Set<Long> collections;
     private EpgDetails epgDetails;
     private AdvancedStreamOptions advancedStreamOptions;
