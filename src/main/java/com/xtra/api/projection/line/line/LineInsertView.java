@@ -1,16 +1,22 @@
 package com.xtra.api.projection.line.line;
 
-import com.xtra.api.model.StreamProtocol;
+
 import lombok.Data;
 
-import java.time.LocalDateTime;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.LinkedHashSet;
-import java.util.List;
+
 
 @Data
 public class LineInsertView {
+
+    @NotBlank(message = "line username can not be empty")
     protected String username;
+    @NotBlank(message = "line password can not be empty")
     protected String password;
+    @NotNull(message = "collection list can not be empty")
     private LinkedHashSet<Long> collections;
 
     /* Location Based Permissions */
