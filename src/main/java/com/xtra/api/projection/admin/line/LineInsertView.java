@@ -3,6 +3,7 @@ package com.xtra.api.projection.admin.line;
 import com.xtra.api.model.StreamProtocol;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
@@ -10,8 +11,9 @@ import java.util.List;
 
 @Data
 public class LineInsertView {
+    @NotBlank(message = "username is mandatory")
     protected String username;
-    @NotNull(message = "Password is mandatory")
+    @NotBlank(message = "Password is mandatory")
     protected String password;
     @NotNull(message = "Role is mandatory")
     private Long roleId;
@@ -25,7 +27,9 @@ public class LineInsertView {
     private String adminNotes;
     private String resellerNotes;
 
+    @NotNull(message = "allowed Protocols list can not be empty")
     private List<StreamProtocol> allowedOutputs;
+    @NotNull(message = "owner is mandatory")
     private Long ownerId;
     private LinkedHashSet<Long> collections;
 
