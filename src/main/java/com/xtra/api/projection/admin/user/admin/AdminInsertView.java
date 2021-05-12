@@ -6,10 +6,15 @@ import com.xtra.api.projection.admin.user.UserInsertView;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class AdminInsertView extends UserInsertView {
+
+    @NotBlank(message = "admin first name can not be empty")
     private String firstname;
+    @NotBlank(message = "admin last name can not be empty")
     private String lastname;
 }
