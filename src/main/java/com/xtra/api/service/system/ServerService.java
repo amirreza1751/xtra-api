@@ -5,8 +5,10 @@ import com.xtra.api.mapper.admin.ChannelStartMapper;
 import com.xtra.api.model.Channel;
 import com.xtra.api.model.ChannelList;
 import com.xtra.api.model.Server;
+import com.xtra.api.model.StreamServerId;
 import com.xtra.api.projection.admin.channel.ChannelStart;
 import com.xtra.api.repository.ServerRepository;
+import com.xtra.api.repository.StreamServerRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +20,12 @@ import java.util.stream.Collectors;
 @Service("systemServerService")
 public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final ChannelStartMapper channelStartMapper;
+    private final StreamServerRepository streamServerRepository;
 
-    protected ServerService(ServerRepository repository, ChannelStartMapper channelStartMapper) {
+    protected ServerService(ServerRepository repository, ChannelStartMapper channelStartMapper, StreamServerRepository streamServerRepository) {
         super(repository, "Server");
         this.channelStartMapper = channelStartMapper;
+        this.streamServerRepository = streamServerRepository;
     }
 
     public ChannelStart getChannelForServer(Long channelId, String token) {
@@ -41,5 +45,14 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     @Override
     protected Page<Server> findWithSearch(String search, Pageable page) {
         return null;
+    }
+
+    public void updateRecordingStatus(String token, boolean status, Long streamId){
+        var server = repository.findByToken(token).orElseThrow(() -> new RuntimeException("server was not found!!!"));
+        var streamServer = streamServerRepository.findById(new StreamServerId(streamId, server.getId()));
+        streamServer.ifPresent(item -> {
+            item.setRecording(status);
+            streamServerRepository.save(item);
+        });
     }
 }

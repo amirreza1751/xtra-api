@@ -13,6 +13,9 @@ public class StreamServer {
     @EqualsAndHashCode.Include
     private StreamServerId id;
     private int selectedSource = 0;
+    private Boolean isCatchUp = false;
+    private int catchUpDays = 0;
+    private Boolean recording = false;
 
     @ManyToOne
     @MapsId("streamId")
