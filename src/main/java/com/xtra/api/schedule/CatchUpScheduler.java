@@ -37,7 +37,7 @@ public class CatchUpScheduler {
                     Optional<Program> result = streamServer.getStream().getEpgChannel().getPrograms().stream().filter(program -> program.getId().getStart().withZoneSameInstant(ZoneOffset.UTC).toString().equals(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).format(formatter))).findAny();
                     result.ifPresent(program -> {
                         //Send record request to server.
-                        CatchupRecordView catchupRecordView = new CatchupRecordView(program.getId().getTitle(), program.getId().getStart(), program.getId().getStop(),streamServer.getStream().getStreamInputs().get(streamServer.getSelectedSource()));
+                        CatchupRecordView catchupRecordView = new CatchupRecordView(program.getId().getTitle(), program.getId().getStart(), program.getId().getStop(), streamServer.getStream().getStreamInputs().get(streamServer.getSelectedSource()), streamServer.getCatchUpDays());
                         Boolean res = serverService.sendRecordRequest(streamServer.getStream().getId(), streamServer.getServer(), catchupRecordView);
                         if (res){
                             streamServer.setRecording(true);
