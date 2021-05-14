@@ -6,6 +6,7 @@ import com.xtra.api.projection.admin.channel.ChannelInfo;
 import com.xtra.api.projection.admin.channel.ChannelInsertView;
 import com.xtra.api.projection.admin.channel.ChannelServerInfo;
 import com.xtra.api.projection.admin.channel.ChannelView;
+import com.xtra.api.projection.admin.epg.EpgDetails;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
 import com.xtra.api.repository.EpgChannelRepository;
@@ -71,7 +72,18 @@ public abstract class ChannelMapper {
 
     @Mapping(source = "streamServers", target = "servers")
     @Mapping(source = "collectionAssigns", target = "collections")
+    @Mapping(source = "epgChannel", target = "epgDetails")
     public abstract ChannelView convertToView(Channel channel);
+
+    public EpgDetails map(EpgChannel epgChannel) {
+        if (epgChannel == null)
+            return null;
+        EpgDetails epgDetails = new EpgDetails();
+        epgDetails.setEpgId(epgChannel.getId().getEpgId());
+        epgDetails.setLanguage(epgChannel.getId().getLanguage());
+        epgDetails.setName(epgChannel.getId().getName());
+        return epgDetails;
+    }
 
     public Set<Long> convertToServerIds(Set<StreamServer> streamServers) {
         if (streamServers == null) return null;
