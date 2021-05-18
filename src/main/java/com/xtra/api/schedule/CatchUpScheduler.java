@@ -27,13 +27,12 @@ public class CatchUpScheduler {
     }
 
     @Scheduled(fixedDelay = 10000)
-    public void checkEpgUpdate() {
+    public void checkProgramsForRecording() {
         var streamServers = streamServerRepository.findAll();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm[XXX]");
         if (streamServers.size() > 0){
             for (StreamServer streamServer : streamServers){
-                var isRecording = streamServerRepository.findById(new StreamServerId(streamServer.getStream().getId(), streamServer.getServer().getId())).get().getRecording();
-                if (!isRecording && streamServer.getIsCatchUp() && !streamServer.getRecording() && streamServer.getStream().getEpgChannel().getPrograms().size() > 0){
+                if (streamServer.getIsCatchUp() && !streamServer.getRecording() && streamServer.getStream().getEpgChannel().getPrograms().size() > 0){
                     Optional<Program> result = streamServer.getStream().getEpgChannel().getPrograms().stream().filter(program -> program.getId().getStart().withZoneSameInstant(ZoneOffset.UTC).toString().equals(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).format(formatter))).findAny();
                     result.ifPresent(program -> {
                         //Send record request to server.
