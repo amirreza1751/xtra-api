@@ -1,6 +1,7 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.model.File;
+import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
@@ -36,13 +37,13 @@ public class ServerController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ServerView> addServer(@Valid @RequestBody ServerView server) {
-        return ResponseEntity.ok(serverService.add(server));
+    public ResponseEntity<ServerView> addServer(@Valid @RequestBody ServerInsertView insertView) {
+        return ResponseEntity.ok(serverService.add(insertView));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ServerView> updateServer(@PathVariable Long id, @RequestBody ServerView server) {
-        return ResponseEntity.ok(serverService.save(id, server));
+    public ResponseEntity<ServerView> updateServer(@PathVariable Long id, @RequestBody ServerInsertView insertView) {
+        return ResponseEntity.ok(serverService.save(id, insertView));
     }
 
     @DeleteMapping("/{id}")
