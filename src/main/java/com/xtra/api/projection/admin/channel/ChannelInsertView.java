@@ -15,11 +15,8 @@ import java.util.Set;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ChannelInsertView {
-    private Long id;
     private String name;
     private String logo;
-    private StreamType streamType;
-    private String streamToken;
     private String notes;
 
     private Set<DayOfWeek> daysToRestart;

@@ -10,6 +10,7 @@ import com.xtra.api.repository.EpgChannelRepository;
 import com.xtra.api.repository.EpgFileRepository;
 import com.xtra.api.service.CrudService;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,6 +124,12 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
             var channelName = programObject.getString("channel");
             var channel = epgChannelList.stream().filter(epgChannel -> epgChannel.getId().getName().equals(channelName)).findAny();
             if (channel.isPresent()) {
+                String title;
+
+                if (programObject.get("title") instanceof JSONArray) {
+                    title = ((JSONArray) programObject.get("title")).get(0).toString();
+                    continue;
+                }
                 Program program = new Program(new ProgramId(programObject.getJSONObject("title").getString("content"), ZonedDateTime.parse(programObject.getString("start"), formatter),
                         ZonedDateTime.parse(programObject.getString("stop"), formatter), programObject.getJSONObject("title").getString("lang")));
                 program.setContent(programJson.toString());

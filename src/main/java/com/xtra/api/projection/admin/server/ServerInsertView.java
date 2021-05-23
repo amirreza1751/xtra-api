@@ -1,6 +1,5 @@
 package com.xtra.api.projection.admin.server;
 
-import com.xtra.api.projection.admin.server.resource.ResourceView;
 import lombok.Data;
 
 @Data

@@ -30,7 +30,6 @@ public abstract class ChannelMapper {
     @Autowired
     private EpgChannelRepository epgChannelRepository;
 
-    @Mapping(target = "streamType", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     public abstract Channel convertToEntity(ChannelInsertView channelView);
 
     @AfterMapping

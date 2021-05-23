@@ -10,7 +10,6 @@ import java.util.Set;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class RoleInsertView {
-    private long id;
     private String name;
     private String color;
 

@@ -51,7 +51,6 @@ public class RoleService extends CrudService<Role, Long, RoleRepository> {
 
     public RoleView updateOrFail(Long id, RoleInsertView view) {
         Role newRole = roleMapper.convertToEntity(view);
-        newRole.setId(id);
         var oldRole = findByIdOrFail(id);
         copyProperties(newRole, oldRole, "id", "permissions");
         var obsoletePermissions = Sets.difference(oldRole.getPermissions(), newRole.getPermissions()).immutableCopy();

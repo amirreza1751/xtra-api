@@ -16,7 +16,6 @@ public class LineInsertView {
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;
-    private int currentConnections = 0;
     private boolean isTrial;
     private boolean isBanned = false;
     private boolean isBlocked = false;
