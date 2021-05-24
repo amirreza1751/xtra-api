@@ -7,9 +7,7 @@ import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
-import com.xtra.api.repository.ChannelRepository;
-import com.xtra.api.repository.EpgChannelRepository;
-import com.xtra.api.repository.StreamInputRepository;
+import com.xtra.api.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,16 +29,20 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final ChannelMapper channelMapper;
     private final EpgChannelRepository epgChannelRepository;
     private final StreamInputRepository streamInputRepository;
+    private final ServerRepository serverRepository;
+    private final ConnectionRepository connectionRepository;
 
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository, StreamInputRepository streamInputRepository, StreamMapper streamMapper) {
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository, StreamInputRepository streamInputRepository, StreamMapper streamMapper, ServerRepository serverRepository, ConnectionRepository connectionRepository) {
         super(repository, "Channel", serverService, streamMapper);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
         this.channelMapper = channelMapper;
         this.epgChannelRepository = epgChannelRepository;
         this.streamInputRepository = streamInputRepository;
+        this.serverRepository = serverRepository;
+        this.connectionRepository = connectionRepository;
     }
 
 
@@ -179,7 +181,28 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     public String playChannel(String stream_token, String line_token, HttpServletRequest request) {
         ArrayList<Server> servers = loadBalancingService.findAvailableServers(stream_token);
         Server server = loadBalancingService.findLeastConnServer(servers);
+
+        /*This forEach below checks that if the requested stream
+        is on-demand and offline at the same time, a start request will be sent to the related server.*/
+        server.getStreamServers().forEach(streamServer -> {
+            if (checkOnDemandStatus(stream_token, streamServer)){
+                serverService.sendStartRequest(streamServer.getId().getStreamId(), server);
+            }
+        });
         return "http://" + server.getIp() + ":" + server.getCorePort() + "/live/" + line_token + "/" + stream_token + "/m3u8";
+    }
+
+    public boolean checkOnDemandStatus(String stream_token, StreamServer streamServer) {
+        if (streamServer.getIsOnDemand() == null){
+            return false;
+        }
+        if (streamServer.getStreamDetails()!= null){
+            boolean status = streamServer.getStream().getStreamToken().equals(stream_token) &&
+                    streamServer.getIsOnDemand() &&
+                    streamServer.getStreamDetails().getStreamStatus() == null ||
+                    !streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE);
+            return status;
+        } else return streamServer.getStream().getStreamToken().equals(stream_token) && streamServer.getIsOnDemand();
     }
 
     public int changeSource(Long streamId, String token) {
@@ -239,5 +262,31 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
                 streamInput.setUrl(streamInputPair.getNewDns());
                 streamInputRepository.save(streamInput);
             }
+    }
+
+    public void autoStopOnDemandChannels(){
+        List<Server> servers = serverRepository.findAll();
+        List<Long> streamIds = new ArrayList<>();
+        if (servers.size() > 0){
+            for (Server server : servers){
+                checkOnDemandConnections(streamIds, server);
+                if (streamIds.size() > 0){
+                    serverService.sendPostRequest("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/batch-stop", String.class, streamIds);
+                }
+                streamIds.clear();
+            }
+        }
+    }
+
+    public void checkOnDemandConnections(List<Long> streamIds, Server server) {
+        int connections;
+        for (StreamServer streamServer : server.getStreamServers()){
+            connections = connectionRepository.countAllByServerIdAndStreamId(server.getId(), streamServer.getStream().getId());
+            if (streamServer.getIsOnDemand() != null && streamServer.getStreamDetails() != null){
+                if (streamServer.getIsOnDemand() && connections == 0 && streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE)){
+                    streamIds.add(streamServer.getStream().getId());
+                }
+            }
+        }
     }
 }

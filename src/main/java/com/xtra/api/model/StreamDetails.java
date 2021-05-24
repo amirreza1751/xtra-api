@@ -23,6 +23,7 @@ public class StreamDetails {
     private String speed;
     private String frameRate;
     private String bitrate;
+    private StreamStatus streamStatus;
 
     @ToString.Exclude
     @OneToOne(mappedBy = "streamDetails")
