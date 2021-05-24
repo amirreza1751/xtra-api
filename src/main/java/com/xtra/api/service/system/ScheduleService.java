@@ -13,7 +13,7 @@ public class ScheduleService {
     }
 
     @Scheduled(fixedDelay = 10000)
-    public void test(){
+    public void autoStopOnDemandChannels(){
         channelService.autoStopOnDemandChannels();
     }
 }

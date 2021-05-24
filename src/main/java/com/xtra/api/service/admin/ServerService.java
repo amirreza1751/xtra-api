@@ -27,6 +27,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -282,7 +283,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         ResponseEntity<T> result;
         try {
             result = new RestTemplate().postForEntity(uri, data, tClass);
-        } catch (HttpClientErrorException | NullPointerException exception) {
+        } catch (HttpClientErrorException | NullPointerException | ResourceAccessException exception) {
             System.out.println(exception.getMessage());
             return null;
         }

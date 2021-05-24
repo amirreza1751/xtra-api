@@ -266,22 +266,26 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     public void autoStopOnDemandChannels(){
         List<Server> servers = serverRepository.findAll();
-        int connections = 0;
         List<Long> streamIds = new ArrayList<>();
         if (servers.size() > 0){
             for (Server server : servers){
-                for (StreamServer streamServer : server.getStreamServers()){
-                    connections = connectionRepository.countAllByServerIdAndStreamId(server.getId(), streamServer.getStream().getId());
-                    if (streamServer.getIsOnDemand() != null && streamServer.getStreamDetails() != null){
-                        if (streamServer.getIsOnDemand() && connections == 0 && streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE)){
-                            streamIds.add(streamServer.getStream().getId());
-                        }
-                    }
-                }
+                checkOnDemandConnections(streamIds, server);
                 if (streamIds.size() > 0){
                     serverService.sendPostRequest("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/batch-stop", String.class, streamIds);
                 }
                 streamIds.clear();
+            }
+        }
+    }
+
+    private void checkOnDemandConnections(List<Long> streamIds, Server server) {
+        int connections;
+        for (StreamServer streamServer : server.getStreamServers()){
+            connections = connectionRepository.countAllByServerIdAndStreamId(server.getId(), streamServer.getStream().getId());
+            if (streamServer.getIsOnDemand() != null && streamServer.getStreamDetails() != null){
+                if (streamServer.getIsOnDemand() && connections == 0 && streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE)){
+                    streamIds.add(streamServer.getStream().getId());
+                }
             }
         }
     }
