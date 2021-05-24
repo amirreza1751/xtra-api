@@ -186,4 +186,69 @@ public class ChannelTest {
         var status = channelService.checkOnDemandStatus(savedChannel.getStreamToken(), streamServer);
         Assertions.assertTrue(status);
     }
+
+    @Test
+    public void stopOnDemand(){
+        //create one line
+        Reseller reseller = new Reseller();
+        reseller.setUsername("reseller");
+        reseller.setPassword("reseller");
+        reseller.setEmail("reseller@test.com");
+        reseller.setCredits(1);
+        reseller.setRole(roleService.findByIdOrFail(2L));
+        reseller.setBanned(false);
+        var savedReseller = resellerService.insert(reseller);
+
+        Line line = new Line();
+        line.setUsername("line-test");
+        line.setPassword("line-test");
+        line.setEmail("line@test.com");
+        line.set_2FASec("secret");
+        line.setNeverExpire(true);
+        line.setMaxConnections(10);
+        line.setOwner(savedReseller);
+        line.setCountryLocked(true);
+        line.setForcedCountry(CountryCode.IR);
+        line.setRole(roleService.findByIdOrFail(3L));
+        var savedLine = lineService.insert(line);
+
+        //create one on-demand channel.
+        Channel channel = new Channel();
+        channel.setName("On Demand Channel");
+        List<String> streamInputs = new ArrayList<>();
+        streamInputs.add("http://tivix.eu:8000/iptenjoyim/3GaALqqI2tcL/62748");
+        channel.setStreamInputs(streamInputs);
+        var savedChannel = channelService.insert(channel, false);
+
+        // create one server.
+        ServerView serverView = new ServerView();
+        serverView.setIp("127.0.0.1");
+        serverView.setCorePort("8081");
+        serverView.setName("Core Test");
+        serverView.setInterfaceName("wlp3s0");
+        var savedServerView = serverService.add(serverView);
+
+        // connect stream to server as an on-demand channel
+        StreamServer streamServer = new StreamServer(new StreamServerId(savedChannel.getId(), savedServerView.getId()));
+        StreamDetails streamDetails = new StreamDetails();
+        streamDetails.setStreamStatus(StreamStatus.ONLINE);
+        streamServer.setStreamDetails(streamDetails);
+        List<StreamServer> streamServers = new ArrayList<>();
+        streamServer.setStream(savedChannel);
+        streamServer.setIsOnDemand(true);
+        streamServer.setServer(serverMapper.convertToEntity(savedServerView));
+        streamServers.add(streamServer);
+        var savedServer = serverMapper.convertToEntity(savedServerView);
+        savedServer.setStreamServers(streamServers);
+        var finalUpdatedServer = serverService.updateOrFail(savedServer.getId(), savedServer);
+
+        //create multiple connections.
+        var newConnection = new Connection(savedLine, savedChannel, finalUpdatedServer, "1.1.1.1");
+        var newConnection2 = new Connection(savedLine, savedChannel, finalUpdatedServer, "1.1.1.2");
+        var newConnection3 = new Connection(savedLine, savedChannel, finalUpdatedServer, "1.1.1.3");
+
+        List<Long> streamIds = new ArrayList<>();
+        channelService.checkOnDemandConnections(streamIds, finalUpdatedServer);
+        Assertions.assertEquals(1l, streamIds.size());
+    }
 }

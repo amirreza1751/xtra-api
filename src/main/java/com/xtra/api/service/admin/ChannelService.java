@@ -278,7 +278,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         }
     }
 
-    private void checkOnDemandConnections(List<Long> streamIds, Server server) {
+    public void checkOnDemandConnections(List<Long> streamIds, Server server) {
         int connections;
         for (StreamServer streamServer : server.getStreamServers()){
             connections = connectionRepository.countAllByServerIdAndStreamId(server.getId(), streamServer.getStream().getId());
