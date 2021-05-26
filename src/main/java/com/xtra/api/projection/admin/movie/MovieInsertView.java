@@ -16,7 +16,6 @@ import java.util.Set;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class MovieInsertView {
-    private Long id;
     private String name;
 
     private MovieInfo info;

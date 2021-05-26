@@ -1,9 +1,9 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.exception.EntityNotFoundException;
-import com.xtra.api.mapper.admin.MappingService;
 import com.xtra.api.mapper.admin.ServerMapper;
 import com.xtra.api.model.*;
+import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
@@ -21,11 +21,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -44,7 +46,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @Configuration
 @EnableScheduling
 @Service
-public class ServerService extends CrudService<Server, Long, ServerRepository> implements MappingService<Server, ServerView, SimpleServerView> {
+public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final ConnectionRepository connectionRepository;
     private final StreamServerRepository streamServerRepository;
     private final ServerMapper serverMapper;
@@ -239,19 +241,16 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         return true;
     }
 
-    @Override
     public Page<SimpleServerView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         return findAll(search, pageNo, pageSize, sortBy, sortDir).map(serverMapper::convertToSimpleView);
     }
 
-    @Override
     public ServerView getById(Long id) {
         return serverMapper.convertToView(findByIdOrFail(id));
     }
 
-    @Override
-    public ServerView add(ServerView serverView) {
-        var server = serverMapper.convertToEntity(serverView);
+    public ServerView add(ServerInsertView insertView) {
+        var server = serverMapper.convertToEntity(insertView);
         UUID uuid = UUID.randomUUID();
         server.setToken(uuid.toString());
         var config = new CoreConfiguration("token", uuid.toString());
@@ -261,9 +260,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         return serverMapper.convertToView(insert(server));
     }
 
-    @Override
-    public ServerView save(Long id, ServerView server) {
-        return serverMapper.convertToView(updateOrFail(id, serverMapper.convertToEntity(server)));
+    public ServerView save(Long id, ServerInsertView insertView) {
+        return serverMapper.convertToView(updateOrFail(id, serverMapper.convertToEntity(insertView)));
     }
 
     private String getServerAddress(Server server) {
@@ -277,4 +275,15 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         copyProperties(newServer, oldObject, "id", "token");
         return repository.save(oldObject);
     }
+    public <T> T sendPostRequest(String uri, Class<T> tClass, Object data) {
+        ResponseEntity<T> result;
+        try {
+            result = new RestTemplate().postForEntity(uri, data, tClass);
+        } catch (HttpClientErrorException | NullPointerException | ResourceAccessException exception) {
+            System.out.println(exception.getMessage());
+            return null;
+        }
+        return result.getBody();
+    }
+
 }

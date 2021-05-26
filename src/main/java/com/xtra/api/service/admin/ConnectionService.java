@@ -4,8 +4,6 @@ import com.maxmind.geoip2.model.CityResponse;
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ConnectionMapper;
 import com.xtra.api.model.Connection;
-import com.xtra.api.model.ConnectionId;
-import com.xtra.api.projection.admin.ConnectionIdView;
 import com.xtra.api.projection.admin.ConnectionView;
 import com.xtra.api.projection.system.ConnectionDetails;
 import com.xtra.api.repository.ConnectionRepository;
@@ -16,12 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 public class ConnectionService {

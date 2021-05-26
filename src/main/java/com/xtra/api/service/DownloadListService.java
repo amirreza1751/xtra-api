@@ -33,7 +33,6 @@ public abstract class DownloadListService extends CrudService<DownloadList, Long
 
     @Transactional
     public DownloadListView updateOrFail(Long id, DownloadListInsertView downloadListView) {
-        downloadListView.setId(id);
         DownloadList downloadList = mapper.convertToEntityWithRelations(downloadListView);
         var existing = findByIdOrFail(id);
         existing.setName(downloadList.getName());

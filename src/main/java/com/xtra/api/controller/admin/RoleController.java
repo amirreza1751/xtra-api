@@ -48,7 +48,6 @@ public class RoleController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<RoleView> updateRole(@PathVariable Long id, @RequestBody RoleInsertView roleView) {
-        roleView.setId(id);
         return ResponseEntity.ok(roleService.updateOrFail(id, roleView));
     }
 

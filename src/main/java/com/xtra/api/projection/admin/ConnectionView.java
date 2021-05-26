@@ -15,7 +15,7 @@ public class ConnectionView {
     private String streamName;
     private String serverName;
     private String lineUsername;
-//    private LocalDateTime startDate;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private long duration;
     private String userAgent;
