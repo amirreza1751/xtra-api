@@ -14,6 +14,7 @@ public class Video {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String location;
+    private String token;
 
     @Enumerated(EnumType.STRING)
     private EncodeStatus encodeStatus;

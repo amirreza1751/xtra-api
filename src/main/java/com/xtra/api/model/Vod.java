@@ -20,7 +20,6 @@ public class Vod {
 
     @NotBlank
     private String name;
-    private String token;
 
     @OneToMany(mappedBy = "vod", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
     @JsonManagedReference
