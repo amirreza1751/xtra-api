@@ -25,6 +25,8 @@ public class StreamServer {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     StreamDetails streamDetails;
 
+    private Boolean isOnDemand;
+
     public StreamServer() {
     }
 

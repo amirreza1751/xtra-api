@@ -20,7 +20,7 @@ public class Server {
     private String interfaceName;
     private String token;
 
-    @OneToMany(mappedBy = "server", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "server", cascade = CascadeType.MERGE)
     @ToString.Exclude
     private List<StreamServer> streamServers;
 

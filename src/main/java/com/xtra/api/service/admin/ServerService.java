@@ -21,11 +21,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -273,4 +275,15 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         copyProperties(newServer, oldObject, "id", "token");
         return repository.save(oldObject);
     }
+    public <T> T sendPostRequest(String uri, Class<T> tClass, Object data) {
+        ResponseEntity<T> result;
+        try {
+            result = new RestTemplate().postForEntity(uri, data, tClass);
+        } catch (HttpClientErrorException | NullPointerException | ResourceAccessException exception) {
+            System.out.println(exception.getMessage());
+            return null;
+        }
+        return result.getBody();
+    }
+
 }
