@@ -32,7 +32,7 @@ public class CatchUpScheduler {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm[XXX]");
         if (streamServers.size() > 0){
             for (StreamServer streamServer : streamServers){
-                if (streamServer.getIsCatchUp() && !streamServer.getRecording() && streamServer.getStream().getEpgChannel().getPrograms().size() > 0){
+                if (streamServer.isCatchUp() && !streamServer.isRecording() && streamServer.getStream().getEpgChannel().getPrograms().size() > 0){
                     Optional<Program> result = streamServer.getStream().getEpgChannel().getPrograms().stream().filter(program -> program.getId().getStart().withZoneSameInstant(ZoneOffset.UTC).toString().equals(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).format(formatter))).findAny();
                     result.ifPresent(program -> {
                         //Send record request to server.

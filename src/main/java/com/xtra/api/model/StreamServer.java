@@ -13,9 +13,9 @@ public class StreamServer {
     @EqualsAndHashCode.Include
     private StreamServerId id;
     private int selectedSource = 0;
-    private Boolean isCatchUp = false;
+    private boolean isCatchUp = false;
     private int catchUpDays = 0;
-    private Boolean recording = false;
+    private boolean recording = false;
 
     @ManyToOne
     @MapsId("streamId")
@@ -28,7 +28,7 @@ public class StreamServer {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     StreamDetails streamDetails;
 
-    private Boolean isOnDemand;
+    private Boolean isOnDemand = false;
 
     public StreamServer() {
     }
