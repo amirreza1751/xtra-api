@@ -13,8 +13,6 @@ import java.util.List;
 public class LineView implements BaseView {
     private Long id;
     private String username;
-    @JsonFormat
-            (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;
