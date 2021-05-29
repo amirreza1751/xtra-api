@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.MovieInfo;
 import com.xtra.api.model.Video;
+import com.xtra.api.projection.admin.server.ServerView;
 import lombok.Data;
 
 import java.util.Set;
@@ -18,4 +19,5 @@ public class MovieView {
     private Set<Video> videos;
 
     private Set<Long> collections;
+    private Set<Long> servers;
 }

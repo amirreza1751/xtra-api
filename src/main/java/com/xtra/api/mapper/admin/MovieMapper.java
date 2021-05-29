@@ -4,6 +4,7 @@ import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.movie.MovieInsertView;
 import com.xtra.api.projection.admin.movie.MovieView;
+import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionVodRepository;
 import com.xtra.api.repository.ServerRepository;
@@ -26,6 +27,8 @@ public abstract class MovieMapper {
     private CollectionRepository collectionRepository;
     @Autowired
     private ServerRepository serverRepository;
+    @Autowired
+    private ServerMapper serverMapper;
 
     public abstract Movie convertToEntity(MovieInsertView movieView);
 
@@ -76,7 +79,7 @@ public abstract class MovieMapper {
 //        return serverVods.stream().map(serverVod -> serverVod.getServer().getId()).collect(Collectors.toSet());
 //    }
 
-    public Set<VideoServer> convertToServers(Set<Long> ids, Movie movie) {
+    public Set<VideoServer> convertToVideoServers(Set<Long> ids, Movie movie) {
         Set<VideoServer> videoServers = new HashSet<>();
         for (Video video : movie.getVideos()) {
             for (Long serverId : ids) {
@@ -105,6 +108,13 @@ public abstract class MovieMapper {
 
         return collectionVodSet;
     }
-
+    @AfterMapping
+    public void convertToServers(final Movie movie, @MappingTarget MovieView movieView){
+        Set<Long> servers = new HashSet<>();
+        for (Video video : movie.getVideos()){
+            servers.addAll(video.getVideoServers().stream().map(videoServer -> videoServer.getServer().getId()).collect(Collectors.toSet()));
+        }
+        movieView.setServers(servers);
+    }
 
 }
