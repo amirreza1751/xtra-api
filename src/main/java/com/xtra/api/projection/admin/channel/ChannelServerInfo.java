@@ -14,6 +14,7 @@ public class ChannelServerInfo {
 
     private String serverName;
     private String uptime;
+    private int users;
     private String currentInput;
     private String resolution;
     private String videoCodec;

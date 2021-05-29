@@ -19,5 +19,4 @@ public interface ChannelRepository extends StreamRepository<Channel> {
     Page<Channel> findByNameLikeOrNotesLike(String name, String notes, Pageable pageable);
 
     List<Channel> findByIdIn(List<Long> ids);
-
 }
