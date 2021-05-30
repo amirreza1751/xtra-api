@@ -45,6 +45,7 @@ public abstract class ChannelMapper {
             for (Long serverId : serverIds) {
                 var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
                 StreamServer streamServer = new StreamServer(new StreamServerId(null, serverId));
+                streamServer.setStreamDetails(new StreamDetails("" ,"" ,"" ,"" ,"" ,"" ,"" ,"" , StreamStatus.OFFLINE));
                 streamServer.setServer(server);
                 streamServer.setStream(channel);
                 streamServers.add(streamServer);

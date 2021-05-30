@@ -29,6 +29,18 @@ public class StreamDetails {
     @OneToOne(mappedBy = "streamDetails")
     private StreamServer streamServer;
 
+    public StreamDetails(String uptime, String currentInput, String resolution, String videoCodec, String audioCodec, String speed, String frameRate, String bitrate, StreamStatus streamStatus) {
+        this.uptime = uptime;
+        this.currentInput = currentInput;
+        this.resolution = resolution;
+        this.videoCodec = videoCodec;
+        this.audioCodec = audioCodec;
+        this.speed = speed;
+        this.frameRate = frameRate;
+        this.bitrate = bitrate;
+        this.streamStatus = streamStatus;
+    }
+
 }
 
 

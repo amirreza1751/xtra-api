@@ -45,7 +45,7 @@ class CatchUpSchedulerTest {
         catchupRecordView2.setStop(ZonedDateTime.parse("20210513015100 +0200", formatter1));
 
         var streamServer = streamServerRepository.findById(new StreamServerId(1L, server.getId()));
-        if (!streamServer.get().getRecording() &&catchupRecordView.getStart().withZoneSameInstant(ZoneOffset.UTC).toString().equals(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).format(formatter))){
+        if (!streamServer.get().isRecording() &&catchupRecordView.getStart().withZoneSameInstant(ZoneOffset.UTC).toString().equals(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).format(formatter))){
             Boolean res = serverService.sendRecordRequest(1L, server, catchupRecordView);
             if (res){
                 streamServer.ifPresent(item -> {
@@ -57,7 +57,7 @@ class CatchUpSchedulerTest {
         }
 
         streamServer = streamServerRepository.findById(new StreamServerId(1L, server.getId()));
-        if (!streamServer.get().getRecording() &&catchupRecordView2.getStart().withZoneSameInstant(ZoneOffset.UTC).toString().equals(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).format(formatter))){
+        if (!streamServer.get().isRecording() &&catchupRecordView2.getStart().withZoneSameInstant(ZoneOffset.UTC).toString().equals(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).format(formatter))){
             Boolean res = serverService.sendRecordRequest(1L, server, catchupRecordView2);
             if (res){
                 streamServer.ifPresent(item -> {
