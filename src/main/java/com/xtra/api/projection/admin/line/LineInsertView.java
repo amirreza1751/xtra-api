@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashSet;
@@ -18,6 +19,7 @@ public class LineInsertView {
     protected String password;
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
+    @PositiveOrZero(message = "max connections number should be a positive number")
     private int maxConnections = 1;
     private boolean isTrial;
     private boolean isBanned = false;
