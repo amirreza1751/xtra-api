@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
+@Validated
 public class AdminService extends CrudService<Admin, Long, AdminRepository> {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AdminMapper adminMapper;

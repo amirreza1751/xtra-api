@@ -10,14 +10,13 @@ import java.util.List;
 @Data
 public class LineCreateView {
 
-    @NotBlank(message = "line username can not be empty")
     protected String username;
     @NotBlank(message = "line password can not be empty")
     protected String password;
     private String resellerNotes;
 
+    @NotNull(message = "package Id can not be empty")
     private Long packageId;
-    @NotNull(message = "collection list can not be empty")
     private LinkedHashSet<Long> collections;
 
     /* Location Based Permissions */

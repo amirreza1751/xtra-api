@@ -18,7 +18,6 @@ public class VideoInsertView {
 
     @NotBlank(message = "video location can not be empty")
     private String location;
-    @NotNull(message = "audio list can not be empty")
     private List<Audio> audios;
     private List<Subtitle> subtitles;
     private List<VideoInfo> videoInfos;

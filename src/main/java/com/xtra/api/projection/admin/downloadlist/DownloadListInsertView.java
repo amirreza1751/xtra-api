@@ -12,6 +12,5 @@ public class DownloadListInsertView {
     @NotBlank(message = "Download List name can not be empty")
     private String name;
 
-    @NotNull(message = "Download collections can not be empty")
     private Set<Long> collections;
 }

@@ -1,12 +1,14 @@
 package com.xtra.api.projection.admin.user;
 
 import lombok.Data;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
+@Validated
 public class UserInsertView {
 
     @NotBlank(message = "username can not be empty")

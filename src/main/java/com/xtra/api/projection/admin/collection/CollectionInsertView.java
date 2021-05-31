@@ -17,7 +17,6 @@ public class CollectionInsertView {
     private String name;
     @NotBlank(message = "collection category can not be empty")
     private String categoryName;
-    @NotNull(message = "collection type can not be empty")
     private MediaType type;
     private List<Long> channels;
     private List<Long> movies;

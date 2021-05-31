@@ -1,13 +1,14 @@
 package com.xtra.api.projection.admin.epg;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.URL;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Data
 public class EpgInsertView {
-    @NotNull(message = "EPG name can not be empty")
+    @NotBlank(message = "EPG name can not be empty")
     private String name;
-    @NotNull(message = "EPG source can not be empty")
+    @URL(message = "EPG source should be a valid URL ")
     private String source;
 }

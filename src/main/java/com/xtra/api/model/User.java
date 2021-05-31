@@ -1,6 +1,7 @@
 package com.xtra.api.model;
 
 import lombok.Data;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -9,6 +10,7 @@ import java.time.ZonedDateTime;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
+@Validated
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -19,8 +20,7 @@ public class SubresellerCreateView {
     @Email
     private String email;
 
-    @Digits(message = "change amount should be a 5 digits number and 3 digit fraction at max", integer = 5, fraction = 3)
+    @PositiveOrZero(message = "credits should be a positive number")
     private int credits;
-    @NotBlank(message = "subreseller DNS can not be empty")
     private String resellerDns;
 }

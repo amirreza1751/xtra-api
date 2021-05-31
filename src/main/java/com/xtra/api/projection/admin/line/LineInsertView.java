@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -19,8 +20,8 @@ public class LineInsertView {
     private Long roleId;
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
+    @PositiveOrZero(message = "max connections number should be a positive number")
     private int maxConnections = 1;
-    private int currentConnections = 0;
     private boolean isTrial;
     private boolean isBanned = false;
     private boolean isBlocked = false;

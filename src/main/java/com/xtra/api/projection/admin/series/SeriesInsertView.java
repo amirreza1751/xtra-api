@@ -18,6 +18,5 @@ public class SeriesInsertView {
     private String year;
 
     private SeriesInfo info;
-    @NotNull(message = "series collections can not be empty")
     private Set<Long> collections;
 }

@@ -15,11 +15,9 @@ public class RoleInsertView {
     private long id;
     @NotBlank( message = "role name can not be empty" )
     private String name;
-    @NotBlank( message = "role color can not be empty" )
     private String color;
 
     private UserType type;
-
-    @NotNull( message = "role permissions can not be empty" )
+    
     private Set<String> permissions;
 }
