@@ -20,5 +20,6 @@ public class Season {
 
 
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OrderBy("episodeNumber")
     private List<Episode> episodes;
 }

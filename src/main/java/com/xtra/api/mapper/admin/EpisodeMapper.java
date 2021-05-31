@@ -2,9 +2,7 @@ package com.xtra.api.mapper.admin;
 
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.episode.EpisodeInsertView;
-import com.xtra.api.projection.admin.episode.EpisodeListView;
-import com.xtra.api.projection.admin.episode.EpisodeView;
+import com.xtra.api.projection.admin.episode.*;
 import com.xtra.api.repository.ServerRepository;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -13,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public abstract class EpisodeMapper {
@@ -43,5 +42,18 @@ public abstract class EpisodeMapper {
         }
     }
 
+    @AfterMapping
+    void assignInfo(final Episode episode, @MappingTarget final EpisodeListView episodeListView){
+        if (!episode.getVideos().isEmpty()){
+            //set server info
+            episodeListView.setServerInfoList(episode.getVideos().iterator().next().getVideoServers().stream().map(videoServer -> new EpisodeServerInfo(videoServer.getServer().getName())).collect(Collectors.toList()));
+            //set video info
+            episodeListView.setVideoInfos(episode.getVideos().stream().map(video -> {
+                if (video.getVideoInfo() != null) {
+                    return new EpisodeVideoInfo(video.getLocation(), video.getVideoInfo().getResolution(), video.getVideoInfo().getVideoCodec(), video.getVideoInfo().getAudioCodec(), video.getVideoInfo().getDuration());
+                } else return null;
+            }).collect(Collectors.toList()));
+        }
+    }
 
 }
