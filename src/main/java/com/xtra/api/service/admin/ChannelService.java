@@ -182,27 +182,23 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         ArrayList<Server> servers = loadBalancingService.findAvailableServers(stream_token);
         Server server = loadBalancingService.findLeastConnServer(servers);
 
-        /*This forEach below checks that if the requested stream
+        /*This code below checks that if the requested stream
         is on-demand and offline at the same time, a start request will be sent to the related server.*/
-        server.getStreamServers().forEach(streamServer -> {
-            if (checkOnDemandStatus(stream_token, streamServer)){
-                serverService.sendStartRequest(streamServer.getId().getStreamId(), server);
+        var streamServer = server.getStreamServers().stream().filter(item -> item.getStream().getStreamToken().equals(stream_token)).findFirst();
+        streamServer.ifPresent(item -> {
+            if (checkOnDemandStatus(item)){
+                serverService.sendStartRequest(item.getId().getStreamId(), server);
             }
         });
         return "http://" + server.getIp() + ":" + server.getCorePort() + "/live/" + line_token + "/" + stream_token + "/m3u8";
     }
 
-    public boolean checkOnDemandStatus(String stream_token, StreamServer streamServer) {
-        if (streamServer.getIsOnDemand() == null){
-            return false;
-        }
+    public boolean checkOnDemandStatus(StreamServer streamServer) {
         if (streamServer.getStreamDetails()!= null){
-            boolean status = streamServer.getStream().getStreamToken().equals(stream_token) &&
-                    streamServer.getIsOnDemand() &&
+            return streamServer.isOnDemand() &&
                     streamServer.getStreamDetails().getStreamStatus() == null ||
                     !streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE);
-            return status;
-        } else return streamServer.getStream().getStreamToken().equals(stream_token) && streamServer.getIsOnDemand();
+        } else return streamServer.isOnDemand();
     }
 
     public int changeSource(Long streamId, String token) {
@@ -282,8 +278,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         int connections;
         for (StreamServer streamServer : server.getStreamServers()){
             connections = connectionRepository.countAllByServerIdAndStreamId(server.getId(), streamServer.getStream().getId());
-            if (streamServer.getIsOnDemand() != null && streamServer.getStreamDetails() != null){
-                if (streamServer.getIsOnDemand() && connections == 0 && streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE)){
+            if (streamServer.getStreamDetails() != null){
+                if (streamServer.isOnDemand() && connections == 0 && streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE)){
                     streamIds.add(streamServer.getStream().getId());
                 }
             }
