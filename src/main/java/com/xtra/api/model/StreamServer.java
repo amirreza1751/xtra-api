@@ -16,6 +16,7 @@ public class StreamServer {
     private boolean isCatchUp = false;
     private int catchUpDays = 0;
     private boolean recording = false;
+    private boolean isOnDemand = false;
 
     @ManyToOne
     @MapsId("streamId")
@@ -28,7 +29,6 @@ public class StreamServer {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     StreamDetails streamDetails;
 
-    private Boolean isOnDemand = false;
 
     public StreamServer() {
     }

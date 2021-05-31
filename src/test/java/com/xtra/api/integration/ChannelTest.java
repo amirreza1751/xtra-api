@@ -176,7 +176,7 @@ public class ChannelTest {
         streamServer.setStreamDetails(streamDetails);
         List<StreamServer> streamServers = new ArrayList<>();
         streamServer.setStream(savedChannel);
-        streamServer.setIsOnDemand(true);
+        streamServer.setOnDemand(true);
         streamServer.setServer(serverMapper.convertToEntity(savedServerView));
         streamServers.add(streamServer);
         var savedServer = serverMapper.convertToEntity(savedServerView);
@@ -184,7 +184,7 @@ public class ChannelTest {
         serverService.updateOrFail(savedServer.getId(), savedServer);
 
         // if the status is equal to ture, this means that the channel has to be started on the selected server.
-        var status = channelService.checkOnDemandStatus(savedChannel.getStreamToken(), streamServer);
+        var status = channelService.checkOnDemandStatus(streamServer);
         Assertions.assertTrue(status);
     }
 
@@ -236,7 +236,7 @@ public class ChannelTest {
         streamServer.setStreamDetails(streamDetails);
         List<StreamServer> streamServers = new ArrayList<>();
         streamServer.setStream(savedChannel);
-        streamServer.setIsOnDemand(true);
+        streamServer.setOnDemand(true);
         streamServer.setServer(serverMapper.convertToEntity(savedServerView));
         streamServers.add(streamServer);
         var savedServer = serverMapper.convertToEntity(savedServerView);
