@@ -7,12 +7,10 @@ import com.xtra.api.projection.admin.channel.ChannelInsertView;
 import com.xtra.api.projection.admin.channel.ChannelServerInfo;
 import com.xtra.api.projection.admin.channel.ChannelView;
 import com.xtra.api.projection.admin.epg.EpgDetails;
-import com.xtra.api.repository.CollectionRepository;
-import com.xtra.api.repository.CollectionStreamRepository;
-import com.xtra.api.repository.EpgChannelRepository;
-import com.xtra.api.repository.ServerRepository;
+import com.xtra.api.repository.*;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +27,8 @@ public abstract class ChannelMapper {
     private CollectionRepository collectionRepository;
     @Autowired
     private EpgChannelRepository epgChannelRepository;
+    @Autowired
+    private ConnectionRepository connectionRepository;
 
     public abstract Channel convertToEntity(ChannelInsertView channelView);
 
@@ -45,6 +45,7 @@ public abstract class ChannelMapper {
             for (Long serverId : serverIds) {
                 var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
                 StreamServer streamServer = new StreamServer(new StreamServerId(null, serverId));
+                streamServer.setStreamDetails(new StreamDetails("" ,"" ,"" ,"" ,"" ,"" ,"" ,"" , StreamStatus.OFFLINE));
                 streamServer.setServer(server);
                 streamServer.setStream(channel);
                 streamServers.add(streamServer);
@@ -123,9 +124,25 @@ public abstract class ChannelMapper {
     }
 
     @Mapping(source = "streamServers", target = "channelInfos")
+    @Mapping(source = "channel", target = "totalUsers", qualifiedByName = "getTotalUsers")
+    @Mapping(target = "epg", expression = "java(channel.getEpgChannel()!=null)")
     public abstract ChannelInfo convertToChannelInfo(Channel channel);
 
+    @Named("getTotalUsers")
+    long getTotalUsers(Channel channel) {
+        return connectionRepository.countAllByStreamId(channel.getId());
+    }
+
+    @Mapping(source = "streamDetails", target = "users", qualifiedByName = "getUsers")
+    @Mapping(source = "streamServer.server.name", target = "serverName")
     public abstract ChannelServerInfo toStreamDetailsView(StreamDetails streamDetails);
+
+    @Named("getUsers")
+    long getUsers(StreamDetails streamDetails) {
+        var streamServer = streamDetails.getStreamServer();
+        return connectionRepository.countAllByServerIdAndStreamId(streamServer.getServer().getId(), streamServer.getStream().getId());
+    }
+
 
     public Set<ChannelServerInfo> convertToInfosMap(Set<StreamServer> streamServers) {
         if (streamServers == null) return null;

@@ -10,7 +10,9 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface ServerMapper {
-    Server convertToEntity(ServerInsertView serverView);
+    Server convertToEntity(ServerInsertView insertView);
+
+    Server convertToEntity(ServerView serverView);
 
     SimpleServerView convertToSimpleView(Server server);
 

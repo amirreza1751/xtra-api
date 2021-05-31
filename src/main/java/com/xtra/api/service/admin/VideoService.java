@@ -27,4 +27,8 @@ public class VideoService extends CrudService<Video, Long, VideoRepository> {
     public Video updateVideo(Long id, Video video) {
         return updateOrFail(id, video);
     }
+
+    public Video getByToken(String vodToken) {
+        return repository.findByToken(vodToken).orElse(null);
+    }
 }

@@ -54,10 +54,12 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
     public Movie insert(Movie movie, boolean encode) {
         String token;
-        do {
-            token = generateRandomString(8, 12, false);
-        } while (repository.findByToken(token).isPresent());
-        movie.setToken(token);
+        for (Video video : movie.getVideos()){
+            do {
+                token = generateRandomString(8, 12, false);
+            } while (videoRepository.findByToken(token).isPresent());
+            video.setToken(token);
+        }
         var savedEntity = repository.save(movie);
 
         if (encode) {
@@ -138,11 +140,6 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         var movie = findByIdOrFail(id);
         serverService.sendEncodeRequest(movie.getVideos().stream().findFirst().get());
         return repository.save(movie);
-    }
-
-    public Video getByToken(String vodToken) {
-        var m = repository.findByToken(vodToken);
-        return m.map(movie -> movie.getVideos().stream().findFirst().get()).orElse(null);
     }
 
     public Movie updateOrFail(Long id, Movie movie, boolean encode) {

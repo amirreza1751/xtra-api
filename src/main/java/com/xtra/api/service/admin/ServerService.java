@@ -4,6 +4,7 @@ import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ServerMapper;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.server.ServerInsertView;
+import com.xtra.api.projection.admin.catchup.CatchupRecordView;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
@@ -275,6 +276,20 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         copyProperties(newServer, oldObject, "id", "token");
         return repository.save(oldObject);
     }
+
+    //Catch-up Methods
+    public Boolean sendRecordRequest(Long streamId, Server server, CatchupRecordView catchupRecordView) {
+        return this.webClient
+                .post()
+                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/" + streamId + "/catch-up/record"))
+                .body(Mono.just(catchupRecordView), CatchupRecordView.class)
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Boolean.class).block();
+    }
+
     public <T> T sendPostRequest(String uri, Class<T> tClass, Object data) {
         ResponseEntity<T> result;
         try {

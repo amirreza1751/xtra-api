@@ -4,6 +4,7 @@ import com.neovisionaries.i18n.CountryCode;
 import com.xtra.api.controller.admin.ChannelController;
 import com.xtra.api.mapper.admin.ServerMapper;
 import com.xtra.api.model.*;
+import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.service.LineService;
@@ -161,12 +162,12 @@ public class ChannelTest {
         var savedChannel = channelService.insert(channel, false);
 
         //create server
-        ServerView serverView = new ServerView();
-        serverView.setIp("127.0.0.1");
-        serverView.setCorePort("8081");
-        serverView.setName("Core Test");
-        serverView.setInterfaceName("wlp3s0");
-        var savedServerView = serverService.add(serverView);
+        ServerInsertView insertView = new ServerInsertView();
+        insertView.setIp("127.0.0.1");
+        insertView.setCorePort("8081");
+        insertView.setName("Core Test");
+        insertView.setInterfaceName("wlp3s0");
+        var savedServerView = serverService.add(insertView);
 
         // connect stream to server as an on-demand channel
         StreamServer streamServer = new StreamServer(new StreamServerId(savedChannel.getId(), savedServerView.getId()));
@@ -175,7 +176,7 @@ public class ChannelTest {
         streamServer.setStreamDetails(streamDetails);
         List<StreamServer> streamServers = new ArrayList<>();
         streamServer.setStream(savedChannel);
-        streamServer.setIsOnDemand(true);
+        streamServer.setOnDemand(true);
         streamServer.setServer(serverMapper.convertToEntity(savedServerView));
         streamServers.add(streamServer);
         var savedServer = serverMapper.convertToEntity(savedServerView);
@@ -183,7 +184,7 @@ public class ChannelTest {
         serverService.updateOrFail(savedServer.getId(), savedServer);
 
         // if the status is equal to ture, this means that the channel has to be started on the selected server.
-        var status = channelService.checkOnDemandStatus(savedChannel.getStreamToken(), streamServer);
+        var status = channelService.checkOnDemandStatus(streamServer);
         Assertions.assertTrue(status);
     }
 
@@ -221,7 +222,7 @@ public class ChannelTest {
         var savedChannel = channelService.insert(channel, false);
 
         // create one server.
-        ServerView serverView = new ServerView();
+        ServerInsertView serverView = new ServerInsertView();
         serverView.setIp("127.0.0.1");
         serverView.setCorePort("8081");
         serverView.setName("Core Test");
@@ -235,7 +236,7 @@ public class ChannelTest {
         streamServer.setStreamDetails(streamDetails);
         List<StreamServer> streamServers = new ArrayList<>();
         streamServer.setStream(savedChannel);
-        streamServer.setIsOnDemand(true);
+        streamServer.setOnDemand(true);
         streamServer.setServer(serverMapper.convertToEntity(savedServerView));
         streamServers.add(streamServer);
         var savedServer = serverMapper.convertToEntity(savedServerView);

@@ -13,6 +13,10 @@ public class StreamServer {
     @EqualsAndHashCode.Include
     private StreamServerId id;
     private int selectedSource = 0;
+    private boolean isCatchUp = false;
+    private int catchUpDays = 0;
+    private boolean recording = false;
+    private boolean isOnDemand = false;
 
     @ManyToOne
     @MapsId("streamId")
@@ -25,7 +29,6 @@ public class StreamServer {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     StreamDetails streamDetails;
 
-    private Boolean isOnDemand;
 
     public StreamServer() {
     }
