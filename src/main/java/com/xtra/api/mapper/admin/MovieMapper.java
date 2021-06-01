@@ -2,8 +2,9 @@ package com.xtra.api.mapper.admin;
 
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.movie.MovieInsertView;
-import com.xtra.api.projection.admin.movie.MovieView;
+import com.xtra.api.projection.admin.episode.EpisodeServerInfo;
+import com.xtra.api.projection.admin.episode.EpisodeVideoInfo;
+import com.xtra.api.projection.admin.movie.*;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionVodRepository;
@@ -35,6 +36,8 @@ public abstract class MovieMapper {
 //    @Mapping(source = "videos.videoServers.serverId", target = "servers")
     @Mapping(source = "collectionAssigns", target = "collections")
     public abstract MovieView convertToView(Movie movie);
+
+    public abstract MovieListView convertToListView(Movie movie);
 
     @AfterMapping
     void convertServerIdsAndCollectionIds(final MovieInsertView movieView, @MappingTarget final Movie movie) {
@@ -117,4 +120,18 @@ public abstract class MovieMapper {
         movieView.setServers(servers);
     }
 
+    @AfterMapping
+    public void assignInfo(final Movie movie, @MappingTarget MovieListView movieListView){
+        movieListView.setDuration(movie.getInfo().getRuntime());
+        if (!movie.getVideos().isEmpty()){
+            //set server info
+            movieListView.setServerInfoList(movie.getVideos().iterator().next().getVideoServers().stream().map(videoServer -> new MovieServerInfo(videoServer.getServer().getName())).collect(Collectors.toList()));
+            //set video info
+            movieListView.setVideoInfoList(movie.getVideos().stream().map(video -> {
+                if (video.getVideoInfo() != null) {
+                    return new MovieVideoInfo(video.getLocation(), video.getVideoInfo().getResolution(), video.getVideoInfo().getVideoCodec(), video.getVideoInfo().getAudioCodec(), video.getVideoInfo().getDuration(), video.getEncodeStatus());
+                } else return null;
+            }).collect(Collectors.toList()));
+        }
+    }
 }
