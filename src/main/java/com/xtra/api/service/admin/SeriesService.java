@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +66,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     }
 
     public Series add(SeriesInsertView seriesInsertView) {
+        seriesInsertView.setLastUpdated(LocalDate.now());
         return this.insert(seriesMapper.convertToEntity(seriesInsertView));
     }
 
@@ -101,6 +103,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     public Series addEpisode(Long id, EpisodeInsertView episodeInsertView) {
         Episode episode = episodeMapper.convertToEntity(episodeInsertView);
         var series = findByIdOrFail(id);
+        series.setLastUpdated(LocalDate.now());
         var season = series.getSeasons().stream().filter(seasonItem -> seasonItem.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()).findFirst();
         if (season.isPresent()) {
             var existingEpisode = season.get().getEpisodes().stream().filter(episodeItem -> episodeItem.getEpisodeNumber() == episodeInsertView.getEpisodeNumber()).findFirst();
