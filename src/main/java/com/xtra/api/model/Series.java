@@ -19,6 +19,7 @@ public class Series extends Vod {
     private String year;
 
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OrderBy("seasonNumber")
     private List<Season> seasons;
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)

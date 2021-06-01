@@ -16,11 +16,6 @@ import java.time.format.DateTimeFormatter;
 
 @Configuration
 public class ApplicationConfig {
-    public static final String DATETIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
-    public static final LocalDateTime FIXED_DATE = LocalDateTime.now();
-    public static LocalDateTimeSerializer LOCAL_DATETIME_SERIALIZER = new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
-    public static LocalDateTimeDeserializer LOCAL_DATETIME_DESERIALIZER = new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
-
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -40,8 +35,6 @@ public class ApplicationConfig {
     public Jackson2ObjectMapperBuilder jacksonBuilder() {
         Jackson2ObjectMapperBuilder b = new Jackson2ObjectMapperBuilder();
         return b.propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-                .featuresToEnable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
-                .serializers(LOCAL_DATETIME_SERIALIZER)
-                .deserializers(LOCAL_DATETIME_DESERIALIZER);
+                .featuresToEnable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
     }
 }

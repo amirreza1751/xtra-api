@@ -2,7 +2,7 @@ package com.xtra.api.mapper.admin;
 
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.episode.EpisodeInsertView;
+import com.xtra.api.projection.admin.episode.*;
 import com.xtra.api.repository.ServerRepository;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -11,15 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public abstract class EpisodeMapper {
     @Autowired
     private ServerRepository serverRepository;
 
-    public abstract Episode convertToEntity(EpisodeInsertView episodeInsertView);
+    public abstract EpisodeView convertToView(Episode episode);
 
-    public abstract EpisodeInsertView convertToView(Episode episode);
+    public abstract EpisodeListView convertToListView(Episode episode);
+
+    public abstract Episode convertToEntity(EpisodeInsertView episodeInsertView);
 
     @AfterMapping
     void assignServerIds(final EpisodeInsertView episodeInsertView, @MappingTarget final Episode episode) {
@@ -36,6 +39,20 @@ public abstract class EpisodeMapper {
                 }
                 video.setVideoServers(videoServers);
             }
+        }
+    }
+
+    @AfterMapping
+    void assignInfo(final Episode episode, @MappingTarget final EpisodeListView episodeListView){
+        if (!episode.getVideos().isEmpty()){
+            //set server info
+            episodeListView.setServerInfoList(episode.getVideos().iterator().next().getVideoServers().stream().map(videoServer -> new EpisodeServerInfo(videoServer.getServer().getName())).collect(Collectors.toList()));
+            //set video info
+            episodeListView.setVideoInfos(episode.getVideos().stream().map(video -> {
+                if (video.getVideoInfo() != null) {
+                    return new EpisodeVideoInfo(video.getLocation(), video.getVideoInfo().getResolution(), video.getVideoInfo().getVideoCodec(), video.getVideoInfo().getAudioCodec(), video.getVideoInfo().getDuration());
+                } else return null;
+            }).collect(Collectors.toList()));
         }
     }
 
