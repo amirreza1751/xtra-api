@@ -3,10 +3,7 @@ package com.xtra.api.service.admin;
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.MovieMapper;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.movie.MovieBatchDeleteView;
-import com.xtra.api.projection.admin.movie.MovieBatchUpdateView;
-import com.xtra.api.projection.admin.movie.MovieInsertView;
-import com.xtra.api.projection.admin.movie.MovieView;
+import com.xtra.api.projection.admin.movie.*;
 import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.repository.MovieRepository;
 import com.xtra.api.repository.VideoRepository;
@@ -40,8 +37,8 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return repository.findByNameLikeOrInfoPlotLikeOrInfoCastLikeOrInfoDirectorLikeOrInfoGenresLikeOrInfoCountryLike(search, search, search, search, search, search, pageable);
     }
 
-    public Page<MovieView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(movieMapper::convertToView);
+    public Page<MovieListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(movieMapper::convertToListView);
     }
 
     public MovieView getViewById(Long id) {

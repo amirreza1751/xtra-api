@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.SeriesInfo;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
@@ -12,6 +13,7 @@ import java.util.Set;
 public class SeriesInsertView {
     private String name;
     private String year;
+    private LocalDate lastUpdated;
 
     private SeriesInfo info;
     private Set<Long> collections;
