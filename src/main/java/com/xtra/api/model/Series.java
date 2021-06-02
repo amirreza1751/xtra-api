@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -17,8 +18,10 @@ public class Series extends Vod {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String year;
+    private LocalDate lastUpdated;
 
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OrderBy("seasonNumber")
     private List<Season> seasons;
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)

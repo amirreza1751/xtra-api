@@ -19,11 +19,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.xtra.api.util.Utilities.generateRandomString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
@@ -64,6 +66,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     }
 
     public Series add(SeriesInsertView seriesInsertView) {
+        seriesInsertView.setLastUpdated(LocalDate.now());
         return this.insert(seriesMapper.convertToEntity(seriesInsertView));
     }
 
@@ -100,17 +103,21 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     public Series addEpisode(Long id, EpisodeInsertView episodeInsertView) {
         Episode episode = episodeMapper.convertToEntity(episodeInsertView);
         var series = findByIdOrFail(id);
+        series.setLastUpdated(LocalDate.now());
         var season = series.getSeasons().stream().filter(seasonItem -> seasonItem.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()).findFirst();
         if (season.isPresent()) {
             var existingEpisode = season.get().getEpisodes().stream().filter(episodeItem -> episodeItem.getEpisodeNumber() == episodeInsertView.getEpisodeNumber()).findFirst();
             if (existingEpisode.isPresent()) {
                 throw new EntityAlreadyExistsException(episode.getEpisodeName(), episode.getEpisodeNumber());
             } else {
+                this.generateToken(episode);
                 List<Episode> existingEpisodes = season.get().getEpisodes();
                 existingEpisodes.add(episode);
+                this.updateNumberOfEpisodes(series);
                 return repository.save(series);
             }
         } else {
+            this.generateToken(episode);
             var newSeason = seasonMapper.convertToEntity(episodeInsertView.getSeason());
             List<Episode> episodes = new ArrayList<>();
             episodes.add(episode);
@@ -118,9 +125,9 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             List<Season> existingSeasons = series.getSeasons();
             existingSeasons.add(newSeason);
             series.setSeasons(existingSeasons);
-            repository.save(series);
+            this.updateNumberOfEpisodes(series);
+            return repository.save(series);
         }
-        return series;
     }
 
     public Series editEpisode(Long id, Long episodeId, EpisodeInsertView episodeInsertView) {
@@ -172,6 +179,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                     series.setSeasons(existingSeasons);
                 }
             }
+            this.updateNumberOfEpisodes(series);
             return repository.save(series);
         }
         return series;
@@ -191,6 +199,24 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         if (seasonIfEmpty != null && seasonIfEmpty.getEpisodes().size() == 0){
             series.getSeasons().remove(seasonIfEmpty);
         }
+        this.updateNumberOfEpisodes(series);
         repository.save(series);
+    }
+    public void generateToken(Episode episode){
+        String token;
+        for (Video video : episode.getVideos()){
+            do {
+                token = generateRandomString(8, 12, false);
+            } while (videoRepository.findByToken(token).isPresent());
+            video.setToken(token);
+            video.setEncodeStatus(EncodeStatus.NOT_ENCODED);
+        }
+    }
+    public void updateNumberOfEpisodes(Series series){
+        if (series.getSeasons() != null){
+            for (Season season : series.getSeasons()){
+                season.setNoOfEpisodes(season.getEpisodes().size());
+            }
+        }
     }
 }
