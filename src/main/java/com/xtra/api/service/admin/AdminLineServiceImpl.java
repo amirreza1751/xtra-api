@@ -3,10 +3,7 @@ package com.xtra.api.service.admin;
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.AdminLineMapper;
 import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.line.LineBatchDeleteView;
-import com.xtra.api.projection.admin.line.LineBatchInsertView;
-import com.xtra.api.projection.admin.line.LineInsertView;
-import com.xtra.api.projection.admin.line.LineView;
+import com.xtra.api.projection.admin.line.*;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.RoleRepository;
@@ -35,8 +32,8 @@ public class AdminLineServiceImpl extends LineService {
         this.lineMapper = lineMapper;
     }
 
-    public Page<LineView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(lineMapper::convertToView);
+    public Page<LineListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(lineMapper::convertToListView);
     }
 
     public LineView getById(Long id) {

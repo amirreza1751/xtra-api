@@ -1,16 +1,21 @@
 package com.xtra.api.mapper.admin;
 
 import com.xtra.api.exception.EntityNotFoundException;
-import com.xtra.api.model.*;
+import com.xtra.api.model.DownloadList;
+import com.xtra.api.model.DownloadListCollection;
+import com.xtra.api.model.Line;
+import com.xtra.api.model.Reseller;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
 import com.xtra.api.projection.admin.line.LineInsertView;
+import com.xtra.api.projection.admin.line.LineListView;
 import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.repository.CollectionRepository;
-import com.xtra.api.repository.RoleRepository;
+import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.service.admin.UserService;
 import org.apache.commons.lang3.RandomUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
@@ -27,6 +32,8 @@ public abstract class AdminLineMapper {
     private UserService userService;
     @Autowired
     private CollectionRepository collectionRepository;
+    @Autowired
+    private ConnectionRepository connectionRepository;
 
     @Mapping(source = "collections", target = "defaultDownloadList")
     @Mapping(source = "ownerId", target = "owner")
@@ -65,5 +72,20 @@ public abstract class AdminLineMapper {
         if (downloadList == null)
             return null;
         return emptyIfNull(downloadList.getCollectionsAssign()).stream().map(dlc -> new DlCollectionView(dlc.getCollection().getId(), dlc.getCollection().getName())).collect(Collectors.toList());
+    }
+
+    @Mapping(source = "owner.username", target = "owner")
+    @Mapping(target = "online", source = "line.id", qualifiedByName = "getIsOnline")
+    @Mapping(target = "currentConnections", source = "line.id", qualifiedByName = "getConnectionsCount")
+    public abstract LineListView convertToListView(Line line);
+
+    @Named("getIsOnline")
+    boolean getIsOnline(Long lineId) {
+        return connectionRepository.countAllByLineId(lineId) > 0;
+    }
+
+    @Named("getConnectionsCount")
+    long getConnectionsCount(Long lineId) {
+        return connectionRepository.countAllByLineId(lineId);
     }
 }

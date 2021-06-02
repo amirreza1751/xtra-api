@@ -41,13 +41,14 @@ public class SystemLineServiceImpl extends LineService {
         var lineByToken = repository.findByLineToken(lineAuth.getLineToken());
         if (lineByToken.isPresent()) {
             var line = lineByToken.get();
+            var currentConnections = getConnectionsCount(line.getId());
             if (line.isBanned()) {
                 return LineStatus.BANNED;
             } else if (line.isBlocked()) {
                 return LineStatus.BLOCKED;
             } else if (!line.isNeverExpire() && line.getExpireDate().isBefore(LocalDateTime.now())) {
                 return LineStatus.EXPIRED;
-            } else if (line.getMaxConnections() == 0 || line.getMaxConnections() < line.getCurrentConnections()) {
+            } else if (line.getMaxConnections() == 0 || line.getMaxConnections() < currentConnections) {
                 return LineStatus.MAX_CONNECTION_REACHED;
             } else if (!isIpAllowed(line, lineAuth.getIpAddress())) {
                 return LineStatus.FORBIDDEN;

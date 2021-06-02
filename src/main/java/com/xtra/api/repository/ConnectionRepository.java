@@ -24,4 +24,6 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
     int countAllByServerIdAndStreamId(Long serverId, Long streamId);
 
     long countAllByStreamId(Long streamId);
+
+    long countAllByLineId(Long lineId);
 }

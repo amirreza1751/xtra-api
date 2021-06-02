@@ -19,7 +19,6 @@ public class Line extends User {
     private LocalDateTime expireDate;
     private boolean neverExpire = false;
     private int maxConnections = 1;
-    private int currentConnections = 0;
     private boolean isTrial;
     private boolean isBlocked = false;
     private String adminNotes;
@@ -53,11 +52,7 @@ public class Line extends User {
 
     @OneToMany(mappedBy = "line")
     @ToString.Exclude
-    private List<Connection> activities = new ArrayList<>();
-
-    public int getCurrentConnections() {
-        return activities.size();
-    }
+    private List<Connection> connections = new ArrayList<>();
 
     public Line() {
         userType = UserType.LINE;

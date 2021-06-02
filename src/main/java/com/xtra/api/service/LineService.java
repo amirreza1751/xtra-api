@@ -136,4 +136,11 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
                 .body(playlist.toString());
     }
 
+    public boolean getIsOnline(Long lineId) {
+        return connectionRepository.countAllByLineId(lineId) > 0;
+    }
+
+    public long getConnectionsCount(Long lineId) {
+        return connectionRepository.countAllByLineId(lineId);
+    }
 }

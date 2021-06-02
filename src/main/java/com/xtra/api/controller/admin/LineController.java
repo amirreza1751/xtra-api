@@ -1,9 +1,6 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.projection.admin.line.LineBatchDeleteView;
-import com.xtra.api.projection.admin.line.LineBatchInsertView;
-import com.xtra.api.projection.admin.line.LineInsertView;
-import com.xtra.api.projection.admin.line.LineView;
+import com.xtra.api.projection.admin.line.*;
 import com.xtra.api.service.admin.AdminLineServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,8 +20,8 @@ public class LineController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<LineView>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                                   @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+    public ResponseEntity<Page<LineListView>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                                       @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(lineService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
