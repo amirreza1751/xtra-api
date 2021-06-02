@@ -65,7 +65,7 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
         collection.setId(id);
         var newColl = mapper.convertToEntity(collection);
         var oldColl = findByIdOrFail(id);
-        copyProperties(oldColl, newColl, "downloadListCollections", "streams", "vods");
+        copyProperties(newColl, oldColl, "downloadListCollections", "streams", "vods");
         if (newColl.getStreams() != null) {
             var obsoleteStreams = Sets.difference(oldColl.getStreams(), newColl.getStreams()).immutableCopy();
             oldColl.removeStreams(obsoleteStreams);
