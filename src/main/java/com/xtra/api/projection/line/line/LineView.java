@@ -20,16 +20,4 @@ public class LineView implements BaseView {
     private boolean isTrial;
     private boolean isBlocked = false;
     private boolean isBanned = false;
-
-    private List<StreamProtocol> allowedOutputs;
-    private List<DlCollectionView> collections;
-
-    private boolean isCountryLocked = false;
-    private String forcedCountry;
-
-    private List<String> allowedIps;
-    private List<String> blockedIps;
-
-    private List<String> allowedUserAgents;
-    private List<String> blockedUserAgents;
 }

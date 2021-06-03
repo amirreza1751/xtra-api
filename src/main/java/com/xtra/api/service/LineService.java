@@ -22,7 +22,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 public abstract class LineService extends CrudService<Line, Long, LineRepository> {
     private final ConnectionRepository connectionRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    protected final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RoleRepository roleRepository;
 
     @Value("${server.address}")
