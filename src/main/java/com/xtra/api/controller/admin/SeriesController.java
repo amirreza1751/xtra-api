@@ -54,15 +54,4 @@ public class SeriesController {
     public ResponseEntity<Series> addEpisode(@PathVariable Long id, @RequestBody EpisodeInsertView episodeInsertView) {
         return ResponseEntity.ok(seriesService.addEpisode(id, episodeInsertView));
     }
-
-    @PatchMapping("/{id}/episodes/{episodeId}")
-    public ResponseEntity<Series> editEpisode(@PathVariable Long id, @PathVariable Long episodeId, @RequestBody EpisodeInsertView episodeInsertView) {
-        return ResponseEntity.ok(seriesService.editEpisode(id, episodeId, episodeInsertView));
-    }
-
-    @DeleteMapping("/{id}/episodes/{episodeId}")
-    public ResponseEntity<Series> deleteEpisode(@PathVariable Long id, @PathVariable Long episodeId) {
-        seriesService.deleteEpisode(id, episodeId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
 }

@@ -111,17 +111,21 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                 throw new EntityAlreadyExistsException(episode.getEpisodeName(), episode.getEpisodeNumber());
             } else {
                 this.generateToken(episode);
+                episode.setSeason(season.get());
                 List<Episode> existingEpisodes = season.get().getEpisodes();
                 existingEpisodes.add(episode);
+                season.get().setSeries(series);
                 this.updateNumberOfEpisodes(series);
                 return repository.save(series);
             }
         } else {
             this.generateToken(episode);
             var newSeason = seasonMapper.convertToEntity(episodeInsertView.getSeason());
+            episode.setSeason(newSeason);
             List<Episode> episodes = new ArrayList<>();
             episodes.add(episode);
             newSeason.setEpisodes(episodes);
+            newSeason.setSeries(series);
             List<Season> existingSeasons = series.getSeasons();
             existingSeasons.add(newSeason);
             series.setSeasons(existingSeasons);
@@ -130,78 +134,6 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         }
     }
 
-    public Series editEpisode(Long id, Long episodeId, EpisodeInsertView episodeInsertView) {
-        Episode episodeToSave = episodeMapper.convertToEntity(episodeInsertView);
-        var series = findByIdOrFail(id);
-        Season oldSeason = null;
-        Episode oldEpisode = null;
-        Optional<Episode> tempEpisode;
-
-        for (Season seasonItem : series.getSeasons()) {
-            tempEpisode = seasonItem.getEpisodes().stream().filter(episode -> episode.getId().equals(episodeId)).findFirst();
-            if (tempEpisode.isPresent()) {
-                oldSeason = seasonItem;
-                oldEpisode = tempEpisode.get();
-            }
-        }
-
-        if (oldSeason != null) {
-            if (oldSeason.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()) { //replacing in the same season
-                for (Episode episodeItem : oldSeason.getEpisodes()){
-                    if (episodeToSave.getEpisodeNumber() == episodeItem.getEpisodeNumber() && !episodeId.equals(episodeItem.getId())){
-                        throw new EntityAlreadyExistsException();
-                    }
-                }
-                copyProperties(episodeToSave, oldEpisode, "id", "videos");
-                oldEpisode.getVideos().clear();
-                oldEpisode.setVideos(episodeToSave.getVideos());
-            } else { // moving to another existing season
-                oldSeason.getEpisodes().remove(oldEpisode);
-                if (oldSeason.getEpisodes().size() == 0){
-                    series.getSeasons().remove(oldSeason);
-                }
-                var newSeason = series.getSeasons().stream().filter(season -> season.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()).findFirst();
-                if (newSeason.isPresent()) {
-                    for (Episode episodeItem : newSeason.get().getEpisodes()){
-                        if (episodeToSave.getEpisodeNumber() == episodeItem.getEpisodeNumber() && !episodeId.equals(episodeItem.getId())){
-                            throw new EntityAlreadyExistsException();
-                        }
-                    }
-                    List<Episode> episodes = newSeason.get().getEpisodes();
-                    episodes.add(episodeToSave);
-                } else { //new season has to be created
-                    var seasonToCreate = seasonMapper.convertToEntity(episodeInsertView.getSeason());
-                    List<Episode> episodes = new ArrayList<>();
-                    episodes.add(episodeToSave);
-                    seasonToCreate.setEpisodes(episodes);
-                    List<Season> existingSeasons = series.getSeasons();
-                    existingSeasons.add(seasonToCreate);
-                    series.setSeasons(existingSeasons);
-                }
-            }
-            this.updateNumberOfEpisodes(series);
-            return repository.save(series);
-        }
-        return series;
-    }
-
-    public void deleteEpisode(Long id, Long episodeId){
-        var series = findByIdOrFail(id);
-        Season seasonIfEmpty = null;
-        Optional<Episode> episodeToDelete;
-        for (Season seasonItem : series.getSeasons()) {
-            episodeToDelete = seasonItem.getEpisodes().stream().filter(episode -> episode.getId().equals(episodeId)).findFirst();
-            if (episodeToDelete.isPresent()){
-                seasonItem.getEpisodes().remove(episodeToDelete.get());
-                seasonIfEmpty = seasonItem;
-            }
-        }
-        if (seasonIfEmpty != null && seasonIfEmpty.getEpisodes().size() == 0){
-            series.getSeasons().remove(seasonIfEmpty);
-        }
-        this.updateNumberOfEpisodes(series);
-        repository.save(series);
-    }
     public void generateToken(Episode episode){
         String token;
         for (Video video : episode.getVideos()){
