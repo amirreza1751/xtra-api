@@ -1,9 +1,7 @@
 package com.xtra.api.schedule;
 
-import com.xtra.api.model.Program;
-import com.xtra.api.model.Server;
+import com.xtra.api.model.EpgProgram;
 import com.xtra.api.model.StreamServer;
-import com.xtra.api.model.StreamServerId;
 import com.xtra.api.projection.admin.catchup.CatchupRecordView;
 import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.repository.StreamServerRepository;
@@ -32,11 +30,11 @@ public class CatchUpScheduler {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm[XXX]");
         if (streamServers.size() > 0){
             for (StreamServer streamServer : streamServers){
-                if (streamServer.isCatchUp() && !streamServer.isRecording() && streamServer.getStream().getEpgChannel().getPrograms().size() > 0){
-                    Optional<Program> result = streamServer.getStream().getEpgChannel().getPrograms().stream().filter(program -> program.getId().getStart().withZoneSameInstant(ZoneOffset.UTC).toString().equals(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).format(formatter))).findAny();
-                    result.ifPresent(program -> {
+                if (streamServer.isCatchUp() && !streamServer.isRecording() && streamServer.getStream().getEpgChannel().getEpgPrograms().size() > 0){
+                    Optional<EpgProgram> result = streamServer.getStream().getEpgChannel().getEpgPrograms().stream().filter(epgProgram -> epgProgram.getId().getStart().withZoneSameInstant(ZoneOffset.UTC).toString().equals(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).format(formatter))).findAny();
+                    result.ifPresent(epgProgram -> {
                         //Send record request to server.
-                        CatchupRecordView catchupRecordView = new CatchupRecordView(program.getId().getTitle(), program.getId().getStart(), program.getId().getStop(), streamServer.getStream().getStreamInputs().get(streamServer.getSelectedSource()), streamServer.getCatchUpDays());
+                        CatchupRecordView catchupRecordView = new CatchupRecordView(epgProgram.getId().getTitle(), epgProgram.getId().getStart(), epgProgram.getId().getStop(), streamServer.getStream().getStreamInputs().get(streamServer.getSelectedSource()), streamServer.getCatchUpDays());
                         Boolean res = serverService.sendRecordRequest(streamServer.getStream().getId(), streamServer.getServer(), catchupRecordView);
                         if (res){
                             streamServer.setRecording(true);

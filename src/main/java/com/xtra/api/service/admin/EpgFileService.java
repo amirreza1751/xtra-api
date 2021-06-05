@@ -91,6 +91,7 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
                 if (!StringUtils.isEmpty(epgFile.getLastVersionHash()) && epgFile.getLastVersionHash().equals(newHash))
                     continue;
 
+                epgFile.setLastVersionHash(newHash);
                 syncEpg(epgFile, xml);
 
             }
@@ -104,14 +105,13 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
         Set<EpgChannel> epgChannelList = new HashSet<>();
         for (var json : root.getJSONObject("tv").getJSONArray("channel")) {
             var channel = ((JSONObject) json);
-            var channelId = new EpgChannelId(channel.getString("id"), channel.getJSONObject("display-name").getString("lang"));
-            var dbChannel = epgChannelRepository.findById(channelId);
-            EpgChannel epgChannel;
-            epgChannel = dbChannel.orElseGet(() -> new EpgChannel(channelId));
+            String channelName = channel.getString("id");
+            String language = channel.getJSONObject("display-name").getString("lang");
+            EpgChannel epgChannel = epgChannelRepository.findByNameAndLanguageAndEpgFile_Id(channelName, language, epgFile.getId())
+                    .orElseGet(() -> new EpgChannel(channelName, language, epgFile));
             epgChannel.setUrl(channel.getString("url"));
             if (channel.has("icon"))
                 epgChannel.setIcon(channel.getJSONObject("icon").getString("src"));
-            epgChannel.setEpgFile(epgFile);
             epgChannelList.add(epgChannel);
         }
         epgFile.getEpgChannels().retainAll(epgChannelList);
@@ -122,21 +122,23 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
         for (var programJson : root.getJSONObject("tv").getJSONArray("programme")) {
             var programObject = ((JSONObject) programJson);
             var channelName = programObject.getString("channel");
-            var channel = epgChannelList.stream().filter(epgChannel -> epgChannel.getId().getName().equals(channelName)).findAny();
+            var channel = epgChannelList.stream().filter(epgChannel -> epgChannel.getName().equals(channelName)).findAny();
             if (channel.isPresent()) {
                 String title;
-
-                if (programObject.get("title") instanceof JSONArray) {
+                if (programObject.get("title") instanceof JSONArray)
                     title = ((JSONArray) programObject.get("title")).get(0).toString();
-                    continue;
+                else{
+                    System.out.println(programObject.getJSONObject("title").toString());
+                    title = programObject.getJSONObject("title").get("content").toString();
                 }
-                Program program = new Program(new ProgramId(programObject.getJSONObject("title").getString("content"), ZonedDateTime.parse(programObject.getString("start"), formatter),
-                        ZonedDateTime.parse(programObject.getString("stop"), formatter), programObject.getJSONObject("title").getString("lang")));
-                program.setContent(programJson.toString());
-                program.setEpgChannel(channel.get());
-                if (!channel.get().addProgram(program)) {
-                    channel.get().removeProgram(program);
-                    channel.get().addProgram(program);
+
+                EpgProgram epgProgram = new EpgProgram(new ProgramId(title, ZonedDateTime.parse(programObject.getString("start"), formatter),
+                        ZonedDateTime.parse(programObject.getString("stop"), formatter), channel.get().getId()));
+                epgProgram.setContent(programJson.toString());
+                epgProgram.setEpgChannel(channel.get());
+                if (!channel.get().addProgram(epgProgram)) {
+                    channel.get().removeProgram(epgProgram);
+                    channel.get().addProgram(epgProgram);
                 }
 
             }

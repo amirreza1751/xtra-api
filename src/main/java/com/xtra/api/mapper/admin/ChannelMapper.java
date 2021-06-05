@@ -36,7 +36,8 @@ public abstract class ChannelMapper {
     void convertServerIdsAndCollectionIds(final ChannelInsertView channelView, @MappingTarget final Channel channel) {
         var epgDetails = channelView.getEpgDetails();
         if (epgDetails != null) {
-            var epgChannel = epgChannelRepository.findById(new EpgChannelId(epgDetails.getName(), epgDetails.getEpgId(), epgDetails.getLanguage())).orElseThrow(() -> new EntityNotFoundException("epg channel"));
+            var epgChannel = epgChannelRepository.findByNameAndLanguageAndEpgFile_Id(epgDetails.getName(), epgDetails.getLanguage(), epgDetails.getEpgId())
+                    .orElseThrow(() -> new EntityNotFoundException("epg channel"));
             channel.setEpgChannel(epgChannel);
         }
         var serverIds = channelView.getServers();
@@ -45,7 +46,7 @@ public abstract class ChannelMapper {
             for (Long serverId : serverIds) {
                 var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
                 StreamServer streamServer = new StreamServer(new StreamServerId(null, serverId));
-                streamServer.setStreamDetails(new StreamDetails("" ,"" ,"" ,"" ,"" ,"" ,"" ,"" , StreamStatus.OFFLINE));
+                streamServer.setStreamDetails(new StreamDetails("", "", "", "", "", "", "", "", StreamStatus.OFFLINE));
                 streamServer.setServer(server);
                 streamServer.setStream(channel);
                 streamServers.add(streamServer);
@@ -79,9 +80,9 @@ public abstract class ChannelMapper {
         if (epgChannel == null)
             return null;
         EpgDetails epgDetails = new EpgDetails();
-        epgDetails.setEpgId(epgChannel.getId().getEpgId());
-        epgDetails.setLanguage(epgChannel.getId().getLanguage());
-        epgDetails.setName(epgChannel.getId().getName());
+        epgDetails.setEpgId(epgChannel.getEpgFile().getId());
+        epgDetails.setLanguage(epgChannel.getLanguage());
+        epgDetails.setName(epgChannel.getName());
         return epgDetails;
     }
 

@@ -7,6 +7,7 @@ import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
+import com.xtra.api.projection.admin.epg.EpgDetails;
 import com.xtra.api.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -239,8 +240,9 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return this.findByIdOrFail(channelId);
     }
 
-    public void setEpgRecord(Long id, EpgChannelId epgChannelId) {
-        var epgChannel = epgChannelRepository.findById(epgChannelId).orElseThrow(() -> new EntityNotFoundException("Epg channel", epgChannelId));
+    public void setEpgRecord(Long id, EpgDetails epgDetails) {
+        var epgChannel = epgChannelRepository.findByNameAndLanguageAndEpgFile_Id(epgDetails.getName(),epgDetails.getLanguage(),epgDetails.getEpgId())
+                .orElseThrow(() -> new EntityNotFoundException("Epg channel", epgDetails));
         var channel = findByIdOrFail(id);
         channel.setEpgChannel(epgChannel);
         repository.save(channel);

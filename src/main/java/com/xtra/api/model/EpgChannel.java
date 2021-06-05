@@ -12,39 +12,54 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
+@Table(
+        uniqueConstraints =
+        @UniqueConstraint(columnNames = {"name", "language","epg_file_id"})
+)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class EpgChannel {
-    @EmbeddedId
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @EqualsAndHashCode.Include
-    private EpgChannelId id;
+    private String name;
+
+    @EqualsAndHashCode.Include
+    @Column(length = 2)
+    private String language;
     private String icon;
     private String url;
 
+    @EqualsAndHashCode.Include
+    @Column(name = "epg_file_id", insertable = false, updatable = false)
+    private Long epgFileId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @MapsId("epgId")
+    @ManyToOne
+    @JoinColumn(name = "epg_file_id")
     private EpgFile epgFile;
 
-
     @OneToMany(mappedBy = "epgChannel", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
-    private Set<Program> programs;
+    private Set<EpgProgram> epgPrograms;
 
     @OneToOne(mappedBy = "epgChannel")
     private Stream stream;
 
-    public EpgChannel(EpgChannelId id) {
-        this.id = id;
+    public EpgChannel(String name, String language, EpgFile epgFile) {
+        this.name = name;
+        this.language = language;
+        this.epgFile = epgFile;
     }
 
-    public boolean addProgram(Program program) {
-        if (programs == null)
-            programs = new HashSet<>();
-        return programs.add(program);
+    public boolean addProgram(EpgProgram epgProgram) {
+        if (epgPrograms == null)
+            epgPrograms = new HashSet<>();
+        return epgPrograms.add(epgProgram);
     }
 
-    public boolean removeProgram(Program program) {
-        if (programs == null)
+    public boolean removeProgram(EpgProgram epgProgram) {
+        if (epgPrograms == null)
             return false;
-        return programs.remove(program);
+        return epgPrograms.remove(epgProgram);
     }
 }

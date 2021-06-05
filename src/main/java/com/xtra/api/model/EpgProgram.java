@@ -12,7 +12,7 @@ import javax.persistence.*;
 
 @Entity
 @Embeddable
-public class Program {
+public class EpgProgram {
     @EmbeddedId
     @EqualsAndHashCode.Include
     private ProgramId id;
@@ -24,7 +24,7 @@ public class Program {
     @MapsId("epgChannelId")
     private EpgChannel epgChannel;
 
-    public Program(ProgramId id) {
+    public EpgProgram(ProgramId id) {
         this.id = id;
     }
 }

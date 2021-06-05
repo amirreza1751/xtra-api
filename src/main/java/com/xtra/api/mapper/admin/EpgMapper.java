@@ -18,7 +18,5 @@ public abstract class EpgMapper {
 
     public abstract EpgFile toEntity(EpgInsertView epgInsertView);
 
-    @Mapping(source = "id.name",target = "name")
-    @Mapping(source = "id.language",target = "language")
     public abstract EpgChannelView toView(EpgChannel epgChannel);
 }
