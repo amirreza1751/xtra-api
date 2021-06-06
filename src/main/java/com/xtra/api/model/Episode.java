@@ -1,16 +1,18 @@
 package com.xtra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Data
+@JsonIgnoreProperties({"season"})
+@ToString(exclude = {"season"})
 public class Episode{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +30,7 @@ public class Episode{
 
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Video> videos;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Season season;
 }

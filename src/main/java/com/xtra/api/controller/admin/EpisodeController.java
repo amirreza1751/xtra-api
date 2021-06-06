@@ -1,13 +1,13 @@
 package com.xtra.api.controller.admin;
 
+import com.xtra.api.model.Series;
+import com.xtra.api.projection.admin.episode.EpisodeInsertView;
 import com.xtra.api.projection.admin.episode.EpisodeListView;
 import com.xtra.api.service.admin.EpisodeService;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/episodes")
@@ -24,4 +24,14 @@ public class EpisodeController {
         return ResponseEntity.ok(episodeService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Series> editEpisode(@PathVariable Long id, @RequestBody EpisodeInsertView episodeInsertView) {
+        return ResponseEntity.ok(episodeService.editEpisode(id, episodeInsertView));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Series> deleteEpisode(@PathVariable Long id) {
+        episodeService.deleteEpisode(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
