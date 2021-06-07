@@ -54,6 +54,13 @@ public abstract class EpisodeMapper {
                 } else return null;
             }).collect(Collectors.toList()));
         }
+        //set related season info and episode info
+        if (episode.getSeason() != null){
+            episodeListView.setSeasonNumber(episode.getSeason().getSeasonNumber());
+            if (episode.getSeason().getSeries() != null){
+                episodeListView.setSeriesName(episode.getSeason().getSeries().getName());
+            }
+        }
     }
 
 }
