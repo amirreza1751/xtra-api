@@ -9,6 +9,8 @@ import java.util.List;
 public class EpisodeListView {
     private Long id;
     private String episodeName;
+    private String seriesName;
+    private int seasonNumber;
     private List<EpisodeServerInfo> serverInfoList;
     private List<EpisodeVideoInfo> videoInfos;
 }

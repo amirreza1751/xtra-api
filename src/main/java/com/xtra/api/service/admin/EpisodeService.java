@@ -6,8 +6,10 @@ import com.xtra.api.mapper.admin.SeasonMapper;
 import com.xtra.api.model.Episode;
 import com.xtra.api.model.Season;
 import com.xtra.api.model.Series;
+import com.xtra.api.projection.admin.channel.ChannelView;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
 import com.xtra.api.projection.admin.episode.EpisodeListView;
+import com.xtra.api.projection.admin.episode.EpisodeView;
 import com.xtra.api.repository.EpisodeRepository;
 import com.xtra.api.repository.SeriesRepository;
 import com.xtra.api.service.CrudService;
@@ -43,6 +45,10 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
 
     public Page<EpisodeListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         return findAll(search, pageNo, pageSize, sortBy, sortDir).map(episodeMapper::convertToListView);
+    }
+
+    public EpisodeView getViewById(Long id) {
+        return episodeMapper.convertToView(findByIdOrFail(id));
     }
 
     public Series editEpisode(Long episodeId, EpisodeInsertView episodeInsertView) {
