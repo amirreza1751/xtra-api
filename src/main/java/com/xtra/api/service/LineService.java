@@ -46,16 +46,7 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
     }
 
     public void killAllConnections(Long id) {
-        if (existsById(id)) {
-            List<Connection> connections = connectionRepository.findAllByLineId(id);
-            if (!connections.isEmpty()) {
-                connections.forEach((activity) -> {
-                    activity.setKilled(true);
-                    activity.setEndDate(LocalDateTime.now());
-                    connectionRepository.save(activity);
-                });
-            }
-        }
+        connectionRepository.killAllLineConnectionsByLineId(id, LocalDateTime.now());
     }
 
     @Override

@@ -14,11 +14,9 @@ import java.util.List;
 @Service
 public class MessagingService {
     private final StreamService streamService;
-    private final ConnectionService connectionService;
 
-    public MessagingService(StreamService streamService, ConnectionService connectionService) {
+    public MessagingService(StreamService streamService) {
         this.streamService = streamService;
-        this.connectionService = connectionService;
     }
 
     @RabbitListener(queues = "streamStatus")
@@ -29,15 +27,5 @@ public class MessagingService {
             return;
         }
         streamService.updateStreamStatuses(token, statuses);
-    }
-
-    @RabbitListener(queues = "connections")
-    public void listenForConnectionUpdates(@Header(value = "token", required = false) String token,
-                                           List<ConnectionDetails> connections) {
-        if (token == null) {
-            System.out.println("server identity invalid");
-            return;
-        }
-        connectionService.updateConnections(token, connections);
     }
 }

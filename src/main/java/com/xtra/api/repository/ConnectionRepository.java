@@ -5,7 +5,10 @@ import com.xtra.api.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -32,4 +35,8 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
     void deleteAllByKilledTrueAndEndDateBefore(LocalDateTime endedDate);
 
     void deleteAllByLastReadIsLessThanEqual(LocalDateTime lastRead);
+
+    @Modifying
+    @Query("update Connection c set c.killed = true, c.endDate = :dateTime where c.line.id = :lineId")
+    void killAllLineConnectionsByLineId(Long lineId, LocalDateTime dateTime);
 }

@@ -20,46 +20,16 @@ import java.util.Optional;
 
 @Service
 public class ConnectionService extends CrudService<Connection, Long, ConnectionRepository> {
-    final private AdminLineServiceImpl adminLineService;
-    final private StreamService streamService;
-    private final ServerService serverService;
-    private final GeoIpService geoIpService;
     private final ConnectionMapper connectionMapper;
 
     @Autowired
-    public ConnectionService(ConnectionRepository repository, AdminLineServiceImpl adminLineService, StreamService streamService, ServerService serverService, GeoIpService geoIpService, ConnectionMapper connectionMapper) {
+    public ConnectionService(ConnectionRepository repository, ConnectionMapper connectionMapper) {
         super(repository, "Connection");
-        this.adminLineService = adminLineService;
-        this.streamService = streamService;
-        this.serverService = serverService;
-        this.geoIpService = geoIpService;
         this.connectionMapper = connectionMapper;
     }
 
     public Page<ConnectionView> getActiveConnections(int pageNo, int pageSize, String sortBy, String sortDir) {
         return repository.findAllByKilledFalse(getSortingPageable(pageNo, pageSize, sortBy, sortDir)).map(connectionMapper::convertToView);
-    }
-
-    public void updateConnections(String token, List<ConnectionDetails> connectionDetailsList) {
-        var serverByToken = serverService.findByServerToken(token);
-        if (serverByToken.isEmpty())
-            return;
-        var server = serverByToken.get();
-        for (var connectionDetails : connectionDetailsList) {
-            if (connectionDetails.getLineToken() == null || connectionDetails.getStreamToken() == null || connectionDetails.getUserIp() == null)
-                continue;
-            var line = adminLineService.findByTokenOrFail(connectionDetails.getLineToken());
-            var stream = streamService.findByTokenOrFail(connectionDetails.getStreamToken());
-            if (stream == null)
-                continue;
-            var newConnection = new Connection(line, stream, server, connectionDetails.getUserIp());
-            var connection = repository.findByLineIdAndServerIdAndStreamIdAndUserIp(line.getId(), server.getId(), stream.getId(), connectionDetails.getUserIp()).orElse(newConnection);
-            connection.setStartDate(connectionDetails.getStartDate());
-            connection.setEndDate(connectionDetails.getEndDate());
-            connection.setLastRead(connectionDetails.getLastRead());
-            connection.setKilled(connectionDetails.isHlsEnded());
-            repository.save(connection);
-        }
     }
 
     public void endConnection(Long id) {
