@@ -1,5 +1,6 @@
 package com.xtra.api.projection.admin.episode;
 
+import com.xtra.api.model.Video;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
@@ -19,5 +20,5 @@ public class EpisodeView {
     private int runtime;
     private float rating;
 
-//    private Set<Video> videos;
+    private Set<Video> videos;
 }
