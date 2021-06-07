@@ -19,6 +19,7 @@ public class ConnectionView {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private long duration;
     private String userAgent;
+    private String ip;
     private String isp;
     private String country;
     private String city;

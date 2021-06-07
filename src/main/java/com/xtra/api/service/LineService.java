@@ -21,7 +21,7 @@ import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 public abstract class LineService extends CrudService<Line, Long, LineRepository> {
-    private final ConnectionRepository connectionRepository;
+    protected final ConnectionRepository connectionRepository;
     protected final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RoleRepository roleRepository;
 
@@ -50,7 +50,7 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
             List<Connection> connections = connectionRepository.findAllByLineId(id);
             if (!connections.isEmpty()) {
                 connections.forEach((activity) -> {
-                    activity.setHlsEnded(true);
+                    activity.setKilled(true);
                     activity.setEndDate(LocalDateTime.now());
                     connectionRepository.save(activity);
                 });

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 public interface StreamRepository<T extends Stream> extends JpaRepository<T, Long> {
-    Optional<T> getByStreamToken(String streamToken);
+    Optional<T> findByStreamToken(String streamToken);
 
     boolean existsByStreamToken(String streamToken);
 

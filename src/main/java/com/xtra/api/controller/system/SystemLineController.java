@@ -18,12 +18,12 @@ public class SystemLineController {
 
     @PostMapping("/stream_auth")
     public LineStatus authorizeLineForStream(@RequestBody LineAuth lineAuth) {
-        return lineService.isLineEligibleForPlaying(lineAuth);
+        return lineService.canLinePlayStream(lineAuth);
     }
 
     @PostMapping("/vod_auth")
     public LineStatus authorizeLineForVod(@RequestBody LineAuth lineAuth) {
-        return lineService.isLineEligibleForPlaying(lineAuth);
+        return lineService.canLinePlayStream(lineAuth);
     }
 
     @GetMapping("/get_id/{line_token}")

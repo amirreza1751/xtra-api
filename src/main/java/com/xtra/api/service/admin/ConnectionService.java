@@ -7,20 +7,19 @@ import com.xtra.api.model.Connection;
 import com.xtra.api.projection.admin.ConnectionView;
 import com.xtra.api.projection.system.ConnectionDetails;
 import com.xtra.api.repository.ConnectionRepository;
+import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ConnectionService {
-    final private ConnectionRepository connectionRepository;
+public class ConnectionService extends CrudService<Connection, Long, ConnectionRepository> {
     final private AdminLineServiceImpl adminLineService;
     final private StreamService streamService;
     private final ServerService serverService;
@@ -28,8 +27,8 @@ public class ConnectionService {
     private final ConnectionMapper connectionMapper;
 
     @Autowired
-    public ConnectionService(ConnectionRepository connectionRepository, AdminLineServiceImpl adminLineService, StreamService streamService, ServerService serverService, GeoIpService geoIpService, ConnectionMapper connectionMapper) {
-        this.connectionRepository = connectionRepository;
+    public ConnectionService(ConnectionRepository repository, AdminLineServiceImpl adminLineService, StreamService streamService, ServerService serverService, GeoIpService geoIpService, ConnectionMapper connectionMapper) {
+        super(repository, "Connection");
         this.adminLineService = adminLineService;
         this.streamService = streamService;
         this.serverService = serverService;
@@ -37,60 +36,10 @@ public class ConnectionService {
         this.connectionMapper = connectionMapper;
     }
 
-    public void deleteConnection(Long id) {
-        connectionRepository.deleteById(id);
+    public Page<ConnectionView> getActiveConnections(int pageNo, int pageSize, String sortBy, String sortDir) {
+        return repository.findAllByKilledFalse(getSortingPageable(pageNo, pageSize, sortBy, sortDir)).map(connectionMapper::convertToView);
     }
 
-    /*//    @Transactional
-    public void batchCreateOrUpdate(List<Connection> connections, String token) {
-        for (var connection : connections) {
-            //@todo find out how null values get passed
-//            var existingConnection = connectionRepository.findById(new ConnectionId(connection.getId().getLineId(), connection.getId().getStreamId(), serverService.findByServerToken(token).get().getId(), connection.getId().getUserIp()));
-            var existingConnection = connectionRepository.findAll().get(0);
-            if (existingConnection.isEmpty()) {
-                var lineById = adminLineService.findById(connection.getLine().getId());
-                if (lineById.isEmpty())
-                    continue;
-                connection.setLine(lineById.get());
-                var streamById = streamService.findById(connection.getStream().getId());
-//                if (streamById.isEmpty())
-//                    continue;
-//                connection.setStream((Stream) streamById.get());
-                connection.setStream(streamById);
-
-                var serverById = serverService.findByServerToken(token);
-                if (serverById.isEmpty())
-                    continue;
-                connection.setServer(serverById.get());
-                connection = this.setIpInformation(connection.getUserIp(), connection);
-                connectionRepository.save(connection);
-
-            } else {
-                var oldActivity = existingConnection.get();
-                copyProperties(connection, oldActivity, "id", "line", "stream", "server");
-                var streamById = streamService.findById(connection.getStream().getId());
-//                if (streamById.isEmpty())
-//                    continue;
-//                oldActivity.setStream((Stream) streamById.get());
-                oldActivity.setStream(streamById);
-
-                var lineById = adminLineService.findById(connection.getLine().getId());
-                if (lineById.isEmpty())
-                    continue;
-                oldActivity.setLine(lineById.get());
-
-                var serverById = serverService.findByServerToken(token);
-                if (serverById.isEmpty())
-                    continue;
-                oldActivity.setServer(serverById.get());
-                oldActivity = this.setIpInformation(connection.getUserIp(), oldActivity);
-                connectionRepository.save(oldActivity);
-
-            }
-
-        }
-    }
-*/
     public void updateConnections(String token, List<ConnectionDetails> connectionDetailsList) {
         var serverByToken = serverService.findByServerToken(token);
         if (serverByToken.isEmpty())
@@ -104,58 +53,30 @@ public class ConnectionService {
             if (stream == null)
                 continue;
             var newConnection = new Connection(line, stream, server, connectionDetails.getUserIp());
-            var connection = connectionRepository.findByLineIdAndServerIdAndStreamIdAndUserIp(line.getId(), server.getId(), stream.getId(), connectionDetails.getUserIp()).orElse(newConnection);
+            var connection = repository.findByLineIdAndServerIdAndStreamIdAndUserIp(line.getId(), server.getId(), stream.getId(), connectionDetails.getUserIp()).orElse(newConnection);
             connection.setStartDate(connectionDetails.getStartDate());
             connection.setEndDate(connectionDetails.getEndDate());
             connection.setLastRead(connectionDetails.getLastRead());
-            connection.setHlsEnded(connectionDetails.isHlsEnded());
-            connectionRepository.save(connection);
+            connection.setKilled(connectionDetails.isHlsEnded());
+            repository.save(connection);
         }
-    }
-
-    @Transactional
-    public void batchDelete(List<Connection> connectionDetailsList) {
-        for (var activity : connectionDetailsList) {
-            connectionRepository.deleteById(activity.getId());
-        }
-    }
-
-    public Connection setIpInformation(String ip, Connection activity) {
-        Optional<CityResponse> cityResponse = geoIpService.getIpInformation(ip);
-        try {
-            activity.setCountry(cityResponse.map(result -> result.getCountry().getName()).orElse("Unknown Country"));
-            activity.setCity(cityResponse.map(result -> result.getCity().getName()).orElse("Unknown City"));
-            activity.setIsoCode(cityResponse.map(result -> result.getCountry().getIsoCode()).orElse("Unknown ISO Code"));
-            activity.setIsp(cityResponse.map(result -> result.getTraits().getIsp()).orElse("Unknown ISP"));
-        } catch (NullPointerException ignored) {
-        }
-        return activity;
-    }
-
-    public Page<ConnectionView> getActiveConnections(int pageNo, int pageSize, String sortBy, String sortDir) {
-        return findAll(pageNo, pageSize, sortBy, sortDir).map(connectionMapper::convertToView);
     }
 
     public void endConnection(Long id) {
-        var connection = connectionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        connection.setHlsEnded(true);
-        connectionRepository.save(connection);
+        var connection = repository.findById(id).orElseThrow(EntityNotFoundException::new);
+        connection.setKilled(true);
+        repository.save(connection);
     }
 
-    private Page<Connection> findAll(int pageNo, int pageSize, String sortBy, String sortDir) {
-        Pageable page;
-        Sort.Order order;
-        if (sortBy != null && !sortBy.equals("")) {
-            if (sortDir != null && sortDir.equalsIgnoreCase("desc"))
-                order = Sort.Order.desc(sortBy);
-            else
-                order = Sort.Order.asc(sortBy);
-            page = PageRequest.of(pageNo, pageSize, Sort.by(order));
-        } else {
-            page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc("id")));
-        }
-        return connectionRepository.findAll(page);
+    @Transactional
+    public void deleteOldConnections() {
+        repository.deleteAllByKilledTrueAndEndDateBefore(LocalDateTime.now().minusMinutes(1));
+        //delete connections not updated longer than one segment time
+        repository.deleteAllByLastReadIsLessThanEqual(LocalDateTime.now().minusSeconds(10));
     }
 
-
+    @Override
+    protected Page<Connection> findWithSearch(String search, Pageable page) {
+        return null;
+    }
 }
