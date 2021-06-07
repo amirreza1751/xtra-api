@@ -34,7 +34,7 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
     void deleteAllByKilledTrueAndEndDateBefore(LocalDateTime endedDate);
 
-    void deleteAllByLastReadIsLessThanEqual(LocalDateTime lastRead);
+    void deleteAllByKilledFalseAndLastReadIsLessThanEqual(LocalDateTime lastRead);
 
     @Modifying
     @Query("update Connection c set c.killed = true, c.endDate = :dateTime where c.line.id = :lineId")

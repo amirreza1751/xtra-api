@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +46,7 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
         return repository.findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(search, search, search, page);
     }
 
+    @Transactional
     public void killAllConnections(Long id) {
         connectionRepository.killAllLineConnectionsByLineId(id, LocalDateTime.now());
     }

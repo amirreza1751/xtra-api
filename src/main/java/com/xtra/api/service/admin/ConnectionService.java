@@ -1,11 +1,9 @@
 package com.xtra.api.service.admin;
 
-import com.maxmind.geoip2.model.CityResponse;
 import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ConnectionMapper;
 import com.xtra.api.model.Connection;
 import com.xtra.api.projection.admin.ConnectionView;
-import com.xtra.api.projection.system.ConnectionDetails;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ConnectionService extends CrudService<Connection, Long, ConnectionRepository> {
@@ -42,7 +38,7 @@ public class ConnectionService extends CrudService<Connection, Long, ConnectionR
     public void deleteOldConnections() {
         repository.deleteAllByKilledTrueAndEndDateBefore(LocalDateTime.now().minusMinutes(1));
         //delete connections not updated longer than one segment time
-        repository.deleteAllByLastReadIsLessThanEqual(LocalDateTime.now().minusSeconds(10));
+        repository.deleteAllByKilledFalseAndLastReadIsLessThanEqual(LocalDateTime.now().minusSeconds(10));
     }
 
     @Override

@@ -72,6 +72,7 @@ public class SystemLineServiceImpl extends LineService {
             var connection = connectionRepository.findByLineLineTokenAndServerTokenAndStream_StreamTokenAndUserIp(lineAuth.getLineToken(), lineAuth.getServerToken(), lineAuth.getMediaToken(), lineAuth.getIpAddress())
                     .orElse(new Connection(line, stream, server, lineAuth.getIpAddress()));
             if (connection.getId() == null) {
+                connection.setStartDate(LocalDateTime.now());
                 Optional<CityResponse> geoResponse = geoIpService.getIpInformation(connection.getUserIp());
                 if (geoResponse.isPresent()) {
                     var geo = geoResponse.get();
@@ -95,6 +96,8 @@ public class SystemLineServiceImpl extends LineService {
             } else if (false) {//@todo check access to stream
                 return LineStatus.NO_ACCESS_TO_STREAM;
             } else {
+                connection.setLastRead(LocalDateTime.now());
+                connectionRepository.save(connection);
                 return LineStatus.OK;
             }
         } else
