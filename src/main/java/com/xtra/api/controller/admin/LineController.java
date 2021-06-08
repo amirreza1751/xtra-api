@@ -70,11 +70,11 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/{id}/kill_connections")
+/*    @GetMapping("/{id}/kill_connections")
     public ResponseEntity<String> killLineConnections(@PathVariable Long id) {
         lineService.killAllConnections(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
+    }*/
 
     @GetMapping("/download/{id}")
     public ResponseEntity<String> AdminDownloadLine(@PathVariable Long id) {

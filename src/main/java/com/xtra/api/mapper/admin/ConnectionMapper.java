@@ -1,7 +1,7 @@
 package com.xtra.api.mapper.admin;
 
 import com.xtra.api.model.Connection;
-import com.xtra.api.projection.admin.ConnectionView;
+import com.xtra.api.projection.admin.connection.ConnectionView;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

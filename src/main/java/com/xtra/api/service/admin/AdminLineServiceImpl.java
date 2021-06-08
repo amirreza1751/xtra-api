@@ -93,14 +93,12 @@ public class AdminLineServiceImpl extends LineService {
     public void updateLineBlock(Long id, boolean blocked) {
         Line line = findByIdOrFail(id);
         line.setBlocked(blocked);
-        killAllConnections(id);
         repository.save(line);
     }
 
     public void updateLineBan(Long id, boolean banned) {
         Line line = findByIdOrFail(id);
         line.setBanned(banned);
-        killAllConnections(id);
         repository.save(line);
     }
 

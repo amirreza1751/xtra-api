@@ -86,14 +86,12 @@ public class ResellerLineServiceImpl extends LineService {
     public void updateLineBlock(Long id, boolean blocked) {
         Line line = findLineByOwnerAndIdOrFail(getCurrentReseller(), id);
         line.setBlocked(blocked);
-        killAllConnections(id);
         repository.save(line);
     }
 
     public void updateLineBan(Long id, boolean banned) {
         Line line = findLineByOwnerAndIdOrFail(getCurrentReseller(), id);
         line.setBanned(banned);
-        killAllConnections(id);
         repository.save(line);
     }
 

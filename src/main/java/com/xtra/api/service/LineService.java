@@ -46,11 +46,6 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
         return repository.findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(search, search, search, page);
     }
 
-    @Transactional
-    public void killAllConnections(Long id) {
-        connectionRepository.killAllLineConnectionsByLineId(id, LocalDateTime.now());
-    }
-
     @Override
     public Line insert(Line line) {
         var role = roleRepository.findByTypeAndName(UserType.LINE, "default").orElseThrow(() -> new RuntimeException("default role not found"));

@@ -24,19 +24,12 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
     List<Connection> findAllByLineId(Long lineId);
 
-    Page<Connection> findAllByKilledFalse(Pageable pageable);
-
     int countAllByServerIdAndStreamId(Long serverId, Long streamId);
 
     long countAllByStreamId(Long streamId);
 
     long countAllByLineId(Long lineId);
 
-    void deleteAllByKilledTrueAndEndDateBefore(LocalDateTime endedDate);
+    void deleteAllByLastReadIsLessThanEqual(LocalDateTime lastRead);
 
-    void deleteAllByKilledFalseAndLastReadIsLessThanEqual(LocalDateTime lastRead);
-
-    @Modifying
-    @Query("update Connection c set c.killed = true, c.endDate = :dateTime where c.line.id = :lineId")
-    void killAllLineConnectionsByLineId(Long lineId, LocalDateTime dateTime);
 }

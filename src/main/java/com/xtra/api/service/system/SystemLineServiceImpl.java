@@ -26,15 +26,17 @@ public class SystemLineServiceImpl extends LineService {
     private final GeoIpService geoIpService;
     private final StreamRepository<Stream> streamRepository;
     private final ServerRepository serverRepository;
+    private final BlockedIpRepository blockedIpRepository;
 
     @Autowired
     public SystemLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper
-            , BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService, RoleRepository roleRepository, StreamRepository streamRepository, ServerRepository serverRepository) {
+            , BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService, RoleRepository roleRepository, StreamRepository streamRepository, ServerRepository serverRepository, BlockedIpRepository blockedIpRepository) {
         super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
         this.lineMapper = lineMapper;
         this.geoIpService = geoIpService;
         this.streamRepository = streamRepository;
         this.serverRepository = serverRepository;
+        this.blockedIpRepository = blockedIpRepository;
     }
 
     public Page<LineView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -91,7 +93,7 @@ public class SystemLineServiceImpl extends LineService {
                 return LineStatus.EXPIRED;
             } else if (line.getMaxConnections() == 0 || line.getMaxConnections() < currentConnections) {
                 return LineStatus.MAX_CONNECTION_REACHED;
-            } else if (!isIpAllowed(line, lineAuth.getIpAddress()) || !isUserAgentAllowed(line, lineAuth.getUserAgent()) || connection.isKilled()) {
+            } else if (!isIpAllowed(line, lineAuth.getIpAddress()) || !isUserAgentAllowed(line, lineAuth.getUserAgent())) {
                 return LineStatus.FORBIDDEN;
             } else if (false) {//@todo check access to stream
                 return LineStatus.NO_ACCESS_TO_STREAM;
@@ -116,6 +118,10 @@ public class SystemLineServiceImpl extends LineService {
     }
 
     private boolean isIpAllowed(Line line, String ipAddress) {
+        var blocked = blockedIpRepository.findById(ipAddress);
+        if (blocked.isPresent() && blocked.get().getUntil().isAfter(LocalDateTime.now())) {
+            return false;
+        }
         if (line.isCountryLocked()) {
             var cityResponse = geoIpService.getIpInformation(ipAddress);
             if (cityResponse.isPresent()) {

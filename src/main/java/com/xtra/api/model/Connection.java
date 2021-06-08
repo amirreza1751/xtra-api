@@ -44,7 +44,6 @@ public class Connection {
     private LocalDateTime endDate;
     private LocalDateTime lastRead;
 
-    private boolean killed;
     private String userAgent;
     private String isp;
     private String country;
