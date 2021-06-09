@@ -1,6 +1,7 @@
 package com.xtra.api.controller.reseller;
 
 import com.xtra.api.projection.reseller.line.LineCreateView;
+import com.xtra.api.projection.reseller.line.LineUpdateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.service.reseller.ResellerLineServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ public class LineController {
     }
 
     @PostMapping("")
-    public ResponseEntity<LineView> createResellerLine(@RequestBody LineCreateView createView) {
-        return ResponseEntity.ok(lineService.createLine(createView));
+    public ResponseEntity<LineView> createResellerLine(@RequestBody LineUpdateView updateView) {
+        return ResponseEntity.ok(lineService.createLine(updateView));
     }
 
     @PatchMapping("/{id}")

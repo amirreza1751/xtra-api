@@ -5,6 +5,7 @@ import com.xtra.api.model.DownloadList;
 import com.xtra.api.model.DownloadListCollection;
 import com.xtra.api.model.Line;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
+import com.xtra.api.projection.reseller.line.LineUpdateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.projection.reseller.line.LineCreateView;
 import com.xtra.api.repository.CollectionRepository;
@@ -28,6 +29,9 @@ public abstract class ResellerLineMapper {
 
     @Mapping(source = "collections", target = "defaultDownloadList")
     public abstract Line convertToEntity(LineCreateView lineView);
+
+    @Mapping(source = "collections", target = "defaultDownloadList")
+    public abstract Line convertToEntity(LineUpdateView lineView);
 
     DownloadList convertCollectionIdsToDownloadList(LinkedHashSet<Long> collectionIds) {
         if (collectionIds == null || collectionIds.size() == 0)

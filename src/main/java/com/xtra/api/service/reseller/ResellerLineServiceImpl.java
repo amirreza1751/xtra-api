@@ -7,6 +7,7 @@ import com.xtra.api.model.Line;
 import com.xtra.api.model.Package;
 import com.xtra.api.model.Reseller;
 import com.xtra.api.projection.reseller.line.LineCreateView;
+import com.xtra.api.projection.reseller.line.LineUpdateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
@@ -47,8 +48,8 @@ public class ResellerLineServiceImpl extends LineService {
         return lineMapper.convertToView(findLineByOwnerAndIdOrFail(getCurrentReseller(), id));
     }
 
-    public LineView createLine(LineCreateView createView) {
-        Line line = lineMapper.convertToEntity(createView);
+    public LineView createLine(LineUpdateView updateView) {
+        Line line = lineMapper.convertToEntity(updateView);
         line.setOwner(getCurrentReseller());
         return lineMapper.convertToView(insert(line));
     }
