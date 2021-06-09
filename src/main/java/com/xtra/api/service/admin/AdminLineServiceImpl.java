@@ -106,6 +106,7 @@ public class AdminLineServiceImpl extends LineService {
     public Line updateOrFail(Long id, Line newLine) {
         Line oldLine = findByIdOrFail(id);
         copyProperties(newLine, oldLine, "id", "lineToken", "currentConnections", "role");
+        oldLine.setPassword(bCryptPasswordEncoder.encode(newLine.getPassword()));
         return repository.save(oldLine);
     }
 
