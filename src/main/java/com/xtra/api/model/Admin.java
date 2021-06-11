@@ -2,6 +2,7 @@ package com.xtra.api.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.Entity;
 

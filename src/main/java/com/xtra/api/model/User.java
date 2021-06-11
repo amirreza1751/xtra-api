@@ -1,6 +1,7 @@
 package com.xtra.api.model;
 
 import lombok.Data;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;

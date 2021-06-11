@@ -2,14 +2,19 @@ package com.xtra.api.projection.reseller.line;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.LinkedHashSet;
 import java.util.List;
 
 @Data
 public class LineUpdateView {
+    @NotBlank(message = "line username can not be empty")
     protected String username;
+    @NotBlank(message = "line password can not be empty")
     protected String password;
     private String resellerNotes;
+    @NotNull(message = "collection list can not be empty")
     private LinkedHashSet<Long> collections;
 
     /* Location Based Permissions */
