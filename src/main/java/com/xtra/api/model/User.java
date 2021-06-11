@@ -10,7 +10,6 @@ import java.time.ZonedDateTime;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
-@Validated
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

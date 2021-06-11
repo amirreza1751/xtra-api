@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 
@@ -17,11 +18,11 @@ public class SeasonInsertView {
     private String seasonName;
 
     @NotNull(message = "season number can not be empty")
-    @PositiveOrZero(message = "season number should be a positive number")
+    @Positive(message = "season number should be a positive number")
     private int seasonNumber;
 
     @NotNull(message = "number of Episode can not be empty")
-    @PositiveOrZero(message = "number of episodes should be a positive number")
+    @Positive(message = "number of episodes should be a positive number")
     private int NoOfEpisodes;
     private LocalDate airDate;
 

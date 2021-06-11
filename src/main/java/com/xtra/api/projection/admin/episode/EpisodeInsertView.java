@@ -8,6 +8,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Set;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class EpisodeInsertView {
     @NotNull(message = "Episode number can not be empty")
-    @PositiveOrZero(message = "Episode number should be a positive number")
+    @Positive(message = "Episode number should be a positive number")
     private int episodeNumber;
     @NotBlank(message = "Episode name can not be empty")
     private String episodeName;
