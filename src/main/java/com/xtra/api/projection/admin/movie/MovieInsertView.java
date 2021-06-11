@@ -6,6 +6,7 @@ import com.xtra.api.model.MovieInfo;
 import com.xtra.api.model.StreamType;
 import com.xtra.api.model.Video;
 import com.xtra.api.projection.admin.epg.EpgDetails;
+import com.xtra.api.projection.admin.video.VideoInsertView;
 import lombok.Data;
 
 import java.time.DayOfWeek;
@@ -18,8 +19,8 @@ import java.util.Set;
 public class MovieInsertView {
     private String name;
 
-    private MovieInfo info;
-    private Set<Video> videos;
+    private MovieInfoInsertView info;
+    private Set<VideoInsertView> videos;
 
     private Set<Long> servers;
     private Set<Long> collections;

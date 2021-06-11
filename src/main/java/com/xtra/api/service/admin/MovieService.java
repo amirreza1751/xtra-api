@@ -139,6 +139,10 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return repository.save(movie);
     }
 
+    public MovieView save(Long id, MovieInsertView movieInsertView, boolean encode){
+        return movieMapper.convertToView(updateOrFail(id, movieMapper.convertToEntity(movieInsertView), encode));
+    }
+
     public Movie updateOrFail(Long id, Movie movie, boolean encode) {
         var updatedMovie = updateOrFail(id, movie);
         if (encode)
