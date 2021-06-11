@@ -31,5 +31,6 @@ public class EpisodeInsertView {
 
     @NotNull(message = "season can not be empty")
     private SeasonInsertView season;
+    private List<VideoInsertView> videos;
     private Set<Long> servers;
 }
