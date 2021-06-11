@@ -63,4 +63,13 @@ public abstract class EpisodeMapper {
         }
     }
 
+    @AfterMapping
+    public void convertToServerIds(final Episode episode, @MappingTarget final EpisodeView episodeView){
+        Set<Long> servers = new HashSet<>();
+        for (Video video : episode.getVideos()){
+            servers.addAll(video.getVideoServers().stream().map(videoServer -> videoServer.getServer().getId()).collect(Collectors.toSet()));
+        }
+        episodeView.setServers(servers);
+    }
+
 }

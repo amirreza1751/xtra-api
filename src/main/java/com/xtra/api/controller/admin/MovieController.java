@@ -42,8 +42,8 @@ public class MovieController {
     }
 
     @PatchMapping(value = {"/{id}", "{id}/{encode}"})
-    public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @RequestBody Movie movie, @PathVariable(required = false) boolean encode) {
-        return ResponseEntity.ok(movieService.updateOrFail(id, movie, encode));
+    public ResponseEntity<MovieView> updateMovie(@PathVariable Long id, @RequestBody MovieInsertView movie, @PathVariable(required = false) boolean encode) {
+        return ResponseEntity.ok(movieService.save(id, movie, encode));
     }
 
     @DeleteMapping("/{id}")
