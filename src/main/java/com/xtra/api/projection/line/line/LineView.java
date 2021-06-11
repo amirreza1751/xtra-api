@@ -1,13 +1,9 @@
 package com.xtra.api.projection.line.line;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.xtra.api.model.StreamProtocol;
 import com.xtra.api.projection.admin.BaseView;
-import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 public class LineView implements BaseView {

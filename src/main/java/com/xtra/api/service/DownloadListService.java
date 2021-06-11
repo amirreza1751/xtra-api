@@ -2,7 +2,7 @@ package com.xtra.api.service;
 
 import com.google.common.collect.Sets;
 import com.xtra.api.mapper.admin.DownloadListMapper;
-import com.xtra.api.model.DownloadList;
+import com.xtra.api.model.download_list.DownloadList;
 import com.xtra.api.projection.admin.downloadlist.DownloadListInsertView;
 import com.xtra.api.projection.admin.downloadlist.DownloadListView;
 import com.xtra.api.repository.DownloadListRepository;

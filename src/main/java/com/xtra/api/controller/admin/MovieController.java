@@ -1,8 +1,9 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.channel.ChannelBatchDeleteView;
-import com.xtra.api.projection.admin.channel.ChannelBatchInsertView;
+import com.xtra.api.model.vod.Audio;
+import com.xtra.api.model.vod.Movie;
+import com.xtra.api.model.vod.Subtitle;
+import com.xtra.api.model.vod.VideoInfo;
 import com.xtra.api.projection.admin.movie.*;
 import com.xtra.api.service.admin.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;

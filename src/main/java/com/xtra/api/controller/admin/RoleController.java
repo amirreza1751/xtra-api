@@ -1,7 +1,6 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.mapper.admin.RoleMapper;
-import com.xtra.api.model.UserType;
+import com.xtra.api.model.user.UserType;
 import com.xtra.api.projection.admin.role.RoleInsertView;
 import com.xtra.api.projection.admin.role.RoleListItem;
 import com.xtra.api.projection.admin.role.RoleView;

@@ -1,5 +1,6 @@
 package com.xtra.api.model;
 
+import com.xtra.api.model.collection.Collection;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;

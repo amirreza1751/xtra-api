@@ -1,6 +1,6 @@
 package com.xtra.api.projection.admin.movie;
 
-import com.xtra.api.model.EncodeStatus;
+import com.xtra.api.model.vod.EncodeStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

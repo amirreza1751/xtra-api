@@ -1,14 +1,11 @@
 package com.xtra.api.projection.admin.line;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.xtra.api.model.StreamProtocol;
+import com.xtra.api.model.stream.StreamProtocol;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashSet;
 import java.util.List;
 

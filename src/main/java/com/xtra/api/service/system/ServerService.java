@@ -1,11 +1,11 @@
 package com.xtra.api.service.system;
 
-import com.xtra.api.exception.EntityNotFoundException;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
-import com.xtra.api.model.Channel;
+import com.xtra.api.model.stream.Channel;
 import com.xtra.api.model.ChannelList;
-import com.xtra.api.model.Server;
-import com.xtra.api.model.StreamServerId;
+import com.xtra.api.model.server.Server;
+import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.projection.admin.channel.ChannelStart;
 import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.repository.StreamServerRepository;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
 
 @Service("systemServerService")

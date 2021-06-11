@@ -1,6 +1,12 @@
 package com.xtra.api.service;
 
-import com.xtra.api.model.*;
+import com.xtra.api.model.collection.Collection;
+import com.xtra.api.model.collection.CollectionStream;
+import com.xtra.api.model.download_list.DownloadList;
+import com.xtra.api.model.download_list.DownloadListCollection;
+import com.xtra.api.model.line.Line;
+import com.xtra.api.model.stream.Stream;
+import com.xtra.api.model.user.UserType;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.RoleRepository;
@@ -12,9 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 
-import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 import static com.xtra.api.util.Utilities.generateRandomString;

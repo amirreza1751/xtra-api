@@ -2,18 +2,16 @@ package com.xtra.api.service.admin;
 
 import com.google.common.collect.Sets;
 import com.xtra.api.mapper.admin.RoleMapper;
-import com.xtra.api.model.Role;
-import com.xtra.api.model.UserType;
+import com.xtra.api.model.role.Role;
+import com.xtra.api.model.user.UserType;
 import com.xtra.api.projection.admin.role.RoleInsertView;
 import com.xtra.api.projection.admin.role.RoleListItem;
 import com.xtra.api.projection.admin.role.RoleView;
-import com.xtra.api.repository.PermissionRepository;
 import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

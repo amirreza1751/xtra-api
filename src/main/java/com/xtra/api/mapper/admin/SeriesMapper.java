@@ -1,7 +1,9 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
-import com.xtra.api.model.*;
+import com.xtra.api.model.collection.CollectionVod;
+import com.xtra.api.model.collection.CollectionVodId;
+import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.vod.Series;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
 import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.repository.CollectionRepository;

@@ -1,7 +1,10 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
-import com.xtra.api.model.*;
+import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.vod.Episode;
+import com.xtra.api.model.vod.Video;
+import com.xtra.api.model.vod.VideoServer;
+import com.xtra.api.model.vod.VideoServerId;
 import com.xtra.api.projection.admin.episode.*;
 import com.xtra.api.repository.ServerRepository;
 import org.mapstruct.AfterMapping;

@@ -1,7 +1,6 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.Episode;
-import com.xtra.api.model.Series;
+import com.xtra.api.model.vod.Series;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
 import com.xtra.api.projection.admin.series.SeriesView;

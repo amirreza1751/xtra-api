@@ -1,8 +1,8 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.AdminMapper;
-import com.xtra.api.model.Admin;
-import com.xtra.api.model.UserType;
+import com.xtra.api.model.user.Admin;
+import com.xtra.api.model.user.UserType;
 import com.xtra.api.projection.admin.user.admin.AdminInsertView;
 import com.xtra.api.projection.admin.user.admin.AdminView;
 import com.xtra.api.repository.AdminRepository;

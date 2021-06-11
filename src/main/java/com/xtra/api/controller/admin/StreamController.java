@@ -1,16 +1,10 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.Stream;
+import com.xtra.api.model.stream.Stream;
 import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.service.admin.StreamService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import java.util.*;
-
 
 
 public class StreamController {

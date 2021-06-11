@@ -1,6 +1,6 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.model.Radio;
+import com.xtra.api.model.stream.Radio;
 import com.xtra.api.repository.RadioRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;

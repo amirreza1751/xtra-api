@@ -1,10 +1,13 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
+import com.xtra.api.model.collection.CollectionStream;
+import com.xtra.api.model.collection.CollectionStreamId;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ChannelMapper;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
 import com.xtra.api.mapper.system.StreamMapper;
-import com.xtra.api.model.*;
+import com.xtra.api.model.server.Server;
+import com.xtra.api.model.stream.*;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.projection.admin.epg.EpgDetails;

@@ -1,7 +1,7 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.PackageMapper;
-import com.xtra.api.model.Package;
+import com.xtra.api.model.line.Package;
 import com.xtra.api.projection.admin.package_.PackageInsertView;
 import com.xtra.api.projection.admin.package_.PackageView;
 import com.xtra.api.repository.PackageRepository;

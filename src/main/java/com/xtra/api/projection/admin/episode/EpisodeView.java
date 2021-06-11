@@ -1,6 +1,5 @@
 package com.xtra.api.projection.admin.episode;
 
-import com.xtra.api.model.Video;
 import com.xtra.api.projection.admin.video.VideoView;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;

@@ -1,9 +1,8 @@
 package com.xtra.api.repository;
 
 
-import com.xtra.api.model.StreamServer;
-import com.xtra.api.model.StreamServerId;
-import org.checkerframework.checker.nullness.Opt;
+import com.xtra.api.model.stream.StreamServer;
+import com.xtra.api.model.stream.StreamServerId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

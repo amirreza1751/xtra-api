@@ -1,6 +1,6 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.model.StreamServer;
+import com.xtra.api.model.stream.StreamServer;
 import com.xtra.api.projection.admin.ChangingServerPair;
 import com.xtra.api.repository.StreamServerRepository;
 import org.springframework.stereotype.Service;

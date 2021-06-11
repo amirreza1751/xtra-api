@@ -1,6 +1,6 @@
 package com.xtra.api.repository;
 
-import com.xtra.api.model.Collection;
+import com.xtra.api.model.collection.Collection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

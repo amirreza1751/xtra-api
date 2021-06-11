@@ -1,6 +1,6 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.File;
+import com.xtra.api.model.server.File;
 import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.SimpleServerView;

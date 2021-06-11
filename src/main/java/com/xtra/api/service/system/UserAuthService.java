@@ -1,7 +1,7 @@
 package com.xtra.api.service.system;
 
-import com.xtra.api.model.Line;
-import com.xtra.api.model.Reseller;
+import com.xtra.api.model.line.Line;
+import com.xtra.api.model.user.Reseller;
 import com.xtra.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,7 +19,7 @@ public class UserAuthService {
         UserAuthService.repository = repository;
     }
 
-    public static com.xtra.api.model.User getCurrentUser() {
+    public static com.xtra.api.model.user.User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
             var principal = auth.getPrincipal();

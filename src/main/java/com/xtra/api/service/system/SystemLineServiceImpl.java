@@ -1,12 +1,12 @@
 package com.xtra.api.service.system;
 
 import com.maxmind.geoip2.model.CityResponse;
-import com.xtra.api.exception.EntityNotFoundException;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.AdminLineMapper;
-import com.xtra.api.model.Connection;
-import com.xtra.api.model.Line;
-import com.xtra.api.model.LineStatus;
-import com.xtra.api.model.Stream;
+import com.xtra.api.model.line.Connection;
+import com.xtra.api.model.line.Line;
+import com.xtra.api.model.line.LineStatus;
+import com.xtra.api.model.stream.Stream;
 import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.projection.system.LineAuth;
 import com.xtra.api.repository.*;

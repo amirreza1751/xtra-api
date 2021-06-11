@@ -1,8 +1,8 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.ConnectionMapper;
-import com.xtra.api.model.BlockedIp;
-import com.xtra.api.model.Connection;
+import com.xtra.api.model.line.BlockedIp;
+import com.xtra.api.model.line.Connection;
 import com.xtra.api.projection.admin.connection.BlockIpRequest;
 import com.xtra.api.projection.admin.connection.ConnectionView;
 import com.xtra.api.repository.BlockedIpRepository;

@@ -1,7 +1,7 @@
 package com.xtra.api.service.admin;
 
 
-import com.xtra.api.model.Video;
+import com.xtra.api.model.vod.Video;
 import com.xtra.api.repository.VideoRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;

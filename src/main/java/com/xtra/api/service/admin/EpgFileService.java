@@ -2,7 +2,10 @@ package com.xtra.api.service.admin;
 
 
 import com.xtra.api.mapper.admin.EpgMapper;
-import com.xtra.api.model.*;
+import com.xtra.api.model.epg.EpgChannel;
+import com.xtra.api.model.epg.EpgFile;
+import com.xtra.api.model.epg.EpgProgram;
+import com.xtra.api.model.vod.ProgramId;
 import com.xtra.api.projection.admin.epg.EpgInsertView;
 import com.xtra.api.projection.admin.epg.EpgSimpleView;
 import com.xtra.api.projection.admin.epg.EpgView;

@@ -1,10 +1,10 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
-import com.xtra.api.model.DownloadList;
-import com.xtra.api.model.DownloadListCollection;
-import com.xtra.api.model.Line;
-import com.xtra.api.model.Reseller;
+import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.download_list.DownloadList;
+import com.xtra.api.model.download_list.DownloadListCollection;
+import com.xtra.api.model.line.Line;
+import com.xtra.api.model.user.Reseller;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
 import com.xtra.api.projection.admin.line.LineInsertView;
 import com.xtra.api.projection.admin.line.LineListView;

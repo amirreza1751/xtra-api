@@ -1,7 +1,7 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.model.EpgChannel;
-import com.xtra.api.model.EpgFile;
+import com.xtra.api.model.epg.EpgChannel;
+import com.xtra.api.model.epg.EpgFile;
 import com.xtra.api.projection.admin.epg.EpgChannelView;
 import com.xtra.api.projection.admin.epg.EpgInsertView;
 import com.xtra.api.projection.admin.epg.EpgSimpleView;

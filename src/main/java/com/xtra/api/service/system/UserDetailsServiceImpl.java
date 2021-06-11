@@ -1,6 +1,6 @@
 package com.xtra.api.service.system;
 
-import com.xtra.api.model.Role;
+import com.xtra.api.model.role.Role;
 import com.xtra.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

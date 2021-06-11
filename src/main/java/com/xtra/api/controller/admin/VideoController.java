@@ -1,6 +1,6 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.Video;
+import com.xtra.api.model.vod.Video;
 import com.xtra.api.service.admin.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

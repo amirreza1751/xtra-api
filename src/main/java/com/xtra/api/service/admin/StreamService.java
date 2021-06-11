@@ -1,8 +1,12 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.system.StreamMapper;
-import com.xtra.api.model.*;
+import com.xtra.api.model.server.Server;
+import com.xtra.api.model.stream.Stream;
+import com.xtra.api.model.stream.StreamDetails;
+import com.xtra.api.model.stream.StreamServer;
+import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.projection.system.StreamDetailsView;
 import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.service.CrudService;

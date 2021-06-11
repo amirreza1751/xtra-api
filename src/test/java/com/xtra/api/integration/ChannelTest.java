@@ -1,13 +1,13 @@
 package com.xtra.api.integration;
 
 import com.neovisionaries.i18n.CountryCode;
-import com.xtra.api.controller.admin.ChannelController;
 import com.xtra.api.mapper.admin.ServerMapper;
-import com.xtra.api.model.*;
+import com.xtra.api.model.line.Connection;
+import com.xtra.api.model.line.Line;
+import com.xtra.api.model.stream.*;
+import com.xtra.api.model.user.Reseller;
 import com.xtra.api.projection.admin.server.ServerInsertView;
-import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.repository.ChannelRepository;
-import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,16 +15,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.validation.constraints.AssertTrue;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;

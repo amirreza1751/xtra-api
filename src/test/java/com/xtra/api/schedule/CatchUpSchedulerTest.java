@@ -1,7 +1,7 @@
 package com.xtra.api.schedule;
 
-import com.xtra.api.model.Server;
-import com.xtra.api.model.StreamServerId;
+import com.xtra.api.model.server.Server;
+import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.projection.admin.catchup.CatchupRecordView;
 import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.repository.StreamServerRepository;
@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CatchUpSchedulerTest {
     @Autowired

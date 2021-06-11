@@ -1,8 +1,8 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.model.Permission;
-import com.xtra.api.model.PermissionId;
-import com.xtra.api.model.UserType;
+import com.xtra.api.model.role.Permission;
+import com.xtra.api.model.role.PermissionId;
+import com.xtra.api.model.user.UserType;
 import com.xtra.api.repository.PermissionRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;

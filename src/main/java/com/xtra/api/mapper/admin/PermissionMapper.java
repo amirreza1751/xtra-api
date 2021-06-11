@@ -1,6 +1,6 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.model.Permission;
+import com.xtra.api.model.role.Permission;
 import com.xtra.api.projection.admin.PermissionView;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

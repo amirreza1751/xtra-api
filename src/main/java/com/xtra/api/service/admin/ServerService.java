@@ -1,8 +1,15 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ServerMapper;
-import com.xtra.api.model.*;
+import com.xtra.api.model.server.File;
+import com.xtra.api.model.server.Resource;
+import com.xtra.api.model.server.Server;
+import com.xtra.api.model.stream.StreamServer;
+import com.xtra.api.model.stream.StreamServerId;
+import com.xtra.api.model.vod.Movie;
+import com.xtra.api.model.vod.Video;
+import com.xtra.api.model.vod.VideoInfo;
 import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.catchup.CatchupRecordView;
 import com.xtra.api.projection.admin.server.ServerView;

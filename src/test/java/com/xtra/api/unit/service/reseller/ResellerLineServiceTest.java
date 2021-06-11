@@ -1,9 +1,9 @@
 package com.xtra.api.unit.service.reseller;
 
 import com.xtra.api.mapper.reseller.ResellerLineMapper;
-import com.xtra.api.model.Line;
-import com.xtra.api.model.Package;
-import com.xtra.api.model.Reseller;
+import com.xtra.api.model.line.Line;
+import com.xtra.api.model.line.Package;
+import com.xtra.api.model.user.Reseller;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.service.admin.PackageService;

@@ -1,7 +1,7 @@
 package com.xtra.api.schedule;
 
-import com.xtra.api.model.EpgProgram;
-import com.xtra.api.model.StreamServer;
+import com.xtra.api.model.epg.EpgProgram;
+import com.xtra.api.model.stream.StreamServer;
 import com.xtra.api.projection.admin.catchup.CatchupRecordView;
 import com.xtra.api.repository.ServerRepository;
 import com.xtra.api.repository.StreamServerRepository;

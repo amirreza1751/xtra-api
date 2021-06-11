@@ -2,9 +2,7 @@ package com.xtra.api.projection.admin.movie;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.MovieInfo;
-import com.xtra.api.model.Video;
-import com.xtra.api.projection.admin.server.ServerView;
+import com.xtra.api.model.vod.MovieInfo;
 import com.xtra.api.projection.admin.video.VideoView;
 import lombok.Data;
 

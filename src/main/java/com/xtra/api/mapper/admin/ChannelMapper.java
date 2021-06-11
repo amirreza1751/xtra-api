@@ -1,13 +1,15 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
-import com.xtra.api.model.*;
+import com.xtra.api.model.collection.CollectionStream;
+import com.xtra.api.model.collection.CollectionStreamId;
+import com.xtra.api.model.epg.EpgChannel;
+import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.stream.*;
 import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.projection.admin.epg.EpgDetails;
 import com.xtra.api.repository.*;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 
 import java.util.HashSet;
 import java.util.Set;

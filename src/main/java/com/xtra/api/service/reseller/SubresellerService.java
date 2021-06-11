@@ -1,11 +1,10 @@
 package com.xtra.api.service.reseller;
 
-import com.xtra.api.exception.ActionNotAllowedException;
-import com.xtra.api.exception.EntityNotFoundException;
+import com.xtra.api.model.exception.ActionNotAllowedException;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ResellerMapper;
-import com.xtra.api.mapper.reseller.CreditChangeMapper;
-import com.xtra.api.model.CreditChangeLog;
-import com.xtra.api.model.Reseller;
+import com.xtra.api.model.user.CreditChangeLog;
+import com.xtra.api.model.user.Reseller;
 import com.xtra.api.projection.reseller.subreseller.CreditChangeRequest;
 import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
 import com.xtra.api.projection.reseller.subreseller.SubresellerSimplified;
@@ -21,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import static com.xtra.api.model.exception.ErrorCode.RESELLER_CREDIT_LOW;
+import static com.xtra.api.model.exception.ErrorCode.SUBRESELLER_CREDIT_INVALID;
 import static com.xtra.api.service.system.UserAuthService.getCurrentUser;
 
 @Service
@@ -55,7 +56,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         var subreseller = resellerMapper.convertToEntity(view);
         var currentReseller = getCurrentReseller();
         if (currentReseller.getCredits() < subreseller.getCredits())
-            throw new ActionNotAllowedException("Not Enough Credits", "LOW_CREDITS");
+            throw new ActionNotAllowedException("Not Enough Credits", RESELLER_CREDIT_LOW);
         subreseller.setOwner(currentReseller);
 
         var currentCredits = currentReseller.getCredits();
@@ -82,9 +83,9 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
 
         var creditChange = creditChangeRequest.getCredits() - targetReseller.getCredits();
         if (creditChange <= 0)
-            throw new ActionNotAllowedException("credit change must be a positive amount", "SUBRESELLER_CREDIT_INVALID");
+            throw new ActionNotAllowedException("credit change must be a positive amount", SUBRESELLER_CREDIT_INVALID);
         if (creditChange > currentReseller.getCredits())
-            throw new ActionNotAllowedException("credit amount is less than current credit balance", "RESELLER_CREDIT_LOW");
+            throw new ActionNotAllowedException("credit amount is less than current credit balance", RESELLER_CREDIT_LOW);
         targetReseller.setCredits(targetReseller.getCredits() + creditChange);
         currentReseller.setCredits(currentReseller.getCredits() - creditChange);
         repository.saveAll(Arrays.asList(targetReseller, currentReseller));

@@ -1,10 +1,9 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.MovieMapper;
-import com.xtra.api.model.*;
+import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.movie.*;
-import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.repository.MovieRepository;
 import com.xtra.api.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;

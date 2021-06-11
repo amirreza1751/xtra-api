@@ -1,6 +1,6 @@
 package com.xtra.api.controller.system;
 
-import com.xtra.api.model.LineStatus;
+import com.xtra.api.model.line.LineStatus;
 import com.xtra.api.projection.system.LineAuth;
 import com.xtra.api.service.system.SystemLineServiceImpl;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.xtra.api.repository;
 
-import com.xtra.api.model.Resource;
+import com.xtra.api.model.server.Resource;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

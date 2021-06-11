@@ -2,12 +2,10 @@ package com.xtra.api.projection.admin.channel;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.AdvancedStreamOptions;
-import com.xtra.api.model.StreamType;
+import com.xtra.api.model.stream.AdvancedStreamOptions;
+import com.xtra.api.model.stream.StreamType;
 import com.xtra.api.projection.admin.epg.EpgDetails;
-import lombok.Builder;
 import lombok.Data;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

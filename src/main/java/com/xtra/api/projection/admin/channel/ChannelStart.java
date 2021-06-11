@@ -2,13 +2,10 @@ package com.xtra.api.projection.admin.channel;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.AdvancedStreamOptions;
-import com.xtra.api.model.StreamServer;
+import com.xtra.api.model.stream.AdvancedStreamOptions;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 
 @Data

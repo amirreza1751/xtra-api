@@ -1,12 +1,11 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exception.EntityAlreadyExistsException;
+import com.xtra.api.model.collection.CollectionVodId;
+import com.xtra.api.model.exception.EntityAlreadyExistsException;
 import com.xtra.api.mapper.admin.EpisodeMapper;
 import com.xtra.api.mapper.admin.SeasonMapper;
 import com.xtra.api.mapper.admin.SeriesMapper;
-import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.channel.ChannelInfo;
-import com.xtra.api.projection.admin.channel.ChannelView;
+import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
 import com.xtra.api.projection.admin.series.SeriesView;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.generateRandomString;

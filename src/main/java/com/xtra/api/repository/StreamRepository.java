@@ -1,8 +1,7 @@
 package com.xtra.api.repository;
 
-import com.xtra.api.model.Stream;
+import com.xtra.api.model.stream.Stream;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 

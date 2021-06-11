@@ -1,11 +1,11 @@
 package com.xtra.api.service.reseller;
 
-import com.xtra.api.exception.ActionNotAllowedException;
-import com.xtra.api.exception.EntityNotFoundException;
+import com.xtra.api.model.exception.ActionNotAllowedException;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.reseller.ResellerLineMapper;
-import com.xtra.api.model.Line;
-import com.xtra.api.model.Package;
-import com.xtra.api.model.Reseller;
+import com.xtra.api.model.line.Line;
+import com.xtra.api.model.line.Package;
+import com.xtra.api.model.user.Reseller;
 import com.xtra.api.projection.reseller.line.LineCreateView;
 import com.xtra.api.projection.reseller.line.LineUpdateView;
 import com.xtra.api.projection.reseller.line.LineView;
@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+import static com.xtra.api.model.exception.ErrorCode.RESELLER_CREDIT_LOW;
 import static com.xtra.api.service.system.UserAuthService.getCurrentReseller;
 
 @Service
@@ -72,7 +73,7 @@ public class ResellerLineServiceImpl extends LineService {
             owner.setCredits(currentCredits - packageCredits);
             return lineMapper.convertToView(repository.save(line));
         }
-        throw new ActionNotAllowedException("LOW_CREDIT", "User Credit is Low");
+        throw new ActionNotAllowedException("User Credit is Low", RESELLER_CREDIT_LOW);
     }
 
     @Override

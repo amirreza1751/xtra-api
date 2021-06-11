@@ -1,6 +1,5 @@
 package com.xtra.api.projection.admin.episode;
 
-import com.xtra.api.model.VideoInfo;
 import lombok.Data;
 
 import java.util.List;

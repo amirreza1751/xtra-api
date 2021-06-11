@@ -2,7 +2,7 @@ package com.xtra.api.projection.admin.series;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.SeriesInfo;
+import com.xtra.api.model.vod.SeriesInfo;
 import lombok.Data;
 
 import java.time.LocalDate;
