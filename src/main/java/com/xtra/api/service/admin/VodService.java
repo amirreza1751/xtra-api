@@ -1,6 +1,6 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.model.Vod;
+import com.xtra.api.model.vod.Vod;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,7 +1,7 @@
 package com.xtra.api.repository;
 
-import com.xtra.api.model.DownloadList;
-import com.xtra.api.model.Reseller;
+import com.xtra.api.model.download_list.DownloadList;
+import com.xtra.api.model.user.Reseller;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,7 +1,6 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.mapper.admin.RoleMapper;
-import com.xtra.api.model.UserType;
+import com.xtra.api.model.user.UserType;
 import com.xtra.api.projection.admin.role.RoleInsertView;
 import com.xtra.api.projection.admin.role.RoleListItem;
 import com.xtra.api.projection.admin.role.RoleView;
@@ -48,7 +47,6 @@ public class RoleController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<RoleView> updateRole(@PathVariable Long id, @RequestBody RoleInsertView roleView) {
-        roleView.setId(id);
         return ResponseEntity.ok(roleService.updateOrFail(id, roleView));
     }
 

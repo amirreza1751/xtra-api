@@ -1,7 +1,7 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.model.Admin;
-import com.xtra.api.model.Role;
+import com.xtra.api.model.user.Admin;
+import com.xtra.api.model.role.Role;
 import com.xtra.api.projection.admin.user.admin.AdminInsertView;
 import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.admin.AdminView;

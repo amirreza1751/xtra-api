@@ -1,7 +1,9 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.model.*;
-import com.xtra.api.model.Package;
+import com.xtra.api.model.download_list.DownloadList;
+import com.xtra.api.model.download_list.DownloadListCollection;
+import com.xtra.api.model.line.Package;
+import com.xtra.api.model.role.Role;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
 import com.xtra.api.projection.admin.package_.PackageInsertView;
 import com.xtra.api.projection.admin.package_.PackageView;

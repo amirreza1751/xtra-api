@@ -1,8 +1,8 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.ResellerMapper;
-import com.xtra.api.model.Reseller;
-import com.xtra.api.model.UserType;
+import com.xtra.api.model.user.Reseller;
+import com.xtra.api.model.user.UserType;
 import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;

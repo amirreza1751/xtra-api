@@ -1,17 +1,15 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.EpgChannelId;
 import com.xtra.api.projection.admin.ChangingServerPair;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
+import com.xtra.api.projection.admin.epg.EpgDetails;
 import com.xtra.api.service.admin.ChannelService;
 import com.xtra.api.service.admin.StreamServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -128,8 +126,8 @@ public class ChannelController {
     }
 
     @PatchMapping("{id}/epg-channel")
-    public ResponseEntity<?> setEpgRecord(@PathVariable Long id, @RequestBody EpgChannelId epgChannelId) {
-        channelService.setEpgRecord(id, epgChannelId);
+    public ResponseEntity<?> setEpgRecord(@PathVariable Long id, @RequestBody EpgDetails epgDetails) {
+        channelService.setEpgRecord(id, epgDetails);
         return ResponseEntity.ok().build();
     }
 

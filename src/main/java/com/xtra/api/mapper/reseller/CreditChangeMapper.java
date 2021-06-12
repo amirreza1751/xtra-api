@@ -1,6 +1,6 @@
 package com.xtra.api.mapper.reseller;
 
-import com.xtra.api.model.CreditChangeLog;
+import com.xtra.api.model.user.CreditChangeLog;
 import com.xtra.api.projection.reseller.subreseller.CreditChangeRequest;
 import org.mapstruct.Mapper;
 

@@ -2,7 +2,12 @@ package com.xtra.api.service.admin;
 
 import com.google.common.collect.Sets;
 import com.xtra.api.mapper.admin.CollectionMapper;
-import com.xtra.api.model.*;
+import com.xtra.api.model.collection.Collection;
+import com.xtra.api.model.collection.CollectionStream;
+import com.xtra.api.model.collection.CollectionStreamId;
+import com.xtra.api.model.collection.CollectionVod;
+import com.xtra.api.model.stream.Stream;
+import com.xtra.api.model.vod.Vod;
 import com.xtra.api.projection.admin.collection.CollectionInsertView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
@@ -65,7 +70,7 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
         collection.setId(id);
         var newColl = mapper.convertToEntity(collection);
         var oldColl = findByIdOrFail(id);
-        copyProperties(oldColl, newColl, "downloadListCollections", "streams", "vods");
+        copyProperties(newColl, oldColl, "downloadListCollections", "streams", "vods");
         if (newColl.getStreams() != null) {
             var obsoleteStreams = Sets.difference(oldColl.getStreams(), newColl.getStreams()).immutableCopy();
             oldColl.removeStreams(obsoleteStreams);

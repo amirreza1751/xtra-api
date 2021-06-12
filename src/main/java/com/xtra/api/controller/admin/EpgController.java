@@ -1,6 +1,5 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.EpgChannel;
 import com.xtra.api.projection.admin.epg.EpgInsertView;
 import com.xtra.api.projection.admin.epg.EpgSimpleView;
 import com.xtra.api.projection.admin.epg.EpgView;
@@ -10,8 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
 
 @RestController
 @RequestMapping("/epg")

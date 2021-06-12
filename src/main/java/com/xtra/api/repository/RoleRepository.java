@@ -1,7 +1,7 @@
 package com.xtra.api.repository;
 
-import com.xtra.api.model.Role;
-import com.xtra.api.model.UserType;
+import com.xtra.api.model.role.Role;
+import com.xtra.api.model.user.UserType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

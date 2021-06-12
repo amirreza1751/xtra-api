@@ -1,9 +1,17 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
-import com.xtra.api.mapper.admin.MappingService;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ServerMapper;
-import com.xtra.api.model.*;
+import com.xtra.api.model.server.File;
+import com.xtra.api.model.server.Resource;
+import com.xtra.api.model.server.Server;
+import com.xtra.api.model.stream.StreamServer;
+import com.xtra.api.model.stream.StreamServerId;
+import com.xtra.api.model.vod.Movie;
+import com.xtra.api.model.vod.Video;
+import com.xtra.api.model.vod.VideoInfo;
+import com.xtra.api.projection.admin.server.ServerInsertView;
+import com.xtra.api.projection.admin.catchup.CatchupRecordView;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
@@ -21,11 +29,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -44,7 +54,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @Configuration
 @EnableScheduling
 @Service
-public class ServerService extends CrudService<Server, Long, ServerRepository> implements MappingService<Server, ServerView, SimpleServerView> {
+public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final ConnectionRepository connectionRepository;
     private final StreamServerRepository streamServerRepository;
     private final ServerMapper serverMapper;
@@ -239,19 +249,16 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         return true;
     }
 
-    @Override
     public Page<SimpleServerView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         return findAll(search, pageNo, pageSize, sortBy, sortDir).map(serverMapper::convertToSimpleView);
     }
 
-    @Override
     public ServerView getById(Long id) {
         return serverMapper.convertToView(findByIdOrFail(id));
     }
 
-    @Override
-    public ServerView add(ServerView serverView) {
-        var server = serverMapper.convertToEntity(serverView);
+    public ServerView add(ServerInsertView insertView) {
+        var server = serverMapper.convertToEntity(insertView);
         UUID uuid = UUID.randomUUID();
         server.setToken(uuid.toString());
         var config = new CoreConfiguration("token", uuid.toString());
@@ -261,9 +268,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         return serverMapper.convertToView(insert(server));
     }
 
-    @Override
-    public ServerView save(Long id, ServerView server) {
-        return serverMapper.convertToView(updateOrFail(id, serverMapper.convertToEntity(server)));
+    public ServerView save(Long id, ServerInsertView insertView) {
+        return serverMapper.convertToView(updateOrFail(id, serverMapper.convertToEntity(insertView)));
     }
 
     private String getServerAddress(Server server) {
@@ -277,4 +283,29 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> i
         copyProperties(newServer, oldObject, "id", "token");
         return repository.save(oldObject);
     }
+
+    //Catch-up Methods
+    public Boolean sendRecordRequest(Long streamId, Server server, CatchupRecordView catchupRecordView) {
+        return this.webClient
+                .post()
+                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/" + streamId + "/catch-up/record"))
+                .body(Mono.just(catchupRecordView), CatchupRecordView.class)
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Boolean.class).block();
+    }
+
+    public <T> T sendPostRequest(String uri, Class<T> tClass, Object data) {
+        ResponseEntity<T> result;
+        try {
+            result = new RestTemplate().postForEntity(uri, data, tClass);
+        } catch (HttpClientErrorException | NullPointerException | ResourceAccessException exception) {
+            System.out.println(exception.getMessage());
+            return null;
+        }
+        return result.getBody();
+    }
+
 }

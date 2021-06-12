@@ -1,12 +1,10 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.channel.ChannelBatchDeleteView;
-import com.xtra.api.projection.admin.channel.ChannelBatchInsertView;
-import com.xtra.api.projection.admin.movie.MovieBatchDeleteView;
-import com.xtra.api.projection.admin.movie.MovieBatchUpdateView;
-import com.xtra.api.projection.admin.movie.MovieInsertView;
-import com.xtra.api.projection.admin.movie.MovieView;
+import com.xtra.api.model.vod.Audio;
+import com.xtra.api.model.vod.Movie;
+import com.xtra.api.model.vod.Subtitle;
+import com.xtra.api.model.vod.VideoInfo;
+import com.xtra.api.projection.admin.movie.*;
 import com.xtra.api.service.admin.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,7 +27,7 @@ public class MovieController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<MovieView>> getAll(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<MovieListView>> getAll(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(movieService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
@@ -45,8 +43,8 @@ public class MovieController {
     }
 
     @PatchMapping(value = {"/{id}", "{id}/{encode}"})
-    public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @RequestBody Movie movie, @PathVariable(required = false) boolean encode) {
-        return ResponseEntity.ok(movieService.updateOrFail(id, movie, encode));
+    public ResponseEntity<MovieView> updateMovie(@PathVariable Long id, @RequestBody MovieInsertView movie, @PathVariable(required = false) boolean encode) {
+        return ResponseEntity.ok(movieService.save(id, movie, encode));
     }
 
     @DeleteMapping("/{id}")
@@ -66,11 +64,6 @@ public class MovieController {
     public ResponseEntity<?> deleteChannels(@RequestBody MovieBatchDeleteView movieView) {
         movieService.deleteAll(movieView);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @GetMapping("/token/{vod_token}/id")
-    public ResponseEntity<Video> getVodIdByToken(@PathVariable("vod_token") String vodToken) {
-        return ResponseEntity.ok(movieService.getByToken(vodToken));
     }
 
     @GetMapping("/{id}/encode")

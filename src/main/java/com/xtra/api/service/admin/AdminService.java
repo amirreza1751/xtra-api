@@ -1,8 +1,8 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.AdminMapper;
-import com.xtra.api.model.Admin;
-import com.xtra.api.model.UserType;
+import com.xtra.api.model.user.Admin;
+import com.xtra.api.model.user.UserType;
 import com.xtra.api.projection.admin.user.admin.AdminInsertView;
 import com.xtra.api.projection.admin.user.admin.AdminView;
 import com.xtra.api.repository.AdminRepository;
@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
+@Validated
 public class AdminService extends CrudService<Admin, Long, AdminRepository> {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AdminMapper adminMapper;

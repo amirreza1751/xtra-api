@@ -1,7 +1,7 @@
 package com.xtra.api.repository;
 
-import com.xtra.api.model.DownloadListCollection;
-import com.xtra.api.model.DownloadListCollectionId;
+import com.xtra.api.model.download_list.DownloadListCollection;
+import com.xtra.api.model.download_list.DownloadListCollectionId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

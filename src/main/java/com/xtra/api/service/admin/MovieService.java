@@ -1,13 +1,9 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.MovieMapper;
-import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.movie.MovieBatchDeleteView;
-import com.xtra.api.projection.admin.movie.MovieBatchUpdateView;
-import com.xtra.api.projection.admin.movie.MovieInsertView;
-import com.xtra.api.projection.admin.movie.MovieView;
-import com.xtra.api.projection.admin.series.SeriesView;
+import com.xtra.api.model.vod.*;
+import com.xtra.api.projection.admin.movie.*;
 import com.xtra.api.repository.MovieRepository;
 import com.xtra.api.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +36,8 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return repository.findByNameLikeOrInfoPlotLikeOrInfoCastLikeOrInfoDirectorLikeOrInfoGenresLikeOrInfoCountryLike(search, search, search, search, search, search, pageable);
     }
 
-    public Page<MovieView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(movieMapper::convertToView);
+    public Page<MovieListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(movieMapper::convertToListView);
     }
 
     public MovieView getViewById(Long id) {
@@ -54,10 +50,12 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
     public Movie insert(Movie movie, boolean encode) {
         String token;
-        do {
-            token = generateRandomString(8, 12, false);
-        } while (repository.findByToken(token).isPresent());
-        movie.setToken(token);
+        for (Video video : movie.getVideos()){
+            do {
+                token = generateRandomString(8, 12, false);
+            } while (videoRepository.findByToken(token).isPresent());
+            video.setToken(token);
+        }
         var savedEntity = repository.save(movie);
 
         if (encode) {
@@ -140,9 +138,8 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return repository.save(movie);
     }
 
-    public Video getByToken(String vodToken) {
-        var m = repository.findByToken(vodToken);
-        return m.map(movie -> movie.getVideos().stream().findFirst().get()).orElse(null);
+    public MovieView save(Long id, MovieInsertView movieInsertView, boolean encode){
+        return movieMapper.convertToView(updateOrFail(id, movieMapper.convertToEntity(movieInsertView), encode));
     }
 
     public Movie updateOrFail(Long id, Movie movie, boolean encode) {

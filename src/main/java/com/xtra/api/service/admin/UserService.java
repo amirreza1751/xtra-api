@@ -1,7 +1,7 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.UserMapper;
-import com.xtra.api.model.User;
+import com.xtra.api.model.user.User;
 import com.xtra.api.projection.admin.user.UserView;
 import com.xtra.api.repository.UserRepository;
 import com.xtra.api.service.CrudService;
@@ -9,14 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service

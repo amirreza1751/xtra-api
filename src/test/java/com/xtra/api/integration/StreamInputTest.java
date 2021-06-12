@@ -1,6 +1,6 @@
 package com.xtra.api.integration;
 
-import com.xtra.api.model.StreamInput;
+import com.xtra.api.model.stream.StreamInput;
 import com.xtra.api.repository.StreamInputRepository;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;

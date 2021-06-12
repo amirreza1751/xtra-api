@@ -1,27 +1,30 @@
 package com.xtra.api.service.system;
 
-import com.xtra.api.exception.EntityNotFoundException;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
-import com.xtra.api.model.Channel;
+import com.xtra.api.model.stream.Channel;
 import com.xtra.api.model.ChannelList;
-import com.xtra.api.model.Server;
+import com.xtra.api.model.server.Server;
+import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.projection.admin.channel.ChannelStart;
 import com.xtra.api.repository.ServerRepository;
+import com.xtra.api.repository.StreamServerRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
 
 @Service("systemServerService")
 public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final ChannelStartMapper channelStartMapper;
+    private final StreamServerRepository streamServerRepository;
 
-    protected ServerService(ServerRepository repository, ChannelStartMapper channelStartMapper) {
+    protected ServerService(ServerRepository repository, ChannelStartMapper channelStartMapper, StreamServerRepository streamServerRepository) {
         super(repository, "Server");
         this.channelStartMapper = channelStartMapper;
+        this.streamServerRepository = streamServerRepository;
     }
 
     public ChannelStart getChannelForServer(Long channelId, String token) {
@@ -41,5 +44,14 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     @Override
     protected Page<Server> findWithSearch(String search, Pageable page) {
         return null;
+    }
+
+    public void updateRecordingStatus(String token, boolean status, Long streamId){
+        var server = repository.findByToken(token).orElseThrow(() -> new RuntimeException("server was not found!!!"));
+        var streamServer = streamServerRepository.findById(new StreamServerId(streamId, server.getId()));
+        streamServer.ifPresent(item -> {
+            item.setRecording(status);
+            streamServerRepository.save(item);
+        });
     }
 }

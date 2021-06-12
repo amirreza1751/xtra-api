@@ -1,6 +1,6 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.Video;
+import com.xtra.api.model.vod.Video;
 import com.xtra.api.service.admin.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,5 +20,10 @@ public class VideoController {
     @PatchMapping("/{id}")
     public ResponseEntity<Video> updateVideo(@PathVariable Long id, @RequestBody Video video) {
         return ResponseEntity.ok(videoService.updateVideo(id, video));
+    }
+
+    @GetMapping("/token/{video_token}")
+    public ResponseEntity<Video> getVideoByToken(@PathVariable("video_token") String videoToken) {
+        return ResponseEntity.ok(videoService.getByToken(videoToken));
     }
 }

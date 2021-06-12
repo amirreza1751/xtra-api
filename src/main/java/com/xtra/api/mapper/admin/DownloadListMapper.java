@@ -1,8 +1,8 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.model.DownloadList;
-import com.xtra.api.model.DownloadListCollection;
-import com.xtra.api.model.DownloadListCollectionId;
+import com.xtra.api.model.download_list.DownloadList;
+import com.xtra.api.model.download_list.DownloadListCollection;
+import com.xtra.api.model.download_list.DownloadListCollectionId;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
 import com.xtra.api.projection.admin.downloadlist.DownloadListInsertView;
 import com.xtra.api.projection.admin.downloadlist.DownloadListView;

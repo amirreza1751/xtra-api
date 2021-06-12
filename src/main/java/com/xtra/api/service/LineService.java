@@ -1,6 +1,12 @@
 package com.xtra.api.service;
 
-import com.xtra.api.model.*;
+import com.xtra.api.model.collection.Collection;
+import com.xtra.api.model.collection.CollectionStream;
+import com.xtra.api.model.download_list.DownloadList;
+import com.xtra.api.model.download_list.DownloadListCollection;
+import com.xtra.api.model.line.Line;
+import com.xtra.api.model.stream.Stream;
+import com.xtra.api.model.user.UserType;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.RoleRepository;
@@ -12,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
@@ -21,8 +25,8 @@ import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 public abstract class LineService extends CrudService<Line, Long, LineRepository> {
-    private final ConnectionRepository connectionRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    protected final ConnectionRepository connectionRepository;
+    protected final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RoleRepository roleRepository;
 
     @Value("${server.address}")
@@ -43,19 +47,6 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
     protected Page<Line> findWithSearch(String search, Pageable page) {
         search = wrapSearchString(search);
         return repository.findByUsernameLikeOrAdminNotesLikeOrResellerNotesLike(search, search, search, page);
-    }
-
-    public void killAllConnections(Long id) {
-        if (existsById(id)) {
-            List<Connection> connections = connectionRepository.findAllByLineId(id);
-            if (!connections.isEmpty()) {
-                connections.forEach((activity) -> {
-                    activity.setHlsEnded(true);
-                    activity.setEndDate(LocalDateTime.now());
-                    connectionRepository.save(activity);
-                });
-            }
-        }
     }
 
     @Override
@@ -136,4 +127,11 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
                 .body(playlist.toString());
     }
 
+    public boolean getIsOnline(Long lineId) {
+        return connectionRepository.countAllByLineId(lineId) > 0;
+    }
+
+    public long getConnectionsCount(Long lineId) {
+        return connectionRepository.countAllByLineId(lineId);
+    }
 }

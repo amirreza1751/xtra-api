@@ -1,7 +1,7 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.model.Server;
-import com.xtra.api.model.Stream;
+import com.xtra.api.model.server.Server;
+import com.xtra.api.model.stream.Stream;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.StreamRepository;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class LoadBalancingService {
     }
 
     public ArrayList<Server> findAvailableServers(String stream_token) {
-        Stream stream = (Stream) streamRepository.getByStreamToken(stream_token).get();
+        Stream stream = (Stream) streamRepository.findByStreamToken(stream_token).get();
         ArrayList<Server> result = new ArrayList<>();
         stream.getStreamServers().forEach(streamServer -> result.add(streamServer.getServer()));
         return result;

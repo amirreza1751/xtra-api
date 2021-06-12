@@ -2,6 +2,7 @@ package com.xtra.api.projection.system;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.xtra.api.model.stream.StreamStatus;
 import lombok.Data;
 
 @Data
@@ -16,4 +17,5 @@ public class StreamDetailsView {
     private String speed;
     private String frameRate;
     private String bitrate;
+    private StreamStatus streamStatus;
 }

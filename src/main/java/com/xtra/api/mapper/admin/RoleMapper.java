@@ -1,6 +1,9 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.model.*;
+import com.xtra.api.model.role.PermissionId;
+import com.xtra.api.model.role.PermissionRole;
+import com.xtra.api.model.role.PermissionRoleId;
+import com.xtra.api.model.role.Role;
 import com.xtra.api.projection.admin.PermissionView;
 import com.xtra.api.projection.admin.role.RoleInsertView;
 import com.xtra.api.projection.admin.role.RoleListItem;
