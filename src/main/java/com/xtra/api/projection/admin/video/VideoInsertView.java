@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class VideoInsertView {
+    private Long id;
     private String location;
     private List<Audio> audios;
     private List<Subtitle> subtitles;

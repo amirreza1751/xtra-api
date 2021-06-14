@@ -13,6 +13,7 @@ import java.util.List;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class VideoView {
+    private Long id;
     private String location;
     private String token;
     private EncodeStatus encodeStatus;

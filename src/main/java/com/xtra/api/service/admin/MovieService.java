@@ -2,6 +2,7 @@ package com.xtra.api.service.admin;
 
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.MovieMapper;
+import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.movie.*;
 import com.xtra.api.repository.MovieRepository;
@@ -11,10 +12,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 public class MovieService extends VodService<Movie, MovieRepository> {
@@ -49,12 +53,8 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     }
 
     public Movie insert(Movie movie, boolean encode) {
-        String token;
         for (Video video : movie.getVideos()){
-            do {
-                token = generateRandomString(8, 12, false);
-            } while (videoRepository.findByToken(token).isPresent());
-            video.setToken(token);
+            this.generateToken(video);
         }
         var savedEntity = repository.save(movie);
 
@@ -142,11 +142,27 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return movieMapper.convertToView(updateOrFail(id, movieMapper.convertToEntity(movieInsertView), encode));
     }
 
-    public Movie updateOrFail(Long id, Movie movie, boolean encode) {
-        var updatedMovie = updateOrFail(id, movie);
+    public Movie updateOrFail(Long id, Movie newMovie, boolean encode) {
+        var oldMovie = findByIdOrFail(id);
+        copyProperties(newMovie, oldMovie, "id", "collections", "videos", "servers");
+        oldMovie.getVideos().retainAll(newMovie.getVideos());
+        List<Video> videosToAdd = new ArrayList<>();
+        for (Video video : newMovie.getVideos()){
+            var target = oldMovie.getVideos().stream().filter(videoItem -> videoItem.equals(video)).findFirst();
+            if (target.isPresent()){
+                copyProperties(video, target, "id", "token", "encodeStatus", "videoInfo", "videoServers");
+            } else {
+                videosToAdd.add(video);
+            }
+        }
+        for (Video video : videosToAdd){
+            video.setId(null);
+            this.generateToken(video);
+        }
+        oldMovie.getVideos().addAll(videosToAdd);
         if (encode)
             encode(id);
-        return updatedMovie;
+        return repository.save(oldMovie);
     }
 
     public void updateEncodeStatus(Long id, Long vidId, Map<String, String> encodeResult) {
@@ -164,5 +180,15 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         var video = vid.orElseThrow(() -> new EntityNotFoundException("Video", vidId.toString()));
         video.setVideoInfo(videoInfo);
         videoRepository.save(video);
+    }
+
+    public void generateToken(Video video){
+        String token;
+            do {
+                token = generateRandomString(8, 12, false);
+            } while (videoRepository.findByToken(token).isPresent());
+            video.setToken(token);
+            video.setEncodeStatus(EncodeStatus.NOT_ENCODED);
+
     }
 }

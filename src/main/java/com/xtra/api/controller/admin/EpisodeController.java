@@ -31,7 +31,7 @@ public class EpisodeController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Series> editEpisode(@PathVariable Long id, @RequestBody EpisodeInsertView episodeInsertView) {
+    public ResponseEntity<EpisodeView> editEpisode(@PathVariable Long id, @RequestBody EpisodeInsertView episodeInsertView) {
         return ResponseEntity.ok(episodeService.editEpisode(id, episodeInsertView));
     }
 
