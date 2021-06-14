@@ -2,6 +2,7 @@ package com.xtra.api.projection.admin.channel;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.xtra.api.model.stream.AdvancedStreamOptions;
 import com.xtra.api.model.stream.StreamType;
 import com.xtra.api.projection.admin.epg.EpgDetails;
 import lombok.Data;
@@ -30,4 +31,5 @@ public class ChannelView {
 
     private List<ChannelServerInfo> infos;
     private EpgDetails epgDetails;
+    private AdvancedStreamOptions advancedStreamOptions;
 }
