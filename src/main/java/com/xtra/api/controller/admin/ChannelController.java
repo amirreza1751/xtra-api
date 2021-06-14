@@ -72,19 +72,15 @@ public class ChannelController {
 
     // Stream Operations
     @GetMapping("/{id}/start")
-    public ResponseEntity<String> startChannel(@PathVariable Long id, @RequestParam(required = false) List<Long> servers) {
-        if (channelService.startOrFail(id, servers))
-            return ResponseEntity.ok().build();
-        else
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    public ResponseEntity<String> startChannelOnServers(@PathVariable Long id, @RequestParam(required = false) List<Long> serversIds) {
+        channelService.startStreamOnServers(id, serversIds);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}/stop")
-    public ResponseEntity<?> stopChannel(@PathVariable Long id, @RequestParam(required = false) List<Long> servers) {
-        if (channelService.stopOrFail(id, servers))
-            return ResponseEntity.ok().build();
-        else
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    public ResponseEntity<?> stopChannelOnServers(@PathVariable Long id, @RequestParam(required = false) List<Long> servers) {
+        channelService.stopStreamOnServers(id, servers);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}/restart")

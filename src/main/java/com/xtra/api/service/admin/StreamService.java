@@ -1,12 +1,13 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.system.StreamMapper;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.stream.StreamDetails;
 import com.xtra.api.model.stream.StreamServer;
 import com.xtra.api.model.stream.StreamServerId;
+import com.xtra.api.projection.admin.channel.ChannelStart;
 import com.xtra.api.projection.system.StreamDetailsView;
 import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.service.CrudService;
@@ -41,47 +42,35 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
         return findByTokenOrFail(token).getId();
     }
 
-    public boolean startOrFail(Long id, List<Long> serverIds) {
-        for (Server server : getStreamServers(id, serverIds)) {
-            serverService.sendStartRequest(id, server);
-        }
-        return true;
-    }
 
-    public boolean stopOrFail(Long id, List<Long> serverIds) {
-        Optional<S> ch = repository.findById(id);
-        for (Server server : getStreamServers(id, serverIds)) {
-            if (ch.isPresent()) {
-                S channel = ch.get();
-                Set<StreamServer> streamServers = channel.getStreamServers();
-                for (StreamServer streamServer : streamServers) {
-                    if (streamServer.getServer().getId().equals(server.getId())) {
-                        streamServer.setStreamDetails(new StreamDetails());
-                    }
+    public void stopStreamOnServers(Long id, List<Long> serverIds) {
+        var channel = findByIdOrFail(id);
+        for (Server server : getServersForStream(channel, serverIds)) {
+            Set<StreamServer> streamServers = channel.getStreamServers();
+            for (StreamServer streamServer : streamServers) {
+                if (streamServer.getServer().getId().equals(server.getId())) {
+                    streamServer.setStreamDetails(new StreamDetails());
                 }
-                channel.setStreamServers(streamServers);
-                repository.save(channel);
             }
+            channel.setStreamServers(streamServers);
+            repository.save(channel);
             serverService.sendStopRequest(id, server);
         }
-        return true;
     }
 
     public boolean restartOrFail(Long id, List<Long> serverIds) {
-        for (Server server : getStreamServers(id, serverIds)) {
+        var stream = findByIdOrFail(id);
+        for (Server server : getServersForStream(stream, serverIds)) {
             serverService.sendRestartRequest(id, server);
         }
         return true;
     }
 
-    //@todo possible database optimizations necessary
-    private List<Server> getStreamServers(Long id, List<Long> serverIds) {
-        List<Server> servers;
-        var stream = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("id", id));
-        if (serverIds == null) {
-            servers = stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
-        } else servers = serverService.findByIdIn(serverIds);
-        return servers;
+    protected List<Server> getServersForStream(Stream stream, List<Long> serverIds) {
+        if (serverIds == null || serverIds.size() == 0)
+            return stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
+        return stream.getStreamServers().stream().map(StreamServer::getServer)
+                .filter(server -> serverIds.contains(server.getId())).collect(Collectors.toList());
     }
 
     @Transactional

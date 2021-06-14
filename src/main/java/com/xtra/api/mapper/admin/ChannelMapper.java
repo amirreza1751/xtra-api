@@ -34,7 +34,7 @@ public abstract class ChannelMapper {
     @AfterMapping
     void convertServerIdsAndCollectionIds(final ChannelInsertView channelView, @MappingTarget final Channel channel) {
         var epgDetails = channelView.getEpgDetails();
-        if (epgDetails != null) {
+        if (epgDetails != null && epgDetails.getEpgId() != null) {
             var epgChannel = epgChannelRepository.findByNameAndLanguageAndEpgFile_Id(epgDetails.getName(), epgDetails.getLanguage(), epgDetails.getEpgId())
                     .orElseThrow(() -> new EntityNotFoundException("epg channel"));
             channel.setEpgChannel(epgChannel);
@@ -190,5 +190,13 @@ public abstract class ChannelMapper {
             aso.setTranscodingProfile(channelBatchInsertView.getTranscodingProfile());
 
         return aso;
+    }
+
+    public abstract ChannelStart convertToChannelStart(Channel channel, int selectedSource);
+
+    @AfterMapping
+    ChannelStart setChannelInput(Channel channel, @MappingTarget ChannelStart channelStart, int selectedSource) {
+        channelStart.setStreamInput(channel.getStreamInputs().get(selectedSource));
+        return channelStart;
     }
 }

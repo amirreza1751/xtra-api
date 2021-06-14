@@ -1,7 +1,7 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ServerMapper;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.server.File;
 import com.xtra.api.model.server.Resource;
 import com.xtra.api.model.server.Server;
@@ -10,8 +10,9 @@ import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.model.vod.Movie;
 import com.xtra.api.model.vod.Video;
 import com.xtra.api.model.vod.VideoInfo;
-import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.catchup.CatchupRecordView;
+import com.xtra.api.projection.admin.channel.ChannelStart;
+import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
@@ -73,10 +74,10 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         this.serverMapper = serverMapper;
         TcpClient tcpClient = TcpClient.create()
                 .doOnConnected(connection -> {
-                    connection.addHandlerLast(new ReadTimeoutHandler(10000, TimeUnit.MILLISECONDS));
-                    connection.addHandlerLast(new WriteTimeoutHandler(10000, TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new ReadTimeoutHandler(3000, TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new WriteTimeoutHandler(3000, TimeUnit.MILLISECONDS));
                 })
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);
         this.webClient = webClientBuilder
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                 .build();
@@ -92,49 +93,80 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return result;
     }
 
-    public void sendStartRequest(Long channelId, Server server) {
-        Mono<Boolean> result = this.webClient
-                .get()
+    public void sendStartRequest(Server server, ChannelStart channelStartData) {
+        this.webClient
+                .post()
                 .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
-                        + "/streams/" + channelId + "/start"))
+                        + "/streams/start"))
+                .body(Mono.just(channelStartData), ChannelStart.class)
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
-                .bodyToMono(Boolean.class);
-        result.subscribe(
-                successValue -> System.out.println("success value: " + successValue),
-                error -> System.out.println("error value: " + error)
-        );
+                .bodyToMono(Void.class)
+                .block();
+
     }
 
-    public void sendRestartRequest(Long channelId, Server server) {
-        Mono<Boolean> result = this.webClient
-                .get()
+    public void sendAsyncStartRequest(Server server, ChannelStart channelStartData) {
+        this.webClient
+                .post()
                 .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
-                        + "/streams/" + channelId + "/restart"))
+                        + "/streams/start"))
+                .body(Mono.just(channelStartData), ChannelStart.class)
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
-                .bodyToMono(Boolean.class);
-        result.subscribe(
-                successValue -> System.out.println("success value: " + successValue),
-                error -> System.out.println("error value: " + error)
-        );
+                .bodyToMono(Void.class);
+    }
+
+    public void sendAsyncRestartRequest(Server server, ChannelStart channelStartData) {
+        this.webClient
+                .post()
+                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/restart"))
+                .body(Mono.just(channelStartData), ChannelStart.class)
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Void.class);
+    }
+
+    public void sendRestartRequest(Server server, ChannelStart channelStartData) {
+        this.webClient
+                .post()
+                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/restart"))
+                .body(Mono.just(channelStartData), ChannelStart.class)
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Void.class)
+                .block();
+
+    }
+
+    public void sendRestartRequest(Long streamId, Server server) {
+        this.webClient
+                .get()
+                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/" + streamId + "/restart"))
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Void.class)
+                .block();
     }
 
     public void sendStopRequest(Long channelId, Server server) {
-        Mono<Boolean> result = this.webClient
+        this.webClient
                 .get()
                 .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
                         + "/streams/" + channelId + "/stop"))
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
-                .bodyToMono(Boolean.class);
-        result.subscribe(
-                successValue -> System.out.println("success value: " + successValue),
-                error -> System.out.println("error value: " + error)
-        );
+                .bodyToMono(Void.class);
+
     }
 
     public Boolean sendUpdateConfigRequest(Server server, CoreConfiguration configuration) {
@@ -307,5 +339,6 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         }
         return result.getBody();
     }
+
 
 }
