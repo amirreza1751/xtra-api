@@ -33,7 +33,7 @@ public class SeriesController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Series> addSeries(@RequestBody SeriesInsertView series) {
+    public ResponseEntity<SeriesView> addSeries(@RequestBody SeriesInsertView series) {
         return ResponseEntity.ok(seriesService.add(series));
     }
 
@@ -50,7 +50,7 @@ public class SeriesController {
 
     //Episodes
     @PostMapping("/{id}/episodes")
-    public ResponseEntity<Series> addEpisode(@PathVariable Long id, @RequestBody EpisodeInsertView episodeInsertView) {
+    public ResponseEntity<SeriesView> addEpisode(@PathVariable Long id, @RequestBody EpisodeInsertView episodeInsertView) {
         return ResponseEntity.ok(seriesService.addEpisode(id, episodeInsertView));
     }
 }

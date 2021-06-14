@@ -63,9 +63,9 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         return seriesMapper.convertToView(findByIdOrFail(id));
     }
 
-    public Series add(SeriesInsertView seriesInsertView) {
+    public SeriesView add(SeriesInsertView seriesInsertView) {
         seriesInsertView.setLastUpdated(LocalDate.now());
-        return this.insert(seriesMapper.convertToEntity(seriesInsertView));
+        return seriesMapper.convertToView(this.insert(seriesMapper.convertToEntity(seriesInsertView)));
     }
 
     public Series insert(Series series) {
@@ -98,7 +98,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     }
 
     //Episodes Section
-    public Series addEpisode(Long id, EpisodeInsertView episodeInsertView) {
+    public SeriesView addEpisode(Long id, EpisodeInsertView episodeInsertView) {
         Episode episode = episodeMapper.convertToEntity(episodeInsertView);
         var series = findByIdOrFail(id);
         series.setLastUpdated(LocalDate.now());
@@ -114,7 +114,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                 existingEpisodes.add(episode);
                 season.get().setSeries(series);
                 this.updateNumberOfEpisodes(series);
-                return repository.save(series);
+                return seriesMapper.convertToView(repository.save(series));
             }
         } else {
             this.generateToken(episode);
@@ -128,7 +128,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             existingSeasons.add(newSeason);
             series.setSeasons(existingSeasons);
             this.updateNumberOfEpisodes(series);
-            return repository.save(series);
+            return seriesMapper.convertToView(repository.save(series));
         }
     }
 
