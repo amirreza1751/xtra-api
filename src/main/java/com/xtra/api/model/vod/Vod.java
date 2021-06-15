@@ -21,7 +21,7 @@ public class Vod {
 
     private String name;
 
-    @OneToMany(mappedBy = "vod", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "vod", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     @JsonManagedReference
     private Set<CollectionVod> collectionAssigns;
 
