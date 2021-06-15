@@ -24,6 +24,7 @@ import com.xtra.api.service.CrudService;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +56,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @Configuration
 @EnableScheduling
 @Service
+@Log4j2
 public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final ConnectionRepository connectionRepository;
     private final StreamServerRepository streamServerRepository;
@@ -108,7 +110,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     public void sendAsyncStartRequest(Server server, ChannelStart channelStartData) {
-        this.webClient
+        var result = this.webClient
                 .post()
                 .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
                         + "/streams/start"))
@@ -117,6 +119,10 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
                 .bodyToMono(Void.class);
+        result.subscribe(
+                successValue -> log.info("success value: " + successValue),
+                error -> log.error("error value: " + error)
+        );
     }
 
     public void sendAsyncRestartRequest(Server server, ChannelStart channelStartData) {
@@ -165,8 +171,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
-                .bodyToMono(Void.class);
-
+                .bodyToMono(Void.class)
+                .block();
     }
 
     public Boolean sendUpdateConfigRequest(Server server, CoreConfiguration configuration) {

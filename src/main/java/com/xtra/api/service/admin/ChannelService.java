@@ -40,8 +40,12 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository, StreamInputRepository streamInputRepository, StreamMapper streamMapper, ServerRepository serverRepository, ConnectionRepository connectionRepository) {
-        super(repository, "Channel", serverService, streamMapper);
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService,
+                          ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository,
+                          StreamInputRepository streamInputRepository, StreamMapper streamMapper,
+                          ServerRepository serverRepository, ConnectionRepository connectionRepository,
+                          StreamServerRepository streamServerRepository) {
+        super(repository, "Channel", serverService, streamMapper, streamServerRepository);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
         this.channelMapper = channelMapper;

@@ -7,15 +7,13 @@ import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.stream.StreamDetails;
 import com.xtra.api.model.stream.StreamServer;
 import com.xtra.api.model.stream.StreamServerId;
-import com.xtra.api.projection.admin.channel.ChannelStart;
 import com.xtra.api.projection.system.StreamDetailsView;
 import com.xtra.api.repository.StreamRepository;
+import com.xtra.api.repository.StreamServerRepository;
 import com.xtra.api.service.CrudService;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -23,11 +21,13 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public abstract class StreamService<S extends Stream, R extends StreamRepository<S>> extends CrudService<S, Long, R> {
     private final ServerService serverService;
     private final StreamMapper streamMapper;
+    private final StreamServerRepository streamServerRepository;
 
-    protected StreamService(R repository, String className, ServerService serverService, StreamMapper streamMapper) {
+    protected StreamService(R repository, String className, ServerService serverService, StreamMapper streamMapper, StreamServerRepository streamServerRepository) {
         super(repository, className);
         this.serverService = serverService;
         this.streamMapper = streamMapper;
+        this.streamServerRepository = streamServerRepository;
     }
 
     public S findById(Long id) {
@@ -45,16 +45,12 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
 
     public void stopStreamOnServers(Long id, List<Long> serverIds) {
         var channel = findByIdOrFail(id);
-        for (Server server : getServersForStream(channel, serverIds)) {
-            Set<StreamServer> streamServers = channel.getStreamServers();
-            for (StreamServer streamServer : streamServers) {
-                if (streamServer.getServer().getId().equals(server.getId())) {
-                    streamServer.setStreamDetails(new StreamDetails());
-                }
+        for (StreamServer streamServer : channel.getStreamServers()) {
+            if (serverIds == null || serverIds.contains(streamServer.getServer().getId())) {
+                serverService.sendStopRequest(id, streamServer.getServer());
+                streamServer.setStreamDetails(new StreamDetails());
+                streamServerRepository.save(streamServer);
             }
-            channel.setStreamServers(streamServers);
-            repository.save(channel);
-            serverService.sendStopRequest(id, server);
         }
     }
 
