@@ -12,6 +12,7 @@ import com.xtra.api.repository.CollectionRepository;
 import org.apache.commons.lang3.RandomUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
@@ -31,7 +32,7 @@ public abstract class ResellerLineMapper {
     public abstract Line convertToEntity(LineCreateView lineView);
 
     @Mapping(source = "collections", target = "defaultDownloadList")
-    public abstract Line convertToEntity(LineUpdateView lineView);
+    public abstract Line convertToEntity(LineUpdateView lineView, @MappingTarget Line line);
 
     DownloadList convertCollectionIdsToDownloadList(LinkedHashSet<Long> collectionIds) {
         if (collectionIds == null || collectionIds.size() == 0)

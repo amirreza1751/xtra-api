@@ -1,8 +1,8 @@
 package com.xtra.api.service.reseller;
 
+import com.xtra.api.mapper.reseller.ResellerLineMapper;
 import com.xtra.api.model.exception.ActionNotAllowedException;
 import com.xtra.api.model.exception.EntityNotFoundException;
-import com.xtra.api.mapper.reseller.ResellerLineMapper;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.line.Package;
 import com.xtra.api.model.user.Reseller;
@@ -49,15 +49,16 @@ public class ResellerLineServiceImpl extends LineService {
         return lineMapper.convertToView(findLineByOwnerAndIdOrFail(getCurrentReseller(), id));
     }
 
-    public LineView createLine(LineUpdateView updateView) {
-        Line line = lineMapper.convertToEntity(updateView);
+    public LineView createLine(LineCreateView createView) {
+        Line line = lineMapper.convertToEntity(createView);
         line.setOwner(getCurrentReseller());
         return lineMapper.convertToView(insert(line));
     }
 
 
-    public LineView updateLine(Long id, LineCreateView createView) {
-        return lineMapper.convertToView(updateOrFail(id, lineMapper.convertToEntity(createView)));
+    public LineView updateLine(Long id, LineUpdateView updateView) {
+        var line = lineMapper.convertToEntity(updateView, findByIdOrFail(id));
+        return lineMapper.convertToView(repository.save(line));
     }
 
     public LineView extendLine(Long id, Long packageId) {

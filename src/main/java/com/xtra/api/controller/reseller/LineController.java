@@ -32,13 +32,13 @@ public class LineController {
     }
 
     @PostMapping("")
-    public ResponseEntity<LineView> createResellerLine(@RequestBody LineUpdateView updateView) {
-        return ResponseEntity.ok(lineService.createLine(updateView));
+    public ResponseEntity<LineView> createResellerLine(@RequestBody LineCreateView createView) {
+        return ResponseEntity.ok(lineService.createLine(createView));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<LineView> updateResellerLine(@PathVariable Long id, @RequestBody LineCreateView createView) {
-        return ResponseEntity.ok(lineService.updateLine(id, createView));
+    public ResponseEntity<LineView> updateResellerLine(@PathVariable Long id, @RequestBody LineUpdateView updateView) {
+        return ResponseEntity.ok(lineService.updateLine(id, updateView));
     }
 
     @PatchMapping("/{id}/extend")
