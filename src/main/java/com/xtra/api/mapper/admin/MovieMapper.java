@@ -62,7 +62,7 @@ public abstract class MovieMapper {
         if (collectionIds != null) {
             Set<CollectionVod> collectionVods = new HashSet<>();
             for (var id : collectionIds) {
-                var collectionVod = new CollectionVod();
+                var collectionVod = new CollectionVod(new CollectionVodId(id, null));
                 var orderCount = collectionVodRepository.countAllByIdCollectionId(id);
                 collectionVod.setOrder(orderCount + 1);
                 var col = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("collection", id.toString()));

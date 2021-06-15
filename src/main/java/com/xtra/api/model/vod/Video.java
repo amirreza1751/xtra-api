@@ -14,8 +14,8 @@ import java.util.Set;
 public class Video {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Long id;
+    @EqualsAndHashCode.Include
     private String location;
     private String token;
 

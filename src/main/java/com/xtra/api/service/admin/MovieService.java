@@ -151,6 +151,10 @@ public class MovieService extends VodService<Movie, MovieRepository> {
             var target = oldMovie.getVideos().stream().filter(videoItem -> videoItem.equals(video)).findFirst();
             if (target.isPresent()){
                 copyProperties(video, target, "id", "token", "encodeStatus", "videoInfo", "videoServers");
+                target.get().getAudios().clear();
+                target.get().getAudios().addAll(video.getAudios());
+                target.get().getSubtitles().clear();
+                target.get().getSubtitles().addAll(video.getSubtitles());
             } else {
                 videosToAdd.add(video);
             }
