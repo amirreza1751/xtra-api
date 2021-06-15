@@ -15,6 +15,7 @@ import com.xtra.api.projection.admin.catchup.CatchupRecordView;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
+import com.xtra.api.projection.admin.videoInfo.VideoInfoView;
 import com.xtra.api.projection.system.CoreConfiguration;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.ServerRepository;
@@ -44,9 +45,7 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -158,8 +157,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", video, String.class);
     }
 
-    public VideoInfo getMediaInfo(Movie movie) {
-        return new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/info/", movie, VideoInfo.class);
+    public List<VideoInfo> getMediaInfo(Server server, List<Video> videoList) {
+        return Arrays.asList(Objects.requireNonNull(new RestTemplate().postForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/info/", videoList, VideoInfo[].class)));
     }
 
     public String SetAudioRequest(Movie movie) {

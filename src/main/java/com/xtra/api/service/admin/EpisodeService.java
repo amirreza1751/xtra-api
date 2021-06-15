@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
@@ -114,6 +116,12 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
             }
         }
         seriesService.updateNumberOfEpisodes(series);
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.execute(() -> {
+            seriesService.updateVideoInfo(oldEpisode.getVideos());
+            seriesRepository.save(series);
+        });
+        executor.shutdown();
         var result = seriesRepository.save(series).getSeasons().stream().map(season -> season.getEpisodes().stream().filter(episode -> episode.getId().equals(episodeId)).findFirst()).collect(Collectors.toList());
         return episodeMapper.convertToView(result.get(0).get());
     }

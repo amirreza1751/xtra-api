@@ -1,5 +1,6 @@
 package com.xtra.api.service.admin;
 
+import com.xtra.api.model.collection.CollectionVod;
 import com.xtra.api.model.collection.CollectionVodId;
 import com.xtra.api.model.exception.EntityAlreadyExistsException;
 import com.xtra.api.mapper.admin.EpisodeMapper;
@@ -20,7 +21,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
@@ -34,6 +39,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     private final EpisodeMapper episodeMapper;
     private final SeasonMapper seasonMapper;
     private final VideoRepository videoRepository;
+    private final ServerService serverService;
 
     @Autowired
     protected SeriesService(SeriesRepository repository,
@@ -41,13 +47,14 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                             CollectionVodRepository collectionVodRepository,
                             EpisodeMapper episodeMapper,
                             SeasonMapper seasonMapper,
-                            VideoRepository videoRepository) {
+                            VideoRepository videoRepository, ServerService serverService) {
         super(repository, "Series");
         this.seriesMapper = seriesMapper;
         this.collectionVodRepository = collectionVodRepository;
         this.episodeMapper = episodeMapper;
         this.seasonMapper = seasonMapper;
         this.videoRepository = videoRepository;
+        this.serverService = serverService;
     }
 
     @Override
@@ -80,7 +87,8 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         var oldSeries = findByIdOrFail(id);
         copyProperties(series, oldSeries, "id", "collectionAssigns", "seasons");
         if (series.getCollectionAssigns() != null) {
-            collectionVodRepository.deleteAll();
+            List<CollectionVod> collectionVodListToDelete = new ArrayList<>(oldSeries.getCollectionAssigns());
+            collectionVodRepository.deleteInBatch(collectionVodListToDelete);
             oldSeries.getCollectionAssigns().addAll(series.getCollectionAssigns().stream().peek(collectionVod -> {
                 collectionVod.setId(new CollectionVodId(collectionVod.getCollection().getId(), oldSeries.getId()));
                 collectionVod.setVod(oldSeries);
@@ -114,6 +122,12 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                 existingEpisodes.add(episode);
                 season.get().setSeries(series);
                 this.updateNumberOfEpisodes(series);
+                ExecutorService executor = Executors.newFixedThreadPool(1);
+                executor.execute(() -> {
+                    updateVideoInfo(episode.getVideos());
+                    repository.save(series);
+                });
+                executor.shutdown();
                 return seriesMapper.convertToView(repository.save(series));
             }
         } else {
@@ -128,6 +142,12 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             existingSeasons.add(newSeason);
             series.setSeasons(existingSeasons);
             this.updateNumberOfEpisodes(series);
+            ExecutorService executor = Executors.newFixedThreadPool(1);
+            executor.execute(() -> {
+                updateVideoInfo(episode.getVideos());
+                repository.save(series);
+            });
+            executor.shutdown();
             return seriesMapper.convertToView(repository.save(series));
         }
     }
@@ -147,6 +167,15 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             for (Season season : series.getSeasons()){
                 season.setNoOfEpisodes(season.getEpisodes().size());
             }
+        }
+    }
+
+    public void updateVideoInfo(Set<Video> videoSet) {
+        var videoInfoList = serverService.getMediaInfo(videoSet.iterator().next().getVideoServers().iterator().next().getServer(), new ArrayList<>(videoSet));
+        Iterator<Video> videosIterator = videoSet.iterator();
+        Iterator<VideoInfo> videoInfosIterator = videoInfoList.iterator();
+        while (videoInfosIterator.hasNext() && videosIterator.hasNext()) {
+            videosIterator.next().setVideoInfo(videoInfosIterator.next());
         }
     }
 }

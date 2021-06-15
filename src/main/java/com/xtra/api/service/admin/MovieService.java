@@ -1,10 +1,15 @@
 package com.xtra.api.service.admin;
 
+import com.xtra.api.model.collection.CollectionVod;
+import com.xtra.api.model.collection.CollectionVodId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.MovieMapper;
+import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.movie.*;
+import com.xtra.api.projection.admin.videoInfo.VideoInfoView;
+import com.xtra.api.repository.CollectionVodRepository;
 import com.xtra.api.repository.MovieRepository;
 import com.xtra.api.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +17,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import static org.springframework.beans.BeanUtils.copyProperties;
+
+
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
@@ -26,13 +34,15 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     private final ServerService serverService;
     private final VideoRepository videoRepository;
     private final MovieMapper movieMapper;
+    private final CollectionVodRepository collectionVodRepository;
 
     @Autowired
-    protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository, MovieMapper movieMapper) {
+    protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository, MovieMapper movieMapper, CollectionVodRepository collectionVodRepository) {
         super(repository);
         this.serverService = serverService;
         this.videoRepository = videoRepository;
         this.movieMapper = movieMapper;
+        this.collectionVodRepository = collectionVodRepository;
     }
 
     @Override
@@ -53,7 +63,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     }
 
     public Movie insert(Movie movie, boolean encode) {
-        for (Video video : movie.getVideos()){
+        for (Video video : movie.getVideos()) {
             this.generateToken(video);
         }
         var savedEntity = repository.save(movie);
@@ -61,7 +71,12 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         if (encode) {
             serverService.sendEncodeRequest(movie.getVideos().stream().findFirst().get());
         }
-
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.execute(() -> {
+            updateVideoInfo(savedEntity.getVideos());
+            repository.save(savedEntity);
+        });
+        executor.shutdown();
         return savedEntity;
     }
 
@@ -138,18 +153,21 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return repository.save(movie);
     }
 
-    public MovieView save(Long id, MovieInsertView movieInsertView, boolean encode){
+    public MovieView save(Long id, MovieInsertView movieInsertView, boolean encode) {
         return movieMapper.convertToView(updateOrFail(id, movieMapper.convertToEntity(movieInsertView), encode));
     }
 
     public Movie updateOrFail(Long id, Movie newMovie, boolean encode) {
         var oldMovie = findByIdOrFail(id);
-        copyProperties(newMovie, oldMovie, "id", "collections", "videos", "servers");
+        copyProperties(newMovie, oldMovie, "id", "collectionAssigns", "videos", "servers");
+        List<CollectionVod> collectionVodListToDelete = new ArrayList<>(oldMovie.getCollectionAssigns());
+        collectionVodRepository.deleteInBatch(collectionVodListToDelete);
+        oldMovie.getCollectionAssigns().addAll(newMovie.getCollectionAssigns());
         oldMovie.getVideos().retainAll(newMovie.getVideos());
         List<Video> videosToAdd = new ArrayList<>();
-        for (Video video : newMovie.getVideos()){
+        for (Video video : newMovie.getVideos()) {
             var target = oldMovie.getVideos().stream().filter(videoItem -> videoItem.equals(video)).findFirst();
-            if (target.isPresent()){
+            if (target.isPresent()) {
                 copyProperties(video, target, "id", "token", "encodeStatus", "videoInfo", "videoServers");
                 target.get().getAudios().clear();
                 target.get().getAudios().addAll(video.getAudios());
@@ -159,11 +177,17 @@ public class MovieService extends VodService<Movie, MovieRepository> {
                 videosToAdd.add(video);
             }
         }
-        for (Video video : videosToAdd){
+        for (Video video : videosToAdd) {
             video.setId(null);
             this.generateToken(video);
         }
         oldMovie.getVideos().addAll(videosToAdd);
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.execute(() -> {
+            updateVideoInfo(oldMovie.getVideos());
+            repository.save(oldMovie);
+        });
+        executor.shutdown();
         if (encode)
             encode(id);
         return repository.save(oldMovie);
@@ -186,13 +210,22 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         videoRepository.save(video);
     }
 
-    public void generateToken(Video video){
+    public void generateToken(Video video) {
         String token;
-            do {
-                token = generateRandomString(8, 12, false);
-            } while (videoRepository.findByToken(token).isPresent());
-            video.setToken(token);
-            video.setEncodeStatus(EncodeStatus.NOT_ENCODED);
+        do {
+            token = generateRandomString(8, 12, false);
+        } while (videoRepository.findByToken(token).isPresent());
+        video.setToken(token);
+        video.setEncodeStatus(EncodeStatus.NOT_ENCODED);
 
+    }
+
+    public void updateVideoInfo(Set<Video> videoSet) {
+        var videoInfoList = serverService.getMediaInfo(videoSet.iterator().next().getVideoServers().iterator().next().getServer(), new ArrayList<>(videoSet));
+        Iterator<Video> videosIterator = videoSet.iterator();
+        Iterator<VideoInfo> videoInfosIterator = videoInfoList.iterator();
+        while (videoInfosIterator.hasNext() && videosIterator.hasNext()) {
+            videosIterator.next().setVideoInfo(videoInfosIterator.next());
+        }
     }
 }

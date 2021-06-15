@@ -19,7 +19,6 @@ public class Vod {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @NotBlank
     private String name;
 
     @OneToMany(mappedBy = "vod", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
