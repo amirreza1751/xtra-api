@@ -209,9 +209,10 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     public boolean checkOnDemandStatus(StreamServer streamServer) {
         if (streamServer.getStreamDetails() != null) {
-            return streamServer.isOnDemand() &&
-                    streamServer.getStreamDetails().getStreamStatus() == null ||
-                    !streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE);
+            return streamServer.isOnDemand() ;
+//                    &&
+//                    streamServer.getStreamDetails().getStreamStatus() == null ||
+//                    !streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE);
         } else return streamServer.isOnDemand();
     }
 
