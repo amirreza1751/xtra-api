@@ -11,12 +11,14 @@ import com.xtra.api.projection.admin.movie.*;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionVodRepository;
 import com.xtra.api.repository.ServerRepository;
+import lombok.NonNull;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -124,7 +126,7 @@ public abstract class MovieMapper {
 
     @AfterMapping
     public void assignInfo(final Movie movie, @MappingTarget MovieListView movieListView){
-        movieListView.setDuration(movie.getInfo().getRuntime());
+        movieListView.setDuration(movie.getInfo() != null ? movie.getInfo().getRuntime() : 0);
         if (!movie.getVideos().isEmpty()){
             //set server info
             movieListView.setServerInfoList(movie.getVideos().iterator().next().getVideoServers().stream().map(videoServer -> new MovieServerInfo(videoServer.getServer().getName())).collect(Collectors.toList()));

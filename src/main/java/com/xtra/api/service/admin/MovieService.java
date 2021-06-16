@@ -1,5 +1,6 @@
 package com.xtra.api.service.admin;
 
+import com.xtra.api.model.collection.CollectionStreamId;
 import com.xtra.api.model.collection.CollectionVod;
 import com.xtra.api.model.collection.CollectionVodId;
 import com.xtra.api.model.exception.EntityNotFoundException;
@@ -160,9 +161,16 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     public Movie updateOrFail(Long id, Movie newMovie, boolean encode) {
         var oldMovie = findByIdOrFail(id);
         copyProperties(newMovie, oldMovie, "id", "collectionAssigns", "videos", "servers");
-        List<CollectionVod> collectionVodListToDelete = new ArrayList<>(oldMovie.getCollectionAssigns());
-        collectionVodRepository.deleteInBatch(collectionVodListToDelete);
-        oldMovie.getCollectionAssigns().addAll(newMovie.getCollectionAssigns());
+
+        //remove old collections from Movie and add new collections
+        if (newMovie.getCollectionAssigns() != null) {
+            oldMovie.getCollectionAssigns().clear();
+            oldMovie.getCollectionAssigns().addAll(newMovie.getCollectionAssigns().stream().peek(collectionVod -> {
+                collectionVod.setId(new CollectionVodId(collectionVod.getCollection().getId(), oldMovie.getId()));
+                collectionVod.setVod(oldMovie);
+            }).collect(Collectors.toSet()));
+        }
+
         oldMovie.getVideos().retainAll(newMovie.getVideos());
         List<Video> videosToAdd = new ArrayList<>();
         for (Video video : newMovie.getVideos()) {
