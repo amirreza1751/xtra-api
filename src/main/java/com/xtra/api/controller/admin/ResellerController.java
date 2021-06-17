@@ -1,6 +1,5 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
@@ -58,13 +57,13 @@ public class ResellerController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteReseller(@PathVariable Long id) {
-        resellerService.deleteOrFail(id);
+    public ResponseEntity<?> deleteReseller(@PathVariable Long id, @RequestParam("new_owner_id") Long newOwnerId) {
+        resellerService.deleteReseller(id, newOwnerId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUpReseller(@RequestBody ResellerSignUpView resellerSignUpView){
+    public ResponseEntity<?> signUpReseller(@RequestBody ResellerSignUpView resellerSignUpView) {
         resellerService.signUp(resellerSignUpView);
         return ResponseEntity.ok().build();
     }

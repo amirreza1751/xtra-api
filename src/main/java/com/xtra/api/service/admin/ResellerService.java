@@ -10,6 +10,7 @@ import com.xtra.api.projection.admin.user.reseller.ResellerListView;
 import com.xtra.api.projection.admin.user.reseller.ResellerSignUpView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
 import com.xtra.api.projection.reseller.ResellerProfile;
+import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.CrudService;
@@ -31,13 +32,15 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ResellerMapper resellerMapper;
     private final RoleRepository roleRepository;
+    private final LineRepository lineRepository;
 
     @Autowired
-    protected ResellerService(ResellerRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, ResellerMapper resellerMapper, RoleRepository roleRepository) {
+    protected ResellerService(ResellerRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, ResellerMapper resellerMapper, RoleRepository roleRepository, LineRepository lineRepository) {
         super(repository, "Reseller");
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.resellerMapper = resellerMapper;
         this.roleRepository = roleRepository;
+        this.lineRepository = lineRepository;
     }
 
     public Page<UserSimpleView> getSimpleList(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -105,5 +108,16 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
 
     public ResellerProfile getResellerProfile() {
         return resellerMapper.convertToProfile((Reseller) getCurrentUser());
+    }
+
+    public void deleteReseller(Long resellerId, Long newOwnerId) {
+        var reseller = findByIdOrFail(resellerId);
+        var substituteReseller = findByIdOrFail(newOwnerId);
+        var lines = reseller.getLines();
+        for (var line : lines) {
+            line.setOwner(substituteReseller);
+        }
+        lineRepository.saveAll(lines);
+        super.deleteOrFail(resellerId);
     }
 }
