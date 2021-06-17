@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -30,6 +31,7 @@ import static com.xtra.api.util.Utilities.generateRandomString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
+@Validated
 public class MovieService extends VodService<Movie, MovieRepository> {
 
     private final ServerService serverService;
