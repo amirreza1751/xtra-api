@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/channels")
@@ -72,7 +73,7 @@ public class ChannelController {
 
     // Stream Operations
     @GetMapping("/{id}/start")
-    public ResponseEntity<String> startChannelOnServers(@PathVariable Long id, @RequestParam(required = false) List<Long> serversIds) {
+    public ResponseEntity<String> startChannelOnServers(@PathVariable Long id, @RequestParam(required = false) Set<Long> serversIds) {
         channelService.startStreamOnServers(id, serversIds);
         return ResponseEntity.ok().build();
     }
@@ -83,19 +84,10 @@ public class ChannelController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{id}/restart")
-    public ResponseEntity<String> restartChannel(@PathVariable Long id, @RequestParam(required = false) List<Long> servers) {
-        if (channelService.restartOrFail(id, servers))
-            return ResponseEntity.ok().build();
-        else
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
-
     @GetMapping("/get_id/{stream_token}")
     public ResponseEntity<Long> getStreamIdByToken(@PathVariable("stream_token") String streamToken) {
         return ResponseEntity.ok(channelService.findIdByToken(streamToken));
     }
-
 
     @PostMapping("/{channel_id}/update-servers-list")
     public void updateServersList(@PathVariable Long channel_id, @RequestBody Long[] serverIds) {

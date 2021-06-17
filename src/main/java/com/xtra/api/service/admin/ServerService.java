@@ -125,44 +125,6 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         );
     }
 
-    public void sendAsyncRestartRequest(Server server, ChannelStart channelStartData) {
-        this.webClient
-                .post()
-                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
-                        + "/streams/restart"))
-                .body(Mono.just(channelStartData), ChannelStart.class)
-                .retrieve()
-                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
-                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
-                .bodyToMono(Void.class);
-    }
-
-    public void sendRestartRequest(Server server, ChannelStart channelStartData) {
-        this.webClient
-                .post()
-                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
-                        + "/streams/restart"))
-                .body(Mono.just(channelStartData), ChannelStart.class)
-                .retrieve()
-                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
-                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
-                .bodyToMono(Void.class)
-                .block();
-
-    }
-
-    public void sendRestartRequest(Long streamId, Server server) {
-        this.webClient
-                .get()
-                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
-                        + "/streams/" + streamId + "/restart"))
-                .retrieve()
-                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
-                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
-                .bodyToMono(Void.class)
-                .block();
-    }
-
     public void sendStopRequest(Long channelId, Server server) {
         this.webClient
                 .get()

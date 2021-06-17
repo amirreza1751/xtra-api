@@ -4,7 +4,6 @@ import com.xtra.api.model.collection.CollectionStream;
 import com.xtra.api.model.collection.CollectionStreamId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ChannelMapper;
-import com.xtra.api.mapper.admin.ChannelStartMapper;
 import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.*;
@@ -82,69 +81,11 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         channel.setStreamToken(token);
         channel.setStreamInputs(emptyIfNull(channel.getStreamInputs()).stream().distinct().collect(Collectors.toList()));
         var savedEntity = repository.save(channel);
-        var serverIds = emptyIfNull(savedEntity.getStreamServers()).stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toList());
+        var serverIds = emptyIfNull(savedEntity.getStreamServers()).stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
         if (start) {
             startStreamOnServers(channel, serverIds);
         }
         return savedEntity;
-    }
-
-    public void startStreamOnServers(Long id, List<Long> serversIds) {
-        startStreamOnServers(findByIdOrFail(id), serversIds);
-    }
-
-    public void startStreamOnServers(Channel channel, List<Long> serverIds) {
-        for (Server server : super.getServersForStream(channel, serverIds)) {
-            serverService.sendAsyncStartRequest(server, channelMapper.convertToChannelStart(channel, 0));
-        }
-    }
-
-    public void restartStreamOnServers(Channel channel, List<Long> serverIds) {
-        for (Server server : super.getServersForStream(channel, serverIds)) {
-            serverService.sendAsyncRestartRequest(server, channelMapper.convertToChannelStart(channel, 0));
-        }
-    }
-
-    public ChannelView save(Long id, ChannelInsertView channelView, boolean restart) {
-        return channelMapper.convertToView(update(id, channelMapper.convertToEntity(channelView), restart));
-    }
-
-    public void saveAll(ChannelBatchInsertView channelBatchInsertView, boolean restart) {
-        var channelIds = channelBatchInsertView.getChannelIds();
-        var serverIds = channelBatchInsertView.getServerIds();
-        var collectionIds = channelBatchInsertView.getCollectionIds();
-
-        if (channelIds != null) {
-            for (Long channelId : channelIds) {
-                var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
-                AdvancedStreamOptions aso = channel.getAdvancedStreamOptions();
-
-                channel.setAdvancedStreamOptions(channelMapper.setASO(aso, channelBatchInsertView));
-
-                if (collectionIds.size() > 0) {
-                    Set<CollectionStream> collectionStreamSet = channelMapper.convertToCollections(collectionIds, channel);
-                    if (!channelBatchInsertView.getKeepCollections())
-                        channel.getCollectionAssigns().retainAll(collectionStreamSet);
-                    channel.getCollectionAssigns().addAll(collectionStreamSet);
-                }
-
-                if (serverIds.size() > 0) {
-                    Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channel);
-                    if (!channelBatchInsertView.getKeepServers())
-                        channel.getStreamServers().retainAll(streamServers);
-                    channel.getStreamServers().addAll(streamServers);
-                }
-            }
-        }
-    }
-
-    public void deleteAll(ChannelBatchDeleteView channelBatchDeleteView) {
-        var channelIds = channelBatchDeleteView.getChannelIds();
-        if (channelIds != null) {
-            for (Long channelId : channelIds) {
-                deleteOrFail(channelId);
-            }
-        }
     }
 
     public Channel update(Long id, Channel channel, boolean restart) {
@@ -179,13 +120,71 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         }
         var savedEntity = repository.save(oldChannel);
         if (savedEntity.getStreamServers() != null) {
-            var serverIds = savedEntity.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toList());
+            var serverIds = savedEntity.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
             if (restart) {
-                restartStreamOnServers(channel, serverIds);
+                startStreamOnServers(channel, serverIds);
             }
         }
         return savedEntity;
     }
+
+    public void startStreamOnServers(Long id, Set<Long> serversIds) {
+        startStreamOnServers(findByIdOrFail(id), serversIds);
+    }
+
+    public void startStreamOnServers(Channel channel, Set<Long> serverIds) {
+        for (Server server : super.getServersForStream(channel, serverIds)) {
+            serverService.sendAsyncStartRequest(server, channelMapper.convertToChannelStart(channel, 0));
+        }
+    }
+
+    public ChannelView save(Long id, ChannelInsertView channelView, boolean restart) {
+        return channelMapper.convertToView(update(id, channelMapper.convertToEntity(channelView), restart));
+    }
+
+    public void saveAll(ChannelBatchInsertView channelBatchInsertView, boolean restart) {
+        var channelIds = channelBatchInsertView.getChannelIds();
+        var serverIds = channelBatchInsertView.getServerIds();
+        var collectionIds = channelBatchInsertView.getCollectionIds();
+
+        if (channelIds != null) {
+            for (Long channelId : channelIds) {
+                var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
+                AdvancedStreamOptions aso = channel.getAdvancedStreamOptions();
+
+                channel.setAdvancedStreamOptions(channelMapper.setASO(aso, channelBatchInsertView));
+
+                if (collectionIds.size() > 0) {
+                    Set<CollectionStream> collectionStreamSet = channelMapper.convertToCollections(collectionIds, channel);
+                    if (!channelBatchInsertView.getKeepCollections())
+                        channel.getCollectionAssigns().retainAll(collectionStreamSet);
+                    channel.getCollectionAssigns().addAll(collectionStreamSet);
+                }
+
+                if (serverIds.size() > 0) {
+                    Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channel);
+                    if (!channelBatchInsertView.getKeepServers())
+                        channel.getStreamServers().retainAll(streamServers);
+                    channel.getStreamServers().addAll(streamServers);
+                }
+                if (restart) {
+                    startStreamOnServers(channel, serverIds);
+                }
+            }
+
+        }
+
+    }
+
+    public void deleteAll(ChannelBatchDeleteView channelBatchDeleteView) {
+        var channelIds = channelBatchDeleteView.getChannelIds();
+        if (channelIds != null) {
+            for (Long channelId : channelIds) {
+                deleteOrFail(channelId);
+            }
+        }
+    }
+
 
     public void updateServersList(Long channel_id, Long[] serverIds) {
         //@todo update servers list
@@ -240,16 +239,12 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         }
         channel.setStreamServers(streamServers);
         repository.save(channel);
-        this.restartOrFail(streamId, Collections.singletonList(serverId));
+        this.startStreamOnServers(streamId, Collections.singleton(serverId));
         return nextSource;
     }
 
     public ChannelInfo getChannelInfo(Long channelId) {
         return channelMapper.convertToChannelInfo(findByIdOrFail(channelId));
-    }
-
-    public Channel channelStart(Long channelId) {
-        return this.findByIdOrFail(channelId);
     }
 
     public void setEpgRecord(Long id, EpgDetails epgDetails) {
