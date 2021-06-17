@@ -20,7 +20,7 @@ public abstract class ConnectionMapper {
 
     @AfterMapping
     void durationCalculation(final Connection connection, @MappingTarget final ConnectionView connectionView) {
-        connectionView.setDuration(Duration.between(connection.getStartDate(), connection.getLastRead()).toMillis());
+        connectionView.setDuration(Duration.between(connection.getStartDate(), connection.getLastRead()).toSeconds());
     }
 
 }

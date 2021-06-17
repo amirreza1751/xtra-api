@@ -79,7 +79,7 @@ public class SystemLineServiceImpl extends LineService {
                 if (geoResponse.isPresent()) {
                     var geo = geoResponse.get();
                     connection.setCity(geo.getCity().getName());
-                    connection.setCountry(geo.getCountry().toString());
+                    connection.setCountry(geo.getCountry().getName());
                     connection.setIsoCode(geo.getCountry().getIsoCode());
                     connection.setIsp(geo.getTraits().getIsp());
                 }
