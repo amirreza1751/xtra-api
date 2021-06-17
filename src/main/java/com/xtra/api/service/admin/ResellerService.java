@@ -9,6 +9,7 @@ import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
 import com.xtra.api.projection.admin.user.reseller.ResellerListView;
 import com.xtra.api.projection.admin.user.reseller.ResellerSignUpView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
+import com.xtra.api.projection.reseller.ResellerProfile;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.repository.RoleRepository;
 import com.xtra.api.service.CrudService;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.xtra.api.service.system.UserAuthService.getCurrentUser;
 import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -99,5 +101,9 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         var defaultRole = roleRepository.findByTypeAndName(UserType.RESELLER, "default").orElseThrow(() -> new RuntimeException("default role not found"));
         reseller.setRole(defaultRole);
         insert(reseller);
+    }
+
+    public ResellerProfile getResellerProfile() {
+        return resellerMapper.convertToProfile((Reseller) getCurrentUser());
     }
 }
