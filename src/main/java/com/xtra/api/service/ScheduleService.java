@@ -1,5 +1,6 @@
 package com.xtra.api.service;
 
+import com.xtra.api.repository.StreamServerRepository;
 import com.xtra.api.service.admin.ChannelService;
 import com.xtra.api.service.admin.ConnectionService;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,12 +17,13 @@ public class ScheduleService {
     }
 
     @Scheduled(fixedDelay = 1000)
-    private void connectionCleaner(){
+    private void connectionCleaner() {
         connectionService.deleteOldConnections();
     }
 
     @Scheduled(fixedDelay = 10000)
-    public void autoStopOnDemandChannels(){
+    public void autoStopOnDemandChannels() {
         channelService.autoStopOnDemandChannels();
     }
+
 }

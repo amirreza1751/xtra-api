@@ -1,7 +1,8 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.mapper.admin.ChannelMapper;
 import com.xtra.api.mapper.admin.ServerMapper;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.server.File;
 import com.xtra.api.model.server.Resource;
 import com.xtra.api.model.server.Server;
@@ -10,8 +11,9 @@ import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.model.vod.Movie;
 import com.xtra.api.model.vod.Video;
 import com.xtra.api.model.vod.VideoInfo;
-import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.catchup.CatchupRecordView;
+import com.xtra.api.projection.admin.channel.ChannelStart;
+import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
@@ -24,6 +26,7 @@ import com.xtra.api.service.CrudService;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -53,11 +56,13 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @Configuration
 @EnableScheduling
 @Service
+@Log4j2
 public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final ConnectionRepository connectionRepository;
     private final StreamServerRepository streamServerRepository;
     private final ServerMapper serverMapper;
     private final WebClient webClient;
+    private final ChannelMapper channelMapper;
 
     @Value("${core.apiPath}")
     private String corePath;
@@ -65,17 +70,18 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private String corePort;
 
     @Autowired
-    protected ServerService(ServerRepository repository, ConnectionRepository connectionRepository, StreamServerRepository streamServerRepository, ServerMapper serverMapper, WebClient.Builder webClientBuilder) {
+    protected ServerService(ServerRepository repository, ConnectionRepository connectionRepository, StreamServerRepository streamServerRepository, ServerMapper serverMapper, WebClient.Builder webClientBuilder, ChannelMapper channelMapper) {
         super(repository, "Server");
         this.connectionRepository = connectionRepository;
         this.streamServerRepository = streamServerRepository;
         this.serverMapper = serverMapper;
+        this.channelMapper = channelMapper;
         TcpClient tcpClient = TcpClient.create()
                 .doOnConnected(connection -> {
-                    connection.addHandlerLast(new ReadTimeoutHandler(10000, TimeUnit.MILLISECONDS));
-                    connection.addHandlerLast(new WriteTimeoutHandler(10000, TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new ReadTimeoutHandler(3000, TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new WriteTimeoutHandler(3000, TimeUnit.MILLISECONDS));
                 })
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);
         this.webClient = webClientBuilder
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                 .build();
@@ -91,49 +97,83 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return result;
     }
 
-    public void sendStartRequest(Long channelId, Server server) {
-        Mono<Boolean> result = this.webClient
-                .get()
+    public void sendStartRequest(Server server, ChannelStart channelStartData) {
+        this.webClient
+                .post()
                 .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
-                        + "/streams/" + channelId + "/start"))
+                        + "/streams/start"))
+                .body(Mono.just(channelStartData), ChannelStart.class)
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
-                .bodyToMono(Boolean.class);
-        result.subscribe(
-                successValue -> System.out.println("success value: " + successValue),
-                error -> System.out.println("error value: " + error)
-        );
+                .bodyToMono(Void.class)
+                .block();
+
     }
 
-    public void sendRestartRequest(Long channelId, Server server) {
-        Mono<Boolean> result = this.webClient
-                .get()
+    public void sendAsyncStartRequest(Server server, ChannelStart channelStartData) {
+        var result = this.webClient
+                .post()
                 .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
-                        + "/streams/" + channelId + "/restart"))
+                        + "/streams/start"))
+                .body(Mono.just(channelStartData), ChannelStart.class)
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
-                .bodyToMono(Boolean.class);
+                .bodyToMono(Void.class);
         result.subscribe(
-                successValue -> System.out.println("success value: " + successValue),
-                error -> System.out.println("error value: " + error)
+                successValue -> log.info("success value: " + successValue),
+                error -> log.error("error value: " + error)
         );
     }
 
     public void sendStopRequest(Long channelId, Server server) {
-        Mono<Boolean> result = this.webClient
+        this.webClient
                 .get()
                 .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
                         + "/streams/" + channelId + "/stop"))
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
-                .bodyToMono(Boolean.class);
+                .bodyToMono(Void.class)
+                .block();
+    }
+
+    public void startAllChannelsOnServer(Long serverId) {
+        var server = findByIdOrFail(serverId);
+        var channelStartList = server.getStreamServers().stream().map(streamServer -> channelMapper.convertToChannelStart(streamServer.getStream(), 0));
+        var result = this.webClient
+                .post()
+                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/start"))
+                .body(Mono.just(channelStartList), List.class)
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Void.class);
         result.subscribe(
-                successValue -> System.out.println("success value: " + successValue),
-                error -> System.out.println("error value: " + error)
+                successValue -> log.info("success value: " + successValue),
+                error -> log.error("error value: " + error)
         );
+    }
+
+    public void stopAllChannelsOnServer(Long serverId) {
+        var server = findByIdOrFail(serverId);
+        this.webClient
+                .get()
+                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/stop"))
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Void.class)
+                .block();
+    }
+
+    public Boolean restartAllChannelsOnServer(Long serverId) {
+        var server = findByIdOrFail(serverId);
+        new RestTemplate().getForObject(getServerAddress(server) + "/streams/restart", Boolean.class);
+        return true;
     }
 
     public Boolean sendUpdateConfigRequest(Server server, CoreConfiguration configuration) {
@@ -222,31 +262,11 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         } else throw new RuntimeException("Server Not Found.");
     }
 
-    public Optional<StreamServer> findStreamServerById(StreamServerId streamServerId) {
-        return streamServerRepository.findById(streamServerId);
-    }
-
     public StreamServer saveStreamServer(StreamServer streamServer) {
         return streamServerRepository.save(streamServer);
     }
 
-    public Boolean startAllChannelsOnServer(Long serverId) {
-        var server = findByIdOrFail(serverId);
-        new RestTemplate().getForObject(getServerAddress(server) + "/streams/start", Boolean.class);
-        return true;
-    }
 
-    public Boolean stopAllChannelsOnServer(Long serverId) {
-        var server = findByIdOrFail(serverId);
-        new RestTemplate().getForObject(getServerAddress(server) + "/streams/stop", Boolean.class);
-        return true;
-    }
-
-    public Boolean restartAllChannelsOnServer(Long serverId) {
-        var server = findByIdOrFail(serverId);
-        new RestTemplate().getForObject(getServerAddress(server) + "/streams/restart", Boolean.class);
-        return true;
-    }
 
     public Page<SimpleServerView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         return findAll(search, pageNo, pageSize, sortBy, sortDir).map(serverMapper::convertToSimpleView);
@@ -306,5 +326,6 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         }
         return result.getBody();
     }
+
 
 }

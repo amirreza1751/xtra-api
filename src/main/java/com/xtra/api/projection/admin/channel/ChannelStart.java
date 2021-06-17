@@ -15,9 +15,7 @@ public class ChannelStart {
     private Long id;
     private String name;
     private String streamToken;
-    private int selectedSource;
-
-    private List<String> streamInputs;
+    private String streamInput;
 
     //advanced stream options
     private AdvancedStreamOptions advancedStreamOptions;

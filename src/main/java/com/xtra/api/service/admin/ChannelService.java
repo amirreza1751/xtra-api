@@ -4,7 +4,6 @@ import com.xtra.api.model.collection.CollectionStream;
 import com.xtra.api.model.collection.CollectionStreamId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.ChannelMapper;
-import com.xtra.api.mapper.admin.ChannelStartMapper;
 import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.*;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -27,6 +27,7 @@ import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
+@Validated
 public class ChannelService extends StreamService<Channel, ChannelRepository> {
     private final ServerService serverService;
     private final LoadBalancingService loadBalancingService;
@@ -38,8 +39,12 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
 
     @Autowired
-    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService, ChannelStartMapper channelStartMapper, ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository, StreamInputRepository streamInputRepository, StreamMapper streamMapper, ServerRepository serverRepository, ConnectionRepository connectionRepository) {
-        super(repository, "Channel", serverService, streamMapper);
+    public ChannelService(ChannelRepository repository, ServerService serverService, LoadBalancingService loadBalancingService,
+                          ChannelMapper channelMapper, EpgChannelRepository epgChannelRepository,
+                          StreamInputRepository streamInputRepository, StreamMapper streamMapper,
+                          ServerRepository serverRepository, ConnectionRepository connectionRepository,
+                          StreamServerRepository streamServerRepository) {
+        super(repository, "Channel", serverService, streamMapper, streamServerRepository);
         this.serverService = serverService;
         this.loadBalancingService = loadBalancingService;
         this.channelMapper = channelMapper;
@@ -69,69 +74,21 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
     }
 
     public Channel insert(Channel channel, boolean start) {
-        //@todo check validation check
         String token;
         do {
             token = generateRandomString(10, 16, false);
         } while (repository.existsChannelByStreamToken(token));
-        AdvancedStreamOptions advancedStreamOptions = new AdvancedStreamOptions();
-
         channel.setStreamToken(token);
         channel.setStreamInputs(emptyIfNull(channel.getStreamInputs()).stream().distinct().collect(Collectors.toList()));
         var savedEntity = repository.save(channel);
         var serverIds = emptyIfNull(savedEntity.getStreamServers()).stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
         if (start) {
-            //@todo start servers
+            startStreamOnServers(channel, serverIds);
         }
         return savedEntity;
     }
 
-    public ChannelView save(Long id, ChannelInsertView channelView, boolean restart) {
-        return channelMapper.convertToView(update(id, channelMapper.convertToEntity(channelView), restart));
-    }
-
-    public void saveAll(ChannelBatchInsertView channelBatchInsertView, boolean restart) {
-        var channelIds = channelBatchInsertView.getChannelIds();
-        var serverIds = channelBatchInsertView.getServerIds();
-        var collectionIds = channelBatchInsertView.getCollectionIds();
-
-        if (channelIds != null) {
-            for (Long channelId : channelIds) {
-                var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
-                AdvancedStreamOptions aso = channel.getAdvancedStreamOptions();
-
-                channel.setAdvancedStreamOptions(channelMapper.setASO(aso, channelBatchInsertView));
-
-                if (collectionIds.size() > 0) {
-                    Set<CollectionStream> collectionStreamSet = channelMapper.convertToCollections(collectionIds, channel);
-                    if (!channelBatchInsertView.getKeepCollections())
-                        channel.getCollectionAssigns().retainAll(collectionStreamSet);
-                    channel.getCollectionAssigns().addAll(collectionStreamSet);
-                }
-
-                if (serverIds.size() > 0) {
-                    Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channel);
-                    if (!channelBatchInsertView.getKeepServers())
-                        channel.getStreamServers().retainAll(streamServers);
-                    channel.getStreamServers().addAll(streamServers);
-                }
-
-                repository.save(channel);
-            }
-        }
-    }
-
-    public void deleteAll(ChannelBatchDeleteView channelBatchDeleteView) {
-        var channelIds = channelBatchDeleteView.getChannelIds();
-        if (channelIds != null) {
-            for (Long channelId : channelIds) {
-                deleteOrFail(channelId);
-            }
-        }
-    }
-
     public Channel update(Long id, Channel channel, boolean restart) {
-        //@todo check validation check
         Channel oldChannel = findByIdOrFail(id);
         copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "collections", "lineActivities", "streamServers", "collectionAssigns", "advancedStreamOptions");
 
@@ -165,33 +122,92 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         if (savedEntity.getStreamServers() != null) {
             var serverIds = savedEntity.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
             if (restart) {
-                //@todo call stream restart on servers
+                startStreamOnServers(channel, serverIds);
             }
         }
         return savedEntity;
     }
+
+    public void startStreamOnServers(Long id, Set<Long> serversIds) {
+        startStreamOnServers(findByIdOrFail(id), serversIds);
+    }
+
+    public void startStreamOnServers(Channel channel, Set<Long> serverIds) {
+        for (Server server : super.getServersForStream(channel, serverIds)) {
+            serverService.sendAsyncStartRequest(server, channelMapper.convertToChannelStart(channel, 0));
+        }
+    }
+
+    public ChannelView save(Long id, ChannelInsertView channelView, boolean restart) {
+        return channelMapper.convertToView(update(id, channelMapper.convertToEntity(channelView), restart));
+    }
+
+    public void saveAll(ChannelBatchInsertView channelBatchInsertView, boolean restart) {
+        var channelIds = channelBatchInsertView.getChannelIds();
+        var serverIds = channelBatchInsertView.getServerIds();
+        var collectionIds = channelBatchInsertView.getCollectionIds();
+
+        if (channelIds != null) {
+            for (Long channelId : channelIds) {
+                var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
+                AdvancedStreamOptions aso = channel.getAdvancedStreamOptions();
+
+                channel.setAdvancedStreamOptions(channelMapper.setASO(aso, channelBatchInsertView));
+
+                if (collectionIds.size() > 0) {
+                    Set<CollectionStream> collectionStreamSet = channelMapper.convertToCollections(collectionIds, channel);
+                    if (!channelBatchInsertView.getKeepCollections())
+                        channel.getCollectionAssigns().retainAll(collectionStreamSet);
+                    channel.getCollectionAssigns().addAll(collectionStreamSet);
+                }
+
+                if (serverIds.size() > 0) {
+                    Set<StreamServer> streamServers = channelMapper.convertToServers(serverIds, channel);
+                    if (!channelBatchInsertView.getKeepServers())
+                        channel.getStreamServers().retainAll(streamServers);
+                    channel.getStreamServers().addAll(streamServers);
+                }
+                if (restart) {
+                    startStreamOnServers(channel, serverIds);
+                }
+            }
+
+        }
+
+    }
+
+    public void deleteAll(ChannelBatchDeleteView channelBatchDeleteView) {
+        var channelIds = channelBatchDeleteView.getChannelIds();
+        if (channelIds != null) {
+            for (Long channelId : channelIds) {
+                deleteOrFail(channelId);
+            }
+        }
+    }
+
 
     public void updateServersList(Long channel_id, Long[] serverIds) {
         //@todo update servers list
     }
 
     public String playChannel(String stream_token, String line_token, HttpServletRequest request) {
-        ArrayList<Server> servers = loadBalancingService.findAvailableServers(stream_token);
+        Channel channel = repository.findByStreamToken(stream_token).orElseThrow();
+        ArrayList<Server> servers = loadBalancingService.findAvailableServers(channel);
         Server server = loadBalancingService.findLeastConnServer(servers);
 
         /*This code below checks that if the requested stream
         is on-demand and offline at the same time, a start request will be sent to the related server.*/
         var streamServer = server.getStreamServers().stream().filter(item -> item.getStream().getStreamToken().equals(stream_token)).findFirst();
         streamServer.ifPresent(item -> {
-            if (checkOnDemandStatus(item)){
-                serverService.sendStartRequest(item.getId().getStreamId(), server);
+            if (checkOnDemandStatus(item)) {
+                serverService.sendStartRequest(server, channelMapper.convertToChannelStart(channel, streamServer.get().getSelectedSource()));
             }
         });
         return "http://" + server.getIp() + ":" + server.getCorePort() + "/live/" + line_token + "/" + stream_token + "/m3u8";
     }
 
     public boolean checkOnDemandStatus(StreamServer streamServer) {
-        if (streamServer.getStreamDetails()!= null){
+        if (streamServer.getStreamDetails() != null) {
             return streamServer.isOnDemand() &&
                     streamServer.getStreamDetails().getStreamStatus() == null ||
                     !streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE);
@@ -223,7 +239,7 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         }
         channel.setStreamServers(streamServers);
         repository.save(channel);
-        this.restartOrFail(streamId, Collections.singletonList(serverId));
+        this.startStreamOnServers(streamId, Collections.singleton(serverId));
         return nextSource;
     }
 
@@ -231,12 +247,8 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
         return channelMapper.convertToChannelInfo(findByIdOrFail(channelId));
     }
 
-    public Channel channelStart(Long channelId) {
-        return this.findByIdOrFail(channelId);
-    }
-
     public void setEpgRecord(Long id, EpgDetails epgDetails) {
-        var epgChannel = epgChannelRepository.findByNameAndLanguageAndEpgFile_Id(epgDetails.getName(),epgDetails.getLanguage(),epgDetails.getEpgId())
+        var epgChannel = epgChannelRepository.findByNameAndLanguageAndEpgFile_Id(epgDetails.getName(), epgDetails.getLanguage(), epgDetails.getEpgId())
                 .orElseThrow(() -> new EntityNotFoundException("Epg channel", epgDetails));
         var channel = findByIdOrFail(id);
         channel.setEpgChannel(epgChannel);
@@ -258,13 +270,13 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
             }
     }
 
-    public void autoStopOnDemandChannels(){
+    public void autoStopOnDemandChannels() {
         List<Server> servers = serverRepository.findAll();
         List<Long> streamIds = new ArrayList<>();
-        if (servers.size() > 0){
-            for (Server server : servers){
+        if (servers.size() > 0) {
+            for (Server server : servers) {
                 checkOnDemandConnections(streamIds, server);
-                if (streamIds.size() > 0){
+                if (streamIds.size() > 0) {
                     serverService.sendPostRequest("http://" + server.getIp() + ":" + server.getCorePort() + "/streams/batch-stop", String.class, streamIds);
                 }
                 streamIds.clear();
@@ -274,10 +286,10 @@ public class ChannelService extends StreamService<Channel, ChannelRepository> {
 
     public void checkOnDemandConnections(List<Long> streamIds, Server server) {
         int connections;
-        for (StreamServer streamServer : server.getStreamServers()){
+        for (StreamServer streamServer : server.getStreamServers()) {
             connections = connectionRepository.countAllByServerIdAndStreamId(server.getId(), streamServer.getStream().getId());
-            if (streamServer.getStreamDetails() != null){
-                if (streamServer.isOnDemand() && connections == 0 && streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE)){
+            if (streamServer.getStreamDetails() != null) {
+                if (streamServer.isOnDemand() && connections == 0 && streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE)) {
                     streamIds.add(streamServer.getStream().getId());
                 }
             }

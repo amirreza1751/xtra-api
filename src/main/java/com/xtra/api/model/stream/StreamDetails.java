@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class StreamDetails {
     @Id
@@ -24,10 +24,15 @@ public class StreamDetails {
     private String frameRate;
     private String bitrate;
     private StreamStatus streamStatus;
+    private LocalDateTime updated;
 
     @ToString.Exclude
     @OneToOne(mappedBy = "streamDetails")
     private StreamServer streamServer;
+
+    public StreamDetails() {
+        updated = LocalDateTime.now();
+    }
 
     public StreamDetails(String uptime, String currentInput, String resolution, String videoCodec, String audioCodec, String speed, String frameRate, String bitrate, StreamStatus streamStatus) {
         this.uptime = uptime;
@@ -39,6 +44,7 @@ public class StreamDetails {
         this.frameRate = frameRate;
         this.bitrate = bitrate;
         this.streamStatus = streamStatus;
+        updated = LocalDateTime.now();
     }
 
 }

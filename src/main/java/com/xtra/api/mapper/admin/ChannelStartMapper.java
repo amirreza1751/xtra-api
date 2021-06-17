@@ -11,9 +11,7 @@ import org.mapstruct.Mapping;
 public abstract class ChannelStartMapper {
 
 
-    @Mapping(source = "channel.streamInputs", target = "streamInputs")
-//    @Mapping(source = "selectedSource", target = "selectedSource")
-    public abstract ChannelStart convertToDto(Channel channel, int selectedSource);
+
 
 
 }
