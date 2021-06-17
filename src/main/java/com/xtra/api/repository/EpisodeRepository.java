@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EpisodeRepository extends JpaRepository<Episode, Long> {
 
-    Page<Episode> findByEpisodeNameContains(String name, Pageable pageable);
+    Page<Episode> findAllByEpisodeNameContains(String name, Pageable pageable);
 }

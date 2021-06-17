@@ -18,6 +18,8 @@ public interface ResellerRepository extends JpaRepository<Reseller, Long> {
 
     Page<Reseller> findAllByUsernameLike(String username, Pageable pageable);
 
+    Page<Reseller> findAllByUsernameContains(String username, Pageable pageable);
+
     @Transactional
     void deleteByIdAndOwner(Long id, Reseller owner);
 

@@ -42,7 +42,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
 
     @Override
     protected Page<Reseller> findWithSearch(String search, Pageable page) {
-        return null;
+        return repository.findAllByUsernameContains(search, page);
     }
 
     public Page<SubresellerSimplified> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {

@@ -46,7 +46,7 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
 
     @Override
     protected Page<Episode> findWithSearch(String search, Pageable page) {
-        return repository.findByEpisodeNameContains(search, page);
+        return repository.findAllByEpisodeNameContains(search, page);
     }
 
     public Page<EpisodeListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {

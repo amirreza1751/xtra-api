@@ -60,7 +60,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     @Override
     protected Page<Series> findWithSearch(String search, Pageable page) {
 
-        return repository.findByNameContainsOrInfoPlotContainsOrInfoCastContainsOrInfoDirectorContainsOrInfoGenresContainsOrInfoCountryContains(search, search, search, search, search, search, page);
+        return repository.findAllByNameContainsOrInfoPlotContainsOrInfoCastContainsOrInfoDirectorContainsOrInfoGenresContainsOrInfoCountryContains(search, search, search, search, search, search, page);
     }
 
     public Page<SeriesView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
