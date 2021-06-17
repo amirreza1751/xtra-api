@@ -194,9 +194,12 @@ public abstract class ChannelMapper {
 
     public abstract ChannelStart convertToChannelStart(Channel channel, int selectedSource);
 
+    public abstract ChannelStart convertToChannelStart(Stream stream, int selectedSource);
+
     @AfterMapping
     ChannelStart setChannelInput(Channel channel, @MappingTarget ChannelStart channelStart, int selectedSource) {
         channelStart.setStreamInput(channel.getStreamInputs().get(selectedSource));
         return channelStart;
     }
+
 }

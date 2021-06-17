@@ -1,5 +1,6 @@
 package com.xtra.api.service.admin;
 
+import com.xtra.api.mapper.admin.ChannelMapper;
 import com.xtra.api.mapper.admin.ServerMapper;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.server.File;
@@ -62,6 +63,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final StreamServerRepository streamServerRepository;
     private final ServerMapper serverMapper;
     private final WebClient webClient;
+    private final ChannelMapper channelMapper;
 
     @Value("${core.apiPath}")
     private String corePath;
@@ -69,11 +71,12 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private String corePort;
 
     @Autowired
-    protected ServerService(ServerRepository repository, ConnectionRepository connectionRepository, StreamServerRepository streamServerRepository, ServerMapper serverMapper, WebClient.Builder webClientBuilder) {
+    protected ServerService(ServerRepository repository, ConnectionRepository connectionRepository, StreamServerRepository streamServerRepository, ServerMapper serverMapper, WebClient.Builder webClientBuilder, ChannelMapper channelMapper) {
         super(repository, "Server");
         this.connectionRepository = connectionRepository;
         this.streamServerRepository = streamServerRepository;
         this.serverMapper = serverMapper;
+        this.channelMapper = channelMapper;
         TcpClient tcpClient = TcpClient.create()
                 .doOnConnected(connection -> {
                     connection.addHandlerLast(new ReadTimeoutHandler(3000, TimeUnit.MILLISECONDS));
@@ -135,6 +138,43 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
                 .bodyToMono(Void.class)
                 .block();
+    }
+
+    public void startAllChannelsOnServer(Long serverId) {
+        var server = findByIdOrFail(serverId);
+        var channelStartList = server.getStreamServers().stream().map(streamServer -> channelMapper.convertToChannelStart(streamServer.getStream(), 0));
+        var result = this.webClient
+                .post()
+                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/start"))
+                .body(Mono.just(channelStartList), List.class)
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Void.class);
+        result.subscribe(
+                successValue -> log.info("success value: " + successValue),
+                error -> log.error("error value: " + error)
+        );
+    }
+
+    public void stopAllChannelsOnServer(Long serverId) {
+        var server = findByIdOrFail(serverId);
+        this.webClient
+                .get()
+                .uri(URI.create("http://" + server.getIp() + ":" + server.getCorePort()
+                        + "/streams/stop"))
+                .retrieve()
+                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("4xx Client Error")))
+                .bodyToMono(Void.class)
+                .block();
+    }
+
+    public Boolean restartAllChannelsOnServer(Long serverId) {
+        var server = findByIdOrFail(serverId);
+        new RestTemplate().getForObject(getServerAddress(server) + "/streams/restart", Boolean.class);
+        return true;
     }
 
     public Boolean sendUpdateConfigRequest(Server server, CoreConfiguration configuration) {
@@ -223,31 +263,11 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         } else throw new RuntimeException("Server Not Found.");
     }
 
-    public Optional<StreamServer> findStreamServerById(StreamServerId streamServerId) {
-        return streamServerRepository.findById(streamServerId);
-    }
-
     public StreamServer saveStreamServer(StreamServer streamServer) {
         return streamServerRepository.save(streamServer);
     }
 
-    public Boolean startAllChannelsOnServer(Long serverId) {
-        var server = findByIdOrFail(serverId);
-        new RestTemplate().getForObject(getServerAddress(server) + "/streams/start", Boolean.class);
-        return true;
-    }
 
-    public Boolean stopAllChannelsOnServer(Long serverId) {
-        var server = findByIdOrFail(serverId);
-        new RestTemplate().getForObject(getServerAddress(server) + "/streams/stop", Boolean.class);
-        return true;
-    }
-
-    public Boolean restartAllChannelsOnServer(Long serverId) {
-        var server = findByIdOrFail(serverId);
-        new RestTemplate().getForObject(getServerAddress(server) + "/streams/restart", Boolean.class);
-        return true;
-    }
 
     public Page<SimpleServerView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         return findAll(search, pageNo, pageSize, sortBy, sortDir).map(serverMapper::convertToSimpleView);
