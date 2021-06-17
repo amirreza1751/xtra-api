@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import static com.xtra.api.util.Utilities.generateRandomString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
+@Validated
 public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
 
     private final SeriesMapper seriesMapper;
@@ -59,7 +61,8 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
 
     @Override
     protected Page<Series> findWithSearch(String search, Pageable page) {
-        return null;
+
+        return repository.findAllByNameContainsOrInfoPlotContainsOrInfoCastContainsOrInfoDirectorContainsOrInfoGenresContainsOrInfoCountryContains(search, search, search, search, search, search, page);
     }
 
     public Page<SeriesView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {

@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AdminRepository extends JpaRepository<Admin, Long> {
     Page<Admin> findAllByUsernameLike(String text, Pageable pageable);
+    Page<Admin> findAllByUsernameContains(String text, Pageable pageable);
 }

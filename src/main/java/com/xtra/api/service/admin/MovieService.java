@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -30,6 +31,7 @@ import static com.xtra.api.util.Utilities.generateRandomString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
+@Validated
 public class MovieService extends VodService<Movie, MovieRepository> {
 
     private final ServerService serverService;
@@ -48,7 +50,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
     @Override
     public Page<Movie> findWithSearch(String search, Pageable pageable) {
-        return repository.findByNameLikeOrInfoPlotLikeOrInfoCastLikeOrInfoDirectorLikeOrInfoGenresLikeOrInfoCountryLike(search, search, search, search, search, search, pageable);
+        return repository.findAllByNameContainsOrInfoPlotContainsOrInfoCastContainsOrInfoDirectorContainsOrInfoGenresContainsOrInfoCountryContains(search, search, search, search, search, search, pageable);
     }
 
     public Page<MovieListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {

@@ -17,6 +17,7 @@ import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import static com.xtra.api.util.Utilities.generateRandomString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
+@Validated
 public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository> {
     private final EpisodeMapper episodeMapper;
     private final SeasonMapper seasonMapper;
@@ -46,7 +48,7 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
 
     @Override
     protected Page<Episode> findWithSearch(String search, Pageable page) {
-        return null;
+        return repository.findAllByEpisodeNameContains(search, page);
     }
 
     public Page<EpisodeListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {

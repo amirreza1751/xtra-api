@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
+@Validated
 public class CollectionService extends CrudService<Collection, Long, CollectionRepository> {
     private final CollectionMapper mapper;
     private final StreamService<Stream, StreamRepository<Stream>> streamService;

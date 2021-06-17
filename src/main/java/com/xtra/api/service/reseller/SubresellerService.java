@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import static com.xtra.api.model.exception.ErrorCode.SUBRESELLER_CREDIT_INVALID;
 import static com.xtra.api.service.system.UserAuthService.getCurrentUser;
 
 @Service
+@Validated
 public class SubresellerService extends CrudService<Reseller, Long, ResellerRepository> {
     private final ResellerMapper resellerMapper;
     private final LineRepository lineRepository;
@@ -42,7 +44,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
 
     @Override
     protected Page<Reseller> findWithSearch(String search, Pageable page) {
-        return null;
+        return repository.findAllByUsernameContains(search, page);
     }
 
     public Page<SubresellerSimplified> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
