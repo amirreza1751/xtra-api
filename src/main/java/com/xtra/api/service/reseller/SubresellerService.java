@@ -49,7 +49,8 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
 
     public Page<SubresellerSimplified> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         var page = getSortingPageable(pageNo, pageSize, sortBy, sortDir);
-        return repository.findAllByOwner(getCurrentReseller(), page).map(resellerMapper::convertToSimplifiedSubreseller);
+//        return repository.findAllByOwner(getCurrentReseller(), page).map(resellerMapper::convertToSimplifiedSubreseller);
+        return repository.findAllByUsernameContains(search, page).map(resellerMapper::convertToSimplifiedSubreseller);
     }
 
     public SubresellerView getReseller(Long id) {
