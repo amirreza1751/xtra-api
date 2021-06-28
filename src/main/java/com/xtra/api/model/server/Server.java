@@ -19,6 +19,7 @@ public class Server {
     private String corePort;
     private String nginxPort;
     private String interfaceName;
+    @Column(unique = true)
     private String token;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "server", cascade = CascadeType.MERGE)
