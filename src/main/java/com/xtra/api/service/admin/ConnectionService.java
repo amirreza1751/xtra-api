@@ -1,6 +1,7 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.ConnectionMapper;
+import com.xtra.api.mapper.admin.LogMapper;
 import com.xtra.api.model.line.BlockedIp;
 import com.xtra.api.model.line.Connection;
 import com.xtra.api.projection.admin.connection.BlockIpRequest;
@@ -20,12 +21,15 @@ import java.time.LocalDateTime;
 public class ConnectionService extends CrudService<Connection, Long, ConnectionRepository> {
     private final ConnectionMapper connectionMapper;
     private final BlockedIpRepository blockedIpRepository;
+    private final LogService logService;
 
     @Autowired
-    public ConnectionService(ConnectionRepository repository, ConnectionMapper connectionMapper, BlockedIpRepository blockedIpRepository) {
+    public ConnectionService(ConnectionRepository repository, ConnectionMapper connectionMapper,
+                             BlockedIpRepository blockedIpRepository, LogService logService) {
         super(repository, "Connection");
         this.connectionMapper = connectionMapper;
         this.blockedIpRepository = blockedIpRepository;
+        this.logService = logService;
     }
 
     public Page<ConnectionView> getActiveConnections(int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -34,8 +38,14 @@ public class ConnectionService extends CrudService<Connection, Long, ConnectionR
 
     @Transactional
     public void deleteOldConnections() {
-        //delete connections not updated longer than one segment time
-        repository.deleteAllByLastReadIsLessThanEqual(LocalDateTime.now().minusSeconds(10));
+        //save activityLog for abandoned connections
+        var connections = repository.findAllByLastReadLessThanEqual(LocalDateTime.now().minusSeconds(20));
+        if (connections.size() > 0) {
+            logService.saveLogForConnections(connections);
+            //delete connections not updated longer than one segment time
+            repository.deleteAll(connections);
+        }
+
     }
 
     @Override

@@ -25,6 +25,8 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
     long countAllByLineId(Long lineId);
 
+    List<Connection> findAllByLastReadLessThanEqual(LocalDateTime lastRead);
+
     void deleteAllByLastReadIsLessThanEqual(LocalDateTime lastRead);
 
 }
