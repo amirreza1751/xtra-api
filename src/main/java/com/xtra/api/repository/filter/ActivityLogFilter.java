@@ -15,5 +15,5 @@ public class ActivityLogFilter {
     private Long serverId;
     private LocalDateTime dateFrom;
     private LocalDateTime dateTo;
-
+    private String search;
 }
