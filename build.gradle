@@ -45,6 +45,8 @@ dependencies {
     implementation "org.mariadb.jdbc:mariadb-java-client"
     implementation "org.apache.commons:commons-lang3:3.11"
     implementation "org.apache.commons:commons-collections4:4.4"
+    implementation 'org.apache.commons:commons-csv:1.8'
+    implementation "commons-io:commons-io:2.10.0"
     implementation "commons-codec:commons-codec:1.15"
     implementation "com.google.guava:guava:29.0-jre"
     implementation "com.auth0:java-jwt:3.11.0"
