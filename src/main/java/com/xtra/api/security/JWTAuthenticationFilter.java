@@ -3,8 +3,11 @@ package com.xtra.api.security;
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.xtra.api.model.line.LoginLog;
+import com.xtra.api.model.line.LoginLogStatus;
 import com.xtra.api.model.user.User;
 import com.xtra.api.repository.UserRepository;
+import com.xtra.api.service.admin.LogService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +20,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,11 +33,13 @@ import static com.xtra.api.security.SecurityConstants.*;
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final LogService logService;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, LogService logService) {
         this.authenticationManager = authenticationManager;
         //setFilterProcessesUrl("/api/users/login");
         this.userRepository = userRepository;
+        this.logService = logService;
     }
 
     @Override
@@ -86,5 +92,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         user.setLastLoginDate(lastLoginDate);
         user.setLastLoginIp(ipAddress);
         userRepository.save(user);
+
+        logService.saveLogingLog(new LoginLog(user, ipAddress, LoginLogStatus.SUCCESS, LocalDateTime.now()));
     }
 }

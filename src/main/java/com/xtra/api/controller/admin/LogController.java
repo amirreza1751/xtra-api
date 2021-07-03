@@ -1,7 +1,9 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.projection.admin.log.ActivityLogView;
+import com.xtra.api.projection.admin.log.LoginLogView;
 import com.xtra.api.repository.filter.ActivityLogFilter;
+import com.xtra.api.repository.filter.LoginLogFilter;
 import com.xtra.api.service.admin.LogService;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -43,4 +45,16 @@ public class LogController {
                 .header("Content-Disposition", "attachment; filename=\"activity_log_export-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ".csv\"")
                 .body(resource);
     }
+
+    @GetMapping("/login-logs")
+    public Page<LoginLogView> getLoginLogs(
+            @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+            , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir
+            , @RequestParam(required = false, name = "user_id") Long userId, @RequestParam(required = false, name = "ip") String ip
+            , @RequestParam(required = false, name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom
+            , @RequestParam(required = false, name = "date_to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
+        return logService.getLoginLogs(pageNo, pageSize, sortBy, sortDir, new LoginLogFilter(dateFrom, dateTo, userId, search));
+
+    }
+
 }

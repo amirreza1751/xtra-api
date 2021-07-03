@@ -3,12 +3,17 @@ package com.xtra.api.service.admin;
 import com.querydsl.core.BooleanBuilder;
 import com.xtra.api.mapper.admin.LogMapper;
 import com.xtra.api.model.line.Connection;
+import com.xtra.api.model.line.LoginLog;
 import com.xtra.api.model.line.QActivityLog;
 import com.xtra.api.model.stream.StreamProtocol;
 import com.xtra.api.projection.admin.log.ActivityLogView;
+import com.xtra.api.projection.admin.log.LoginLogView;
 import com.xtra.api.repository.ActivityLogRepository;
+import com.xtra.api.repository.LoginLogRepository;
 import com.xtra.api.repository.filter.ActivityLogFilter;
 import com.xtra.api.repository.filter.ActivityLogFilterBuilder;
+import com.xtra.api.repository.filter.LoginLogFilter;
+import com.xtra.api.repository.filter.LoginLogFilterBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -33,11 +38,13 @@ public class LogService {
     private final LogMapper logMapper;
     private final GeoIpService geoIpService;
     private final ActivityLogRepository activityLogRepository;
+    private final LoginLogRepository loginLogRepository;
 
-    public LogService(LogMapper logMapper, GeoIpService geoIpService, ActivityLogRepository activityLogRepository) {
+    public LogService(LogMapper logMapper, GeoIpService geoIpService, ActivityLogRepository activityLogRepository, LoginLogRepository loginLogRepository) {
         this.logMapper = logMapper;
         this.geoIpService = geoIpService;
         this.activityLogRepository = activityLogRepository;
+        this.loginLogRepository = loginLogRepository;
     }
 
     public Page<ActivityLogView> getActivityLogs(int pageNo, int pageSize, String sortBy, String sortDir, ActivityLogFilter filter) {
@@ -87,5 +94,15 @@ public class LogService {
             page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc("id")));
         }
         return page;
+    }
+
+    public Page<LoginLogView> getLoginLogs(int pageNo, int pageSize, String sortBy, String sortDir, LoginLogFilter filter) {
+        var builder = new LoginLogFilterBuilder();
+        var predicate = builder.build(filter);
+        return loginLogRepository.findAll(predicate, getSortingPageable(pageNo, pageSize, sortBy, sortDir)).map(logMapper::convertToLoginLogView);
+    }
+
+    public void saveLogingLog(LoginLog loginLog) {
+        loginLogRepository.save(loginLog);
     }
 }
