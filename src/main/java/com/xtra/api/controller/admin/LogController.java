@@ -63,7 +63,7 @@ public class LogController {
         var resource = logService.downloadLoginLogsAsCsv(dateFrom, dateTo);
         return ResponseEntity.ok().contentLength(resource.contentLength())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header("Content-Disposition", "attachment; filename=\"activity_log_export-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ".csv\"")
+                .header("Content-Disposition", "attachment; filename=\"login_log_export-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ".csv\"")
                 .body(resource);
     }
 
