@@ -5,6 +5,7 @@ import com.xtra.api.mapper.admin.LogMapper;
 import com.xtra.api.model.line.Connection;
 import com.xtra.api.model.line.LoginLog;
 import com.xtra.api.model.line.QActivityLog;
+import com.xtra.api.model.line.QLoginLog;
 import com.xtra.api.model.stream.StreamProtocol;
 import com.xtra.api.projection.admin.log.ActivityLogView;
 import com.xtra.api.projection.admin.log.LoginLogView;
@@ -104,5 +105,21 @@ public class LogService {
 
     public void saveLogingLog(LoginLog loginLog) {
         loginLogRepository.save(loginLog);
+    }
+
+    public ByteArrayResource downloadLoginLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
+        BooleanBuilder builder = new BooleanBuilder(QLoginLog.loginLog.date.after(dateFrom).and(QLoginLog.loginLog.date.before(dateTo)));
+        var logs = loginLogRepository.findAll(builder);
+        StringWriter writer = new StringWriter();
+        try (CSVPrinter printer = new CSVPrinter(writer,
+                CSVFormat.DEFAULT.withHeader("ID", "User", "Ip", "Status", "Date"))) {
+            for (var log : logs) {
+                printer.printRecord(log.getId(), log.getUser().getUsername(),
+                        log.getIp(), log.getStatus(), log.getDate());
+            }
+        } catch (IOException e) {
+            log.error("error in writing file");
+        }
+        return new ByteArrayResource(writer.toString().getBytes(StandardCharsets.UTF_8));
     }
 }

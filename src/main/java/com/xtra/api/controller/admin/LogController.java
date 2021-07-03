@@ -57,4 +57,14 @@ public class LogController {
 
     }
 
+    @GetMapping("/login-logs/export")
+    public ResponseEntity<?> downloadLoginLogsAsCsv(@RequestParam(name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
+                                                       @RequestParam(name = "date_to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
+        var resource = logService.downloadLoginLogsAsCsv(dateFrom, dateTo);
+        return ResponseEntity.ok().contentLength(resource.contentLength())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Disposition", "attachment; filename=\"activity_log_export-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ".csv\"")
+                .body(resource);
+    }
+
 }
