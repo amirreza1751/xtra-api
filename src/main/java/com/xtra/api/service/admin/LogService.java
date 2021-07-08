@@ -112,9 +112,9 @@ public class LogService {
         var logs = loginLogRepository.findAll(builder);
         StringWriter writer = new StringWriter();
         try (CSVPrinter printer = new CSVPrinter(writer,
-                CSVFormat.DEFAULT.withHeader("ID", "User", "Ip", "Status", "Date"))) {
+                CSVFormat.DEFAULT.withHeader("ID", "User", "Type", "Ip", "Status", "Date"))) {
             for (var log : logs) {
-                printer.printRecord(log.getId(), log.getUser().getUsername(),
+                printer.printRecord(log.getId(), log.getUser().getUsername(), log.getType(),
                         log.getIp(), log.getStatus(), log.getDate());
             }
         } catch (IOException e) {

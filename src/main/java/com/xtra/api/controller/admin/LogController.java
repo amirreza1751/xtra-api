@@ -50,8 +50,7 @@ public class LogController {
     public Page<LoginLogView> getLoginLogs(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir
-            , @RequestParam(required = false, name = "user_id") Long userId, @RequestParam(required = false, name = "ip") String ip
-            , @RequestParam(required = false, name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom
+            , @RequestParam(required = false, name = "user_id") Long userId, @RequestParam(required = false, name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom
             , @RequestParam(required = false, name = "date_to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
         return logService.getLoginLogs(pageNo, pageSize, sortBy, sortDir, new LoginLogFilter(dateFrom, dateTo, userId, search));
 
