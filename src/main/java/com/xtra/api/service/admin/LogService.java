@@ -103,7 +103,7 @@ public class LogService {
         return loginLogRepository.findAll(predicate, getSortingPageable(pageNo, pageSize, sortBy, sortDir)).map(logMapper::convertToLoginLogView);
     }
 
-    public void saveLogingLog(LoginLog loginLog) {
+    public void saveLoginLog(LoginLog loginLog) {
         loginLogRepository.save(loginLog);
     }
 
