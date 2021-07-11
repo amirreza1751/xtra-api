@@ -9,7 +9,7 @@ buildscript {
 plugins {
     id 'org.springframework.boot' version '2.3.0.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id 'com.google.cloud.tools.jib' version '3.0.0'
+    id 'com.google.cloud.tools.jib' version '3.1.1'
     id 'java'
 }
 
@@ -83,5 +83,15 @@ test {
 configurations {
     all {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+}
+
+jib{
+    from{
+        image='docker://adoptopenjdk:11-jre'
+    }
+    to {
+        image = 'registry.gitlab.com/xtrapanel/xtra-api'
+        tags = ['latest']
     }
 }
