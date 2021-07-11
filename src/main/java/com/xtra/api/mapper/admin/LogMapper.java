@@ -3,7 +3,9 @@ package com.xtra.api.mapper.admin;
 import com.xtra.api.model.line.ActivityLog;
 import com.xtra.api.model.line.Connection;
 import com.xtra.api.model.line.LoginLog;
+import com.xtra.api.model.user.CreditLog;
 import com.xtra.api.projection.admin.log.ActivityLogView;
+import com.xtra.api.projection.admin.log.CreditLogView;
 import com.xtra.api.projection.admin.log.LoginLogView;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -29,4 +31,12 @@ public abstract class LogMapper {
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.username", target = "username")
     public abstract LoginLogView convertToLoginLogView(LoginLog loginLog);
+
+    @Mapping(source = "actor.id",target = "actorId")
+    @Mapping(source = "actor.username",target = "actorUsername")
+    @Mapping(source = "actor.userType",target = "actorUserType")
+    @Mapping(source = "target.id",target = "targetId")
+    @Mapping(source = "target.username",target = "targetUsername")
+    @Mapping(source = "reason.text",target = "reason")
+    public abstract CreditLogView convertToCreditLogView(CreditLog creditLog);
 }
