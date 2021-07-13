@@ -1,8 +1,11 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.UserMapper;
+import com.xtra.api.model.line.BlockedIp;
 import com.xtra.api.model.user.User;
 import com.xtra.api.projection.admin.user.UserView;
+import com.xtra.api.repository.BlockedIpRepository;
+import com.xtra.api.repository.LoginLogRepository;
 import com.xtra.api.repository.UserRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
@@ -23,11 +26,16 @@ import java.util.stream.Collectors;
 public class UserService extends CrudService<User, Long, UserRepository> {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserMapper userMapper;
+    private final BlockedIpRepository blockedIpRepository;
+    private final LoginLogRepository loginLogRepository;
 
-    protected UserService(UserRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper) {
+
+    protected UserService(UserRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper, BlockedIpRepository blockedIpRepository, LoginLogRepository loginLogRepository) {
         super(repository, "User");
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userMapper = userMapper;
+        this.blockedIpRepository = blockedIpRepository;
+        this.loginLogRepository = loginLogRepository;
     }
 
     @Override
@@ -60,6 +68,13 @@ public class UserService extends CrudService<User, Long, UserRepository> {
         userData.put("type", dbUser.getUserType().toString());
         userData.put("permissions", auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
         return userData;
+    }
+
+    public void blockIp(Long id) {
+        var loginLog = loginLogRepository.findById(id).orElseThrow();
+        var blockedIp = blockedIpRepository.findById(loginLog.getIp())
+                .orElse(new BlockedIp(loginLog.getIp(), true));
+        blockedIpRepository.save(blockedIp);
     }
 
 }

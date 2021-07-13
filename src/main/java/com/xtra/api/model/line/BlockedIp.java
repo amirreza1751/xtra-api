@@ -16,8 +16,14 @@ public class BlockedIp {
     @Id
     private String ip;
     private LocalDateTime until;
+    private Boolean forever = false;
 
     public BlockedIp(String ip) {
         this.ip = ip;
+    }
+
+    public BlockedIp(String ip, Boolean forever) {
+        this.ip = ip;
+        this.forever = forever;
     }
 }

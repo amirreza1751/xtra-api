@@ -1,5 +1,6 @@
 package com.xtra.api.controller.admin;
 
+import com.xtra.api.projection.admin.connection.BlockIpRequest;
 import com.xtra.api.projection.admin.user.UserView;
 import com.xtra.api.service.admin.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,11 @@ public class UserController {
             return ResponseEntity.ok(userService.verifyUser(authentication));
         else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @PostMapping("/block-ip")
+    public ResponseEntity<?> blockIpAddress(@RequestParam Long id) {
+        userService.blockIp(id);
+        return ResponseEntity.ok().build();
     }
 }
