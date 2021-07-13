@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class LoginLogView {
+    private Long id;
     private String username;
     private String userId;
     private UserType type;
