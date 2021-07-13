@@ -87,4 +87,15 @@ public class LogController {
         return creditLogService.getCreditLogs(pageNo, pageSize, sortBy, sortDir, new CreditLogFilter(actorId, actorUserType, targetId, changeAmountLTE, changeAmountGTE, dateFrom, dateTo, reason, search));
     }
 
+    @GetMapping("/credit-logs/export")
+    public ResponseEntity<?> downloadCreditLogsAsCsv(
+            @RequestParam(name = "date_from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
+            @RequestParam(name = "date_to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
+        var resource = creditLogService.downloadCreditLogsAsCsv(dateFrom, dateTo);
+        return ResponseEntity.ok().contentLength(resource.contentLength())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Disposition", "attachment; filename=\"activity_log_export-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ".csv\"")
+                .body(resource);
+    }
+
 }

@@ -6,13 +6,21 @@ import com.xtra.api.projection.admin.log.CreditLogView;
 import com.xtra.api.repository.CreditLogRepository;
 import com.xtra.api.repository.filter.CreditLogFilter;
 import com.xtra.api.util.OptionalBooleanBuilder;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 @Service
+@Log4j2
 public class CreditLogService extends CrudService<CreditLog, Long, CreditLogRepository> {
 
     private final QCreditLog creditLog = QCreditLog.creditLog;
@@ -58,5 +66,23 @@ public class CreditLogService extends CrudService<CreditLog, Long, CreditLogRepo
         repository.save(log);
     }
 
+    public ByteArrayResource downloadCreditLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
+        var predicate = new OptionalBooleanBuilder(creditLog.isNotNull())
+                .notNullAnd(creditLog.date::before, dateTo)
+                .notNullAnd(creditLog.date::after, dateFrom)
+                .build();
+        var logs = repository.findAll(predicate);
+        StringWriter writer = new StringWriter();
+        try (CSVPrinter printer = new CSVPrinter(writer,
+                CSVFormat.DEFAULT.withHeader("Actor", "Actor Type", "Target", "Initial Credits", "Final Credits", "Change Amount", "Date", "Reason", "Description"))) {
+            for (var log : logs) {
+                printer.printRecord(log.getActor().getUsername(), log.getActor().getUserType(), log.getTarget().getUsername(),
+                        log.getInitialCredits(), log.getFinalCredits(), log.getChangeAmount(), log.getDate(), log.getReason(), log.getDescription());
+            }
+        } catch (IOException e) {
+            log.error("error in writing file");
+        }
+        return new ByteArrayResource(writer.toString().getBytes(StandardCharsets.UTF_8));
+    }
 
 }
