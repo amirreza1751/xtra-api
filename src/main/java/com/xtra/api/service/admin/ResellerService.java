@@ -1,18 +1,18 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.ResellerMapper;
+import com.xtra.api.model.exception.ActionNotAllowedException;
+import com.xtra.api.model.user.CreditLogReason;
 import com.xtra.api.model.user.Reseller;
 import com.xtra.api.model.user.UserType;
 import com.xtra.api.projection.admin.user.UserSimpleView;
-import com.xtra.api.projection.admin.user.reseller.ResellerCreditChangeView;
-import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
-import com.xtra.api.projection.admin.user.reseller.ResellerListView;
-import com.xtra.api.projection.admin.user.reseller.ResellerSignUpView;
-import com.xtra.api.projection.admin.user.reseller.ResellerView;
+import com.xtra.api.projection.admin.user.reseller.*;
 import com.xtra.api.projection.reseller.ResellerProfile;
+import com.xtra.api.repository.CreditLogRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.repository.RoleRepository;
+import com.xtra.api.service.CreditLogService;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.xtra.api.model.exception.ErrorCode.CREDIT_VALUE_INVALID;
 import static com.xtra.api.service.system.UserAuthService.getCurrentUser;
 import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -35,14 +36,16 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
     private final ResellerMapper resellerMapper;
     private final RoleRepository roleRepository;
     private final LineRepository lineRepository;
+    private final CreditLogService creditLogService;
 
     @Autowired
-    protected ResellerService(ResellerRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, ResellerMapper resellerMapper, RoleRepository roleRepository, LineRepository lineRepository) {
+    protected ResellerService(ResellerRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, ResellerMapper resellerMapper, RoleRepository roleRepository, LineRepository lineRepository, CreditLogRepository creditChangeRepository, CreditLogService creditLogService) {
         super(repository, "Reseller");
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.resellerMapper = resellerMapper;
         this.roleRepository = roleRepository;
         this.lineRepository = lineRepository;
+        this.creditLogService = creditLogService;
     }
 
     public Page<UserSimpleView> getSimpleList(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -91,13 +94,16 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         return resellerMapper.convertToView(insert(resellerMapper.convertToEntity(resellerInsertView)));
     }
 
-    public void updateCredits(Long id, ResellerCreditChangeView credits) {
-        if (credits.getCredits() < 0)
-            //@todo throw bad request exception
-            return;
+    public void updateCredits(Long id, ResellerCreditChangeView creditChange) {
+        if (creditChange.getCredits() < 0) {
+            throw new ActionNotAllowedException("credit change must be a positive amount", CREDIT_VALUE_INVALID);
+        }
         var existingReseller = findByIdOrFail(id);
-        existingReseller.setCredits(credits.getCredits());
-        //@todo log the credit change with reason
+        var initialCredits = existingReseller.getCredits();
+        var finalCredits = creditChange.getCredits();
+        var changeAmount = finalCredits - initialCredits;
+        existingReseller.setCredits(finalCredits);
+        creditLogService.saveCreditChangeLog(getCurrentUser(), existingReseller, initialCredits, changeAmount, CreditLogReason.ADMIN_MANUAL_CHANGE, creditChange.getDescription());
         repository.save(existingReseller);
     }
 

@@ -29,9 +29,11 @@ public class SystemLineServiceImpl extends LineService {
     private final BlockedIpRepository blockedIpRepository;
 
     @Autowired
-    public SystemLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper
-            , BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService, RoleRepository roleRepository, StreamRepository streamRepository, ServerRepository serverRepository, BlockedIpRepository blockedIpRepository) {
-        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
+    public SystemLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper,
+                                 BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService, RoleRepository roleRepository,
+                                 StreamRepository streamRepository, ServerRepository serverRepository, BlockedIpRepository blockedIpRepository,
+                                 UserRepository userRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository, userRepository);
         this.lineMapper = lineMapper;
         this.geoIpService = geoIpService;
         this.streamRepository = streamRepository;
