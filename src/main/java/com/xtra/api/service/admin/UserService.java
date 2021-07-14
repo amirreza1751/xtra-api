@@ -74,6 +74,7 @@ public class UserService extends CrudService<User, Long, UserRepository> {
         var loginLog = loginLogRepository.findById(id).orElseThrow();
         var blockedIp = blockedIpRepository.findById(loginLog.getIp())
                 .orElse(new BlockedIp(loginLog.getIp(), true));
+        blockedIp.setForever(true);
         blockedIpRepository.save(blockedIp);
     }
 
