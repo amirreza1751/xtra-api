@@ -15,6 +15,7 @@ import com.xtra.api.repository.filter.ActivityLogFilter;
 import com.xtra.api.repository.filter.ActivityLogFilterBuilder;
 import com.xtra.api.repository.filter.LoginLogFilter;
 import com.xtra.api.repository.filter.LoginLogFilterBuilder;
+import com.xtra.api.util.OptionalBooleanBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -41,6 +42,9 @@ public class LogService {
     private final ActivityLogRepository activityLogRepository;
     private final LoginLogRepository loginLogRepository;
 
+    private final QActivityLog activityLog = QActivityLog.activityLog;
+    private final QLoginLog loginLog = QLoginLog.loginLog;
+
     public LogService(LogMapper logMapper, GeoIpService geoIpService, ActivityLogRepository activityLogRepository, LoginLogRepository loginLogRepository) {
         this.logMapper = logMapper;
         this.geoIpService = geoIpService;
@@ -55,8 +59,11 @@ public class LogService {
     }
 
     public ByteArrayResource downloadActivityLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
-        BooleanBuilder builder = new BooleanBuilder(QActivityLog.activityLog.start.after(dateFrom).and(QActivityLog.activityLog.stop.before(dateTo)));
-        var logs = activityLogRepository.findAll(builder);
+        var predicate = new OptionalBooleanBuilder(activityLog.isNotNull())
+                .notNullAnd(activityLog.start::after, dateFrom)
+                .notNullAnd(activityLog.stop::before, dateTo)
+                .build();
+        var logs = activityLogRepository.findAll(predicate);
         StringWriter writer = new StringWriter();
         try (CSVPrinter printer = new CSVPrinter(writer,
                 CSVFormat.DEFAULT.withHeader("Line", "Stream", "Server", "Ip", "Player", "Country", "Start", "Stop", "Duration", "Output"))) {
@@ -108,8 +115,11 @@ public class LogService {
     }
 
     public ByteArrayResource downloadLoginLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
-        BooleanBuilder builder = new BooleanBuilder(QLoginLog.loginLog.date.after(dateFrom).and(QLoginLog.loginLog.date.before(dateTo)));
-        var logs = loginLogRepository.findAll(builder);
+        var predicate = new OptionalBooleanBuilder(loginLog.isNotNull())
+                .notNullAnd(loginLog.date::after, dateFrom)
+                .notNullAnd(loginLog.date::before, dateTo)
+                .build();
+        var logs = loginLogRepository.findAll(predicate);
         StringWriter writer = new StringWriter();
         try (CSVPrinter printer = new CSVPrinter(writer,
                 CSVFormat.DEFAULT.withHeader("ID", "User", "Type", "Ip", "Status", "Date"))) {

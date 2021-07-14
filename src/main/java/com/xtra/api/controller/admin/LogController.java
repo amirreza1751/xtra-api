@@ -44,8 +44,9 @@ public class LogController {
     }
 
     @GetMapping("/activity-logs/export")
-    public ResponseEntity<?> downloadActivityLogsAsCsv(@RequestParam(name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
-                                                       @RequestParam(name = "date_to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
+    public ResponseEntity<?> downloadActivityLogsAsCsv(
+            @RequestParam(name = "date_from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
+            @RequestParam(name = "date_to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
         var resource = logService.downloadActivityLogsAsCsv(dateFrom, dateTo);
         return ResponseEntity.ok().contentLength(resource.contentLength())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
@@ -66,8 +67,8 @@ public class LogController {
 
     @GetMapping("/login-logs/export")
     public ResponseEntity<?> downloadLoginLogsAsCsv(
-            @RequestParam(name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
-            @RequestParam(name = "date_to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
+            @RequestParam(name = "date_from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
+            @RequestParam(name = "date_to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
         var resource = logService.downloadLoginLogsAsCsv(dateFrom, dateTo);
         return ResponseEntity.ok().contentLength(resource.contentLength())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
