@@ -1,5 +1,6 @@
 package com.xtra.api.service.system;
 
+import com.xtra.api.projection.admin.catchup.CatchupRecordView;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +14,13 @@ public class CatchUpService {
 
     public void updateRecordingStatus(@Header(value = "token", required = false) String token,
                                        boolean status,
-                                      Long streamId) {
+                                      Long streamId,
+                                      CatchupRecordView catchupRecordView) {
         if (token == null) {
             System.out.println("server identity invalid");
             return;
         }
-        serverService.updateRecordingStatus(token, status, streamId);
+        serverService.updateRecordingStatus(token, status, streamId, catchupRecordView);
     }
 
 }

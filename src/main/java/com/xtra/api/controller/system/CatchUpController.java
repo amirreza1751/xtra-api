@@ -1,6 +1,7 @@
 package com.xtra.api.controller.system;
 
 import com.xtra.api.model.ChannelList;
+import com.xtra.api.projection.admin.catchup.CatchupRecordView;
 import com.xtra.api.projection.admin.channel.ChannelStart;
 import com.xtra.api.service.system.CatchUpService;
 import com.xtra.api.service.system.ServerService;
@@ -21,11 +22,11 @@ public class CatchUpController {
         this.catchUpService = catchUpService;
     }
 
-    @GetMapping("/streams/{id}/recording/{status}")
-    public ResponseEntity<Void> updateRecordingStatus(@PathVariable Long id, @PathVariable boolean status, @RequestHeader(value = "token", required = false) String token) {
+    @PostMapping("/streams/{id}/recording/{status}")
+    public ResponseEntity<Void> updateRecordingStatus(@PathVariable Long id, @PathVariable boolean status, @RequestBody CatchupRecordView catchupRecordView, @RequestHeader(value = "token", required = false) String token) {
         if (token == null)
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        catchUpService.updateRecordingStatus(token, status, id);
+        catchUpService.updateRecordingStatus(token, status, id, catchupRecordView);
         return ResponseEntity.ok().build();
     }
 
