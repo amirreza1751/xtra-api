@@ -32,4 +32,8 @@ public class ChannelView {
     private List<ChannelServerInfo> infos;
     private EpgDetails epgDetails;
     private AdvancedStreamOptions advancedStreamOptions;
+
+    private Long catchUp;
+    private int catchUpDays;
+    private Long onDemand;
 }

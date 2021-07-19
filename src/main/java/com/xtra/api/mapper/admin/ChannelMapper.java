@@ -38,6 +38,9 @@ public abstract class ChannelMapper {
 
     @AfterMapping
     void convertServerIdsAndCollectionIds(final ChannelInsertView channelView, @MappingTarget final Channel channel) {
+        if (channelView.getOnDemand() != null && channelView.getCatchUp() != null && channelView.getCatchUp().equals(channelView.getOnDemand())){
+            throw new RuntimeException("The on-demand server and catch-up server must not be the same.");
+        }
         var epgDetails = channelView.getEpgDetails();
         if (epgDetails != null && epgDetails.getEpgId() != null) {
             var epgChannel = epgChannelRepository.findByNameAndLanguageAndEpgFile_Id(epgDetails.getName(), epgDetails.getLanguage(), epgDetails.getEpgId())
@@ -50,6 +53,15 @@ public abstract class ChannelMapper {
             for (Long serverId : serverIds) {
                 var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
                 StreamServer streamServer = new StreamServer(new StreamServerId(null, serverId));
+                //insert catch-up server
+                if (channelView.getCatchUp() != null && server.getId().equals(channelView.getCatchUp())) {
+                    streamServer.setCatchUp(true);
+                    streamServer.setCatchUpDays(channelView.getCatchUpDays());
+                }
+                //insert on-demand server
+                if (channelView.getOnDemand() != null && server.getId().equals(channelView.getOnDemand())) {
+                    streamServer.setOnDemand(true);
+                }
                 streamServer.setStreamDetails(new StreamDetails("", "", "", "", "", "", "", "", StreamStatus.OFFLINE));
                 streamServer.setServer(server);
                 streamServer.setStream(channel);
@@ -79,6 +91,23 @@ public abstract class ChannelMapper {
     @Mapping(source = "collectionAssigns", target = "collections")
     @Mapping(source = "epgChannel", target = "epgDetails")
     public abstract ChannelView convertToView(Channel channel);
+
+    @AfterMapping
+    void convertCatchupDetails(final Channel channel, @MappingTarget final ChannelView channelView){
+        var catchUp = channel.getStreamServers().stream().filter(StreamServer::isCatchUp).findFirst();
+        if (catchUp.isPresent()){
+            channelView.setCatchUp(catchUp.get().getServer().getId());
+            channelView.setCatchUpDays(catchUp.get().getCatchUpDays());
+        }
+    }
+
+    @AfterMapping
+    void convertOnDemandDetails(final Channel channel, @MappingTarget final ChannelView channelView){
+        var onDemand = channel.getStreamServers().stream().filter(StreamServer::isOnDemand).findFirst();
+        if (onDemand.isPresent()){
+            channelView.setOnDemand(onDemand.get().getServer().getId());
+        }
+    }
 
     public EpgDetails map(EpgChannel epgChannel) {
         if (epgChannel == null)
