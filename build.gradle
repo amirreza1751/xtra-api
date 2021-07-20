@@ -91,7 +91,7 @@ jib{
         image='docker://adoptopenjdk:11-jre'
     }
     to {
-        image = 'xtra/xtra-api'
+        image = 'registry.gitlab.com/xtrapanel/xtra-api'
         tags = ['latest']
     }
 }
