@@ -36,4 +36,8 @@ public class ChannelInsertView {
     private Set<Long> collections;
     private EpgDetails epgDetails;
     private AdvancedStreamOptions advancedStreamOptions;
+
+    private Long catchUp;
+    private int catchUpDays;
+    private Long onDemand;
 }

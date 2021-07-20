@@ -1,13 +1,15 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.projection.admin.line.*;
+import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.service.admin.AdminLineServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
@@ -28,6 +30,11 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineView> getLine(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.getById(id));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<UserSimpleView>> getLineList(@RequestParam String search) {
+        return ResponseEntity.ok(lineService.getLineList(search));
     }
 
     @PostMapping("")

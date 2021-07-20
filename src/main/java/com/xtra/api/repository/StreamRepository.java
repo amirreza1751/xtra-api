@@ -3,12 +3,11 @@ package com.xtra.api.repository;
 import com.xtra.api.model.stream.Stream;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
-public interface StreamRepository<T extends Stream> extends JpaRepository<T, Long> {
-    Optional<T> findByStreamToken(String streamToken);
+public interface StreamRepository extends JpaRepository<Stream, Long> {
+    List<Stream> findAllByNameContains(String name);
 
-    boolean existsByStreamToken(String streamToken);
-
-    boolean existsByName(String name);
+    Optional<Stream> findByStreamToken(String token);
 }

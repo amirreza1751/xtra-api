@@ -7,17 +7,16 @@ import com.xtra.api.model.server.File;
 import com.xtra.api.model.server.Resource;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.StreamServer;
-import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.model.vod.Movie;
 import com.xtra.api.model.vod.Video;
 import com.xtra.api.model.vod.VideoInfo;
+import com.xtra.api.projection.EntityListItem;
 import com.xtra.api.projection.admin.catchup.CatchupRecordView;
 import com.xtra.api.projection.admin.channel.ChannelStart;
+import com.xtra.api.projection.admin.server.ServerInfo;
 import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.server.ServerView;
-import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
-import com.xtra.api.projection.admin.videoInfo.VideoInfoView;
 import com.xtra.api.projection.system.CoreConfiguration;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.ServerRepository;
@@ -50,6 +49,7 @@ import reactor.netty.tcp.TcpClient;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -267,8 +267,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
 
-
-    public Page<SimpleServerView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+    public Page<ServerInfo> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         return findAll(search, pageNo, pageSize, sortBy, sortDir).map(serverMapper::convertToSimpleView);
     }
 
@@ -328,4 +327,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
 
+    public List<EntityListItem> getServerList(String search) {
+        return repository.findAllByNameContains(search).stream().map(serverMapper::convertToEntityListItem).collect(Collectors.toList());
+    }
 }

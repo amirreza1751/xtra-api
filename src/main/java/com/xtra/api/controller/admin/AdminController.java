@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admins")
 public class AdminController {
@@ -28,9 +30,8 @@ public class AdminController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Page<UserSimpleView>> getAdminsSimpleList(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                                                    @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(adminService.findAll(search, pageNo, pageSize, sortBy, sortDir).map(adminMapper::convertToSimpleView));
+    public ResponseEntity<List<UserSimpleView>> getAdminsSimpleList(@RequestParam(required = false) String search) {
+        return ResponseEntity.ok(adminService.getAdminList(search));
     }
 
     @GetMapping("/{id}")

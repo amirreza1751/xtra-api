@@ -1,14 +1,15 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.download_list.DownloadList;
 import com.xtra.api.model.download_list.DownloadListCollection;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.user.Reseller;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
 import com.xtra.api.projection.admin.line.LineInsertView;
 import com.xtra.api.projection.admin.line.LineListView;
 import com.xtra.api.projection.admin.line.LineView;
+import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.service.admin.UserService;
@@ -88,4 +89,6 @@ public abstract class AdminLineMapper {
     long getConnectionsCount(Long lineId) {
         return connectionRepository.countAllByLineId(lineId);
     }
+
+    public abstract UserSimpleView convertToUserSimpleView(Line line);
 }

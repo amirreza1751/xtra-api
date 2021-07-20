@@ -9,6 +9,7 @@ import com.xtra.api.projection.line.line.LineView;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.RoleRepository;
+import com.xtra.api.repository.UserRepository;
 import com.xtra.api.service.DownloadListService;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,9 @@ public class LineLineServiceImpl extends LineService {
 
     @Autowired
     protected LineLineServiceImpl(LineRepository repository, LineLineMapper lineMapper, ConnectionRepository connectionRepository
-            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, DownloadListService downloadListService, DownloadListMapper downloadListMapper) {
-        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, DownloadListService downloadListService
+            , DownloadListMapper downloadListMapper, UserRepository userRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository, userRepository);
         this.lineMapper = lineMapper;
         this.downloadListService = downloadListService;
         this.downloadListMapper = downloadListMapper;

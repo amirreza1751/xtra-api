@@ -3,15 +3,15 @@ package com.xtra.api.service.reseller;
 import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.model.exception.ActionNotAllowedException;
 import com.xtra.api.model.exception.EntityNotFoundException;
-import com.xtra.api.model.user.CreditChangeLog;
+import com.xtra.api.model.user.CreditLogReason;
 import com.xtra.api.model.user.Reseller;
 import com.xtra.api.projection.reseller.subreseller.CreditChangeRequest;
 import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
 import com.xtra.api.projection.reseller.subreseller.SubresellerSimplified;
 import com.xtra.api.projection.reseller.subreseller.SubresellerView;
-import com.xtra.api.repository.CreditChangeLogRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ResellerRepository;
+import com.xtra.api.service.CreditLogService;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +19,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import static com.xtra.api.model.exception.ErrorCode.CREDIT_VALUE_INVALID;
 import static com.xtra.api.model.exception.ErrorCode.RESELLER_CREDIT_LOW;
-import static com.xtra.api.model.exception.ErrorCode.SUBRESELLER_CREDIT_INVALID;
 import static com.xtra.api.service.system.UserAuthService.getCurrentUser;
 
 @Service
@@ -31,14 +30,14 @@ import static com.xtra.api.service.system.UserAuthService.getCurrentUser;
 public class SubresellerService extends CrudService<Reseller, Long, ResellerRepository> {
     private final ResellerMapper resellerMapper;
     private final LineRepository lineRepository;
-    private final CreditChangeLogRepository creditChangeRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final CreditLogService creditLogService;
 
-    protected SubresellerService(ResellerRepository repository, ResellerMapper resellerMapper, LineRepository lineRepository, CreditChangeLogRepository creditChangeRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    protected SubresellerService(ResellerRepository repository, ResellerMapper resellerMapper, LineRepository lineRepository, BCryptPasswordEncoder bCryptPasswordEncoder, CreditLogService creditLogService) {
         super(repository, "Reseller");
         this.resellerMapper = resellerMapper;
         this.lineRepository = lineRepository;
-        this.creditChangeRepository = creditChangeRepository;
+        this.creditLogService = creditLogService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
@@ -65,10 +64,14 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         subreseller.setOwner(currentReseller);
         subreseller.setPassword(bCryptPasswordEncoder.encode(subreseller.getPassword()));
         subreseller.setRole(currentReseller.getRole());
-        var currentCredits = currentReseller.getCredits();
-        currentReseller.setCredits(currentCredits - view.getCredits());
+        var creditChange = view.getCredits();
+        var actorInitialCredits = currentReseller.getCredits();
+        currentReseller.setCredits(actorInitialCredits - creditChange);
         var res = repository.save(subreseller);
         repository.save(currentReseller);
+
+        creditLogService.saveCreditChangeLog(getCurrentUser(), subreseller, 0, creditChange, CreditLogReason.RESELLER_SUBRESELLER_CREATION, "");
+        creditLogService.saveCreditChangeLog(getCurrentUser(), getCurrentReseller(), actorInitialCredits, -creditChange, CreditLogReason.RESELLER_SUBRESELLER_CREATION, "");
         return resellerMapper.convertToSubresellerView(res);
     }
 
@@ -85,23 +88,20 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
     public void changeCredits(Long id, CreditChangeRequest creditChangeRequest) {
         var targetReseller = findByIdOrFail(id);
         var currentReseller = getCurrentReseller();
-        CreditChangeLog creditChangeLog = new CreditChangeLog();
+        var actorInitialCredits = currentReseller.getCredits();
+        var targetInitialCredits = targetReseller.getCredits();
+        var creditChange = creditChangeRequest.getCredits() - targetInitialCredits;
 
-        var creditChange = creditChangeRequest.getCredits() - targetReseller.getCredits();
         if (creditChange <= 0)
-            throw new ActionNotAllowedException("credit change must be a positive amount", SUBRESELLER_CREDIT_INVALID);
+            throw new ActionNotAllowedException("credit change must be a positive amount", CREDIT_VALUE_INVALID);
         if (creditChange > currentReseller.getCredits())
             throw new ActionNotAllowedException("credit amount is less than current credit balance", RESELLER_CREDIT_LOW);
         targetReseller.setCredits(targetReseller.getCredits() + creditChange);
         currentReseller.setCredits(currentReseller.getCredits() - creditChange);
         repository.saveAll(Arrays.asList(targetReseller, currentReseller));
 
-        creditChangeLog.setTarget(targetReseller);
-        creditChangeLog.setActor(getCurrentUser());
-        creditChangeLog.setChangeAmount(creditChange);
-        creditChangeLog.setDate(LocalDateTime.now());
-        creditChangeLog.setDescription(creditChangeRequest.getDescription());
-        creditChangeRepository.save(creditChangeLog);
+        creditLogService.saveCreditChangeLog(getCurrentUser(), targetReseller, targetInitialCredits, creditChange, CreditLogReason.RESELLER_CREDIT_TRANSFER, creditChangeRequest.getDescription());
+        creditLogService.saveCreditChangeLog(getCurrentUser(), getCurrentReseller(), actorInitialCredits, -creditChange, CreditLogReason.RESELLER_CREDIT_TRANSFER, creditChangeRequest.getDescription());
     }
 
 
