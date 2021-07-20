@@ -112,4 +112,15 @@ public class LogController {
         return logService.getResellerLogs(pageNo, pageSize, sortBy, sortDir, new ResellerLogFilter(dateFrom, dateTo, resellerId, action, search));
     }
 
+    @GetMapping("/reseller-logs/export")
+    public ResponseEntity<?> downloadResellerLogsAsCsv(
+            @RequestParam(name = "date_from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
+            @RequestParam(name = "date_to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
+        var resource = logService.downloadResellerLogsAsCsv(dateFrom, dateTo);
+        return ResponseEntity.ok().contentLength(resource.contentLength())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Disposition", "attachment; filename=\"reseller_log_export-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ".csv\"")
+                .body(resource);
+    }
+
 }

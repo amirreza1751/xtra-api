@@ -11,8 +11,8 @@ public class ResellerLogView {
     private Long resellerId;
     private String resellerUsername;
     private String action;
-    private Long lineId;
-    private String lineUsername;
+    private Long userId;
+    private String userUsername;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime date;
 }

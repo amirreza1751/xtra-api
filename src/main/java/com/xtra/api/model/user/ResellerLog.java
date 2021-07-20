@@ -4,6 +4,7 @@ import com.xtra.api.model.line.Line;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -19,7 +20,7 @@ public class ResellerLog {
     private Reseller reseller;
 
     @OneToOne
-    private Line line;
+    private User user;
 
     @OneToOne
     private CreditLog creditLog;
@@ -28,10 +29,17 @@ public class ResellerLog {
 
     private ResellerLogAction action;
 
-    public ResellerLog(Line line, Reseller reseller, CreditLog creditLog, LocalDateTime date, ResellerLogAction action) {
-        this.line = line;
+    public ResellerLog(Reseller reseller,User user, CreditLog creditLog, LocalDateTime date, ResellerLogAction action) {
+        this.user = user;
         this.reseller = reseller;
         this.creditLog = creditLog;
+        this.action = action;
+        this.date = date;
+    }
+
+    public ResellerLog(Reseller reseller,User user, LocalDateTime date, ResellerLogAction action) {
+        this.user = user;
+        this.reseller = reseller;
         this.action = action;
         this.date = date;
     }

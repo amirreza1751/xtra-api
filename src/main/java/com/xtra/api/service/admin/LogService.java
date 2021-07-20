@@ -144,4 +144,23 @@ public class LogService {
         resellerLogRepository.save(resellerLog);
     }
 
+    public ByteArrayResource downloadResellerLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
+        var predicate = new OptionalBooleanBuilder(loginLog.isNotNull())
+                .notNullAnd(loginLog.date::after, dateFrom)
+                .notNullAnd(loginLog.date::before, dateTo)
+                .build();
+        var logs = resellerLogRepository.findAll(predicate);
+        StringWriter writer = new StringWriter();
+        try (CSVPrinter printer = new CSVPrinter(writer,
+                CSVFormat.DEFAULT.withHeader("ID", "Reseller", "User/Subreseller", "Action", "Date"))) {
+            for (var log : logs) {
+                printer.printRecord(log.getId(), log.getReseller().getUsername(), log.getUser().getUsername(),
+                        log.getAction(), log.getDate());
+            }
+        } catch (IOException e) {
+            log.error("error in writing file");
+        }
+        return new ByteArrayResource(writer.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
 }
