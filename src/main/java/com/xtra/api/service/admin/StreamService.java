@@ -2,61 +2,41 @@ package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.exception.EntityNotFoundException;
-import com.xtra.api.model.server.Server;
-import com.xtra.api.model.stream.*;
+import com.xtra.api.model.stream.Stream;
+import com.xtra.api.model.stream.StreamDetails;
+import com.xtra.api.model.stream.StreamStatus;
+import com.xtra.api.projection.admin.StreamSimpleView;
 import com.xtra.api.projection.system.StreamDetailsView;
 import com.xtra.api.repository.StreamRepository;
-import com.xtra.api.repository.StreamServerRepository;
 import com.xtra.api.service.CrudService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
-public abstract class StreamService<S extends Stream, R extends StreamRepository<S>> extends CrudService<S, Long, R> {
-    private final ServerService serverService;
+@Service
+public class StreamService extends CrudService<Stream, Long, StreamRepository> {
     private final StreamMapper streamMapper;
-    private final StreamServerRepository streamServerRepository;
+    private final ServerService serverService;
 
-    protected StreamService(R repository, String className, ServerService serverService, StreamMapper streamMapper, StreamServerRepository streamServerRepository) {
-        super(repository, className);
-        this.serverService = serverService;
+    protected StreamService(StreamRepository repository, StreamMapper streamMapper, ServerService serverService) {
+        super(repository, "Stream");
         this.streamMapper = streamMapper;
-        this.streamServerRepository = streamServerRepository;
+        this.serverService = serverService;
     }
 
-    public S findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+    @Override
+    protected Page<Stream> findWithSearch(String search, Pageable page) {
+        return null;
     }
 
-    public Stream findByTokenOrFail(String token) {
-        return repository.findByStreamToken(token).orElseThrow(() -> new EntityNotFoundException("Stream", token));
-    }
-
-    public Long findIdByToken(String token) {
-        return findByTokenOrFail(token).getId();
-    }
-
-
-    public void stopStreamOnServers(Long id, List<Long> serverIds) {
-        var channel = findByIdOrFail(id);
-        for (StreamServer streamServer : channel.getStreamServers()) {
-            if (serverIds == null || serverIds.contains(streamServer.getServer().getId())) {
-                serverService.sendStopRequest(id, streamServer.getServer());
-                streamServer.setStreamDetails(new StreamDetails());
-                streamServerRepository.save(streamServer);
-            }
-        }
-    }
-
-    protected List<Server> getServersForStream(Stream stream, Set<Long> serverIds) {
-        if (serverIds == null || serverIds.size() == 0)
-            return stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
-        return stream.getStreamServers().stream().map(StreamServer::getServer)
-                .filter(server -> serverIds.contains(server.getId())).collect(Collectors.toList());
+    public Stream findById(Long id) {
+        return repository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional
@@ -74,5 +54,9 @@ public abstract class StreamService<S extends Stream, R extends StreamRepository
                 serverService.saveStreamServer(streamServer);
             }
         });
+    }
+
+    public List<StreamSimpleView> getStreamList(String name) {
+        return repository.findAllByNameContains(name).stream().map(streamMapper::convertToSimpleView).collect(Collectors.toList());
     }
 }

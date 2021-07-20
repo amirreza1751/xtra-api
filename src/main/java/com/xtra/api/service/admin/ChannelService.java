@@ -1,10 +1,10 @@
 package com.xtra.api.service.admin;
 
+import com.xtra.api.mapper.admin.ChannelMapper;
+import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.collection.CollectionStream;
 import com.xtra.api.model.collection.CollectionStreamId;
 import com.xtra.api.model.exception.EntityNotFoundException;
-import com.xtra.api.mapper.admin.ChannelMapper;
-import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.*;
 import com.xtra.api.projection.admin.StreamInputPair;
@@ -28,7 +28,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 @Validated
-public class ChannelService extends StreamService<Channel, ChannelRepository> {
+public class ChannelService extends StreamBaseService<Channel, ChannelRepository> {
     private final ServerService serverService;
     private final LoadBalancingService loadBalancingService;
     private final ChannelMapper channelMapper;

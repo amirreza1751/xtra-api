@@ -6,12 +6,10 @@ import com.xtra.api.model.collection.Collection;
 import com.xtra.api.model.collection.CollectionStream;
 import com.xtra.api.model.collection.CollectionStreamId;
 import com.xtra.api.model.collection.CollectionVod;
-import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.vod.Vod;
 import com.xtra.api.projection.admin.collection.CollectionInsertView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
-import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.repository.VodRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +28,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @Validated
 public class CollectionService extends CrudService<Collection, Long, CollectionRepository> {
     private final CollectionMapper mapper;
-    private final StreamService<Stream, StreamRepository<Stream>> streamService;
+    private final StreamService streamService;
     private final VodService<Vod, VodRepository> vodService;
     private final CollectionStreamRepository csRepository;
 

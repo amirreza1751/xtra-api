@@ -1,22 +1,27 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.stream.Stream;
-import com.xtra.api.repository.StreamRepository;
+import com.xtra.api.projection.admin.StreamSimpleView;
 import com.xtra.api.service.admin.StreamService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 
+@RestController
+@RequestMapping("streams")
 public class StreamController {
-    StreamService<Stream, StreamRepository<Stream>> streamService;
+    private final StreamService streamService;
 
-    public StreamController(StreamService<Stream,StreamRepository<Stream>> streamService) {
+    public StreamController(StreamService streamService) {
         this.streamService = streamService;
     }
 
-    @GetMapping("/get_id/{stream_token}")
-    public ResponseEntity<Long> getStreamIdByToken(@PathVariable("stream_token") String streamToken) {
-        return ResponseEntity.ok(streamService.findIdByToken(streamToken));
+    @GetMapping("/list")
+    public ResponseEntity<List<StreamSimpleView>> getStreamList(@RequestParam String search) {
+        return ResponseEntity.ok(streamService.getStreamList(search));
     }
 
 }

@@ -1,12 +1,11 @@
 package com.xtra.api.service.system;
 
 import com.maxmind.geoip2.model.CityResponse;
-import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.AdminLineMapper;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.line.Connection;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.line.LineStatus;
-import com.xtra.api.model.stream.Stream;
 import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.projection.system.LineAuth;
 import com.xtra.api.repository.*;
@@ -24,7 +23,7 @@ import java.util.Optional;
 public class SystemLineServiceImpl extends LineService {
     private final AdminLineMapper lineMapper;
     private final GeoIpService geoIpService;
-    private final StreamRepository<Stream> streamRepository;
+    private final StreamRepository streamRepository;
     private final ServerRepository serverRepository;
     private final BlockedIpRepository blockedIpRepository;
 
