@@ -12,4 +12,6 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
     Optional<Server> findByToken(String token);
 
     List<Server> findByIdIn(List<Long> ids);
+
+    List<Server> findAllByNameContains(String name);
 }

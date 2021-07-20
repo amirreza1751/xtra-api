@@ -4,7 +4,7 @@ import com.xtra.api.projection.admin.server.resource.ResourceView;
 import lombok.Data;
 
 @Data
-public class SimpleServerView {
+public class ServerInfo {
     private Long id;
     private String name;
     private String domainName;
