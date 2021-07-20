@@ -5,7 +5,7 @@ import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.stream.StreamDetails;
 import com.xtra.api.model.stream.StreamStatus;
-import com.xtra.api.projection.admin.StreamSimpleView;
+import com.xtra.api.projection.EntityListItem;
 import com.xtra.api.projection.system.StreamDetailsView;
 import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.service.CrudService;
@@ -56,7 +56,7 @@ public class StreamService extends CrudService<Stream, Long, StreamRepository> {
         });
     }
 
-    public List<StreamSimpleView> getStreamList(String name) {
-        return repository.findAllByNameContains(name).stream().map(streamMapper::convertToSimpleView).collect(Collectors.toList());
+    public List<EntityListItem> getStreamList(String name) {
+        return repository.findAllByNameContains(name).stream().map(streamMapper::convertToEntityListItem).collect(Collectors.toList());
     }
 }

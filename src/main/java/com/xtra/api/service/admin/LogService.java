@@ -1,6 +1,5 @@
 package com.xtra.api.service.admin;
 
-import com.querydsl.core.BooleanBuilder;
 import com.xtra.api.mapper.admin.LogMapper;
 import com.xtra.api.model.line.Connection;
 import com.xtra.api.model.line.LoginLog;

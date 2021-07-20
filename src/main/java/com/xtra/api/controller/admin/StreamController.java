@@ -1,6 +1,6 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.projection.admin.StreamSimpleView;
+import com.xtra.api.projection.EntityListItem;
 import com.xtra.api.service.admin.StreamService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,7 @@ public class StreamController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<StreamSimpleView>> getStreamList(@RequestParam String search) {
+    public ResponseEntity<List<EntityListItem>> getStreamList(@RequestParam String search) {
         return ResponseEntity.ok(streamService.getStreamList(search));
     }
 

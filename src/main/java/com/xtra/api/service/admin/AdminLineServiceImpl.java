@@ -1,9 +1,10 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.AdminLineMapper;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.projection.admin.line.*;
+import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.RoleRepository;
@@ -17,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -122,5 +125,9 @@ public class AdminLineServiceImpl extends LineService {
 
     public ResponseEntity<String> downloadLinePlaylist(Long lineId) {
         return downloadLinePlaylist(findByIdOrFail(lineId));
+    }
+
+    public List<UserSimpleView> getLineList(String search) {
+        return repository.findByLineToken(search).stream().map(lineMapper::convertToUserSimpleView).collect(Collectors.toList());
     }
 }
