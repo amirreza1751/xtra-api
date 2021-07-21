@@ -15,6 +15,7 @@ import com.xtra.api.service.CreditLogService;
 import com.xtra.api.service.admin.LogService;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -121,6 +122,14 @@ public class LogController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header("Content-Disposition", "attachment; filename=\"reseller_log_export-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ".csv\"")
                 .body(resource);
+    }
+
+    @GetMapping("/reseller-logs/clear")
+    public ResponseEntity<?> clearResellerLogs(
+            @RequestParam(name = "date_from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
+            @RequestParam(name = "date_to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
+        logService.clearResellerLogs(dateFrom, dateTo);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

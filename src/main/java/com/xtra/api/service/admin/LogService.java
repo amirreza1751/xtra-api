@@ -6,6 +6,7 @@ import com.xtra.api.model.line.LoginLog;
 import com.xtra.api.model.line.QActivityLog;
 import com.xtra.api.model.line.QLoginLog;
 import com.xtra.api.model.stream.StreamProtocol;
+import com.xtra.api.model.user.QResellerLog;
 import com.xtra.api.model.user.ResellerLog;
 import com.xtra.api.projection.admin.log.ActivityLogView;
 import com.xtra.api.projection.admin.log.LoginLogView;
@@ -44,6 +45,7 @@ public class LogService {
 
     private final QActivityLog activityLog = QActivityLog.activityLog;
     private final QLoginLog loginLog = QLoginLog.loginLog;
+    private final QResellerLog resellerLog = QResellerLog.resellerLog;
 
     public LogService(LogMapper logMapper, GeoIpService geoIpService, ActivityLogRepository activityLogRepository, LoginLogRepository loginLogRepository, ResellerLogRepository resellerLogRepository) {
         this.logMapper = logMapper;
@@ -145,9 +147,9 @@ public class LogService {
     }
 
     public ByteArrayResource downloadResellerLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
-        var predicate = new OptionalBooleanBuilder(loginLog.isNotNull())
-                .notNullAnd(loginLog.date::after, dateFrom)
-                .notNullAnd(loginLog.date::before, dateTo)
+        var predicate = new OptionalBooleanBuilder(resellerLog.isNotNull())
+                .notNullAnd(resellerLog.date::after, dateFrom)
+                .notNullAnd(resellerLog.date::before, dateTo)
                 .build();
         var logs = resellerLogRepository.findAll(predicate);
         StringWriter writer = new StringWriter();
@@ -161,6 +163,15 @@ public class LogService {
             log.error("error in writing file");
         }
         return new ByteArrayResource(writer.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void clearResellerLogs(LocalDateTime dateFrom, LocalDateTime dateTo) {
+        var predicate = new OptionalBooleanBuilder(resellerLog.isNotNull())
+                .notNullAnd(resellerLog.date::after, dateFrom)
+                .notNullAnd(resellerLog.date::before, dateTo)
+                .build();
+        var logs = resellerLogRepository.findAll(predicate);
+        resellerLogRepository.deleteAll(logs);
     }
 
 }
