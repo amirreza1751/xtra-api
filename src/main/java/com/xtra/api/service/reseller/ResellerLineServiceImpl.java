@@ -97,6 +97,7 @@ public class ResellerLineServiceImpl extends LineService {
             resellerRepository.save(owner);
             CreditLog log = new CreditLog(owner, owner, initialCredit, owner.getCredits(), -1 * packageCredits, LocalDateTime.now()
                     , CreditLogReason.RESELLER_LINE_CREATE_EXTEND, "");
+            logService.saveResellerLog(new ResellerLog(owner, line, log, LocalDateTime.now(), ResellerLogAction.EXTEND_LINE));
 
             return lineMapper.convertToView(repository.save(line));
         }
@@ -110,18 +111,24 @@ public class ResellerLineServiceImpl extends LineService {
         if (!repository.existsByOwnerAndId(owner, id))
             entityNotFoundException("id", id);
         repository.deleteLineByOwnerAndId(owner, id);
+
+        logService.saveResellerLog(new ResellerLog(owner, findByIdOrFail(id), LocalDateTime.now(), ResellerLogAction.DELETE_LINE));
     }
 
     public void updateLineBlock(Long id, boolean blocked) {
         Line line = findLineByOwnerAndIdOrFail(getCurrentReseller(), id);
         line.setBlocked(blocked);
         repository.save(line);
+
+        logService.saveResellerLog(new ResellerLog(getCurrentReseller(), line, LocalDateTime.now(), ResellerLogAction.BLOCK_LINE));
     }
 
     public void updateLineBan(Long id, boolean banned) {
         Line line = findLineByOwnerAndIdOrFail(getCurrentReseller(), id);
         line.setBanned(banned);
         repository.save(line);
+
+        logService.saveResellerLog(new ResellerLog(getCurrentReseller(), line, LocalDateTime.now(), ResellerLogAction.BAN_LINE));
     }
 
     private Line findLineByOwnerAndIdOrFail(Reseller owner, Long id) {
