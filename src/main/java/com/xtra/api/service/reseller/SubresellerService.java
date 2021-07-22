@@ -3,8 +3,7 @@ package com.xtra.api.service.reseller;
 import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.model.exception.ActionNotAllowedException;
 import com.xtra.api.model.exception.EntityNotFoundException;
-import com.xtra.api.model.user.CreditLogReason;
-import com.xtra.api.model.user.Reseller;
+import com.xtra.api.model.user.*;
 import com.xtra.api.projection.reseller.subreseller.CreditChangeRequest;
 import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
 import com.xtra.api.projection.reseller.subreseller.SubresellerSimplified;
@@ -13,12 +12,14 @@ import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ResellerRepository;
 import com.xtra.api.service.CreditLogService;
 import com.xtra.api.service.CrudService;
+import com.xtra.api.service.admin.LogService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static com.xtra.api.model.exception.ErrorCode.CREDIT_VALUE_INVALID;
@@ -32,13 +33,16 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
     private final LineRepository lineRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final CreditLogService creditLogService;
+    private final LogService logService;
 
-    protected SubresellerService(ResellerRepository repository, ResellerMapper resellerMapper, LineRepository lineRepository, BCryptPasswordEncoder bCryptPasswordEncoder, CreditLogService creditLogService) {
+
+    protected SubresellerService(ResellerRepository repository, ResellerMapper resellerMapper, LineRepository lineRepository, BCryptPasswordEncoder bCryptPasswordEncoder, CreditLogService creditLogService, LogService logService) {
         super(repository, "Reseller");
         this.resellerMapper = resellerMapper;
         this.lineRepository = lineRepository;
         this.creditLogService = creditLogService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.logService = logService;
     }
 
     @Override
@@ -70,8 +74,9 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         var res = repository.save(subreseller);
         repository.save(currentReseller);
 
-        creditLogService.saveCreditChangeLog(getCurrentUser(), subreseller, 0, creditChange, CreditLogReason.RESELLER_SUBRESELLER_CREATION, "");
+        CreditLog log = creditLogService.saveCreditChangeLog(getCurrentUser(), subreseller, 0, creditChange, CreditLogReason.RESELLER_SUBRESELLER_CREATION, "");
         creditLogService.saveCreditChangeLog(getCurrentUser(), getCurrentReseller(), actorInitialCredits, -creditChange, CreditLogReason.RESELLER_SUBRESELLER_CREATION, "");
+        logService.saveResellerLog(new ResellerLog(currentReseller, subreseller, log, LocalDateTime.now(), ResellerLogAction.NEW_SUBRESELLER));
         return resellerMapper.convertToSubresellerView(res);
     }
 
@@ -100,8 +105,10 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         currentReseller.setCredits(currentReseller.getCredits() - creditChange);
         repository.saveAll(Arrays.asList(targetReseller, currentReseller));
 
-        creditLogService.saveCreditChangeLog(getCurrentUser(), targetReseller, targetInitialCredits, creditChange, CreditLogReason.RESELLER_CREDIT_TRANSFER, creditChangeRequest.getDescription());
+        CreditLog log = creditLogService.saveCreditChangeLog(getCurrentUser(), targetReseller, targetInitialCredits, creditChange, CreditLogReason.RESELLER_CREDIT_TRANSFER, creditChangeRequest.getDescription());
         creditLogService.saveCreditChangeLog(getCurrentUser(), getCurrentReseller(), actorInitialCredits, -creditChange, CreditLogReason.RESELLER_CREDIT_TRANSFER, creditChangeRequest.getDescription());
+
+        logService.saveResellerLog(new ResellerLog(currentReseller, targetReseller, log, LocalDateTime.now(), ResellerLogAction.CREDIT_CHANGE_SUBRESELLER));
     }
 
 
@@ -111,6 +118,8 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
             repository.deleteByIdAndOwner(id, currentReseller);
         } else
             throw new EntityNotFoundException("Reseller", id.toString());
+
+        logService.saveResellerLog(new ResellerLog(currentReseller, findByIdOrFail(id), LocalDateTime.now(), ResellerLogAction.DELETE_SUBRESELLER));
     }
 
     public void enableResellerLines(Long subresellerId) {

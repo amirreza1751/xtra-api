@@ -59,11 +59,13 @@ public class CreditLogService extends CrudService<CreditLog, Long, CreditLogRepo
         return null;
     }
 
-    public void saveCreditChangeLog(User actor, Reseller target, int initialCredits, int changeAmount, CreditLogReason reason, String description) {
+    public CreditLog saveCreditChangeLog(User actor, Reseller target, int initialCredits, int changeAmount, CreditLogReason reason, String description) {
         var finalCredits = initialCredits + changeAmount;
         CreditLog log = new CreditLog(actor, target, initialCredits, finalCredits, changeAmount, LocalDateTime.now()
                 , reason, description);
         repository.save(log);
+
+        return log;
     }
 
     public ByteArrayResource downloadCreditLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
