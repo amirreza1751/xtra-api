@@ -21,7 +21,7 @@ public class TeleRecord {
     private ZonedDateTime stop;
     private Duration duration;
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Video video;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

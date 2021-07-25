@@ -23,7 +23,7 @@ public class SystemLineController {
 
     @PostMapping("/vod_auth")
     public LineStatus authorizeLineForVod(@RequestBody LineAuth lineAuth) {
-        return lineService.canLinePlayStream(lineAuth);
+        return lineService.canLinePlayVod(lineAuth);
     }
 
     @GetMapping("/get_id/{line_token}")

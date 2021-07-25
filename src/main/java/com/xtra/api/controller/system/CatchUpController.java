@@ -1,10 +1,7 @@
 package com.xtra.api.controller.system;
 
-import com.xtra.api.model.ChannelList;
 import com.xtra.api.projection.admin.catchup.CatchupRecordView;
-import com.xtra.api.projection.admin.channel.ChannelStart;
 import com.xtra.api.service.system.CatchUpService;
-import com.xtra.api.service.system.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
