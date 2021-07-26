@@ -1,9 +1,6 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.projection.admin.catchup.TeleRecordListView;
-import com.xtra.api.projection.admin.connection.BlockIpRequest;
-import com.xtra.api.projection.admin.connection.ConnectionView;
-import com.xtra.api.service.admin.ConnectionService;
 import com.xtra.api.service.admin.TeleRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,15 +14,15 @@ public class TeleRecordController {
     private final TeleRecordService teleRecordService;
 
     @Autowired
-    public TeleRecordController(ConnectionService connectionService, TeleRecordService teleRecordService) {
-
+    public TeleRecordController(TeleRecordService teleRecordService) {
         this.teleRecordService = teleRecordService;
     }
 
     @GetMapping("/channels/{id}/tele-records")
-    public ResponseEntity<Page<TeleRecordListView>> getAll(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
-            , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(teleRecordService.getAll(search, pageNo, pageSize, sortBy, sortDir));
+    public ResponseEntity<Page<TeleRecordListView>> getAll(@PathVariable Long id,
+                                                           @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                                           @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+        return ResponseEntity.ok(teleRecordService.findAllByChannel(id, pageNo, pageSize, sortBy, sortDir));
     }
 
     @DeleteMapping("/tele-records/{id}")
