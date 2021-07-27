@@ -41,8 +41,8 @@ public class LineController {
         return ResponseEntity.ok(lineService.updateLine(id, updateView));
     }
 
-    @PatchMapping("/{id}/extend")
-    public ResponseEntity<LineView> extendResellerLine(@PathVariable Long id, @RequestBody Long packageId) {
+    @GetMapping("/{id}/extend")
+    public ResponseEntity<LineView> extendResellerLine(@PathVariable Long id, @RequestParam Long packageId) {
         return ResponseEntity.ok(lineService.extendLine(id, packageId));
     }
 
