@@ -1,14 +1,13 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.projection.admin.connection.BlockIpRequest;
 import com.xtra.api.projection.admin.user.UserView;
 import com.xtra.api.service.admin.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,9 +33,9 @@ public class UserController {
 
     //auth
     @GetMapping("/verify")
-    public ResponseEntity<?> verifyUserByToken(@AuthenticationPrincipal Authentication authentication) {
-        if (authentication != null)
-            return ResponseEntity.ok(userService.verifyUser(authentication));
+    public ResponseEntity<?> verifyUserByToken(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails != null)
+            return ResponseEntity.ok(userService.verifyUser(userDetails));
         else
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }

@@ -11,8 +11,8 @@ import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -58,15 +58,15 @@ public class UserService extends CrudService<User, Long, UserRepository> {
     }
 
 
-    public Map<String, Object> verifyUser(Authentication auth) {
-        var dbUser = repository.findByUsername(auth.getName()).orElseThrow();
+    public Map<String, Object> verifyUser(UserDetails userDetails) {
+        var dbUser = repository.findByUsername(userDetails.getUsername()).orElseThrow();
         if (dbUser.isBanned())
             throw new AuthenticationServiceException("User is Banned!");
         var userData = new LinkedHashMap<String, Object>();
         userData.put("username", dbUser.getUsername());
         userData.put("email", dbUser.getEmail());
         userData.put("type", dbUser.getUserType().toString());
-        userData.put("permissions", auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+        userData.put("permissions", userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
         return userData;
     }
 
