@@ -84,12 +84,14 @@ public abstract class CollectionMapper {
                 }
                 break;
             case CHANNEL:
-                i = 0;
-                for (var id : input.getChannels()) {
-                    CollectionStream collectionStream = new CollectionStream(new CollectionStreamId(input.getId(), id));
-                    collectionStream.setOrder(i++);
-                    collectionStream.setCollection(collection);
-                    collection.addStream(collectionStream);
+                if (input.getChannels() != null){
+                    i = 0;
+                    for (var id : input.getChannels()) {
+                        CollectionStream collectionStream = new CollectionStream(new CollectionStreamId(input.getId(), id));
+                        collectionStream.setOrder(i++);
+                        collectionStream.setCollection(collection);
+                        collection.addStream(collectionStream);
+                    }
                 }
                 break;
         }

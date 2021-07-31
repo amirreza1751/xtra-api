@@ -11,6 +11,7 @@ import java.util.Set;
 
 @Entity
 @Data
+@ToString(exclude = {"epgFile"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @Table(
@@ -62,5 +63,9 @@ public class EpgChannel {
         if (epgPrograms == null)
             return false;
         return epgPrograms.remove(epgProgram);
+    }
+    @Override
+    public String toString(){
+        return this.name;
     }
 }

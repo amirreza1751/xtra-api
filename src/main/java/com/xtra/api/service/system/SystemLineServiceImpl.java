@@ -26,18 +26,21 @@ public class SystemLineServiceImpl extends LineService {
     private final StreamRepository streamRepository;
     private final ServerRepository serverRepository;
     private final BlockedIpRepository blockedIpRepository;
+    private final VideoRepository videoRepository;
 
     @Autowired
-    public SystemLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper,
-                                 BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService, RoleRepository roleRepository,
-                                 StreamRepository streamRepository, ServerRepository serverRepository, BlockedIpRepository blockedIpRepository,
-                                 UserRepository userRepository) {
+    public SystemLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper
+            , BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService, RoleRepository roleRepository
+            , StreamRepository streamRepository, ServerRepository serverRepository, BlockedIpRepository blockedIpRepository
+            , VideoRepository videoRepository, UserRepository userRepository) {
+
         super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository, userRepository);
         this.lineMapper = lineMapper;
         this.geoIpService = geoIpService;
         this.streamRepository = streamRepository;
         this.serverRepository = serverRepository;
         this.blockedIpRepository = blockedIpRepository;
+        this.videoRepository = videoRepository;
     }
 
     public Page<LineView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -101,6 +104,38 @@ public class SystemLineServiceImpl extends LineService {
             } else {
                 connection.setLastRead(LocalDateTime.now());
                 connectionRepository.save(connection);
+                return LineStatus.OK;
+            }
+        } else
+            return LineStatus.NOT_FOUND;
+    }
+
+
+    public LineStatus canLinePlayVod(LineAuth lineAuth) {
+        var lineByToken = repository.findByLineToken(lineAuth.getLineToken());
+        var videoByToken = videoRepository.findByToken(lineAuth.getMediaToken());
+        var serverByToken = serverRepository.findByToken(lineAuth.getServerToken());
+
+        if (lineByToken.isPresent() && videoByToken.isPresent() && serverByToken.isPresent()) {
+            var line = lineByToken.get();
+            var stream = videoByToken.get();
+            var server = serverByToken.get();
+
+            var currentConnections = getConnectionsCount(line.getId());
+
+            if (line.isBanned()) {
+                return LineStatus.BANNED;
+            } else if (line.isBlocked()) {
+                return LineStatus.BLOCKED;
+            } else if (!line.isNeverExpire() && line.getExpireDate().isBefore(LocalDateTime.now())) {
+                return LineStatus.EXPIRED;
+            } else if (line.getMaxConnections() == 0 || line.getMaxConnections() < currentConnections) {
+                return LineStatus.MAX_CONNECTION_REACHED;
+            } else if (!isIpAllowed(line, lineAuth.getIpAddress()) || !isUserAgentAllowed(line, lineAuth.getUserAgent())) {
+                return LineStatus.FORBIDDEN;
+            } else if (false) {//@todo check access to stream
+                return LineStatus.NO_ACCESS_TO_STREAM;
+            } else {
                 return LineStatus.OK;
             }
         } else
