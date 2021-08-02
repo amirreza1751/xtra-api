@@ -12,6 +12,7 @@ import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.RoleRepository;
+import com.xtra.api.repository.VodConnectionRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.PackageService;
 import org.apache.commons.lang3.StringUtils;
@@ -35,8 +36,8 @@ public class ResellerLineServiceImpl extends LineService {
 
     @Autowired
     protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, ConnectionRepository connectionRepository, PackageService packageService
-            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
-        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, VodConnectionRepository vodConnectionRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository, vodConnectionRepository);
         this.lineMapper = lineMapper;
         this.packageService = packageService;
     }
