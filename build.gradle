@@ -53,6 +53,7 @@ dependencies {
     implementation "com.neovisionaries:nv-i18n:1.27"
     implementation "com.maxmind.geoip2:geoip2:2.15.0"
     implementation "org.json:json:20201115"
+    implementation 'org.jdom:jdom2:2.0.6'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation "org.projectlombok:lombok:${lombokVersion}"
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"

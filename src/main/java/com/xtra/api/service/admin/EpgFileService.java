@@ -91,7 +91,7 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
 
                 //Check if file is updated
                 var newHash = DigestUtils.md5Hex(xml);
-                if (!StringUtils.isEmpty(epgFile.getLastVersionHash()) && epgFile.getLastVersionHash().equals(newHash))
+                if (!StringUtils.hasText(epgFile.getLastVersionHash()) && epgFile.getLastVersionHash().equals(newHash))
                     continue;
 
                 epgFile.setLastVersionHash(newHash);

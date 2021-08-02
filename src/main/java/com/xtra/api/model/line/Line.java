@@ -2,6 +2,7 @@ package com.xtra.api.model.line;
 
 import com.neovisionaries.i18n.CountryCode;
 import com.xtra.api.model.download_list.DownloadList;
+import com.xtra.api.model.mag.MagDevice;
 import com.xtra.api.model.stream.StreamProtocol;
 import com.xtra.api.model.user.Reseller;
 import com.xtra.api.model.user.User;
@@ -59,7 +60,14 @@ public class Line extends User {
     @ToString.Exclude
     private List<Connection> connections = new ArrayList<>();
 
+    @OneToOne
+    private MagDevice magDevice;
+
     public Line() {
         userType = UserType.LINE;
+    }
+
+    public boolean isExpired() {
+        return (!neverExpire && expireDate.isBefore(LocalDateTime.now()));
     }
 }

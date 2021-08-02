@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<strings>
+    <stringSet locale="en_GB.utf8">
+        <text key="weather_comfort">Comfort</text>
+        <text key="weather_pressure">Pressure</text>
+        <text key="weather_mmhg">mmHg</text>
+        <text key="weather_wind">Wind</text>
+        <text key="weather_speed">m/s</text>
+        <text key="weather_humidity">Humidity</text>
+        <text key="current_weather_unavailable">Current weather unavailable</text>
+        <text key="current_weather_not_configured">The weather is not configured</text>
+        <text key="karaoke_view">VIEW</text>
+        <text key="karaoke_sort">SORT</text>
+        <text key="karaoke_search">SEARCH</text>
+        <text key="karaoke_sampling">PICKING</text>
+        <text key="karaoke_by_letter">BY LETTER</text>
+        <text key="karaoke_by_performer">BY NAME</text>
+        <text key="karaoke_by_title">BY TITLE</text>
+        <text key="karaoke_title">KARAOKE</text>
+        <text key="layer_page">PAGE</text>
+        <text key="layer_from">FROM</text>
+        <text key="layer_found">FOUND</text>
+        <text key="layer_records">RECORDS</text>
+        <text key="layer_loading">LOADING...</text>
+        <text key="Loading...">Loading...</text>
+        <text key="mbrowser_title">Media Browser</text>
+        <text key="mbrowser_connected">connected</text>
+        <text key="mbrowser_disconnected">disconnected</text>
+        <text key="mbrowser_not_found">not found</text>
+        <text key="usb_drive">"USB drive"</text>
+        <text key="player_limit_notice">The number of connections is limited.<br/>Try again later
+        </text>
+        <text key="player_file_missing">File missing</text>
+        <text key="player_server_error">Server error</text>
+        <text key="player_access_denied">Access denied</text>
+        <text key="player_server_unavailable">Server unavailable</text>
+        <text key="player_series">part</text>
+        <text key="player_season">Season</text>
+        <text key="player_track">Track</text>
+        <text key="player_off">Off</text>
+        <text key="player_subtitle">Subtitles</text>
+        <text key="player_claim">"Complain</text>
+        <text key="player_on_sound">on sound</text>
+        <text key="player_on_video">on video</text>
+        <text key="player_audio">Audio</text>
+        <text key="player_ty">Thank you your opinion will be taken into account</text>
+        <text key="series_by_one_play">one series</text>
+        <text key="series_continuously_play">continuously</text>
+        <text key="aspect_fit">fit on</text>
+        <text key="aspect_big">zoom</text>
+        <text key="aspect_opt">optimal</text>
+        <text key="aspect_exp">stretch</text>
+        <text key="aspect_cmb">combined</text>
+        <text key="radio_title">RADIO</text>
+        <text key="radio_sort">SORT</text>
+        <text key="radio_favorite">FAVORITE</text>
+        <text key="radio_search">SEARCH</text>
+        <text key="radio_by_number">by number</text>
+        <text key="radio_by_title">"by title</text>
+        <text key="radio_only_favorite">only favorite</text>
+        <text key="radio_fav_add">add</text>
+        <text key="radio_fav_del">del</text>
+        <text key="radio_search_box">SEARCH</text>
+        <text key="tv_view">VIEW</text>
+        <text key="tv_sort">SORT</text>
+        <text key="favorite">FAVORITE</text>
+        <text key="tv_favorite">FAVORITE</text>
+        <text key="tv_move">MOVE</text>
+        <text key="tv_by_number">by number</text>
+        <text key="tv_by_title">by title</text>
+        <text key="tv_only_favorite">only favorite</text>
+        <text key="tv_only_hd">HD only</text>
+        <text key="tv_list">list</text>
+        <text key="tv_list_w_info">list + info</text>
+        <text key="tv_title">TV</text>
+        <text key="vclub_info">information about the movie</text>
+        <text key="sclub_info">information about the series</text>
+        <text key="vclub_year">Year</text>
+        <text key="vclub_country">Country</text>
+        <text key="vclub_genre">Genre</text>
+        <text key="vclub_length">Length</text>
+        <text key="vclub_minutes">min</text>
+        <text key="vclub_director">Director</text>
+        <text key="vclub_cast">Cast</text>
+        <text key="vclub_rating">Rating</text>
+        <text key="vclub_age">Age</text>
+        <text key="vclub_rating_mpaa">Rating MPAA</text>
+        <text key="vclub_view">VIEW</text>
+        <text key="vclub_sort">SORT</text>
+        <text key="vclub_search">SEARCH</text>
+        <text key="vclub_fav">FAVORITE</text>
+        <text key="vclub_other">OTHER</text>
+        <text key="vclub_find">FIND</text>
+        <text key="vclub_by_letter">BY LETTER</text>
+        <text key="vclub_by_genre">BY GENRE</text>
+        <text key="vclub_by_year">BY YEAR</text>
+        <text key="vclub_by_rating">BY RATING</text>
+        <text key="vclub_search_box">search</text>
+        <text key="vclub_query_box">picking</text>
+        <text key="vclub_by_title">by title</text>
+        <text key="vclub_by_addtime">by addtime</text>
+        <text key="vclub_top">rating</text>
+        <text key="vclub_only_hd">HD only</text>
+        <text key="vclub_only_favorite">favorite only</text>
+        <text key="vclub_only_purchased">purchased</text>
+        <text key="vclub_not_ended">not ended</text>
+        <text key="vclub_list">list</text>
+        <text key="vclub_list_w_info">list + info</text>
+        <text key="vclub_title">VideoClub</text>
+        <text key="sclub_title">TV Series</text>
+        <text key="vclub_purchased">Purchased</text>
+        <text key="vclub_rent_expires_in">rent expires in</text>
+        <text key="cut_off_msg">Your STB is blocked.<br/>Call the provider.
+        </text>
+        <textArray key="month_arr">
+            <item>JANUARY</item>
+            <item>FEBRUARY</item>
+            <item>MARCH</item>
+            <item>APRIL</item>
+            <item>MAY</item>
+            <item>JUNE</item>
+            <item>JULY</item>
+            <item>AUGUST</item>
+            <item>SEPTEMBER</item>
+            <item>OCTOBER</item>
+            <item>NOVEMBER</item>
+            <item>DECEMBER</item>
+        </textArray>
+        <textArray key="week_arr">
+            <item>SUNDAY</item>
+            <item>MONDAY</item>
+            <item>TUESDAY</item>
+            <item>WEDNESDAY</item>
+            <item>THURSDAY</item>
+            <item>FRIDAY</item>
+            <item>SATURDAY</item>
+        </textArray>
+        <text key="year"></text>,
+        <text key="records_title">RECORDS</text>
+        <text key="ears_back"><br/>B<br/>A<br/>C<br/>K
+            <br/>
+        </text>
+        <text key="ears_about_movie"><br/>A<br/>B<br/>O<br/>U<br/>T
+            <br/>
+            <br/>M<br/>O<br/>V<br/>I<br/>E
+            <br/>
+        </text>
+        <text key="ears_tv_guide"><br/>T<br/>V
+            <br/>
+            <br/>G<br/>U<br/>I<br/>D<br/>E
+            <br/>
+        </text>
+        <text key="ears_about_package"><br/>P<br/>A<br/>C<br/>K<br/>A<br/>G<br/>E
+            <br/>
+            <br/>I<br/>N<br/>F<br/>O
+            <br/>
+        </text>
+        <text key="settings_title">SETTINGS</text>
+        <text key="parent_settings_cancel">CANCEL</text>
+        <text key="parent_settings_save">SAVE</text>
+        <text key="parent_settings_old_pass">Current password</text>
+        <text key="parent_settings_title">PARENTAL SETTINGS</text>
+        <text key="parent_settings_title_short">PARENTAL</text>
+        <text key="parent_settings_new_pass">New password</text>
+        <text key="parent_settings_repeat_new_pass">Repeat new password</text>
+        <text key="settings_saved">Settings saved</text>
+        <text key="settings_saved_reboot">Settings saved.<br/>The STB will be rebooted. Press OK.
+        </text>
+        <text key="settings_check_error">Error filling fields</text>
+        <text key="settings_saving_error">Saving error</text>
+        <text key="localization_settings_title">LOCALIZATION</text>
+        <text key="localization_label">Language of the interface</text>
+        <text key="country_label">Country</text>
+        <text key="city_label">City</text>
+        <text key="localization_page_button_info">Use PAGE-/+ buttons to move through several menu items</text>
+        <text key="settings_software_update">SOFTWARE UPDATE</text>
+        <text key="update_settings_cancel">CANCEL</text>
+        <text key="update_settings_start_update">START UPDATE</text>
+        <text key="update_from_http">From HTTP</text>
+        <text key="update_from_usb">From USB</text>
+        <text key="update_source">Source</text>
+        <text key="update_method_select">Method select</text>
+        <text key="empty">EMPTY</text>
+        <text key="course_title">Exchange rate on</text>
+        <text key="course_title_nbu">NBU exchange rate on</text>
+        <text key="course_title_cbr">CBR exchange rate on</text>
+        <text key="dayweather_title">WEATHER</text>
+        <text key="dayweather_pressure">pres.:</text>
+        <text key="dayweather_mmhg">mm Hg</text>
+        <text key="dayweather_wind">wind:</text>
+        <text key="dayweather_speed">m/s</text>
+        <text key="infoportal_title">INFOPORTAL</text>
+        <text key="cityinfo_title">CITY INFO</text>
+        <text key="cityinfo_main">emergency</text>
+        <text key="cityinfo_help">help</text>
+        <text key="cityinfo_other">other</text>
+        <text key="cityinfo_sort">VIEW</text>
+        <text key="horoscope_title">HOROSCOPE</text>
+        <text key="anecdote_title">JOKES</text>
+        <text key="anecdote_goto">GOTO</text>
+        <text key="anecdote_like">LIKE</text>
+        <text key="anecdote_bookmark">BOOKMARK</text>
+        <text key="anecdote_to_bookmark">TO BOOKMARK</text>
+        <text key="anecdote_pagebar_title">JOKE</text>
+        <text key="mastermind_title">MASTERMIND</text>
+        <text key="mastermind_rules">RULES</text>
+        <text key="mastermind_rating">RATING</text>
+        <text key="mastermind_bull">B</text>
+        <text key="mastermind_cow">C</text>
+        <text key="mastermind_rules_text">Your task is to guess the number of unique four digits, the first of them -
+            not zero. Every your guess will be compared with the number put forth a STB. If you guessed a digit, but it
+            is not in place, then it is a COW (C). If you guessed, and a number, and its location, this BULL (B).
+        </text>
+        <text key="mastermind_move_cursor">Moving the cursor</text>
+        <text key="mastermind_cell_numbers">Enter numbers into cells</text>
+        <text key="mastermind_step_confirmation">Confirmation of the step</text>
+        <text key="mastermind_page">Page</text>
+        <text key="mastermind_history_moves">Moving through the pages of history moves</text>
+        <text key="msg_service_off">Service is disabled</text>
+        <text key="msg_channel_not_available">Channel is not available</text>
+        <text key="epg_title">TV Guide</text>
+        <text key="epg_record">RECORD</text>
+        <text key="epg_remind">REMIND</text>
+        <text key="epg_memo">Memo</text>
+        <text key="epg_goto_ch">Goto channel</text>
+        <text key="epg_close_msg">Close</text>
+        <text key="epg_on_ch">on channel</text>
+        <text key="epg_now_begins">now begins</text>
+        <text key="epg_on_time">in</text>
+        <text key="epg_started">started</text>
+        <text key="epg_more">MORE</text>
+        <text key="epg_category">Category</text>
+        <text key="epg_director">Director</text>
+        <text key="epg_actors">Stars</text>
+        <text key="epg_desc">Description</text>
+        <text key="search_box_languages">["en"]</text>
+        <text key="date_format">{0}, {2} {1}, {3}</text>
+        <text key="time_format">{0}:{1}</text>
+        <text key="timezone_label">Timezone</text>
+        <text key="ntp_server">NTP Server</text>
+        <text key="remote_pvr_del">DELETE</text>
+        <text key="remote_pvr_stop">STOP</text>
+        <text key="remote_pvr_del_confirm">Do you really want to delete this record?</text>
+        <text key="remote_pvr_stop_confirm">Do you really want to stop this record?</text>
+        <text key="alert_confirm">Confirm</text>
+        <text key="alert_cancel">Cancel</text>
+        <text key="recorder_server_error">Server error. Try again later.</text>
+        <text key="record_duration">RECORDING DURATION</text>
+        <text key="rest_length_title">FREE on the server, h</text>
+        <text key="channel_recording_restricted">Recording this channel is forbidden</text>
+        <text key="playback_settings_buffer_size">Buffer size</text>
+        <text key="playback_settings_time">Time, sec</text>
+        <text key="playback_settings_title">PLAYBACK</text>
+        <text key="cancel_btn">CANCEL</text>
+        <text key="settings_cancel">CANCEL</text>
+        <text key="playback_settings_cancel">CANCEL</text>
+        <text key="exit_btn">EXIT</text>
+        <text key="yes_btn">YES</text>
+        <text key="close_btn">CLOSE</text>
+        <text key="ok_btn">OK</text>
+        <text key="pay_btn">PAY</text>
+        <text key="play_btn">PLAY</text>
+        <text key="start_btn">START</text>
+        <text key="add_btn">ADD</text>
+        <text key="settings_save">SAVE</text>
+        <text key="playback_settings_save">SAVE</text>
+        <text key="audio_out">Audio out</text>
+        <text key="audio_out_analog">Analog only</text>
+        <text key="audio_out_analog_spdif">Analog and S/PDIF 2-channel PCM</text>
+        <text key="audio_out_spdif">S/PDIF raw or 2-channel PCM</text>
+        <text key="game">GAME</text>
+        <text key="downloads_title">DOWNLOADS</text>
+        <text key="not_found_mounted_devices">Not found mounted devices</text>
+        <text key="downloads_add_download">Add download</text>
+        <text key="downloads_device">Device</text>
+        <text key="downloads_file_name">File name</text>
+        <text key="downloads_ok">Ok</text>
+        <text key="downloads_cancel">Cancel</text>
+        <text key="downloads_create">CREATE</text>
+        <text key="downloads_move_up">MOVE UP</text>
+        <text key="downloads_move_down">MOVE DOWN</text>
+        <text key="downloads_delete">DELETE</text>
+        <text key="downloads_record">RECORDING</text>
+        <text key="downloads_download">DOWNLOAD</text>
+        <text key="downloads_record_and_file">RECORDING AND FILE</text>
+        <text key="playback_limit_title">Duration of continuous playback</text>
+        <text key="playback_limit_off">Without limit</text>
+        <text key="playback_hours">hours</text>
+        <text key="playback_limit_reached">Reached limit the duration of continuous playback. To continue playback,
+            press the OK or EXIT.
+        </text>
+        <text key="common_settings_title">GENERAL SETTINGS</text>
+        <text key="screensaver_delay_title">Screensaver interval</text>
+        <text key="screensaver_off">Disabled</text>
+        <text key="screensaver_minutes">min</text>
+        <text key="demo_video_title">DEMO VIDEO</text>
+        <text key="account_info_title">ACCOUNT</text>
+        <text key="coming_soon">Coming soon</text>
+        <text key="account_info">INFORMATION</text>
+        <text key="account_payment">PAYMENT</text>
+        <text key="account_pay">PAY</text>
+        <text key="account_agreement">AGREEMENT</text>
+        <text key="account_terms">TERMS OF USE</text>
+        <text key="demo_video">Video instruction</text>
+        <text key="tv_quality">QUALITY</text>
+        <text key="tv_quality_low">low</text>
+        <text key="tv_quality_medium">medium</text>
+        <text key="tv_quality_high">high</text>
+        <text key="tv_fav_add">add</text>
+        <text key="tv_fav_del">del</text>
+        <text key="internet">internet</text>
+        <text key="network_status_title">NETWORK STATUS</text>
+        <text key="network_status_refresh">REFRESH</text>
+        <text key="test_speed">Speed test</text>
+        <text key="speedtest_testing">testing...</text>
+        <text key="speedtest_error">error</text>
+        <text key="speedtest_waiting">waiting...</text>
+        <text key="lan_up">UP</text>
+        <text key="lan_down">DOWN</text>
+        <text key="download_stopped">stopped</text>
+        <text key="download_waiting_queue">waiting queue</text>
+        <text key="download_running">running</text>
+        <text key="download_completed">completed</text>
+        <text key="download_temporary_error">temporary error</text>
+        <text key="download_permanent_error">permanent error</text>
+        <text key="auth_title">Authentication</text>
+        <text key="auth_login">Login</text>
+        <text key="auth_password">Password</text>
+        <text key="auth_error">Error</text>
+        <text key="play_or_download">Play this url or start download?</text>
+        <text key="player_play">Play</text>
+        <text key="player_download">Download</text>
+        <text key="play_all">Play all</text>
+        <text key="on">on</text>
+        <text key="off">off</text>
+        <text key="smb_auth">Network authentication</text>
+        <text key="smb_username">Login</text>
+        <text key="smb_password">Password</text>
+        <text key="exit_title">Do you really want to exit?</text>
+        <text key="identical_download_exist">There is an active downloads from this server</text>
+        <text key="alert_form_title">Alert</text>
+        <text key="confirm_form_title">Confirm</text>
+        <text key="notice_form_title">Notice</text>
+        <text key="select_form_title">Select</text>
+        <text key="media_favorites">Favorites</text>
+        <text key="stb_type_not_supported">Your STB is not supported</text>
+        <text key="Phone">Subscription Expire Date</text>
+        <text key="Tariff plan">Tariff plan</text>
+        <text key="User">User</text>
+        <text key="SERVICES MANAGEMENT">SERVICES MANAGEMENT</text>
+        <text key="SUBSCRIBE">SUBSCRIBE</text>
+        <text key="UNSUBSCRIBE">UNSUBSCRIBE</text>
+        <text key="package_info_title">PACKAGE INFO</text>
+        <text key="package_type">Type</text>
+        <text key="package_content">Content</text>
+        <text key="package_description">Description</text>
+        <text key="confirm_service_subscribe_text">Are you really want to subscribe to this service?</text>
+        <text key="confirm_service_unsubscribe_text">Are you really want to unsubscribe from this service?</text>
+        <text key="confirm_service_price_text">The service costs {0}</text>
+        <text key="service_subscribe_success">You have successfully subscribed to the service.</text>
+        <text key="service_unsubscribe_success">You have successfully unsubscribed from the service.</text>
+        <text key="service_subscribe_success_reboot">You have successfully subscribed to the service. STB will be
+            rebooted.
+        </text>
+        <text key="service_unsubscribe_success_reboot">You have successfully unsubscribed from the service. STB will be
+            rebooted.
+        </text>
+        <text key="service_subscribe_fail">An error in the management of subscriptions.</text>
+        <text key="service_subscribe_server_error">Server error. Try again later.</text>
+        <text key="package_price_measurement">package_price_measurement</text>
+        <text key="rent_movie_text">Do you really want to rent this movie?</text>
+        <text key="rent_movie_price_text">The movie costs {0}</text>
+        <text key="rent_duration_text">Rent duration: {0}h</text>
+        <text key="Account number">Account number</text>
+        <text key="Password">Password</text>
+        <text key="End date">End date</text>
+        <text key="3D mode">3D mode</text>
+        <text key="mode {0}">mode {0}</text>
+        <text key="no epg">no epg</text>
+        <text key="wrong epg">wrong epg</text>
+        <text key="iso_title">Part</text>
+        <text key="error_channel_nothing_to_play">Channel not available</text>
+        <text key="error_channel_limit">Channel temporary unavailable</text>
+        <text key="error_channel_not_available_for_zone">Channel not available for this region</text>
+        <text key="error_channel_link_fault">Channel not available. Server error.</text>
+        <text key="error_channel_access_denied">Access denied</text>
+        <text key="blocking_account_info">Account info</text>
+        <text key="blocking_account_payment">Payment</text>
+        <text key="blocking_account_reboot">Reload portal</text>
+        <text key="archive_continue_playing_text">Continue playing?</text>
+        <text key="archive_yes">YES</text>
+        <text key="archive_no">NO</text>
+        <text key="time_shift_exit_confirm_text">Do you want to quit the Time Shift mode?</text>
+        <text key="mbrowser_sort_by_name">by name</text>
+        <text key="mbrowser_sort_by_date">by date</text>
+        <text key="Connection problem">Connection problem</text>
+        <text key="Authentication problem">Authentication problem</text>
+        <text key="Account balance">Account balance</text>
+        <text key="remote_pvr_confirm_text">Start recording on the server?</text>
+        <text key="remote_deferred_pvr_confirm_text">Do you really want to schedule a recording on the server?</text>
+        <text key="pvr_target_select_text">Select where to save the record</text>
+        <text key="usb_target_btn">USB Storage</text>
+        <text key="server_target_btn">Server</text>
+        <text key="save_path">Path</text>
+        <text key="file_name">Filename</text>
+        <text key="usb_device">USB Device</text>
+        <text key="rec_stop_msg">rec_stop_msg</text>
+        <text key="rec_file_missing">The recorded file is missing</text>
+        <text key="rec_not_ended">Recording is not finished yet</text>
+        <text key="rec_channel_has_scheduled_recording">The channel already has a scheduled recording</text>
+        <text key="pvr_error_wrong_param">PVR Error: Wrong parameter</text>
+        <text key="pvr_error_memory">PVR Error: Not enough memory to complete the operation</text>
+        <text key="pvr_error_duration">PVR Error: Incorrect recording range</text>
+        <text key="pvr_error_not_found">PVR Error: Task not found</text>
+        <text key="pvr_error_wrong_filename">PVR Error: Wrong filename</text>
+        <text key="pvr_error_record_exist">PVR Error: Record file already exists</text>
+        <text key="pvr_error_url_open_error">PVR Error: Error opening channel URL</text>
+        <text key="pvr_error_file_open_error">PVR Error: Error opening file</text>
+        <text key="pvr_error_rec_limit">PVR Error: Exceeded the maximum number simultaneous recordings</text>
+        <text key="pvr_error_end_of_stream">PVR Error: End of stream</text>
+        <text key="pvr_error_file_write_error">PVR Error: Error writing to file</text>
+        <text key="pvr_start_time">Start time</text>
+        <text key="pvr_end_time">End time</text>
+        <text key="pvr_duration">Duration</text>
+        <text key="rec_options_form_title">Recording</text>
+        <text key="local_pvr_interrupted">Recording on USB device interrupted</text>
+        <text key="parent_password_error">Wrong</text>
+        <text key="parent_password_title">Parent control</text>
+        <text key="settings_password_title">Access control</text>
+        <text key="password_label">Password</text>
+        <text key="encoding_label">Encoding</text>
+        <text key="network_folder">Network folder</text>
+        <text key="server_ip">IP address</text>
+        <text key="server_path">Path</text>
+        <text key="local_folder">Local folder</text>
+        <text key="server_type">Type</text>
+        <text key="server_login">Login</text>
+        <text key="server_password">Password</text>
+        <text key="add_folder">ADD</text>
+        <text key="server_ip_placeholder">Server address</text>
+        <text key="server_path_placeholder">Path to the folder</text>
+        <text key="local_folder_placeholder">Folder name in favorites</text>
+        <text key="error">error</text>
+        <text key="mount_failed">Mount failed</text>
+        <text key="ad_skip">SKIP</text>
+        <text key="commercial">COMMERCIAL</text>
+        <text key="videoClockTitle">Clock</text>
+        <text key="videoClock_off">Hidden</text>
+        <text key="videoClock_upRight">Top Right</text>
+        <text key="videoClock_upLeft">Top Left</text>
+        <text key="videoClock_downRight">Bottom Right</text>
+        <text key="videoClock_downLeft">Bottom Left</text>
+        <text key="settings_unavailable">Settings section is currently unavailable</text>
+        <text key="no_dvb_channels_title">No channels available</text>
+        <text key="go_to_dvb_settings">You can configure DVB channels in the settings menu</text>
+        <text key="apps_title">Applications</text>
+        <text key="coming_soon_video">Video will be available soon</text>
+        <text key="app_install_confirm">Install application?</text>
+        <text key="audioclub_title">AUDIO CLUB</text>
+        <text key="track_search">TRACK SEARCH</text>
+        <text key="album_search">ALBUM SEARCH</text>
+        <text key="add_to_playlist">ADD TO PLAYLIST</text>
+        <text key="remove_from_playlist">DEL FROM PLAYLIST</text>
+        <text key="playlist">PLAYLIST</text>
+        <text key="audioclub_year">Year</text>
+        <text key="audioclub_country">Country</text>
+        <text key="audioclub_languages">Language</text>
+        <text key="audioclub_language">Language</text>
+        <text key="audioclub_performer">Artist</text>
+        <text key="audioclub_album">Album</text>
+        <text key="audioclub_albums">Albums</text>
+        <text key="audioclub_tracks">Compositions</text>
+        <text key="audioclub_select_playlist">Playlist select</text>
+        <text key="audioclub_playlist">Playlist</text>
+        <text key="new_btn">NEW</text>
+        <text key="playlist_name">Name</text>
+        <text key="audioclub_new_playlist">New Playlist</text>
+        <text key="audioclub_saving_error">Error while saving</text>
+        <text key="audioclub_create_new">CREATE NEW</text>
+        <text key="remove_from_playlist_confirm">Do you really want to delete this track from playlist?</text>
+        <text key="delete_playlist_confirm">Do you really want to delete this playlist?</text>
+        <text key="audioclub_remove_playlist">DELETE</text>
+        <text key="vk_music_title">VK MUSIC</text>
+        <text key="all_title">All</text>
+        <text key="outdated_firmware">Firmware of your STB is outdated.<br/>Please update it.
+        </text>
+        <text key="LOGOUT">LOGOUT</text>
+        <text key="confirm_logout_title">Confirm</text>
+        <text key="confirm_logout">Do you really want to log out?"</text>
+    </stringSet>
+    <stringSet locale="el_GR.utf8">
+
+    </stringSet>
+</strings>

@@ -1,8 +1,0 @@
-{
-  "properties": [
-    {
-      "name": "core.apiPort",
-      "type": "java.lang.String",
-      "description": "Description for core.apiPort."
-  }
-] }
