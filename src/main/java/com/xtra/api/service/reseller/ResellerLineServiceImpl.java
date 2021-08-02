@@ -11,6 +11,7 @@ import com.xtra.api.projection.reseller.line.LineUpdateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.*;
 import com.xtra.api.service.CreditLogService;
+import com.xtra.api.repository.VodConnectionRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.LogService;
 import com.xtra.api.service.admin.PackageService;
@@ -40,8 +41,8 @@ public class ResellerLineServiceImpl extends LineService {
 
     @Autowired
     protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, ConnectionRepository connectionRepository, PackageService packageService
-            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, ResellerRepository resellerRepository, CreditLogService creditLogService, UserRepository userRepository, LogService logService) {
-        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository, userRepository);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, ResellerRepository resellerRepository, CreditLogService creditLogService, UserRepository userRepository, LogService logService, VodConnectionRepository vodConnectionRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository, userRepository, vodConnectionRepository);
         this.lineMapper = lineMapper;
         this.packageService = packageService;
         this.resellerRepository = resellerRepository;

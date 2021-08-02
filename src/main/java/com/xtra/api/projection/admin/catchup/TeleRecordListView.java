@@ -14,9 +14,9 @@ public class TeleRecordListView {
     private Long id;
 
     private String title;
-    private ZonedDateTime start;
-    private ZonedDateTime stop;
-    private Duration duration;
+    private String start;
+    private String stop;
+    private String duration;
     private String channelName;
     private String serverName;
 }

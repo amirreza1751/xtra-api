@@ -8,6 +8,7 @@ import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.RoleRepository;
+import com.xtra.api.repository.VodConnectionRepository;
 import com.xtra.api.repository.UserRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ public class AdminLineServiceImpl extends LineService {
 
     @Autowired
     public AdminLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper
-            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, UserRepository userRepository) {
-        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository, userRepository);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, UserRepository userRepository, VodConnectionRepository vodConnectionRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository, userRepository,vodConnectionRepository);
         this.lineMapper = lineMapper;
     }
 
