@@ -25,10 +25,10 @@ public class MagDevice {
     private String token;
     private LocalDateTime lastWatchdog;
 
-    @OneToOne(mappedBy = "mag")
+    @OneToOne(mappedBy = "magDevice")
     private Line line;
 
-    @OneToMany
+    @OneToMany(mappedBy = "magDevice")
     private List<MagEvent> magEvents;
 
 }

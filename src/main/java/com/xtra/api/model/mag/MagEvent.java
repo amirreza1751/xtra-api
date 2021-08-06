@@ -2,10 +2,7 @@ package com.xtra.api.model.mag;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -17,5 +14,13 @@ public class MagEvent {
     private String event;
     private boolean needsConfirm;
     private String msg;
+    private boolean rebootAfterOk;
+    private boolean autoHideTimeout;
+    private boolean additionalServicesOn;
+    private boolean anec;
+    private boolean vclub;
+
+    @ManyToOne
+    private MagDevice magDevice;
 
 }

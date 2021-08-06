@@ -7,4 +7,7 @@ import java.util.Optional;
 
 public interface MagRepository extends JpaRepository<MagDevice, Long> {
     Optional<MagDevice> findByMac(String mac);
+
+    Optional<MagDevice> findByToken(String token);
+
 }
