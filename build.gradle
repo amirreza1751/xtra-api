@@ -56,6 +56,7 @@ dependencies {
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation "org.projectlombok:lombok:${lombokVersion}"
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    implementation 'com.zaxxer:nuprocess:2.0.2'
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     compileOnly 'org.springframework.boot:spring-boot-devtools'
