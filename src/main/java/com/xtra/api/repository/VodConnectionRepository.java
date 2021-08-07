@@ -32,6 +32,7 @@ public interface VodConnectionRepository extends JpaRepository<VodConnection, Lo
 
     void deleteAllByLastReadIsLessThanEqual(LocalDateTime lastRead);
 
-    @Query(value = "SELECT new com.xtra.api.projection.admin.connection.VodConnectionResult (conn.server.id, count (conn.id)) FROM VodConnection conn group by conn.server.id")
-    List<VodConnectionResult> getVodConnectionsCount();
+
+    @Query(value = "SELECT new com.xtra.api.projection.admin.connection.VodConnectionResult (conn.server.id, count (conn.id)) FROM VodConnection conn WHERE conn.server.id IN ?1 group by conn.server.id")
+    List<VodConnectionResult> getVodConnectionsCount(List<Long> servers);
 }

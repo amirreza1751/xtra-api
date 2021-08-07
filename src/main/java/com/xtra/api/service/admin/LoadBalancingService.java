@@ -4,12 +4,15 @@ import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.vod.Video;
+import com.xtra.api.projection.admin.connection.VodConnectionResult;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.VodConnectionRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LoadBalancingService {
@@ -41,9 +44,20 @@ public class LoadBalancingService {
     }
 
     public Server findLeastConnServerForVod(ArrayList<Server> servers) {
-        servers.forEach(server -> connections.add(connectionRepository.countAllByServerId(server.getId())));
-        var vodConnectionsCount = vodConnectionRepository.getVodConnectionsCount();
-        var leastConn = Collections.min(vodConnectionsCount);
-        return servers.stream().filter(server -> server.getId().equals(leastConn.getServerId())).findFirst().orElseThrow(() -> new EntityNotFoundException("Server", leastConn.getServerId()));
+        List<Long> serverIds =  servers.stream().map(Server::getId).collect(Collectors.toList());
+        long selectedServer = serverIds.get(0); //Default Server.
+        var vodConnectionsCount = vodConnectionRepository.getVodConnectionsCount(serverIds);
+        if (vodConnectionsCount.size() != 0) {
+            selectedServer = Collections.min(vodConnectionsCount).getServerId();
+            for (Long temp : serverIds) {
+                var tempResult = new VodConnectionResult(temp);
+                if (!vodConnectionsCount.contains(tempResult)) {
+                    selectedServer = tempResult.getServerId();
+                    break;
+                }
+            }
+        }
+        long finalSelectedServer = selectedServer;
+        return servers.stream().filter(server -> server.getId().equals(finalSelectedServer)).findFirst().orElseThrow(() -> new EntityNotFoundException("Server", finalSelectedServer));
     }
 }
