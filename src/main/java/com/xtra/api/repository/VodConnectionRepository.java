@@ -3,7 +3,9 @@ package com.xtra.api.repository;
 
 import com.xtra.api.model.line.Connection;
 import com.xtra.api.model.line.VodConnection;
+import com.xtra.api.projection.admin.connection.VodConnectionResult;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,4 +32,6 @@ public interface VodConnectionRepository extends JpaRepository<VodConnection, Lo
 
     void deleteAllByLastReadIsLessThanEqual(LocalDateTime lastRead);
 
+    @Query(value = "SELECT new com.xtra.api.projection.admin.connection.VodConnectionResult (conn.server.id, count (conn.id)) FROM VodConnection conn group by conn.server.id")
+    List<VodConnectionResult> getVodConnectionsCount();
 }
