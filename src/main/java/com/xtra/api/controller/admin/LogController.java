@@ -28,10 +28,10 @@ public class LogController {
     public Page<ActivityLogView> getActivityLogs(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir
-            , @RequestParam(required = false, name = "server_id") Long serverId, @RequestParam(required = false, name = "stream_id") Long streamId
-            , @RequestParam(required = false, name = "line_id") Long lineId, @RequestParam(required = false, name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom
+            , @RequestParam(required = false, name = "server_name") String serverName, @RequestParam(required = false, name = "stream_name") String streamName
+            , @RequestParam(required = false, name = "line_username") String lineUsername, @RequestParam(required = false, name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom
             , @RequestParam(required = false, name = "date_to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
-        return logService.getActivityLogs(pageNo, pageSize, sortBy, sortDir, new ActivityLogFilter(lineId, streamId, serverId, dateFrom, dateTo, search));
+        return logService.getActivityLogs(pageNo, pageSize, sortBy, sortDir, new ActivityLogFilter(lineUsername, streamName, serverName, dateFrom, dateTo, search));
     }
 
     @GetMapping("/activity-logs/export")

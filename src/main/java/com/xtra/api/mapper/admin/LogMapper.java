@@ -9,14 +9,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public abstract class LogMapper {
 
-    @Mapping(source = "line.id", target = "lineId")
-    @Mapping(source = "stream.id", target = "streamId")
-    @Mapping(source = "server.id", target = "serverId")
+    public abstract ActivityLogView convertToActivityLogView(ActivityLog activityLog);
+
     @Mapping(source = "line.username", target = "lineUsername")
     @Mapping(source = "stream.name", target = "streamName")
     @Mapping(source = "server.name", target = "serverName")
-    public abstract ActivityLogView convertToActivityLogView(ActivityLog activityLog);
-
     @Mapping(source = "userIp", target = "ip")
     @Mapping(source = "startDate", target = "start")
     @Mapping(source = "lastRead", target = "stop")

@@ -53,8 +53,8 @@ public class LogService {
         try (CSVPrinter printer = new CSVPrinter(writer,
                 CSVFormat.DEFAULT.withHeader("Line", "Stream", "Server", "Ip", "Player", "Country", "Start", "Stop", "Duration", "Output"))) {
             for (var log : logs) {
-                printer.printRecord(log.getLine().getUsername(), log.getStream().getName(),
-                        log.getServer().getName(), log.getIp(), log.getPlayer(), log.getCountry(),
+                printer.printRecord(log.getLineUsername(), log.getStreamName(),
+                        log.getServerName(), log.getIp(), log.getPlayer(), log.getCountry(),
                         log.getStart(), log.getStop(), log.getDuration(), log.getOutput());
             }
         } catch (IOException e) {

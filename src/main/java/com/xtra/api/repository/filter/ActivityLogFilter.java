@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ActivityLogFilter {
-    private Long lineId;
-    private Long streamId;
-    private Long serverId;
+    private String lineUsername;
+    private String streamName;
+    private String serverName;
     private LocalDateTime dateFrom;
     private LocalDateTime dateTo;
     private String search;
