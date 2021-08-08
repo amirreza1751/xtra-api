@@ -96,7 +96,7 @@ public class ResellerLineServiceImpl extends LineService {
         if (initialCredit >= packageCredits) {
             owner.setCredits(initialCredit - packageCredits);
             resellerRepository.save(owner);
-            CreditLog log = new CreditLog(owner, owner, initialCredit, owner.getCredits(), -1 * packageCredits, LocalDateTime.now()
+            CreditLog log = new CreditLog(owner.getUsername(), owner.getUserType(), owner.getUsername(), initialCredit, owner.getCredits(), -1 * packageCredits, LocalDateTime.now()
                     , CreditLogReason.RESELLER_LINE_CREATE_EXTEND, "");
             logService.saveResellerLog(new ResellerLog(owner, line, log, LocalDateTime.now(), ResellerLogAction.EXTEND_LINE));
 

@@ -33,9 +33,9 @@ public class CreditLogService extends CrudService<CreditLog, Long, CreditLogRepo
 
     public Page<CreditLogView> getCreditLogs(int pageNo, int pageSize, String sortBy, String sortDir, CreditLogFilter filter) {
         var predicate = new OptionalBooleanBuilder(creditLog.isNotNull())
-                .notNullAnd(creditLog.actor.id::eq, filter.getActorId())
-                .notNullAnd(creditLog.actor.userType::eq, filter.getActorUserType())
-                .notNullAnd(creditLog.target.id::eq, filter.getTargetId())
+                .notNullAnd(creditLog.actorUsername::contains, filter.getActorUsername())
+                .notNullAnd(creditLog.actorType::eq, filter.getActorUserType())
+                .notNullAnd(creditLog.targetUsername::contains, filter.getTargetUsername())
                 .notNullAnd(creditLog.changeAmount::goe, filter.getChangeAmountGTE())
                 .notNullAnd(creditLog.changeAmount::loe, filter.getChangeAmountLTE())
                 .notNullAnd(creditLog.date::after, filter.getDateFrom())
@@ -45,8 +45,8 @@ public class CreditLogService extends CrudService<CreditLog, Long, CreditLogRepo
         var search = filter.getSearch();
         if (search != null) {
             predicate = predicate.andAnyOf(
-                    creditLog.actor.username.containsIgnoreCase(search),
-                    creditLog.target.username.containsIgnoreCase(search),
+                    creditLog.actorUsername.containsIgnoreCase(search),
+                    creditLog.targetUsername.containsIgnoreCase(search),
                     creditLog.description.containsIgnoreCase(search)
             );
         }
@@ -61,7 +61,7 @@ public class CreditLogService extends CrudService<CreditLog, Long, CreditLogRepo
 
     public CreditLog saveCreditChangeLog(User actor, Reseller target, int initialCredits, int changeAmount, CreditLogReason reason, String description) {
         var finalCredits = initialCredits + changeAmount;
-        CreditLog log = new CreditLog(actor, target, initialCredits, finalCredits, changeAmount, LocalDateTime.now()
+        CreditLog log = new CreditLog(actor.getUsername(), actor.getUserType(), target.getUsername(), initialCredits, finalCredits, changeAmount, LocalDateTime.now()
                 , reason, description);
         repository.save(log);
 
@@ -78,7 +78,7 @@ public class CreditLogService extends CrudService<CreditLog, Long, CreditLogRepo
         try (CSVPrinter printer = new CSVPrinter(writer,
                 CSVFormat.DEFAULT.withHeader("Actor", "Actor Type", "Target", "Initial Credits", "Final Credits", "Change Amount", "Date", "Reason", "Description"))) {
             for (var log : logs) {
-                printer.printRecord(log.getActor().getUsername(), log.getActor().getUserType(), log.getTarget().getUsername(),
+                printer.printRecord(log.getActorUsername(), log.getActorType(), log.getTargetUsername(),
                         log.getInitialCredits(), log.getFinalCredits(), log.getChangeAmount(), log.getDate(), log.getReason(), log.getDescription());
             }
         } catch (IOException e) {
