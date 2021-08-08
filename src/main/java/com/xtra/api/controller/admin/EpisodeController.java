@@ -1,9 +1,7 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.model.vod.Series;
-import com.xtra.api.projection.admin.episode.EpisodeInsertView;
-import com.xtra.api.projection.admin.episode.EpisodeListView;
-import com.xtra.api.projection.admin.episode.EpisodeView;
+import com.xtra.api.projection.admin.episode.*;
 import com.xtra.api.service.admin.EpisodeService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -38,6 +36,19 @@ public class EpisodeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Series> deleteEpisode(@PathVariable Long id) {
         episodeService.deleteEpisode(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // Batch Actions
+    @PatchMapping("/batch")
+    public ResponseEntity<?> updateAll(@RequestBody EpisodeBatchUpdateView episodeBatchUpdateView) {
+        episodeService.updateAll(episodeBatchUpdateView);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/batch")
+    public ResponseEntity<?> deleteAll(@RequestBody EpisodeBatchDeleteView episodeBatchDeleteView) {
+        episodeService.deleteAll(episodeBatchDeleteView);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

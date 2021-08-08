@@ -75,4 +75,15 @@ public abstract class EpisodeMapper {
         episodeView.setServers(servers);
     }
 
+    public Set<VideoServer> convertToVideoServers(Set<Long> serverIds, Episode episode){
+        Set<VideoServer> videoServers = new HashSet<>();
+        if (serverIds.size() > 0 ){
+            for (Video video : episode.getVideos()){
+                for (Long serverId : serverIds){
+                    videoServers.add(new VideoServer(new VideoServerId(video.getId(), serverId)));
+                }
+            }
+        }
+        return videoServers;
+    }
 }

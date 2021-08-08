@@ -3,13 +3,9 @@ package com.xtra.api.service.admin;
 import com.xtra.api.model.exception.EntityAlreadyExistsException;
 import com.xtra.api.mapper.admin.EpisodeMapper;
 import com.xtra.api.mapper.admin.SeasonMapper;
-import com.xtra.api.model.vod.EncodeStatus;
-import com.xtra.api.model.vod.Episode;
-import com.xtra.api.model.vod.Season;
-import com.xtra.api.model.vod.Video;
-import com.xtra.api.projection.admin.episode.EpisodeInsertView;
-import com.xtra.api.projection.admin.episode.EpisodeListView;
-import com.xtra.api.projection.admin.episode.EpisodeView;
+import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.vod.*;
+import com.xtra.api.projection.admin.episode.*;
 import com.xtra.api.repository.EpisodeRepository;
 import com.xtra.api.repository.SeriesRepository;
 import com.xtra.api.repository.VideoRepository;
@@ -21,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -146,5 +143,36 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
         } while (videoRepository.findByToken(token).isPresent());
         video.setToken(token);
         video.setEncodeStatus(EncodeStatus.NOT_ENCODED);
+    }
+
+    public void updateAll(EpisodeBatchUpdateView episodeBatchUpdateView) {
+        var episodeIds = episodeBatchUpdateView.getEpisodeIds();
+        var serverIds = episodeBatchUpdateView.getServerIds();
+
+        if (episodeIds != null) {
+            for (Long episodeId : episodeIds) {
+                var episode = repository.findById(episodeId).orElseThrow(() -> new EntityNotFoundException("Episode", episodeId.toString()));
+
+                if (serverIds.size() > 0) {
+                    Set<VideoServer> videoServers = episodeMapper.convertToVideoServers(serverIds, episode);
+                        for (Video video : episode.getVideos()){
+                            if (!episodeBatchUpdateView.getKeepServers()) {
+                                video.getVideoServers().retainAll(videoServers);
+                            }
+                            video.getVideoServers().addAll(videoServers);
+                        }
+                }
+                repository.save(episode);
+            }
+        }
+    }
+
+    public void deleteAll(EpisodeBatchDeleteView episodeBatchDeleteView) {
+        var episodeIds = episodeBatchDeleteView.getEpisodeIds();
+        if (episodeIds != null) {
+            for (Long episodeId : episodeIds) {
+                deleteEpisode(episodeId);
+            }
+        }
     }
 }
