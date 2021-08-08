@@ -30,8 +30,6 @@ public abstract class LogMapper {
     @Mapping(target = "id", ignore = true)
     public abstract ActivityLog convertConnectionToActivityLog(Connection connection);
 
-    @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "user.username", target = "username")
     public abstract LoginLogView convertToLoginLogView(LoginLog loginLog);
 
     @Mapping(source = "reseller.id", target = "resellerId")

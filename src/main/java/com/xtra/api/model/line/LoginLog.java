@@ -14,15 +14,14 @@ public class LoginLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    private User user;
+    private String username;
     private UserType type;
     private String ip;
     private LoginLogStatus status;
     private LocalDateTime date;
 
-    public LoginLog(User user, UserType type, String ipAddress, LoginLogStatus success, LocalDateTime now) {
-        this.user = user;
+    public LoginLog(String username, UserType type, String ipAddress, LoginLogStatus success, LocalDateTime now) {
+        this.username = username;
         this.type = type;
         this.ip = ipAddress;
         this.status = success;
