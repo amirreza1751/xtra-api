@@ -38,13 +38,12 @@ public class LogController {
     }
 
     @GetMapping("/activity-logs")
-    public Page<ActivityLogView> getActivityLogs(
-            @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-            @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir,
-            @RequestParam(required = false, name = "server_id") Long serverId, @RequestParam(required = false, name = "stream_id") Long streamId,
-            @RequestParam(required = false, name = "line_id") Long lineId, @RequestParam(required = false, name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
-            @RequestParam(required = false, name = "date_to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
-        return logService.getActivityLogs(pageNo, pageSize, sortBy, sortDir, new ActivityLogFilter(lineId, streamId, serverId, dateFrom, dateTo, search));
+    public Page<ActivityLogView> getActivityLogs(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+            , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir
+            , @RequestParam(required = false, name = "server_name") String serverName, @RequestParam(required = false, name = "stream_name") String streamName
+            , @RequestParam(required = false, name = "line_username") String lineUsername, @RequestParam(required = false, name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom
+            , @RequestParam(required = false, name = "date_to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
+        return logService.getActivityLogs(pageNo, pageSize, sortBy, sortDir, new ActivityLogFilter(lineUsername, streamName, serverName, dateFrom, dateTo, search));
     }
 
     @GetMapping("/activity-logs/export")
@@ -125,11 +124,9 @@ public class LogController {
     }
 
     @GetMapping("/reseller-logs/clear")
-    public ResponseEntity<?> clearResellerLogs(
-            @RequestParam(name = "date_from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
-            @RequestParam(name = "date_to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
-        logService.clearResellerLogs(dateFrom, dateTo);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    public ResponseEntity<?> clearResellerLogs() {
+        logService.clearResellerLogs();
+        return ResponseEntity.ok().build();
     }
 
 }

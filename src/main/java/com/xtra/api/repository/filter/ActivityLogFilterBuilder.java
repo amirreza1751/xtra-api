@@ -10,17 +10,18 @@ public class ActivityLogFilterBuilder {
 
     public Predicate build(ActivityLogFilter filter) {
         var filterPred = new OptionalBooleanBuilder(LOG.isNotNull())
-                .notNullAnd(LOG.stream.id::eq, filter.getStreamId())
-                .notNullAnd(LOG.server.id::eq, filter.getServerId())
-                .notNullAnd(LOG.line.id::eq, filter.getLineId())
+                .notNullAnd(LOG.lineUsername::containsIgnoreCase, filter.getLineUsername())
+                .notNullAnd(LOG.serverName::containsIgnoreCase, filter.getServerName())
+                .notNullAnd(LOG.streamName::containsIgnoreCase, filter.getLineUsername())
                 .notNullAnd(LOG.start::after, filter.getDateFrom())
                 .notNullAnd(LOG.stop::before, filter.getDateTo())
                 .build();
         if (filter.getSearch() == null)
             return filterPred;
-        return filterPred.andAnyOf(LOG.line.username.containsIgnoreCase(filter.getSearch()),
-                LOG.stream.name.containsIgnoreCase(filter.getSearch()),
-                LOG.server.name.containsIgnoreCase(filter.getSearch()),
+        return filterPred.andAnyOf(
+                LOG.streamName.containsIgnoreCase(filter.getSearch()),
+                LOG.serverName.containsIgnoreCase(filter.getSearch()),
+                LOG.lineUsername.containsIgnoreCase(filter.getSearch()),
                 LOG.ip.containsIgnoreCase(filter.getSearch()));
     }
 }

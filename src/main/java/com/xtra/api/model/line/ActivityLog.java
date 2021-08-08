@@ -16,14 +16,9 @@ public class ActivityLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Line line;
-
-    @ManyToOne
-    private Stream stream;
-
-    @ManyToOne
-    private Server server;
+    private String lineUsername;
+    private String streamName;
+    private String serverName;
     private String ip;
     private String player;
     private String country;

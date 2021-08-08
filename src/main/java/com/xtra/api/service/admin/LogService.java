@@ -71,8 +71,8 @@ public class LogService {
         try (CSVPrinter printer = new CSVPrinter(writer,
                 CSVFormat.DEFAULT.withHeader("Line", "Stream", "Server", "Ip", "Player", "Country", "Start", "Stop", "Duration", "Output"))) {
             for (var log : logs) {
-                printer.printRecord(log.getLine().getUsername(), log.getStream().getName(),
-                        log.getServer().getName(), log.getIp(), log.getPlayer(), log.getCountry(),
+                printer.printRecord(log.getLineUsername(), log.getStreamName(),
+                        log.getServerName(), log.getIp(), log.getPlayer(), log.getCountry(),
                         log.getStart(), log.getStop(), log.getDuration(), log.getOutput());
             }
         } catch (IOException e) {
@@ -165,12 +165,8 @@ public class LogService {
         return new ByteArrayResource(writer.toString().getBytes(StandardCharsets.UTF_8));
     }
 
-    public void clearResellerLogs(LocalDateTime dateFrom, LocalDateTime dateTo) {
-        var predicate = new OptionalBooleanBuilder(resellerLog.isNotNull())
-                .notNullAnd(resellerLog.date::after, dateFrom)
-                .notNullAnd(resellerLog.date::before, dateTo)
-                .build();
-        var logs = resellerLogRepository.findAll(predicate);
+    public void clearResellerLogs() {
+        var logs = resellerLogRepository.findAll();
         resellerLogRepository.deleteAll(logs);
     }
 
