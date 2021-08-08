@@ -1,13 +1,9 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.LogMapper;
-import com.xtra.api.model.line.Connection;
-import com.xtra.api.model.line.LoginLog;
-import com.xtra.api.model.line.QActivityLog;
-import com.xtra.api.model.line.QLoginLog;
+import com.xtra.api.model.line.*;
 import com.xtra.api.model.stream.StreamProtocol;
-import com.xtra.api.model.user.QResellerLog;
-import com.xtra.api.model.user.ResellerLog;
+import com.xtra.api.model.user.*;
 import com.xtra.api.projection.admin.log.ActivityLogView;
 import com.xtra.api.projection.admin.log.LoginLogView;
 import com.xtra.api.projection.admin.log.ResellerLogView;
@@ -142,8 +138,8 @@ public class LogService {
         return resellerLogRepository.findAll(predicate, getSortingPageable(pageNo, pageSize, sortBy, sortDir)).map(logMapper::convertToResellerLogView);
     }
 
-    public void saveResellerLog(ResellerLog resellerLog) {
-        resellerLogRepository.save(resellerLog);
+    public void saveResellerLog(Reseller reseller, User user, LocalDateTime date, ResellerLogAction action) {
+        resellerLogRepository.save(new ResellerLog(reseller.getUsername(), user.getUsername(), user.getUserType(), date, action));
     }
 
     public ByteArrayResource downloadResellerLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
@@ -154,9 +150,9 @@ public class LogService {
         var logs = resellerLogRepository.findAll(predicate);
         StringWriter writer = new StringWriter();
         try (CSVPrinter printer = new CSVPrinter(writer,
-                CSVFormat.DEFAULT.withHeader("ID", "Reseller", "User/Subreseller", "Action", "Date"))) {
+                CSVFormat.DEFAULT.withHeader("ID", "Reseller", "User/Subreseller", "Type", "Action", "Date"))) {
             for (var log : logs) {
-                printer.printRecord(log.getId(), log.getReseller().getUsername(), log.getUser().getUsername(),
+                printer.printRecord(log.getId(), log.getResellerUsername(), log.getTargetUsername(), log.getTargetType(),
                         log.getAction(), log.getDate());
             }
         } catch (IOException e) {

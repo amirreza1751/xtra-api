@@ -34,10 +34,6 @@ public abstract class LogMapper {
     @Mapping(source = "user.username", target = "username")
     public abstract LoginLogView convertToLoginLogView(LoginLog loginLog);
 
-    @Mapping(source = "reseller.id", target = "resellerId")
-    @Mapping(source = "reseller.username", target = "resellerUsername")
-    @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "user.username", target = "userUsername")
     public abstract ResellerLogView convertToResellerLogView(ResellerLog resellerLog);
 
     @Mapping(source = "actor.id",target = "actorId")

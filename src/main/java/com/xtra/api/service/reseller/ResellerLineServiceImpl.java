@@ -71,7 +71,7 @@ public class ResellerLineServiceImpl extends LineService {
             var res = insert(line);
             resellerRepository.save(owner);
             CreditLog creditLog = creditLogService.saveCreditChangeLog(owner, owner, initialCredit, -packageCredits, CreditLogReason.RESELLER_LINE_CREATE_EXTEND, "");
-            logService.saveResellerLog(new ResellerLog(owner, line, creditLog, LocalDateTime.now(), ResellerLogAction.NEW_LINE));
+            logService.saveResellerLog(owner, line, LocalDateTime.now(), ResellerLogAction.NEW_LINE);
             return lineMapper.convertToView(res);
         }
         throw new ActionNotAllowedException("User Credit is Low", RESELLER_CREDIT_LOW);
@@ -97,7 +97,7 @@ public class ResellerLineServiceImpl extends LineService {
             resellerRepository.save(owner);
             CreditLog log = new CreditLog(owner, owner, initialCredit, owner.getCredits(), -1 * packageCredits, LocalDateTime.now()
                     , CreditLogReason.RESELLER_LINE_CREATE_EXTEND, "");
-            logService.saveResellerLog(new ResellerLog(owner, line, log, LocalDateTime.now(), ResellerLogAction.EXTEND_LINE));
+            logService.saveResellerLog(owner, line, LocalDateTime.now(), ResellerLogAction.EXTEND_LINE);
 
             return lineMapper.convertToView(repository.save(line));
         }
@@ -112,7 +112,7 @@ public class ResellerLineServiceImpl extends LineService {
             entityNotFoundException("id", id);
         repository.deleteLineByOwnerAndId(owner, id);
 
-        logService.saveResellerLog(new ResellerLog(owner, findByIdOrFail(id), LocalDateTime.now(), ResellerLogAction.DELETE_LINE));
+        logService.saveResellerLog(owner, findByIdOrFail(id), LocalDateTime.now(), ResellerLogAction.DELETE_LINE);
     }
 
     public void updateLineBlock(Long id, boolean blocked) {
@@ -120,7 +120,7 @@ public class ResellerLineServiceImpl extends LineService {
         line.setBlocked(blocked);
         repository.save(line);
 
-        logService.saveResellerLog(new ResellerLog(getCurrentReseller(), line, LocalDateTime.now(), ResellerLogAction.BLOCK_LINE));
+        logService.saveResellerLog(getCurrentReseller(), line, LocalDateTime.now(), ResellerLogAction.BLOCK_LINE);
     }
 
     public void updateLineBan(Long id, boolean banned) {
@@ -128,7 +128,7 @@ public class ResellerLineServiceImpl extends LineService {
         line.setBanned(banned);
         repository.save(line);
 
-        logService.saveResellerLog(new ResellerLog(getCurrentReseller(), line, LocalDateTime.now(), ResellerLogAction.BAN_LINE));
+        logService.saveResellerLog(getCurrentReseller(), line, LocalDateTime.now(), ResellerLogAction.BAN_LINE);
     }
 
     private Line findLineByOwnerAndIdOrFail(Reseller owner, Long id) {

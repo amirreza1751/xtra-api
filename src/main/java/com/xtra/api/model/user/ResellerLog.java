@@ -16,30 +16,16 @@ public class ResellerLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    private Reseller reseller;
-
-    @OneToOne
-    private User user;
-
-    @OneToOne
-    private CreditLog creditLog;
-
+    private String resellerUsername;
+    private String targetUsername;
+    private UserType targetType;
     private LocalDateTime date;
-
     private ResellerLogAction action;
 
-    public ResellerLog(Reseller reseller,User user, CreditLog creditLog, LocalDateTime date, ResellerLogAction action) {
-        this.user = user;
-        this.reseller = reseller;
-        this.creditLog = creditLog;
-        this.action = action;
-        this.date = date;
-    }
-
-    public ResellerLog(Reseller reseller,User user, LocalDateTime date, ResellerLogAction action) {
-        this.user = user;
-        this.reseller = reseller;
+    public ResellerLog(String resellerUsername,String targetUsername, UserType targetType, LocalDateTime date, ResellerLogAction action) {
+        this.resellerUsername = resellerUsername;
+        this.targetUsername = targetUsername;
+        this.targetType = targetType;
         this.action = action;
         this.date = date;
     }
