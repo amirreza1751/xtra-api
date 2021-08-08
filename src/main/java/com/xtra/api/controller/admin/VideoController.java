@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/videos")
 public class VideoController {
@@ -25,5 +29,12 @@ public class VideoController {
     @GetMapping("/token/{video_token}")
     public ResponseEntity<Video> getVideoByToken(@PathVariable("video_token") String videoToken) {
         return ResponseEntity.ok(videoService.getByToken(videoToken));
+    }
+
+    //Play a Video
+    @GetMapping("/play/{line_token}/{video_token}")
+    public void playVideo(@PathVariable String video_token, @PathVariable String line_token, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String videoLink = videoService.playVideo(video_token, line_token, request);
+        response.sendRedirect(videoLink);
     }
 }
