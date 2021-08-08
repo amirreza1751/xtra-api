@@ -85,12 +85,12 @@ public class LogController {
     public Page<CreditLogView> getCreditLogs(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
             @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir,
-            @RequestParam(required = false, name = "actor_id") Long actorId, @RequestParam(required = false, name = "actor_type") UserType actorUserType,
-            @RequestParam(required = false, name = "target_id") Long targetId, @RequestParam(required = false, name = "amount_gte") Integer changeAmountGTE,
+            @RequestParam(required = false, name = "actor_usern") String actorUsername, @RequestParam(required = false, name = "actor_type") UserType actorUserType,
+            @RequestParam(required = false, name = "target_username") String targetUsername, @RequestParam(required = false, name = "amount_gte") Integer changeAmountGTE,
             @RequestParam(required = false, name = "amount_lte") Integer changeAmountLTE, @RequestParam(required = false, name = "reason") CreditLogReason reason,
             @RequestParam(required = false, name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
             @RequestParam(required = false, name = "date_to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
-        return creditLogService.getCreditLogs(pageNo, pageSize, sortBy, sortDir, new CreditLogFilter(actorId, actorUserType, targetId, changeAmountLTE, changeAmountGTE, dateFrom, dateTo, reason, search));
+        return creditLogService.getCreditLogs(pageNo, pageSize, sortBy, sortDir, new CreditLogFilter(actorUsername, actorUserType, targetUsername, changeAmountLTE, changeAmountGTE, dateFrom, dateTo, reason, search));
     }
 
     @GetMapping("/credit-logs/export")

@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreditLogFilter {
-    private Long actorId;
+    private String actorUsername;
     private UserType actorUserType;
-    private Long targetId;
+    private String targetUsername;
     private Integer changeAmountLTE;
     private Integer changeAmountGTE;
     private LocalDateTime dateFrom;

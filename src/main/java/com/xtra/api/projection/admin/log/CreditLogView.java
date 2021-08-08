@@ -8,10 +8,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class CreditLogView {
-    private Long actorId;
     private String actorUsername;
     private UserType actorUserType;
-    private Long targetId;
     private String targetUsername;
     private int initialCredits;
     private int finalCredits;
