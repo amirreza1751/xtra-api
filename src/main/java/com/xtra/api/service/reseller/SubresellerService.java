@@ -76,7 +76,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
 
         CreditLog log = creditLogService.saveCreditChangeLog(getCurrentUser(), subreseller, 0, creditChange, CreditLogReason.RESELLER_SUBRESELLER_CREATION, "");
         creditLogService.saveCreditChangeLog(getCurrentUser(), getCurrentReseller(), actorInitialCredits, -creditChange, CreditLogReason.RESELLER_SUBRESELLER_CREATION, "");
-        logService.saveResellerLog(new ResellerLog(currentReseller, subreseller, log, LocalDateTime.now(), ResellerLogAction.NEW_SUBRESELLER));
+        logService.saveResellerLog(currentReseller, subreseller, LocalDateTime.now(), ResellerLogAction.NEW_SUBRESELLER);
         return resellerMapper.convertToSubresellerView(res);
     }
 
@@ -108,7 +108,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         CreditLog log = creditLogService.saveCreditChangeLog(getCurrentUser(), targetReseller, targetInitialCredits, creditChange, CreditLogReason.RESELLER_CREDIT_TRANSFER, creditChangeRequest.getDescription());
         creditLogService.saveCreditChangeLog(getCurrentUser(), getCurrentReseller(), actorInitialCredits, -creditChange, CreditLogReason.RESELLER_CREDIT_TRANSFER, creditChangeRequest.getDescription());
 
-        logService.saveResellerLog(new ResellerLog(currentReseller, targetReseller, log, LocalDateTime.now(), ResellerLogAction.CREDIT_CHANGE_SUBRESELLER));
+        logService.saveResellerLog(currentReseller, targetReseller, LocalDateTime.now(), ResellerLogAction.CREDIT_CHANGE_SUBRESELLER);
     }
 
 
@@ -119,7 +119,7 @@ public class SubresellerService extends CrudService<Reseller, Long, ResellerRepo
         } else
             throw new EntityNotFoundException("Reseller", id.toString());
 
-        logService.saveResellerLog(new ResellerLog(currentReseller, findByIdOrFail(id), LocalDateTime.now(), ResellerLogAction.DELETE_SUBRESELLER));
+        logService.saveResellerLog(currentReseller, findByIdOrFail(id), LocalDateTime.now(), ResellerLogAction.DELETE_SUBRESELLER);
     }
 
     public void enableResellerLines(Long subresellerId) {

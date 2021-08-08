@@ -108,10 +108,10 @@ public class LogController {
      public Page<ResellerLogView> getResellerLogs(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
             @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir,
-            @RequestParam(required = false, name = "reseller_id") Long resellerId, @RequestParam(required = false, name = "action") ResellerLogAction action,
+            @RequestParam(required = false, name = "reseller_username") String resellerUsername, @RequestParam(required = false, name = "action") ResellerLogAction action,
             @RequestParam(required = false, name = "date_from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
             @RequestParam(required = false, name = "date_to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
-        return logService.getResellerLogs(pageNo, pageSize, sortBy, sortDir, new ResellerLogFilter(dateFrom, dateTo, resellerId, action, search));
+        return logService.getResellerLogs(pageNo, pageSize, sortBy, sortDir, new ResellerLogFilter(dateFrom, dateTo, resellerUsername, action, search));
     }
 
     @GetMapping("/reseller-logs/export")
