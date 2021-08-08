@@ -29,4 +29,8 @@ public class EpgFile {
             epgChannels = new HashSet<>();
         epgChannels.add(channel);
     }
+    @Override
+    public String toString(){
+        return this.name;
+    }
 }

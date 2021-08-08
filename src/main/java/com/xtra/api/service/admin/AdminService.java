@@ -3,6 +3,7 @@ package com.xtra.api.service.admin;
 import com.xtra.api.mapper.admin.AdminMapper;
 import com.xtra.api.model.user.Admin;
 import com.xtra.api.model.user.UserType;
+import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.admin.AdminInsertView;
 import com.xtra.api.projection.admin.user.admin.AdminView;
 import com.xtra.api.repository.AdminRepository;
@@ -16,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -59,5 +61,9 @@ public class AdminService extends CrudService<Admin, Long, AdminRepository> {
 
     public AdminView add(AdminInsertView adminInsertView) {
         return adminMapper.convertToView(insert(adminMapper.convertToEntity(adminInsertView)));
+    }
+
+    public List<UserSimpleView> getAdminList(String search) {
+        return repository.findAllByUsernameContains(search).stream().map(adminMapper::convertToUserSimpleView).collect(Collectors.toList());
     }
 }

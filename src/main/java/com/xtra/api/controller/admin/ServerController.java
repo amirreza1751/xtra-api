@@ -1,9 +1,10 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.model.server.File;
+import com.xtra.api.projection.EntityListItem;
+import com.xtra.api.projection.admin.server.ServerInfo;
 import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.server.ServerView;
-import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
 import com.xtra.api.service.admin.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,14 @@ public class ServerController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<SimpleServerView>> getServers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<ServerInfo>> getServers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(serverService.getAll(search, pageNo, pageSize, sortBy, sortDir));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<EntityListItem>> getServerList(@RequestParam String search) {
+        return ResponseEntity.ok(serverService.getServerList(search));
     }
 
     @GetMapping("/{id}")

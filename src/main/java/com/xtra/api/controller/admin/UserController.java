@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,10 +33,16 @@ public class UserController {
 
     //auth
     @GetMapping("/verify")
-    public ResponseEntity<?> verifyUserByToken(@AuthenticationPrincipal Authentication authentication) {
-        if (authentication != null)
-            return ResponseEntity.ok(userService.verifyUser(authentication));
+    public ResponseEntity<?> verifyUserByToken(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails != null)
+            return ResponseEntity.ok(userService.verifyUser(userDetails));
         else
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PostMapping("/block-ip")
+    public ResponseEntity<?> blockIpAddress(@RequestParam Long id) {
+        userService.blockIp(id);
+        return ResponseEntity.ok().build();
     }
 }

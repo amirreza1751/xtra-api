@@ -10,6 +10,8 @@ import com.xtra.api.model.user.UserType;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.RoleRepository;
+import com.xtra.api.repository.VodConnectionRepository;
+import com.xtra.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,8 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
     protected final ConnectionRepository connectionRepository;
     protected final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    protected final VodConnectionRepository vodConnectionRepository;
 
     @Value("${server.address}")
     private String serverAddress;
@@ -36,11 +40,13 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
     private String serverPort;
 
 
-    protected LineService(LineRepository repository, ConnectionRepository connectionRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+    protected LineService(LineRepository repository, ConnectionRepository connectionRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, UserRepository userRepository, VodConnectionRepository vodConnectionRepository) {
         super(repository, "Line");
         this.connectionRepository = connectionRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
+        this.vodConnectionRepository = vodConnectionRepository;
     }
 
     @Override
@@ -62,13 +68,13 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
             var username = "";
             while (!isUnique) {
                 username = generateRandomString(8, 12, true);
-                if (!repository.existsByUsername(username)) {
+                if (!userRepository.existsByUsername(username)) {
                     isUnique = true;
                 }
             }
             line.setUsername(username);
         } else {
-            if (repository.existsByUsername(lineUsername))
+            if (userRepository.existsByUsername(lineUsername))
                 //@todo change exception type
                 throw new RuntimeException("line Username already exists");
         }
@@ -133,5 +139,9 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
 
     public long getConnectionsCount(Long lineId) {
         return connectionRepository.countAllByLineId(lineId);
+    }
+
+    public long getVodConnectionsCount(Long lineId) {
+        return vodConnectionRepository.countAllByLineId(lineId);
     }
 }

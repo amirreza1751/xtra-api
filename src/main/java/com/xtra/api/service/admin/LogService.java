@@ -1,14 +1,21 @@
 package com.xtra.api.service.admin;
 
-import com.querydsl.core.BooleanBuilder;
 import com.xtra.api.mapper.admin.LogMapper;
 import com.xtra.api.model.line.Connection;
+import com.xtra.api.model.line.LoginLog;
 import com.xtra.api.model.line.QActivityLog;
+import com.xtra.api.model.line.QLoginLog;
 import com.xtra.api.model.stream.StreamProtocol;
+import com.xtra.api.model.user.QResellerLog;
+import com.xtra.api.model.user.ResellerLog;
 import com.xtra.api.projection.admin.log.ActivityLogView;
+import com.xtra.api.projection.admin.log.LoginLogView;
+import com.xtra.api.projection.admin.log.ResellerLogView;
 import com.xtra.api.repository.ActivityLogRepository;
-import com.xtra.api.repository.filter.ActivityLogFilter;
-import com.xtra.api.repository.filter.ActivityLogFilterBuilder;
+import com.xtra.api.repository.LoginLogRepository;
+import com.xtra.api.repository.ResellerLogRepository;
+import com.xtra.api.repository.filter.*;
+import com.xtra.api.util.OptionalBooleanBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -33,11 +40,19 @@ public class LogService {
     private final LogMapper logMapper;
     private final GeoIpService geoIpService;
     private final ActivityLogRepository activityLogRepository;
+    private final LoginLogRepository loginLogRepository;
+    private final ResellerLogRepository resellerLogRepository;
 
-    public LogService(LogMapper logMapper, GeoIpService geoIpService, ActivityLogRepository activityLogRepository) {
+    private final QActivityLog activityLog = QActivityLog.activityLog;
+    private final QLoginLog loginLog = QLoginLog.loginLog;
+    private final QResellerLog resellerLog = QResellerLog.resellerLog;
+
+    public LogService(LogMapper logMapper, GeoIpService geoIpService, ActivityLogRepository activityLogRepository, LoginLogRepository loginLogRepository, ResellerLogRepository resellerLogRepository) {
         this.logMapper = logMapper;
         this.geoIpService = geoIpService;
         this.activityLogRepository = activityLogRepository;
+        this.loginLogRepository = loginLogRepository;
+        this.resellerLogRepository = resellerLogRepository;
     }
 
     public Page<ActivityLogView> getActivityLogs(int pageNo, int pageSize, String sortBy, String sortDir, ActivityLogFilter filter) {
@@ -47,8 +62,11 @@ public class LogService {
     }
 
     public ByteArrayResource downloadActivityLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
-        BooleanBuilder builder = new BooleanBuilder(QActivityLog.activityLog.start.after(dateFrom).and(QActivityLog.activityLog.stop.before(dateTo)));
-        var logs = activityLogRepository.findAll(builder);
+        var predicate = new OptionalBooleanBuilder(activityLog.isNotNull())
+                .notNullAnd(activityLog.start::after, dateFrom)
+                .notNullAnd(activityLog.stop::before, dateTo)
+                .build();
+        var logs = activityLogRepository.findAll(predicate);
         StringWriter writer = new StringWriter();
         try (CSVPrinter printer = new CSVPrinter(writer,
                 CSVFormat.DEFAULT.withHeader("Line", "Stream", "Server", "Ip", "Player", "Country", "Start", "Stop", "Duration", "Output"))) {
@@ -88,4 +106,68 @@ public class LogService {
         }
         return page;
     }
+
+    public Page<LoginLogView> getLoginLogs(int pageNo, int pageSize, String sortBy, String sortDir, LoginLogFilter filter) {
+        var builder = new LoginLogFilterBuilder();
+        var predicate = builder.build(filter);
+        return loginLogRepository.findAll(predicate, getSortingPageable(pageNo, pageSize, sortBy, sortDir)).map(logMapper::convertToLoginLogView);
+    }
+
+    public void saveLoginLog(LoginLog loginLog) {
+        loginLogRepository.save(loginLog);
+    }
+
+    public ByteArrayResource downloadLoginLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
+        var predicate = new OptionalBooleanBuilder(loginLog.isNotNull())
+                .notNullAnd(loginLog.date::after, dateFrom)
+                .notNullAnd(loginLog.date::before, dateTo)
+                .build();
+        var logs = loginLogRepository.findAll(predicate);
+        StringWriter writer = new StringWriter();
+        try (CSVPrinter printer = new CSVPrinter(writer,
+                CSVFormat.DEFAULT.withHeader("ID", "User", "Type", "Ip", "Status", "Date"))) {
+            for (var log : logs) {
+                printer.printRecord(log.getId(), log.getUser().getUsername(), log.getType(),
+                        log.getIp(), log.getStatus(), log.getDate());
+            }
+        } catch (IOException e) {
+            log.error("error in writing file");
+        }
+        return new ByteArrayResource(writer.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    public Page<ResellerLogView> getResellerLogs(int pageNo, int pageSize, String sortBy, String sortDir, ResellerLogFilter filter) {
+        var builder = new ResellerLogFilterBuilder();
+        var predicate = builder.build(filter);
+        return resellerLogRepository.findAll(predicate, getSortingPageable(pageNo, pageSize, sortBy, sortDir)).map(logMapper::convertToResellerLogView);
+    }
+
+    public void saveResellerLog(ResellerLog resellerLog) {
+        resellerLogRepository.save(resellerLog);
+    }
+
+    public ByteArrayResource downloadResellerLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
+        var predicate = new OptionalBooleanBuilder(resellerLog.isNotNull())
+                .notNullAnd(resellerLog.date::after, dateFrom)
+                .notNullAnd(resellerLog.date::before, dateTo)
+                .build();
+        var logs = resellerLogRepository.findAll(predicate);
+        StringWriter writer = new StringWriter();
+        try (CSVPrinter printer = new CSVPrinter(writer,
+                CSVFormat.DEFAULT.withHeader("ID", "Reseller", "User/Subreseller", "Action", "Date"))) {
+            for (var log : logs) {
+                printer.printRecord(log.getId(), log.getReseller().getUsername(), log.getUser().getUsername(),
+                        log.getAction(), log.getDate());
+            }
+        } catch (IOException e) {
+            log.error("error in writing file");
+        }
+        return new ByteArrayResource(writer.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void clearResellerLogs() {
+        var logs = resellerLogRepository.findAll();
+        resellerLogRepository.deleteAll(logs);
+    }
+
 }

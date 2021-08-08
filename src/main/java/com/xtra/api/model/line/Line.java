@@ -62,4 +62,9 @@ public class Line extends User {
     public Line() {
         userType = UserType.LINE;
     }
+
+    @Override
+    public String toString(){
+        return this.adminNotes;
+    }
 }

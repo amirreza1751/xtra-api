@@ -1,0 +1,70 @@
+version: '3'
+services:
+  database:
+    image: "mariadb:10.6.3-focal"
+    environment:
+      - MYSQL_USER=xtra-user
+      - MYSQL_PASSWORD=qweasdzxc
+      - MYSQL_DATABASE=xtra-api
+      - MARIADB_RANDOM_ROOT_PASSWORD=yes
+    volumes:
+      - ~/.docker-conf/db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - xtra-network
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - xtra-network
+
+  server:
+    image: registry.gitlab.com/xtrapanel/xtra-api
+    environment:
+      - server.servlet.contextPath=/api/
+      - spring.datasource.url=jdbc:mariadb://database:3306/xtra-api
+      - spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+      - spring.jpa.database-platform=org.hibernate.dialect.MariaDB103Dialect
+      - spring.datasource.username=xtra-user
+      - spring.datasource.password=qweasdzxc
+      - spring.jpa.hibernate.ddl-auto=update
+      - server.address=0.0.0.0
+      - server.port=8082
+      - temp-dir=/tmp
+      - maxmind.dbPath=/geolite/GeoLite2-City.mmdb
+      - maxmind.license-key=skSHvmnkWQGEToJD
+      - core.apiPath=http://localhost
+      - core.apiPort=8080
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.username=guest
+      - spring.rabbitmq.password=guest
+      - spring.rabbitmq.port=5672
+    ports:
+      - "8082:8082"
+    depends_on:
+      - database
+      - rabbitmq
+    networks:
+      - xtra-network
+    restart: on-failure
+
+networks:
+  xtra-network:
+    driver: bridge
+

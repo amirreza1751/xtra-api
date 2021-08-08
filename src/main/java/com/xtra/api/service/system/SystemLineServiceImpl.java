@@ -1,11 +1,12 @@
 package com.xtra.api.service.system;
 
 import com.maxmind.geoip2.model.CityResponse;
-import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.AdminLineMapper;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.line.Connection;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.line.LineStatus;
+import com.xtra.api.model.line.VodConnection;
 import com.xtra.api.model.stream.Stream;
 import com.xtra.api.projection.admin.line.LineView;
 import com.xtra.api.projection.system.LineAuth;
@@ -24,19 +25,24 @@ import java.util.Optional;
 public class SystemLineServiceImpl extends LineService {
     private final AdminLineMapper lineMapper;
     private final GeoIpService geoIpService;
-    private final StreamRepository<Stream> streamRepository;
+    private final StreamRepository streamRepository;
     private final ServerRepository serverRepository;
     private final BlockedIpRepository blockedIpRepository;
+    private final VideoRepository videoRepository;
 
     @Autowired
     public SystemLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper
-            , BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService, RoleRepository roleRepository, StreamRepository streamRepository, ServerRepository serverRepository, BlockedIpRepository blockedIpRepository) {
-        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, GeoIpService geoIpService, RoleRepository roleRepository
+            , StreamRepository streamRepository, ServerRepository serverRepository, BlockedIpRepository blockedIpRepository
+            , VideoRepository videoRepository, UserRepository userRepository, VodConnectionRepository vodConnectionRepository) {
+
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository, userRepository,vodConnectionRepository);
         this.lineMapper = lineMapper;
         this.geoIpService = geoIpService;
         this.streamRepository = streamRepository;
         this.serverRepository = serverRepository;
         this.blockedIpRepository = blockedIpRepository;
+        this.videoRepository = videoRepository;
     }
 
     public Page<LineView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -100,6 +106,52 @@ public class SystemLineServiceImpl extends LineService {
             } else {
                 connection.setLastRead(LocalDateTime.now());
                 connectionRepository.save(connection);
+                return LineStatus.OK;
+            }
+        } else
+            return LineStatus.NOT_FOUND;
+    }
+
+
+    public LineStatus canLinePlayVod(LineAuth lineAuth) {
+        var lineByToken = repository.findByLineToken(lineAuth.getLineToken());
+        var videoByToken = videoRepository.findByToken(lineAuth.getMediaToken());
+        var serverByToken = serverRepository.findByToken(lineAuth.getServerToken());
+        if (lineByToken.isPresent() && videoByToken.isPresent() && serverByToken.isPresent()) {
+            var line = lineByToken.get();
+            var video = videoByToken.get();
+            var server = serverByToken.get();
+
+            var currentConnections = getVodConnectionsCount(line.getId());
+            var vodConnection = vodConnectionRepository.findByLineLineTokenAndServerTokenAndVideo_tokenAndUserIp(lineAuth.getLineToken(), lineAuth.getServerToken(), lineAuth.getMediaToken(), lineAuth.getIpAddress())
+                    .orElse(new VodConnection(line, video, server, lineAuth.getIpAddress()));
+            if (vodConnection.getId() == null) {
+                vodConnection.setStartDate(LocalDateTime.now());
+                Optional<CityResponse> geoResponse = geoIpService.getIpInformation(vodConnection.getUserIp());
+                if (geoResponse.isPresent()) {
+                    var geo = geoResponse.get();
+                    vodConnection.setCity(geo.getCity().getName());
+                    vodConnection.setCountry(geo.getCountry().getName());
+                    vodConnection.setIsoCode(geo.getCountry().getIsoCode());
+                    vodConnection.setIsp(geo.getTraits().getIsp());
+                }
+            }
+            if (line.isBanned()) {
+                return LineStatus.BANNED;
+            } else if (line.isBlocked()) {
+                return LineStatus.BLOCKED;
+            } else if (!line.isNeverExpire() && line.getExpireDate().isBefore(LocalDateTime.now())) {
+                return LineStatus.EXPIRED;
+            } else if (line.getMaxConnections() == 0 || line.getMaxConnections() < currentConnections) {
+                return LineStatus.MAX_CONNECTION_REACHED;
+            } else if (!isIpAllowed(line, lineAuth.getIpAddress()) || !isUserAgentAllowed(line, lineAuth.getUserAgent())) {
+                return LineStatus.FORBIDDEN;
+            } else if (false) {//@todo check access to stream
+                return LineStatus.NO_ACCESS_TO_STREAM;
+            }
+            else {
+                vodConnection.setLastRead(LocalDateTime.now());
+                vodConnectionRepository.save(vodConnection);
                 return LineStatus.OK;
             }
         } else

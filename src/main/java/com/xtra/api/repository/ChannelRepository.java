@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-public interface ChannelRepository extends StreamRepository<Channel> {
+public interface ChannelRepository extends StreamBaseRepository<Channel> {
 
     boolean existsChannelByStreamToken(String streamToken);
 

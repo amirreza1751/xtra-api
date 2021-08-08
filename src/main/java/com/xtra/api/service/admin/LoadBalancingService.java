@@ -3,7 +3,6 @@ package com.xtra.api.service.admin;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.Stream;
 import com.xtra.api.repository.ConnectionRepository;
-import com.xtra.api.repository.StreamRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
