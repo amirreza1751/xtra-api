@@ -1,7 +1,8 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.vod.Series;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
+import com.xtra.api.projection.admin.series.SeriesBatchDeleteView;
+import com.xtra.api.projection.admin.series.SeriesBatchUpdateView;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
 import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.service.admin.SeriesService;
@@ -45,6 +46,19 @@ public class SeriesController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSeries(@PathVariable Long id) {
         seriesService.deleteSeries(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // Batch Actions
+    @PatchMapping("/batch")
+    public ResponseEntity<?> updateAll(@RequestBody SeriesBatchUpdateView seriesBatchUpdateView) {
+        seriesService.updateAll(seriesBatchUpdateView);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/batch")
+    public ResponseEntity<?> deleteAll(@RequestBody SeriesBatchDeleteView seriesBatchDeleteView) {
+        seriesService.deleteAll(seriesBatchDeleteView);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

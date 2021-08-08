@@ -54,4 +54,18 @@ public abstract class SeriesMapper {
         if (collectionVods == null) return null;
         return collectionVods.stream().map(collectionVod -> collectionVod.getCollection().getId()).collect(Collectors.toSet());
     }
+
+    public Set<CollectionVod> convertToCollections(Set<Long> ids, Series series) {
+        Set<CollectionVod> collectionVodSet = new HashSet<>();
+
+        for (Long id : ids) {
+            CollectionVod collectionVod = new CollectionVod(new CollectionVodId(id, series.getId()));
+            var collection = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Collection", id.toString()));
+            collectionVod.setVod(series);
+            collectionVod.setCollection(collection);
+            collectionVodSet.add(collectionVod);
+        }
+
+        return collectionVodSet;
+    }
 }

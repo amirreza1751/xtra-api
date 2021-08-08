@@ -6,8 +6,11 @@ import com.xtra.api.model.exception.EntityAlreadyExistsException;
 import com.xtra.api.mapper.admin.EpisodeMapper;
 import com.xtra.api.mapper.admin.SeasonMapper;
 import com.xtra.api.mapper.admin.SeriesMapper;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
+import com.xtra.api.projection.admin.series.SeriesBatchDeleteView;
+import com.xtra.api.projection.admin.series.SeriesBatchUpdateView;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
 import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.repository.CollectionVodRepository;
@@ -106,6 +109,34 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             collectionVodRepository.deleteAll(seriesToDelete.getCollectionAssigns());
         }
         repository.delete(seriesToDelete);
+    }
+
+    public void updateAll(SeriesBatchUpdateView seriesBatchUpdateView) {
+        var seriesIds = seriesBatchUpdateView.getSeriesIds();
+        var collectionIds = seriesBatchUpdateView.getCollectionIds();
+
+        if (seriesIds != null) {
+            for (Long seriesId : seriesIds) {
+                var series = repository.findById(seriesId).orElseThrow(() -> new EntityNotFoundException("Series", seriesId.toString()));
+
+                if (collectionIds.size() > 0) {
+                    Set<CollectionVod> collectionVodSet = seriesMapper.convertToCollections(collectionIds, series);
+                    if (!seriesBatchUpdateView.getKeepCollections())
+                        series.getCollectionAssigns().retainAll(collectionVodSet);
+                    series.getCollectionAssigns().addAll(collectionVodSet);
+                }
+                repository.save(series);
+            }
+        }
+    }
+
+    public void deleteAll(SeriesBatchDeleteView seriesBatchDeleteView) {
+        var seriesIds = seriesBatchDeleteView.getSeriesIds();
+        if (seriesIds != null) {
+            for (Long seriesId : seriesIds) {
+                deleteSeries(seriesId);
+            }
+        }
     }
 
     //Episodes Section
