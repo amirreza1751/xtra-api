@@ -93,6 +93,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         user.setLastLoginIp(ipAddress);
         userRepository.save(user);
 
-        logService.saveLoginLog(new LoginLog(user, user.getUserType(), ipAddress, LoginLogStatus.SUCCESS, LocalDateTime.now()));
+        logService.saveLoginLog(new LoginLog(user.getUsername(), user.getUserType(), ipAddress, LoginLogStatus.SUCCESS, LocalDateTime.now()));
     }
 }

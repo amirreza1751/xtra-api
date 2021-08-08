@@ -10,14 +10,15 @@ public class LoginLogFilterBuilder {
 
     public Predicate build(LoginLogFilter filter) {
         var filterPred = new OptionalBooleanBuilder(LOG.isNotNull())
-                .notNullAnd(LOG.user.id::eq, filter.getUserId())
+                .notNullAnd(LOG.username::eq, filter.getUsername())
+                .notNullAnd(LOG.type::eq, filter.getUserType())
                 .notNullAnd(LOG.date::after, filter.getDateFrom())
                 .notNullAnd(LOG.date::before, filter.getDateTo())
                 .build();
         if (filter.getSearch() == null)
             return filterPred;
         return filterPred.andAnyOf(
-                LOG.user.username.containsIgnoreCase(filter.getSearch()),
+                LOG.username.containsIgnoreCase(filter.getSearch()),
                 LOG.ip.containsIgnoreCase(filter.getSearch()));
     }
 }

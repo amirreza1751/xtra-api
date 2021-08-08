@@ -127,7 +127,7 @@ public class LogService {
         try (CSVPrinter printer = new CSVPrinter(writer,
                 CSVFormat.DEFAULT.withHeader("ID", "User", "Type", "Ip", "Status", "Date"))) {
             for (var log : logs) {
-                printer.printRecord(log.getId(), log.getUser().getUsername(), log.getType(),
+                printer.printRecord(log.getId(), log.getUsername(), log.getType(),
                         log.getIp(), log.getStatus(), log.getDate());
             }
         } catch (IOException e) {
