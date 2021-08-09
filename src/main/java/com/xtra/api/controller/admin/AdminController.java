@@ -2,6 +2,8 @@ package com.xtra.api.controller.admin;
 
 import com.xtra.api.mapper.admin.AdminMapper;
 import com.xtra.api.projection.admin.user.UserSimpleView;
+import com.xtra.api.projection.admin.user.admin.AdminBatchDeleteView;
+import com.xtra.api.projection.admin.user.admin.AdminBatchInsertView;
 import com.xtra.api.projection.admin.user.admin.AdminInsertView;
 import com.xtra.api.projection.admin.user.admin.AdminView;
 import com.xtra.api.service.admin.AdminService;
@@ -49,9 +51,21 @@ public class AdminController {
         return ResponseEntity.ok(adminService.save(id, admin));
     }
 
+    @PatchMapping("/batches")
+    public ResponseEntity<?> updateAdminBatch(@RequestBody AdminBatchInsertView admins) {
+        adminService.saveAll(admins);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAdmin(@PathVariable Long id) {
         adminService.deleteOrFail(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/batches")
+    public ResponseEntity<?> deleteAdmins(@RequestBody AdminBatchDeleteView batchDelete) {
+        adminService.deleteAll(batchDelete);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
