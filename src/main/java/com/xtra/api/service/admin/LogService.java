@@ -88,6 +88,11 @@ public class LogService {
         activityLogRepository.saveAll(activityLogs);
     }
 
+    public void clearActivityLogs() {
+        var logs = activityLogRepository.findAll();
+        activityLogRepository.deleteAll(logs);
+    }
+
     protected Pageable getSortingPageable(int pageNo, int pageSize, String sortBy, String sortDir) {
         Pageable page;
         Sort.Order order;
@@ -130,6 +135,11 @@ public class LogService {
             log.error("error in writing file");
         }
         return new ByteArrayResource(writer.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void clearLoginLogs() {
+        var logs = loginLogRepository.findAll();
+        loginLogRepository.deleteAll(logs);
     }
 
     public Page<ResellerLogView> getResellerLogs(int pageNo, int pageSize, String sortBy, String sortDir, ResellerLogFilter filter) {

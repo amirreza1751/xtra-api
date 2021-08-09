@@ -87,4 +87,9 @@ public class CreditLogService extends CrudService<CreditLog, Long, CreditLogRepo
         return new ByteArrayResource(writer.toString().getBytes(StandardCharsets.UTF_8));
     }
 
+    public void clearCreditLogs() {
+        var logs = repository.findAll();
+        repository.deleteAll(logs);
+    }
+
 }

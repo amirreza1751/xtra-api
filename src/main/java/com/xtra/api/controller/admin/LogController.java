@@ -57,6 +57,13 @@ public class LogController {
                 .body(resource);
     }
 
+    @GetMapping("/activity-logs/clear")
+    public ResponseEntity<?> clearActivityLogs() {
+        logService.clearActivityLogs();
+        return ResponseEntity.ok().build();
+    }
+
+
     @GetMapping("/login-logs")
     public Page<LoginLogView> getLoginLogs(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
@@ -81,6 +88,12 @@ public class LogController {
                 .body(resource);
     }
 
+    @GetMapping("/login-logs/clear")
+    public ResponseEntity<?> clearLoginLogs() {
+        logService.clearLoginLogs();
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/credit-logs")
     public Page<CreditLogView> getCreditLogs(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
@@ -102,6 +115,12 @@ public class LogController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header("Content-Disposition", "attachment; filename=\"activity_log_export-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ".csv\"")
                 .body(resource);
+    }
+
+    @GetMapping("/credit-logs/clear")
+    public ResponseEntity<?> clearCreditLogs() {
+        creditLogService.clearCreditLogs();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/reseller-logs")
