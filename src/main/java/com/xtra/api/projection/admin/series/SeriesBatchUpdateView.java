@@ -14,5 +14,5 @@ public class SeriesBatchUpdateView {
     private Set<Long> SeriesIds;
     private Set<Long> collectionIds;
 
-    private Boolean keepCollections;
+    private boolean keepCollections;
 }

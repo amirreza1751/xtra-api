@@ -156,7 +156,7 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
                 if (serverIds.size() > 0) {
                     Set<VideoServer> videoServers = episodeMapper.convertToVideoServers(serverIds, episode);
                         for (Video video : episode.getVideos()){
-                            if (!episodeBatchUpdateView.getKeepServers()) {
+                            if (!episodeBatchUpdateView.isKeepServers()) {
                                 video.getVideoServers().retainAll(videoServers);
                             }
                             video.getVideoServers().addAll(videoServers);

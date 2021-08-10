@@ -14,5 +14,5 @@ public class EpisodeBatchUpdateView {
     private Set<Long> episodeIds;
     private Set<Long> serverIds;
 
-    private Boolean keepServers;
+    private boolean keepServers;
 }

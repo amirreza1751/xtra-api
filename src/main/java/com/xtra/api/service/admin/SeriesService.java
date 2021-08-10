@@ -121,7 +121,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
 
                 if (collectionIds.size() > 0) {
                     Set<CollectionVod> collectionVodSet = seriesMapper.convertToCollections(collectionIds, series);
-                    if (!seriesBatchUpdateView.getKeepCollections())
+                    if (!seriesBatchUpdateView.isKeepCollections())
                         series.getCollectionAssigns().retainAll(collectionVodSet);
                     series.getCollectionAssigns().addAll(collectionVodSet);
                 }
