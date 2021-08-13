@@ -2,6 +2,7 @@ package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.ResellerMapper;
 import com.xtra.api.model.exception.ActionNotAllowedException;
+import com.xtra.api.model.role.Role;
 import com.xtra.api.model.user.CreditLogReason;
 import com.xtra.api.model.user.Reseller;
 import com.xtra.api.model.user.UserType;
@@ -23,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.xtra.api.model.exception.ErrorCode.CREDIT_VALUE_INVALID;
 import static com.xtra.api.service.system.UserAuthService.getCurrentUser;
@@ -90,6 +92,39 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         return resellerMapper.convertToView(repository.save(existingReseller));
     }
 
+    public void saveAll(ResellerBatchView resellerBatchView) {
+        Set<Long> ids = resellerBatchView.getIds();
+
+        Reseller owner = null;
+        if (resellerBatchView.getOwnerId() != null)
+            owner = findByIdOrFail(resellerBatchView.getOwnerId());
+        Role role = null;
+        if (resellerBatchView.getRoleId() != null)
+            role = roleRepository.findById(resellerBatchView.getRoleId()).orElseThrow(() -> new RuntimeException("role not found"));
+
+        for(Long id : ids) {
+            Reseller reseller = findByIdOrFail(id);
+            if(resellerBatchView.getCredits() != null)
+                reseller.setCredits(Integer.parseInt(resellerBatchView.getCredits()));
+            if (resellerBatchView.getResellerDns() != null)
+                reseller.setResellerDns(resellerBatchView.getResellerDns());
+            if (resellerBatchView.getNotes() != null)
+                reseller.setNotes(resellerBatchView.getNotes());
+            if(resellerBatchView.getLang() != null)
+                reseller.setLang(resellerBatchView.getLang());
+            if (owner != null) {
+                reseller.setOwner(owner);
+            }
+            if (resellerBatchView.getIsBanned() != null)
+                reseller.setBanned(Boolean.parseBoolean(resellerBatchView.getIsBanned()));
+
+            if (role != null)
+                reseller.setRole(role);
+
+            repository.save(reseller);
+        }
+    }
+
     public ResellerView add(ResellerInsertView resellerInsertView) {
         return resellerMapper.convertToView(insert(resellerMapper.convertToEntity(resellerInsertView)));
     }
@@ -127,5 +162,18 @@ public class ResellerService extends CrudService<Reseller, Long, ResellerReposit
         }
         lineRepository.saveAll(lines);
         super.deleteOrFail(resellerId);
+    }
+
+    public void deleteAll(ResellerBatchDeleteView deleteView) {
+        for (Long id : deleteView.getIds()) {
+            var reseller = findByIdOrFail(id);
+            var substituteReseller = findByIdOrFail(deleteView.getNewOwnerId());
+            var lines = reseller.getLines();
+            for (var line : lines) {
+                line.setOwner(substituteReseller);
+            }
+            lineRepository.saveAll(lines);
+            super.deleteOrFail(id);
+        }
     }
 }

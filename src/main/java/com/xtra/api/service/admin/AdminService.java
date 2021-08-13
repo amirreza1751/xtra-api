@@ -4,6 +4,8 @@ import com.xtra.api.mapper.admin.AdminMapper;
 import com.xtra.api.model.user.Admin;
 import com.xtra.api.model.user.UserType;
 import com.xtra.api.projection.admin.user.UserSimpleView;
+import com.xtra.api.projection.admin.user.admin.AdminBatchDeleteView;
+import com.xtra.api.projection.admin.user.admin.AdminBatchInsertView;
 import com.xtra.api.projection.admin.user.admin.AdminInsertView;
 import com.xtra.api.projection.admin.user.admin.AdminView;
 import com.xtra.api.repository.AdminRepository;
@@ -17,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -65,5 +68,22 @@ public class AdminService extends CrudService<Admin, Long, AdminRepository> {
 
     public List<UserSimpleView> getAdminList(String search) {
         return repository.findAllByUsernameContains(search).stream().map(adminMapper::convertToUserSimpleView).collect(Collectors.toList());
+    }
+
+    public void saveAll(AdminBatchInsertView admins) {
+        Set<Long> ids = admins.getIds();
+        for (Long id : ids) {
+            Admin admin = findByIdOrFail(id);
+            if(admins.getRoleId() != null)
+                admin.setRole(adminMapper.convertToId(admins.getRoleId()));
+            if(admins.getIsBanned() != null)
+                admin.setBanned(Boolean.parseBoolean(admins.getIsBanned()));
+
+            repository.save(admin);
+        }
+    }
+
+    public void deleteAll(AdminBatchDeleteView batchDeleteView) {
+        repository.deleteAllByIdInBatch(batchDeleteView.getIds());
     }
 }

@@ -22,7 +22,7 @@ public abstract class AdminMapper {
 
     public abstract Admin convertToEntity(AdminInsertView view);
 
-    Role convertToId(Long roleId) {
+    public Role convertToId(Long roleId) {
         if (roleId == null)
             return null;//todo throw exception
         return roleService.findByIdOrFail(roleId);
