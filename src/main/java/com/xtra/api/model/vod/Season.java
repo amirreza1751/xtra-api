@@ -23,7 +23,7 @@ public class Season {
     private LocalDate airDate;
 
 
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     @OrderBy("episodeNumber")
     private List<Episode> episodes;
 
