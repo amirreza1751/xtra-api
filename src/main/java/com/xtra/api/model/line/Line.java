@@ -64,7 +64,11 @@ public class Line extends User {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return this.adminNotes;
+    }
+
+    public boolean isExpired() {
+        return (!neverExpire && expireDate.isBefore(LocalDateTime.now()));
     }
 }

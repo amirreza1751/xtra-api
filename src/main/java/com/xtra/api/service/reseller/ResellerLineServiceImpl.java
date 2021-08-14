@@ -5,13 +5,14 @@ import com.xtra.api.model.exception.ActionNotAllowedException;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.line.Package;
-import com.xtra.api.model.user.*;
+import com.xtra.api.model.user.CreditLogReason;
+import com.xtra.api.model.user.Reseller;
+import com.xtra.api.model.user.ResellerLogAction;
 import com.xtra.api.projection.reseller.line.LineCreateView;
 import com.xtra.api.projection.reseller.line.LineUpdateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.*;
 import com.xtra.api.service.CreditLogService;
-import com.xtra.api.repository.VodConnectionRepository;
 import com.xtra.api.service.LineService;
 import com.xtra.api.service.admin.LogService;
 import com.xtra.api.service.admin.PackageService;
@@ -24,7 +25,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-
 import java.time.LocalDateTime;
 
 import static com.xtra.api.model.exception.ErrorCode.RESELLER_CREDIT_LOW;
@@ -71,7 +71,7 @@ public class ResellerLineServiceImpl extends LineService {
             owner.setCredits(initialCredit - packageCredits);
             var res = insert(line);
             resellerRepository.save(owner);
-            CreditLog creditLog = creditLogService.saveCreditChangeLog(owner, owner, initialCredit, -packageCredits, CreditLogReason.RESELLER_LINE_CREATE_EXTEND, "");
+            creditLogService.saveCreditChangeLog(owner, owner, initialCredit, -packageCredits, CreditLogReason.RESELLER_LINE_CREATE_EXTEND, "");
             logService.saveResellerLog(owner, line, LocalDateTime.now(), ResellerLogAction.NEW_LINE);
             return lineMapper.convertToView(res);
         }
@@ -84,22 +84,24 @@ public class ResellerLineServiceImpl extends LineService {
         return lineMapper.convertToView(repository.save(line));
     }
 
-    public LineView extendLine(Long id, Long packageId) {
+    public LineView extendLine(Long id, Long packageId, String notes) {
         Package pack = packageService.findByIdOrFail(packageId);
         Line line = findByIdOrFail(id);
-        line.setExpireDate(line.getExpireDate().plus(pack.getDuration()));
-        line.setMaxConnections(pack.getMaxConnections());
-
         var owner = getCurrentReseller();
         var initialCredit = owner.getCredits();
         var packageCredits = pack.getCredits();
+
         if (initialCredit >= packageCredits) {
+            if (line.isExpired())
+                line.setExpireDate(LocalDateTime.now().plus(pack.getDuration()));
+            else
+                line.setExpireDate(line.getExpireDate().plus(pack.getDuration()));
+            line.setMaxConnections(pack.getMaxConnections());
+            line.setResellerNotes(notes);
             owner.setCredits(initialCredit - packageCredits);
             resellerRepository.save(owner);
-            CreditLog log = new CreditLog(owner.getUsername(), owner.getUserType(), owner.getUsername(), initialCredit, owner.getCredits(), -1 * packageCredits, LocalDateTime.now()
-                    , CreditLogReason.RESELLER_LINE_CREATE_EXTEND, "");
+            creditLogService.saveCreditChangeLog(owner, owner, initialCredit, -packageCredits, CreditLogReason.RESELLER_LINE_CREATE_EXTEND, "");
             logService.saveResellerLog(owner, line, LocalDateTime.now(), ResellerLogAction.EXTEND_LINE);
-
             return lineMapper.convertToView(repository.save(line));
         }
         throw new ActionNotAllowedException("User Credit is Low", RESELLER_CREDIT_LOW);
