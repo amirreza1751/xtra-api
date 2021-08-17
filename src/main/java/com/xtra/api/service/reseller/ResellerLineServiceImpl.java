@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 
+import static com.xtra.api.model.exception.ErrorCode.LINE_NEVER_EXPIRES;
 import static com.xtra.api.model.exception.ErrorCode.RESELLER_CREDIT_LOW;
 import static com.xtra.api.service.system.UserAuthService.getCurrentReseller;
 
@@ -87,6 +88,10 @@ public class ResellerLineServiceImpl extends LineService {
     public LineView extendLine(Long id, Long packageId, String notes) {
         Package pack = packageService.findByIdOrFail(packageId);
         Line line = findByIdOrFail(id);
+        if (line.isNeverExpire()) {
+            throw new ActionNotAllowedException("Line never expires", LINE_NEVER_EXPIRES);
+        }
+
         var owner = getCurrentReseller();
         var initialCredit = owner.getCredits();
         var packageCredits = pack.getCredits();

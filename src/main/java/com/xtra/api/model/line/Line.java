@@ -69,6 +69,8 @@ public class Line extends User {
     }
 
     public boolean isExpired() {
-        return (!neverExpire && expireDate.isBefore(LocalDateTime.now()));
+        if (neverExpire)
+            return false;
+        return (expireDate.isBefore(LocalDateTime.now()));
     }
 }
