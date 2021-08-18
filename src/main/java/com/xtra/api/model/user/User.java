@@ -22,6 +22,7 @@ public class User {
     @Email(message = "Email should be valid", regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")
     protected String email;
     protected String _2FASec;
+    protected boolean isUsing2FA;
     protected boolean isBanned = false;
 
     protected ZonedDateTime lastLoginDate;
