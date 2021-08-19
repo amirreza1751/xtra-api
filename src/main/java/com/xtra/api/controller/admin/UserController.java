@@ -7,12 +7,13 @@ import com.xtra.api.service.system.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.awt.image.BufferedImage;
 
 @RestController
 @RequestMapping("/users")
@@ -52,9 +53,15 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/barcode")
-    public int barcode() throws IOException, WriterException {
-        UserAuthService.createQRCode("otpauth://totp/My%20Awesome%20Company%3Atest%40gmail.com?secret=RT6HTNXMNODHOCS5HKTOW2NFCJWWB75Z&issuer=My%20Awesome%20Company", "/home/amirak/Desktop/barcode.png", 200, 200);
-        return 1;
+    @GetMapping(value = "/enable-2fa", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<BufferedImage> enable2FA() throws WriterException {
+        return ResponseEntity.ok()
+                .body(userAuthService.enable2FA());
+    }
+
+    @GetMapping(value = "/disable-2fa")
+    public ResponseEntity<?> disable2FA() {
+        userAuthService.disable2FA();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

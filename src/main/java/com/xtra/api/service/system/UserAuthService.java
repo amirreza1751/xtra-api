@@ -5,6 +5,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.user.Reseller;
 import com.xtra.api.repository.UserRepository;
@@ -12,6 +13,9 @@ import de.taimos.totp.TOTP;
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.converter.BufferedImageHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
+import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -53,25 +58,11 @@ public class UserAuthService {
         return (Reseller) getCurrentUser();
     }
 
-    public static String generateSecretKey() {
-        SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[20];
-        random.nextBytes(bytes);
-        Base32 base32 = new Base32();
-        return base32.encodeToString(bytes);
-    }
-
     public static String getTOTPCode(String secretKey) {
         Base32 base32 = new Base32();
         byte[] bytes = base32.decode(secretKey);
         String hexKey = Hex.encodeHexString(bytes);
         return TOTP.getOTP(hexKey);
-    }
-    @Scheduled(fixedRate = 1000)
-    public void code(){
-        String secretKey = "RT6HTNXMNODHOCS5HKTOW2NFCJWWB75Z";
-        String code = getTOTPCode(secretKey);
-            System.out.println(code);
     }
 
     public static String getGoogleAuthenticatorBarCode(String secretKey, String account, String issuer) {
@@ -85,12 +76,42 @@ public class UserAuthService {
         }
     }
 
-    public static void createQRCode(String barCodeData, String filePath, int height, int width)
-            throws WriterException, IOException {
-        BitMatrix matrix = new MultiFormatWriter().encode(barCodeData, BarcodeFormat.QR_CODE,
+    public static BufferedImage createQRCode(String barCodeData, int height, int width)
+            throws WriterException {
+        BitMatrix matrix = new QRCodeWriter().encode(barCodeData, BarcodeFormat.QR_CODE,
                 width, height);
-        try (FileOutputStream out = new FileOutputStream(filePath)) {
-            MatrixToImageWriter.writeToStream(matrix, "png", out);
-        }
+        return MatrixToImageWriter.toBufferedImage(matrix);
+    }
+
+    public  BufferedImage enable2FA() throws WriterException {
+        com.xtra.api.model.user.User currentUser = getCurrentUser();
+        String secret = "";
+        //Generating Secret
+        if (currentUser.get_2FASec() == null) {
+            currentUser.setUsing2FA(true);
+            SecureRandom random = new SecureRandom();
+            byte[] bytes = new byte[20];
+            random.nextBytes(bytes);
+            Base32 base32 = new Base32();
+            secret = base32.encodeToString(bytes);
+            currentUser.set_2FASec(secret);
+            repository.save(currentUser);
+        } else
+            secret = currentUser.get_2FASec();
+        if (currentUser.getEmail() == null)
+            throw new RuntimeException(" User does not have the email address.");
+        String otpAuth = getGoogleAuthenticatorBarCode(secret, currentUser.getEmail(), "xtra");
+        return createQRCode(otpAuth, 200, 200);
+    }
+    @Bean
+    public HttpMessageConverter<BufferedImage> imageConverter(){
+        return new BufferedImageHttpMessageConverter();
+    }
+
+    public void disable2FA(){
+        com.xtra.api.model.user.User currentUser = getCurrentUser();
+        currentUser.setUsing2FA(false);
+        currentUser.set_2FASec(null);
+        repository.save(currentUser);
     }
 }
