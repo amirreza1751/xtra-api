@@ -15,8 +15,16 @@ import com.xtra.api.projection.admin.epg.EpgDetails;
 import com.xtra.api.repository.*;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -234,6 +242,48 @@ public abstract class ChannelMapper {
     ChannelStart setChannelInput(Channel channel, @MappingTarget ChannelStart channelStart, int selectedSource) {
         channelStart.setStreamInput(channel.getStreamInputs().get(selectedSource));
         return channelStart;
+    }
+
+    public List<ChannelInsertView> addChannels(ChannelImportView importView) {
+        List<ChannelInsertView> channelInsertViews= new ArrayList<>();
+        try {
+            List<String> names = new ArrayList<>();
+            List<String> inputs = new ArrayList<>();
+            MultipartFile document = importView.getDocument();
+            InputStream inputStream = document.getInputStream();
+            new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                    .lines().forEach((line) -> {
+                        if (line.contains("tvg-name")) {
+                            System.out.println(line.substring(line.indexOf(",") + 1));
+                            names.add(line.substring(line.indexOf(",") + 1));
+                        } else {
+                            System.out.println(line);
+                            inputs.add(line);
+                        }
+                    });
+
+
+            for (int i = 0; i< names.size(); i++) {
+                ChannelInsertView newInsertView = new ChannelInsertView();
+                newInsertView.setName(names.get(i));
+                newInsertView.setNotes(importView.getNotes());
+                newInsertView.setDaysToRestart(importView.getDaysToRestart());
+                newInsertView.setTimeToRestart(importView.getTimeToRestart());
+                List<String> streamInputs = new ArrayList<>();
+                streamInputs.add(inputs.get(i));
+                newInsertView.setStreamInputs(streamInputs);
+                newInsertView.setServers(importView.getServers());
+                newInsertView.setCollections(importView.getCollections());
+                newInsertView.setAdvancedStreamOptions(importView.getAdvancedStreamOptions());
+                newInsertView.setOnDemand(importView.getOnDemand());
+
+                channelInsertViews.add(newInsertView);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return channelInsertViews;
     }
 
 }
