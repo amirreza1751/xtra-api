@@ -3,11 +3,15 @@ package com.xtra.api.security;
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.xtra.api.model.exception.IncorrectTotpException;
+import com.xtra.api.model.exception.TotpMissingException;
 import com.xtra.api.model.line.LoginLog;
 import com.xtra.api.model.line.LoginLogStatus;
 import com.xtra.api.model.user.User;
+import com.xtra.api.projection.auth.UserCredentials;
 import com.xtra.api.repository.UserRepository;
 import com.xtra.api.service.admin.LogService;
+import com.xtra.api.service.system.UserAuthService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,8 +50,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
         try {
-            User creds = new ObjectMapper()
-                    .readValue(req.getInputStream(), User.class);
+            UserCredentials creds = new ObjectMapper()
+                    .readValue(req.getInputStream(), UserCredentials.class);
+            var user = userRepository.findByUsername(creds.getUsername()).orElseThrow(() -> new UsernameNotFoundException(creds.getUsername()));
+            if (user.isUsing2FA()){
+                if (creds.getTotp() == null || creds.getTotp().equals(""))
+                    throw new TotpMissingException();
+                if (!UserAuthService.getTOTPCode(user.get_2FASec()).equals(creds.getTotp()))
+                    throw new IncorrectTotpException();
+            }
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
