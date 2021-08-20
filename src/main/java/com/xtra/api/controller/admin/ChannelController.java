@@ -71,6 +71,12 @@ public class ChannelController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @RequestMapping(path = "/import", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<?> saveEmployee(@ModelAttribute ChannelImportView importView) {
+        channelService.importChannels(importView);
+        return ResponseEntity.ok().build();
+    }
+
     // Stream Operations
     @GetMapping("/{id}/start")
     public ResponseEntity<String> startChannelOnServers(@PathVariable Long id, @RequestParam(required = false) Set<Long> serversIds) {

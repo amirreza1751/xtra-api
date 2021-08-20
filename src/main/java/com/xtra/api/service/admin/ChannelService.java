@@ -16,10 +16,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
 import static com.xtra.api.util.Utilities.wrapSearchString;
@@ -182,6 +190,15 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
             for (Long channelId : channelIds) {
                 deleteOrFail(channelId);
             }
+        }
+    }
+
+    public void importChannels(ChannelImportView importView) {
+        List<ChannelInsertView> insertViews = channelMapper.addChannels(importView);
+        for (ChannelInsertView insertView:insertViews) {
+            if (!repository.existsByName(insertView.getName()))
+                channelMapper.convertToView(insert(channelMapper.convertToEntity(insertView), false));
+
         }
     }
 

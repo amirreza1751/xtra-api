@@ -3,6 +3,7 @@ package com.xtra.api.exception;
 import com.xtra.api.model.exception.ActionNotAllowedException;
 import com.xtra.api.model.exception.ApiError;
 import com.xtra.api.model.exception.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,5 +60,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, path, "val-ch_name", exception.getMessage(), "");
         return buildResponseEntity(apiError);
     }*/
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<?> handleValidationExceptions(DataIntegrityViolationException ex,WebRequest request){
+        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
+        ApiError apiError = new ApiError(path, "", "Exists!", "");
+        return buildResponseEntity(apiError, HttpStatus.BAD_REQUEST);
+    }
 
 }
