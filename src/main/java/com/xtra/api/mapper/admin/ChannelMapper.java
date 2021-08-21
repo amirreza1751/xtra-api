@@ -1,5 +1,7 @@
 package com.xtra.api.mapper.admin;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.xtra.api.model.*;
 import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.repository.CollectionRepository;
@@ -22,10 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
@@ -46,7 +47,7 @@ public abstract class ChannelMapper {
 
     @AfterMapping
     void convertServerIdsAndCollectionIds(final ChannelInsertView channelView, @MappingTarget final Channel channel) {
-        if (channelView.getOnDemand() != null && channelView.getCatchUp() != null && channelView.getCatchUp().equals(channelView.getOnDemand())){
+        if (channelView.getOnDemand() != null && channelView.getCatchUp() != null && channelView.getCatchUp().equals(channelView.getOnDemand())) {
             throw new RuntimeException("The on-demand server and catch-up server must not be the same.");
         }
         var epgDetails = channelView.getEpgDetails();
@@ -101,18 +102,18 @@ public abstract class ChannelMapper {
     public abstract ChannelView convertToView(Channel channel);
 
     @AfterMapping
-    void convertCatchupDetails(final Channel channel, @MappingTarget final ChannelView channelView){
+    void convertCatchupDetails(final Channel channel, @MappingTarget final ChannelView channelView) {
         var catchUp = channel.getStreamServers().stream().filter(StreamServer::isCatchUp).findFirst();
-        if (catchUp.isPresent()){
+        if (catchUp.isPresent()) {
             channelView.setCatchUp(catchUp.get().getServer().getId());
             channelView.setCatchUpDays(catchUp.get().getCatchUpDays());
         }
     }
 
     @AfterMapping
-    void convertOnDemandDetails(final Channel channel, @MappingTarget final ChannelView channelView){
+    void convertOnDemandDetails(final Channel channel, @MappingTarget final ChannelView channelView) {
         var onDemand = channel.getStreamServers().stream().filter(StreamServer::isOnDemand).findFirst();
-        if (onDemand.isPresent()){
+        if (onDemand.isPresent()) {
             channelView.setOnDemand(onDemand.get().getServer().getId());
         }
     }
@@ -245,7 +246,7 @@ public abstract class ChannelMapper {
     }
 
     public List<ChannelInsertView> addChannels(ChannelImportView importView) {
-        List<ChannelInsertView> channelInsertViews= new ArrayList<>();
+        List<ChannelInsertView> channelInsertViews = new ArrayList<>();
         try {
             List<String> names = new ArrayList<>();
             List<String> inputs = new ArrayList<>();
@@ -254,27 +255,27 @@ public abstract class ChannelMapper {
             new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
                     .lines().forEach((line) -> {
                         if (line.contains("tvg-name")) {
-                            System.out.println(line.substring(line.indexOf(",") + 1));
                             names.add(line.substring(line.indexOf(",") + 1));
                         } else {
-                            System.out.println(line);
                             inputs.add(line);
                         }
                     });
 
 
-            for (int i = 0; i< names.size(); i++) {
+            for (int i = 0; i < names.size(); i++) {
                 ChannelInsertView newInsertView = new ChannelInsertView();
                 newInsertView.setName(names.get(i));
                 newInsertView.setNotes(importView.getNotes());
+                Gson gson = new Gson();
+                AdvancedStreamOptions aso = gson.fromJson(importView.getAdvancedStreamOptions(), AdvancedStreamOptions.class);
                 newInsertView.setDaysToRestart(importView.getDaysToRestart());
-                newInsertView.setTimeToRestart(importView.getTimeToRestart());
+                newInsertView.setTimeToRestart(LocalTime.parse(importView.getTimeToRestart()));
                 List<String> streamInputs = new ArrayList<>();
                 streamInputs.add(inputs.get(i));
                 newInsertView.setStreamInputs(streamInputs);
                 newInsertView.setServers(importView.getServers());
                 newInsertView.setCollections(importView.getCollections());
-                newInsertView.setAdvancedStreamOptions(importView.getAdvancedStreamOptions());
+                newInsertView.setAdvancedStreamOptions(aso);
                 newInsertView.setOnDemand(importView.getOnDemand());
 
                 channelInsertViews.add(newInsertView);
