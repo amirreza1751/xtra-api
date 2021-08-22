@@ -7,11 +7,7 @@ import com.xtra.api.model.download_list.DownloadListCollection;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.user.UserType;
-import com.xtra.api.repository.ConnectionRepository;
-import com.xtra.api.repository.LineRepository;
-import com.xtra.api.repository.RoleRepository;
-import com.xtra.api.repository.VodConnectionRepository;
-import com.xtra.api.repository.UserRepository;
+import com.xtra.api.repository.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +29,7 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
     private final UserRepository userRepository;
     protected final VodConnectionRepository vodConnectionRepository;
 
-    @Value("${server.address}")
+    @Value("${server.external.address}")
     private String serverAddress;
 
     @Value("${server.port}")
