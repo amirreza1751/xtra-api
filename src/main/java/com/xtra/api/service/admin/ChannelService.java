@@ -197,7 +197,7 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
         List<ChannelInsertView> insertViews = channelMapper.addChannels(importView);
         for (ChannelInsertView insertView:insertViews) {
             if (!repository.existsByName(insertView.getName()))
-                channelMapper.convertToView(insert(channelMapper.convertToEntity(insertView), false));
+                insert(channelMapper.convertToEntity(insertView), false);
 
         }
     }

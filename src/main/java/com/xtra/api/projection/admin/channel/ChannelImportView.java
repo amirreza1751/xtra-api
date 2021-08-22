@@ -22,9 +22,9 @@ public class ChannelImportView {
 
     private String notes;
     private Set<DayOfWeek> daysToRestart;
-    private LocalTime timeToRestart;
+    private String timeToRestart;
     private Set<Long> servers;
     private Set<Long> collections;
-    private AdvancedStreamOptions advancedStreamOptions;
+    private String advancedStreamOptions;
     private Long onDemand;
 }
