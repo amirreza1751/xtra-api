@@ -93,7 +93,7 @@ configurations {
 
 jib{
     from{
-        image='docker://adoptopenjdk:11-jre'
+        image='adoptopenjdk:11-jre'
     }
     to {
         image = 'registry.gitlab.com/xtrapanel/xtra-api'
