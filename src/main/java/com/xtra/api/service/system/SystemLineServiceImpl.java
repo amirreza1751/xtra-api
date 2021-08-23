@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SystemLineServiceImpl extends LineService {
@@ -101,7 +102,7 @@ public class SystemLineServiceImpl extends LineService {
                 return LineStatus.MAX_CONNECTION_REACHED;
             } else if (!isIpAllowed(line, lineAuth.getIpAddress()) || !isUserAgentAllowed(line, lineAuth.getUserAgent())) {
                 return LineStatus.FORBIDDEN;
-            } else if (false) {//@todo check access to stream
+            } else if (!isCollectionAllowed(line, stream)) {
                 return LineStatus.NO_ACCESS_TO_STREAM;
             } else {
                 connection.setLastRead(LocalDateTime.now());
@@ -191,5 +192,8 @@ public class SystemLineServiceImpl extends LineService {
         return true;
     }
 
+    public boolean isCollectionAllowed(Line line, Stream stream){
+        return line.getDefaultDownloadList().getCollectionsAssign().stream().map(downloadListCollection -> downloadListCollection.getCollection().getId()).anyMatch(stream.getCollectionAssigns().stream().map(collectionStream -> collectionStream.getCollection().getId()).collect(Collectors.toSet())::contains);
+    }
 
 }
