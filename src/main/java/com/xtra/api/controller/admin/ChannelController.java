@@ -72,7 +72,7 @@ public class ChannelController {
     }
 
     @RequestMapping(path = "/import", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<?> saveEmployee(@ModelAttribute ChannelImportView importView) {
+    public ResponseEntity<?> importMovies(@ModelAttribute ChannelImportView importView) {
         channelService.importChannels(importView);
         return ResponseEntity.ok().build();
     }

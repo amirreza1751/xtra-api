@@ -124,6 +124,22 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         }
     }
 
+    public void importMovies(MovieImportView importView, Boolean encode) {
+        var servers = importView.getServers();
+        var collections = importView.getCollections();
+        var movies = importView.getMovies();
+
+        for (MovieImport movie : movies) {
+            MovieInsertView insertView = new MovieInsertView();
+            insertView.setCollections(collections);
+            insertView.setServers(servers);
+            insertView.setName(movie.getName());
+            insertView.setInfo(movie.getInfo());
+            insertView.setVideos(movie.getVideos());
+            insert(movieMapper.convertToEntity(insertView), encode);
+        }
+    }
+
     public List<Subtitle> updateSubtitles(Long id, Long vidId, List<Subtitle> subtitles) {
         if (subtitles.size() == 0)
             throw new RuntimeException("provide at least one subtitle");
