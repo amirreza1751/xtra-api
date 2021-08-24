@@ -14,6 +14,7 @@ import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -83,32 +84,41 @@ public class UserAuthService {
         return MatrixToImageWriter.toBufferedImage(matrix);
     }
 
-    public  BufferedImage enable2FA() throws WriterException {
+    public BufferedImage getQRCode() throws WriterException {
         com.xtra.api.model.user.User currentUser = getCurrentUser();
-        String secret = "";
-        //Generating Secret
-        if (currentUser.get_2FASec() == null) {
-            currentUser.setUsing2FA(true);
-            SecureRandom random = new SecureRandom();
-            byte[] bytes = new byte[20];
-            random.nextBytes(bytes);
-            Base32 base32 = new Base32();
-            secret = base32.encodeToString(bytes);
-            currentUser.set_2FASec(secret);
-            repository.save(currentUser);
-        } else
-            secret = currentUser.get_2FASec();
+        if (currentUser.isUsing2FA())
+            throw new RuntimeException("2FA is already activated.");
         if (currentUser.getEmail() == null)
             throw new RuntimeException(" User does not have the email address.");
+
+        //Generating Secret
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[20];
+        random.nextBytes(bytes);
+        Base32 base32 = new Base32();
+        String secret = base32.encodeToString(bytes);
+        currentUser.set_2FASec(secret);
+        repository.save(currentUser);
+
         String otpAuth = getGoogleAuthenticatorBarCode(secret, currentUser.getEmail(), "xtra");
         return createQRCode(otpAuth, 200, 200);
     }
+
     @Bean
-    public HttpMessageConverter<BufferedImage> imageConverter(){
+    public HttpMessageConverter<BufferedImage> imageConverter() {
         return new BufferedImageHttpMessageConverter();
     }
 
-    public void disable2FA(){
+    public HttpStatus verify2FA(String totp) {
+        com.xtra.api.model.user.User currentUser = getCurrentUser();
+        if (!currentUser.isUsing2FA() && totp != null && getTOTPCode(currentUser.get_2FASec()).equals(totp)) {
+            currentUser.setUsing2FA(true);
+            repository.save(currentUser);
+            return HttpStatus.OK;
+        } else return HttpStatus.BAD_REQUEST;
+    }
+
+    public void disable2FA() {
         com.xtra.api.model.user.User currentUser = getCurrentUser();
         currentUser.setUsing2FA(false);
         currentUser.set_2FASec(null);

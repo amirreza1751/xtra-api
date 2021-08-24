@@ -3,11 +3,8 @@ package com.xtra.api.security;
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.xtra.api.model.exception.IncorrectTotpException;
-import com.xtra.api.model.exception.TotpMissingException;
 import com.xtra.api.model.line.LoginLog;
 import com.xtra.api.model.line.LoginLogStatus;
-import com.xtra.api.model.user.User;
 import com.xtra.api.projection.auth.UserCredentials;
 import com.xtra.api.repository.UserRepository;
 import com.xtra.api.service.admin.LogService;
@@ -54,10 +51,13 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     .readValue(req.getInputStream(), UserCredentials.class);
             var user = userRepository.findByUsername(creds.getUsername()).orElseThrow(() -> new UsernameNotFoundException(creds.getUsername()));
             if (user.isUsing2FA()){
-                if (creds.getTotp() == null || creds.getTotp().equals(""))
-                    throw new TotpMissingException();
-                if (!UserAuthService.getTOTPCode(user.get_2FASec()).equals(creds.getTotp()))
-                    throw new IncorrectTotpException();
+                int responseCode = 0;
+                if (creds.getTotp() == null)
+                {
+                    res.sendError(460, "Totp is required.");
+                } else if (!UserAuthService.getTOTPCode(user.get_2FASec()).equals(creds.getTotp())){
+                    res.sendError(461, "Incorrect Totp");
+                }
             }
 
             return authenticationManager.authenticate(
