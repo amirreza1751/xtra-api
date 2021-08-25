@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import static com.xtra.api.model.server.QServer.server;
 import static com.xtra.api.util.Utilities.generateRandomString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -33,14 +34,16 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
     private final SeriesRepository seriesRepository;
     private final SeriesService seriesService;
     private final VideoRepository videoRepository;
+    private final ServerService serverService;
 
-    protected EpisodeService(EpisodeRepository repository, EpisodeMapper episodeMapper, SeasonMapper seasonMapper, SeriesRepository seriesRepository, SeriesService seriesService, VideoRepository videoRepository) {
+    protected EpisodeService(EpisodeRepository repository, EpisodeMapper episodeMapper, SeasonMapper seasonMapper, SeriesRepository seriesRepository, SeriesService seriesService, VideoRepository videoRepository, ServerService serverService) {
         super(repository, "Episode");
         this.episodeMapper = episodeMapper;
         this.seasonMapper = seasonMapper;
         this.seriesRepository = seriesRepository;
         this.seriesService = seriesService;
         this.videoRepository = videoRepository;
+        this.serverService = serverService;
     }
 
     @Override
@@ -63,16 +66,16 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
         var series = oldSeason.getSeries();
         copyProperties(episodeToSave, oldEpisode, "id", "season", "videos", "servers");
         if (oldSeason.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()) { //replacing in the same season
-            for (Episode episodeItem : oldSeason.getEpisodes()){
-                if (episodeToSave.getEpisodeNumber() == episodeItem.getEpisodeNumber() && !episodeId.equals(episodeItem.getId())){
+            for (Episode episodeItem : oldSeason.getEpisodes()) {
+                if (episodeToSave.getEpisodeNumber() == episodeItem.getEpisodeNumber() && !episodeId.equals(episodeItem.getId())) {
                     throw new EntityAlreadyExistsException();
                 }
             }
             oldEpisode.getVideos().retainAll(episodeToSave.getVideos());
             List<Video> videosToAdd = new ArrayList<>();
-            for (Video video : episodeToSave.getVideos()){
+            for (Video video : episodeToSave.getVideos()) {
                 var target = oldEpisode.getVideos().stream().filter(videoItem -> videoItem.equals(video)).findFirst();
-                if (target.isPresent()){
+                if (target.isPresent()) {
                     copyProperties(video, target, "id", "token", "encodeStatus", "videoInfo", "videoServers");
                     target.get().getAudios().clear();
                     target.get().getAudios().addAll(video.getAudios());
@@ -82,20 +85,20 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
                     videosToAdd.add(video);
                 }
             }
-            for (Video video : videosToAdd){
+            for (Video video : videosToAdd) {
                 video.setId(null);
                 this.generateToken(video);
             }
             oldEpisode.getVideos().addAll(videosToAdd);
         } else { // moving to another existing season
             oldSeason.getEpisodes().remove(oldEpisode);
-            if (oldSeason.getEpisodes().isEmpty()){
+            if (oldSeason.getEpisodes().isEmpty()) {
                 series.getSeasons().remove(oldSeason);
             }
             var newSeason = series.getSeasons().stream().filter(season -> season.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()).findFirst();
             if (newSeason.isPresent()) {
-                for (Episode episodeItem : newSeason.get().getEpisodes()){
-                    if (episodeToSave.getEpisodeNumber() == episodeItem.getEpisodeNumber() && !episodeId.equals(episodeItem.getId())){
+                for (Episode episodeItem : newSeason.get().getEpisodes()) {
+                    if (episodeToSave.getEpisodeNumber() == episodeItem.getEpisodeNumber() && !episodeId.equals(episodeItem.getId())) {
                         throw new EntityAlreadyExistsException();
                     }
                 }
@@ -125,18 +128,25 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
         return episodeMapper.convertToView(result.get(0).get());
     }
 
-    public void deleteEpisode(Long episodeId){
+    public void encode(long id) {
+        var episode = findByIdOrFail(id);
+        if (episode.getVideos() != null)
+            serverService.sendEncodeRequest(episode.getVideos().stream().findFirst().get());
+    }
+
+    public void deleteEpisode(Long episodeId) {
         var episode = findByIdOrFail(episodeId);
         var season = episode.getSeason();
         var series = season.getSeries();
         season.getEpisodes().remove(episode);
-        if (season.getEpisodes().isEmpty()){
+        if (season.getEpisodes().isEmpty()) {
             series.getSeasons().remove(season);
         }
         seriesService.updateNumberOfEpisodes(series);
         seriesRepository.save(series);
     }
-    public void generateToken(Video video){
+
+    public void generateToken(Video video) {
         String token;
         do {
             token = generateRandomString(8, 12, false);
@@ -155,12 +165,12 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
 
                 if (serverIds.size() > 0) {
                     Set<VideoServer> videoServers = episodeMapper.convertToVideoServers(serverIds, episode);
-                        for (Video video : episode.getVideos()){
-                            if (!episodeBatchUpdateView.isKeepServers()) {
-                                video.getVideoServers().retainAll(videoServers);
-                            }
-                            video.getVideoServers().addAll(videoServers);
+                    for (Video video : episode.getVideos()) {
+                        if (!episodeBatchUpdateView.isKeepServers()) {
+                            video.getVideoServers().retainAll(videoServers);
                         }
+                        video.getVideoServers().addAll(videoServers);
+                    }
                 }
                 repository.save(episode);
             }

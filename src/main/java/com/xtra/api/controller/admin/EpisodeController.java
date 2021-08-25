@@ -1,5 +1,6 @@
 package com.xtra.api.controller.admin;
 
+import com.xtra.api.model.vod.Movie;
 import com.xtra.api.model.vod.Series;
 import com.xtra.api.projection.admin.episode.*;
 import com.xtra.api.service.admin.EpisodeService;
@@ -36,6 +37,12 @@ public class EpisodeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Series> deleteEpisode(@PathVariable Long id) {
         episodeService.deleteEpisode(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/{id}/encode")
+    public ResponseEntity<?> encodeEpisode(@PathVariable Long id) {
+        episodeService.encode(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
