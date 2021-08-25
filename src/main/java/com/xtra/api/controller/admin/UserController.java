@@ -53,13 +53,18 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/enable-2fa", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<BufferedImage> enable2FA() throws WriterException {
+    @GetMapping(value = "/2fa/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<BufferedImage> getQRCode() throws WriterException {
         return ResponseEntity.ok()
-                .body(userAuthService.enable2FA());
+                .body(userAuthService.getQRCode());
     }
 
-    @GetMapping(value = "/disable-2fa")
+    @PostMapping(value = "/2fa/verify")
+    public ResponseEntity<?> verify2FA(@RequestBody String totp) {
+        return ResponseEntity.status(userAuthService.verify2FA(totp)).build();
+    }
+
+    @GetMapping(value = "/2fa/disable")
     public ResponseEntity<?> disable2FA() {
         userAuthService.disable2FA();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
