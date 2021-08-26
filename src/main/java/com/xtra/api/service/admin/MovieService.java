@@ -6,6 +6,7 @@ import com.xtra.api.model.collection.CollectionVodId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.MovieMapper;
 import com.xtra.api.model.server.Server;
+import com.xtra.api.model.stream.QChannel;
 import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.movie.*;
@@ -13,6 +14,8 @@ import com.xtra.api.projection.admin.videoInfo.VideoInfoView;
 import com.xtra.api.repository.CollectionVodRepository;
 import com.xtra.api.repository.MovieRepository;
 import com.xtra.api.repository.VideoRepository;
+import com.xtra.api.repository.filter.MovieFilter;
+import com.xtra.api.util.OptionalBooleanBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +41,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     private final VideoRepository videoRepository;
     private final MovieMapper movieMapper;
     private final CollectionVodRepository collectionVodRepository;
+    private final QMovie movie = QMovie.movie;
 
     @Autowired
     protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository, MovieMapper movieMapper, CollectionVodRepository collectionVodRepository) {
@@ -53,8 +57,17 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return repository.findAllByNameContainsOrInfoPlotContainsOrInfoCastContainsOrInfoDirectorContainsOrInfoGenresContainsOrInfoCountryContains(search, search, search, search, search, search, pageable);
     }
 
-    public Page<MovieListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(movieMapper::convertToListView);
+    public Page<MovieListView> getAll(int pageNo, int pageSize, String sortBy, String sortDir, MovieFilter filter) {
+        var predicate = new OptionalBooleanBuilder(movie.isNotNull())
+                .notNullAnd(movie.name::contains, filter.getName())
+                .build();
+        var search = filter.getSearch();
+        if (search != null) {
+            predicate = predicate.andAnyOf(
+                    movie.name.containsIgnoreCase(search)
+            );
+        }
+        return repository.findAll(predicate, getSortingPageable(pageNo, pageSize, sortBy, sortDir)).map(movieMapper::convertToListView);
     }
 
     public MovieView getViewById(Long id) {

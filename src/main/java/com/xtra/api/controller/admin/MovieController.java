@@ -5,6 +5,7 @@ import com.xtra.api.model.vod.Movie;
 import com.xtra.api.model.vod.Subtitle;
 import com.xtra.api.model.vod.VideoInfo;
 import com.xtra.api.projection.admin.movie.*;
+import com.xtra.api.repository.filter.MovieFilter;
 import com.xtra.api.service.admin.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,8 +29,9 @@ public class MovieController {
 
     @GetMapping("")
     public ResponseEntity<Page<MovieListView>> getAll(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
-            , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(movieService.getAll(search, pageNo, pageSize, sortBy, sortDir));
+            , @RequestParam(required = false) String search, @RequestParam(required = false, name = "name") String name,
+              @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+        return ResponseEntity.ok(movieService.getAll(pageNo, pageSize, sortBy, sortDir, new MovieFilter(name, search)));
     }
 
     @GetMapping("/{id}")

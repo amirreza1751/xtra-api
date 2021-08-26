@@ -7,10 +7,13 @@ import com.xtra.api.model.collection.CollectionStreamId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.*;
+import com.xtra.api.model.user.QCreditLog;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.projection.admin.epg.EpgDetails;
 import com.xtra.api.repository.*;
+import com.xtra.api.repository.filter.ChannelFilter;
+import com.xtra.api.util.OptionalBooleanBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +47,8 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
     private final StreamInputRepository streamInputRepository;
     private final ServerRepository serverRepository;
     private final ConnectionRepository connectionRepository;
+    private final QChannel channel = QChannel.channel;
+
 
 
     @Autowired
@@ -63,9 +68,21 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
     }
 
 
-    public Page<ChannelInfo> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(channelMapper::convertToChannelInfo);
+    public Page<ChannelInfo> getAll(int pageNo, int pageSize, String sortBy, String sortDir, ChannelFilter filter) {
+        var predicate = new OptionalBooleanBuilder(channel.isNotNull())
+                .notNullAnd(channel.name::contains, filter.getName())
+                .build();
+        var search = filter.getSearch();
+        if (search != null) {
+            predicate = predicate.andAnyOf(
+                    channel.name.containsIgnoreCase(search),
+                    channel.notes.containsIgnoreCase(search),
+                    channel.streamInputs.any().containsIgnoreCase(search)
+            );
+        }
+        return repository.findAll(predicate, getSortingPageable(pageNo, pageSize, sortBy, sortDir)).map(channelMapper::convertToChannelInfo);
     }
+
 
     public ChannelView getViewById(Long id) {
         return channelMapper.convertToView(findByIdOrFail(id));
