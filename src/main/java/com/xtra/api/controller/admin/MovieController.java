@@ -42,6 +42,12 @@ public class MovieController {
         return ResponseEntity.ok(movieService.add(movie, encode));
     }
 
+    @PostMapping(value = {"/import", "/{encode}"})
+    public ResponseEntity<?> importMovies(@RequestBody MovieImportView movieImportView, @PathVariable(required = false) boolean encode) {
+        movieService.importMovies(movieImportView, encode);
+        return ResponseEntity.ok().build();
+    }
+
     @PatchMapping(value = {"/{id}", "{id}/{encode}"})
     public ResponseEntity<MovieView> updateMovie(@PathVariable Long id, @RequestBody MovieInsertView movie, @PathVariable(required = false) boolean encode) {
         return ResponseEntity.ok(movieService.save(id, movie, encode));
