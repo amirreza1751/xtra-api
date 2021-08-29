@@ -59,7 +59,12 @@ insert ignore into permission (name, description, user_type) values ('series_bat
 insert ignore into permission (name, description, user_type) values ('series_batch_delete', 'Batch Delete Series', 'ADMIN');
 insert ignore into permission (name, description, user_type) values ('series_import', 'Import Series', 'ADMIN');
 
-insert ignore into permission (name, description, user_type) values ('add_channel', 'Add Channel', 'ADMIN');
-insert ignore into permission (name, description, user_type) values ('delete_channel', 'Delete Channel', 'ADMIN');
+insert ignore into permission (name, description, user_type) values ('collections_manage', 'Manage Collections', 'ADMIN');
+insert ignore into permission (name, description, user_type) values ('category_manage', 'Manage Category', 'ADMIN');
+insert ignore into permission (name, description, user_type) values ('package_manage', 'Manage Package', 'ADMIN');
+insert ignore into permission (name, description, user_type) values ('epg_manage', 'Manage EPG', 'ADMIN');
+insert ignore into permission (name, description, user_type) values ('logs_manage', 'Manage Logs', 'ADMIN');
+insert ignore into permission (name, description, user_type) values ('servers_manage', 'Manage Servers', 'ADMIN');
+insert ignore into permission (name, description, user_type) values ('setting_manage', 'Manage Setting', 'ADMIN');
 
 insert ignore into setting (id, value) value ('backup_interval', '')
