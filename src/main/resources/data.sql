@@ -14,4 +14,4 @@ values ('add_channel', 'Add Channel', 'ADMIN');
 insert ignore into permission (name, description, user_type)
 values ('delete_channel', 'Delete Channel', 'ADMIN');
 
-insert ignore into setting (id, value) value ('backup_interval', '')
+insert ignore into setting (id, value) value ('backup_interval', '');

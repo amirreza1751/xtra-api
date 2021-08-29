@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,12 +30,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
-        return new User(user.getUsername(), user.getPassword(), true, true, true, !user.isBanned(), getAuthorities(user.getRole()));
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getUserType()));
+        if (user.getRole() != null) {
+            authorities.addAll(getAuthorities(user.getRole()));
+        }
+        return new User(user.getUsername(), user.getPassword(), true, true, true, !user.isBanned(), authorities);
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Role role) {
-        List<GrantedAuthority> privileges = emptyIfNull(role.getPermissions()).stream().map(permission -> new SimpleGrantedAuthority(permission.getPermission().getId().getName())).collect(Collectors.toList());
-        privileges.add(new SimpleGrantedAuthority("ROLE_" + role.getType().toString()));
-        return privileges;
+        return emptyIfNull(role.getPermissions()).stream().map(permission -> new SimpleGrantedAuthority(permission.getPermission().getId().getName())).collect(Collectors.toList());
     }
 }
