@@ -59,8 +59,8 @@ public class UserController {
                 .body(userAuthService.getQRCode());
     }
 
-    @PostMapping(value = "/2fa/verify")
-    public ResponseEntity<?> verify2FA(@RequestBody String totp) {
+    @GetMapping(value = "/2fa/verify")
+    public ResponseEntity<?> verify2FA(@RequestParam long totp) {
         return ResponseEntity.status(userAuthService.verify2FA(totp)).build();
     }
 
