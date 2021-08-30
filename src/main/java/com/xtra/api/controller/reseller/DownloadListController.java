@@ -5,12 +5,14 @@ import com.xtra.api.projection.admin.downloadlist.DownloadListView;
 import com.xtra.api.service.reseller.DownloadListServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController("resellerDownloadListController")
 @RequestMapping("/users/current/download-lists")
+@PreAuthorize("hasAnyRole({'RESELLER'})")
 public class DownloadListController {
     private final DownloadListServiceImpl dlService;
 

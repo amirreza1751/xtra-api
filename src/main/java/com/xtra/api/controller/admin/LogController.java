@@ -18,6 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @RequestMapping("logs")
+@PreAuthorize("hasAnyRole({'ADMIN', 'SUPER_ADMIN'})")
 @RestController
 public class LogController {
     private final LogService logService;
@@ -37,6 +39,7 @@ public class LogController {
         this.creditLogService = creditLogService;
     }
 
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/activity-logs")
     public Page<ActivityLogView> getActivityLogs(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir
@@ -46,6 +49,7 @@ public class LogController {
         return logService.getActivityLogs(pageNo, pageSize, sortBy, sortDir, new ActivityLogFilter(lineUsername, streamName, serverName, dateFrom, dateTo, search));
     }
 
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/activity-logs/export")
     public ResponseEntity<?> downloadActivityLogsAsCsv(
             @RequestParam(name = "date_from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
@@ -57,13 +61,14 @@ public class LogController {
                 .body(resource);
     }
 
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/activity-logs/clear")
     public ResponseEntity<?> clearActivityLogs() {
         logService.clearActivityLogs();
         return ResponseEntity.ok().build();
     }
 
-
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/login-logs")
     public Page<LoginLogView> getLoginLogs(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
@@ -77,6 +82,7 @@ public class LogController {
 
     }
 
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/login-logs/export")
     public ResponseEntity<?> downloadLoginLogsAsCsv(
             @RequestParam(name = "date_from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
@@ -88,12 +94,14 @@ public class LogController {
                 .body(resource);
     }
 
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/login-logs/clear")
     public ResponseEntity<?> clearLoginLogs() {
         logService.clearLoginLogs();
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/credit-logs")
     public Page<CreditLogView> getCreditLogs(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
@@ -106,6 +114,7 @@ public class LogController {
         return creditLogService.getCreditLogs(pageNo, pageSize, sortBy, sortDir, new CreditLogFilter(actorUsername, actorUserType, targetUsername, changeAmountLTE, changeAmountGTE, dateFrom, dateTo, reason, search));
     }
 
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/credit-logs/export")
     public ResponseEntity<?> downloadCreditLogsAsCsv(
             @RequestParam(name = "date_from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
@@ -117,12 +126,14 @@ public class LogController {
                 .body(resource);
     }
 
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/credit-logs/clear")
     public ResponseEntity<?> clearCreditLogs() {
         creditLogService.clearCreditLogs();
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/reseller-logs")
      public Page<ResellerLogView> getResellerLogs(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
@@ -133,6 +144,7 @@ public class LogController {
         return logService.getResellerLogs(pageNo, pageSize, sortBy, sortDir, new ResellerLogFilter(dateFrom, dateTo, resellerUsername, action, search));
     }
 
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/reseller-logs/export")
     public ResponseEntity<?> downloadResellerLogsAsCsv(
             @RequestParam(name = "date_from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
@@ -144,6 +156,7 @@ public class LogController {
                 .body(resource);
     }
 
+    @PreAuthorize("hasAnyAuthority({'logs_manage'})")
     @GetMapping("/reseller-logs/clear")
     public ResponseEntity<?> clearResellerLogs() {
         logService.clearResellerLogs();

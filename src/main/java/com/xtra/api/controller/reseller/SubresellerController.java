@@ -8,10 +8,12 @@ import com.xtra.api.service.reseller.SubresellerService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users/current/sub-resellers")
+@PreAuthorize("hasAnyRole({'RESELLER'})")
 public class SubresellerController {
     private final SubresellerService subresellerService;
 

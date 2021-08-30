@@ -9,7 +9,6 @@ import com.xtra.api.service.admin.StreamServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,32 +33,32 @@ public class ChannelController {
     }
 
     // Stream CRUD
-    @PreAuthorize("hasAnyAuthority({'channels_manage'}) or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority({'channels_manage'})")
     @GetMapping("")
     public ResponseEntity<Page<ChannelInfo>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(channelService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
-    @PreAuthorize("hasAnyAuthority({'channels_manage', 'channels_add'}) or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority({'channels_manage'})")
     @PostMapping(value = {"", "/{start}"})
     public ResponseEntity<ChannelView> addChannel(@RequestBody ChannelInsertView insertView, @PathVariable(required = false) boolean start) {
         return ResponseEntity.ok(channelService.add(insertView, start));
     }
 
-    @PreAuthorize("hasAnyAuthority({'channels_manage'}) or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority({'channels_manage'})")
     @GetMapping("/{id}")
     public ResponseEntity<ChannelView> getChannelById(@PathVariable Long id) {
         return ResponseEntity.ok(channelService.getViewById(id));
     }
 
-    @PreAuthorize("hasAnyAuthority({'channels_manage', 'channels_edit'}) or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority({'channels_manage'})")
     @PatchMapping(value = {"/{id}", "/{id}/{restart}"})
     public ResponseEntity<ChannelView> updateChannel(@PathVariable Long id, @RequestBody ChannelInsertView channelView, @PathVariable(required = false) boolean restart) {
         return ResponseEntity.ok(channelService.save(id, channelView, restart));
     }
 
-    @PreAuthorize("hasAnyAuthority({'channels_manage', 'channels_delete'}) or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority({'channels_manage'})")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteChannel(@PathVariable Long id) {
         channelService.deleteOrFail(id);
@@ -67,21 +66,21 @@ public class ChannelController {
     }
 
     // Batch Actions
-    @PreAuthorize("hasAnyAuthority({'channels_manage', 'channels_batch_edit'}) or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority({'channels_manage'})")
     @PatchMapping(value = {"/batch", "/batch/{restart}"})
     public ResponseEntity<?> updateChannels(@RequestBody ChannelBatchInsertView channelView, @PathVariable(required = false) boolean restart) {
         channelService.saveAll(channelView, restart);
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAnyAuthority({'channels_manage', 'channels_batch_delete'}) or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority({'channels_manage'})")
     @DeleteMapping("/batch")
     public ResponseEntity<?> deleteChannels(@RequestBody ChannelBatchDeleteView channelView) {
         channelService.deleteAll(channelView);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PreAuthorize("hasAnyAuthority({'channels_manage', 'channels_import'}) or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority({'channels_manage'})")
     @RequestMapping(path = "/import", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<?> importMovies(@ModelAttribute ChannelImportView importView) {
         channelService.importChannels(importView);
@@ -89,14 +88,14 @@ public class ChannelController {
     }
 
     // Stream Operations
-    @PreAuthorize("hasAnyAuthority({'channels_manage'}) or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority({'channels_manage'})")
     @GetMapping("/{id}/start")
     public ResponseEntity<String> startChannelOnServers(@PathVariable Long id, @RequestParam(required = false) Set<Long> serversIds) {
         channelService.startStreamOnServers(id, serversIds);
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAnyAuthority({'channels_manage'}) or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority({'channels_manage'})")
     @GetMapping("/{id}/stop")
     public ResponseEntity<?> stopChannelOnServers(@PathVariable Long id, @RequestParam(required = false) List<Long> servers) {
         channelService.stopStreamOnServers(id, servers);
