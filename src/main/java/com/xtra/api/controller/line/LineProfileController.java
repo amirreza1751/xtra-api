@@ -1,5 +1,6 @@
 package com.xtra.api.controller.line;
 
+import com.xtra.api.projection.PasswordUpdateView;
 import com.xtra.api.projection.admin.downloadlist.DownloadListView;
 import com.xtra.api.projection.line.LineSecurityView;
 import com.xtra.api.projection.line.line.LineSecurityUpdateView;
@@ -46,5 +47,11 @@ public class LineProfileController {
     @PatchMapping("security")
     public ResponseEntity<LineView> updateProfileSecurity(@RequestBody LineSecurityUpdateView updateView) {
         return ResponseEntity.ok(lineService.updateProfileSecurity(updateView));
+    }
+
+    @PatchMapping("security/password")
+    public ResponseEntity<?> updateProfilePassword(@RequestBody PasswordUpdateView passwordUpdateView) {
+        lineService.updateProfilePassword(passwordUpdateView);
+        return ResponseEntity.ok().build();
     }
 }
