@@ -33,6 +33,12 @@ public abstract class RoleMapper {
     @Mapping(target = "permissions", ignore = true)
     public abstract Role convertToEntity(RoleInsertView roleView);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "name", ignore = true)
+    @Mapping(target = "permissions", ignore = true)
+    public abstract Role updateEntity(RoleInsertView roleView, @MappingTarget Role role);
+
+
     @AfterMapping
     public void convertPermissionNames(final RoleInsertView roleView, @MappingTarget final Role role) {
         var permissions = new HashSet<PermissionRole>();
@@ -43,8 +49,14 @@ public abstract class RoleMapper {
             pr.setPermission(p);
             permissions.add(pr);
         }
-        role.setPermissions(permissions);
+        if (role.getPermissions() == null) {
+            role.setPermissions(permissions);
+        } else {
+            role.getPermissions().clear();
+            role.getPermissions().addAll(permissions);
+        }
     }
+
 
     public abstract RoleListItem toListItem(Role role);
 }

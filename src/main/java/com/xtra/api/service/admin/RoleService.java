@@ -1,6 +1,5 @@
 package com.xtra.api.service.admin;
 
-import com.google.common.collect.Sets;
 import com.xtra.api.mapper.admin.RoleMapper;
 import com.xtra.api.model.role.Role;
 import com.xtra.api.model.user.UserType;
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 public class RoleService extends CrudService<Role, Long, RoleRepository> {
@@ -48,16 +45,8 @@ public class RoleService extends CrudService<Role, Long, RoleRepository> {
 
 
     public RoleView updateOrFail(Long id, RoleInsertView view) {
-        Role newRole = roleMapper.convertToEntity(view);
         var oldRole = findByIdOrFail(id);
-        copyProperties(newRole, oldRole, "id", "permissions");
-        var obsoletePermissions = Sets.difference(oldRole.getPermissions(), newRole.getPermissions()).immutableCopy();
-        oldRole.getPermissions().removeAll(obsoletePermissions);
-        for (var permission : newRole.getPermissions()) {
-            if (!oldRole.getPermissions().contains(permission)) {
-                oldRole.addPermission(permission);
-            }
-        }
+        oldRole = roleMapper.updateEntity(view, oldRole);
         return roleMapper.convertToDto(repository.save(oldRole));
     }
 

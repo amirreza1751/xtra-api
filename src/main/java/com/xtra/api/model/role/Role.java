@@ -1,7 +1,5 @@
 package com.xtra.api.model.role;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.line.Package;
 import com.xtra.api.model.user.UserType;
 import lombok.Data;
@@ -13,7 +11,6 @@ import java.util.Set;
 
 @Entity
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Table(
         uniqueConstraints =
         @UniqueConstraint(columnNames = {"name", "type"})
