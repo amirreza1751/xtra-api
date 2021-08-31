@@ -65,7 +65,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
             response.setContentType("application/json;charset=UTF-8");
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            if (response.getStatus() != 460 && response.getStatus()!= 461)
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             try {
                 response.getWriter().write(new JSONObject()
                         .put("timestamp", LocalDateTime.now())

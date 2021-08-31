@@ -20,12 +20,10 @@ import java.awt.image.BufferedImage;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private final UserAuthService userAuthService;
 
     @Autowired
-    public UserController(UserService userService, UserAuthService userAuthService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userAuthService = userAuthService;
     }
 
     @GetMapping("")
@@ -52,22 +50,5 @@ public class UserController {
     public ResponseEntity<?> blockIpAddress(@RequestParam Long id) {
         userService.blockIp(id);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping(value = "/2fa/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<BufferedImage> getQRCode() throws WriterException {
-        return ResponseEntity.ok()
-                .body(userAuthService.getQRCode());
-    }
-
-    @GetMapping(value = "/2fa/verify")
-    public ResponseEntity<?> verify2FA(@RequestParam long totp) {
-        return ResponseEntity.status(userAuthService.verify2FA(totp)).build();
-    }
-
-    @GetMapping(value = "/2fa/disable")
-    public ResponseEntity<?> disable2FA() {
-        userAuthService.disable2FA();
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

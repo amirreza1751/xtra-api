@@ -109,7 +109,7 @@ public class UserAuthService {
         return new BufferedImageHttpMessageConverter();
     }
 
-    public HttpStatus verify2FA(long totp) {
+    public HttpStatus enable2FA(long totp) {
         com.xtra.api.model.user.User currentUser = getCurrentUser();
         if (!currentUser.isUsing2FA() && getTOTPCode(currentUser.get_2FASec()).equals(String.valueOf(totp))) {
             currentUser.setUsing2FA(true);
@@ -123,5 +123,9 @@ public class UserAuthService {
         currentUser.setUsing2FA(false);
         currentUser.set_2FASec(null);
         repository.save(currentUser);
+    }
+
+    public boolean check2FAStatus(){
+        return getCurrentUser().isUsing2FA();
     }
 }
