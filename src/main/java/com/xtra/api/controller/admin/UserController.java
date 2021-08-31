@@ -1,23 +1,30 @@
 package com.xtra.api.controller.admin;
 
+import com.google.zxing.WriterException;
 import com.xtra.api.projection.admin.user.UserView;
 import com.xtra.api.service.admin.UserService;
+import com.xtra.api.service.system.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.awt.image.BufferedImage;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final UserAuthService userAuthService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserAuthService userAuthService) {
         this.userService = userService;
+        this.userAuthService = userAuthService;
     }
 
     @GetMapping("")
@@ -33,10 +40,33 @@ public class UserController {
 
     //auth
     @GetMapping("/verify")
-    public ResponseEntity<?> verifyUserByToken(@AuthenticationPrincipal Authentication authentication) {
-        if (authentication != null)
-            return ResponseEntity.ok(userService.verifyUser(authentication));
+    public ResponseEntity<?> verifyUserByToken(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails != null)
+            return ResponseEntity.ok(userService.verifyUser(userDetails));
         else
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PostMapping("/block-ip")
+    public ResponseEntity<?> blockIpAddress(@RequestParam Long id) {
+        userService.blockIp(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/2fa/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<BufferedImage> getQRCode() throws WriterException {
+        return ResponseEntity.ok()
+                .body(userAuthService.getQRCode());
+    }
+
+    @GetMapping(value = "/2fa/verify")
+    public ResponseEntity<?> verify2FA(@RequestParam long totp) {
+        return ResponseEntity.status(userAuthService.verify2FA(totp)).build();
+    }
+
+    @GetMapping(value = "/2fa/disable")
+    public ResponseEntity<?> disable2FA() {
+        userAuthService.disable2FA();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -2,7 +2,7 @@ package com.xtra.api.service;
 
 import com.google.common.collect.Sets;
 import com.xtra.api.mapper.admin.DownloadListMapper;
-import com.xtra.api.model.DownloadList;
+import com.xtra.api.model.download_list.DownloadList;
 import com.xtra.api.projection.admin.downloadlist.DownloadListInsertView;
 import com.xtra.api.projection.admin.downloadlist.DownloadListView;
 import com.xtra.api.repository.DownloadListRepository;
@@ -33,8 +33,11 @@ public abstract class DownloadListService extends CrudService<DownloadList, Long
 
     @Transactional
     public DownloadListView updateOrFail(Long id, DownloadListInsertView downloadListView) {
-        downloadListView.setId(id);
         DownloadList downloadList = mapper.convertToEntityWithRelations(downloadListView);
+        return mapper.convertToView(updateDownloadList(id, downloadList));
+    }
+
+    public DownloadList updateDownloadList(Long id, DownloadList downloadList) {
         var existing = findByIdOrFail(id);
         existing.setName(downloadList.getName());
 
@@ -47,16 +50,20 @@ public abstract class DownloadListService extends CrudService<DownloadList, Long
             dlc.setCollection(collectionService.findByIdOrFail(dlc.getId().getCollectionId()));
             existing.getCollectionsAssign().add(dlc);
         }
-        return mapper.convertToView(repository.save(existing));
+        return repository.save(existing);
     }
 
 
     public DownloadListView save(DownloadListInsertView downloadListView) {
         DownloadList downloadList = mapper.convertToEntityWithRelations(downloadListView);
+        return mapper.convertToView(addDownloadList(downloadList));
+    }
+
+    public DownloadList addDownloadList(DownloadList downloadList){
         downloadList.setCollectionsAssign(downloadList.getCollectionsAssign().stream().peek(dlc -> {
             dlc.setCollection(collectionService.findByIdOrFail(dlc.getId().getCollectionId()));
             dlc.setDownloadList(downloadList);
         }).collect(toSet()));
-        return mapper.convertToView(super.insert(downloadList));
+        return super.insert(downloadList);
     }
 }

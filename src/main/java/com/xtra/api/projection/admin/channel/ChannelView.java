@@ -2,12 +2,12 @@ package com.xtra.api.projection.admin.channel;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.StreamType;
+import com.xtra.api.model.stream.AdvancedStreamOptions;
+import com.xtra.api.model.stream.StreamType;
 import com.xtra.api.projection.admin.epg.EpgDetails;
 import lombok.Data;
 
 import java.time.DayOfWeek;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -31,4 +31,9 @@ public class ChannelView {
 
     private List<ChannelServerInfo> infos;
     private EpgDetails epgDetails;
+    private AdvancedStreamOptions advancedStreamOptions;
+
+    private Long catchUp;
+    private int catchUpDays;
+    private Long onDemand;
 }

@@ -15,6 +15,24 @@ public class ChannelBatchInsertView {
     private Set<Long> serverIds;
     private Set<Long> collectionIds;
 
+    // null => no change | TRUE OR FALSE TO CHANGE
+    private String generatePts;
+    private String nativeFrames;
+    private String streamAllCodecs;
+    private String allowRecording;
+    private String outputRTMP;
+    private String directSource;
+
+    // null => no change | EMPTY STRING TO CLEAR, FILL TO SAVE
+    private String customChannelSID;
+    private String onDemandProbeSize;
+    private String minuteDelay;
+    private String userAgent;
+    private String httpProxy;
+    private String cookie;
+    private String headers;
+    private String transcodingProfile;
+
     private Boolean keepServers;
     private Boolean keepCollections;
 }

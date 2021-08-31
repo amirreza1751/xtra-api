@@ -1,7 +1,7 @@
 package com.xtra.api.integration;
 
 import com.xtra.api.controller.admin.CollectionController;
-import com.xtra.api.model.Collection;
+import com.xtra.api.model.collection.Collection;
 import com.xtra.api.repository.CollectionRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;

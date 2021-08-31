@@ -1,6 +1,5 @@
 package com.xtra.api.projection.admin.epg;
 
-import com.xtra.api.model.EpgChannel;
 import lombok.Data;
 
 import java.time.LocalDateTime;

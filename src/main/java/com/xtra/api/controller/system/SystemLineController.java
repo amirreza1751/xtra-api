@@ -1,6 +1,6 @@
 package com.xtra.api.controller.system;
 
-import com.xtra.api.model.LineStatus;
+import com.xtra.api.model.line.LineStatus;
 import com.xtra.api.projection.system.LineAuth;
 import com.xtra.api.service.system.SystemLineServiceImpl;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +18,12 @@ public class SystemLineController {
 
     @PostMapping("/stream_auth")
     public LineStatus authorizeLineForStream(@RequestBody LineAuth lineAuth) {
-        return lineService.isLineEligibleForPlaying(lineAuth);
+        return lineService.canLinePlayStream(lineAuth);
     }
 
     @PostMapping("/vod_auth")
     public LineStatus authorizeLineForVod(@RequestBody LineAuth lineAuth) {
-        return lineService.isLineEligibleForPlaying(lineAuth);
+        return lineService.canLinePlayVod(lineAuth);
     }
 
     @GetMapping("/get_id/{line_token}")

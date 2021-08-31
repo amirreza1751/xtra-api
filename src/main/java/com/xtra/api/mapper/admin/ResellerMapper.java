@@ -1,14 +1,15 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
-import com.xtra.api.model.DownloadList;
-import com.xtra.api.model.Reseller;
-import com.xtra.api.model.Role;
+import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.download_list.DownloadList;
+import com.xtra.api.model.user.Reseller;
+import com.xtra.api.model.role.Role;
 import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
 import com.xtra.api.projection.admin.user.reseller.ResellerListView;
 import com.xtra.api.projection.admin.user.reseller.ResellerSignUpView;
 import com.xtra.api.projection.admin.user.reseller.ResellerView;
+import com.xtra.api.projection.reseller.ResellerProfile;
 import com.xtra.api.projection.reseller.subreseller.SubresellerCreateView;
 import com.xtra.api.projection.reseller.subreseller.SubresellerSimplified;
 import com.xtra.api.projection.reseller.subreseller.SubresellerView;
@@ -74,4 +75,5 @@ public abstract class ResellerMapper {
 
     public abstract Reseller convertToEntity(ResellerSignUpView resellerSignUpView);
 
+    public abstract ResellerProfile convertToProfile(Reseller currentUser);
 }

@@ -1,6 +1,7 @@
 package com.xtra.api.controller.reseller;
 
 import com.xtra.api.projection.reseller.line.LineCreateView;
+import com.xtra.api.projection.reseller.line.LineUpdateView;
 import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.service.reseller.ResellerLineServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController("resellerLineController")
 @RequestMapping("users/current/lines")
@@ -36,13 +39,13 @@ public class LineController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<LineView> updateResellerLine(@PathVariable Long id, @RequestBody LineCreateView createView) {
-        return ResponseEntity.ok(lineService.updateLine(id, createView));
+    public ResponseEntity<LineView> updateResellerLine(@PathVariable Long id, @RequestBody LineUpdateView updateView) {
+        return ResponseEntity.ok(lineService.updateLine(id, updateView));
     }
 
-    @PatchMapping("/{id}/extend")
-    public ResponseEntity<LineView> extendResellerLine(@PathVariable Long id, @RequestBody Long packageId) {
-        return ResponseEntity.ok(lineService.extendLine(id, packageId));
+    @PostMapping("/{id}/extend")
+    public ResponseEntity<LineView> extendResellerLine(@PathVariable Long id, @RequestParam(name = "package_id") Long packageId, @RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(lineService.extendLine(id, packageId, body.getOrDefault("notes", "")));
     }
 
     @DeleteMapping("/{id}")
@@ -68,9 +71,4 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/{id}/kill_connections")
-    public ResponseEntity<String> killResellerLineConnections(@PathVariable Long id) {
-        lineService.killAllConnections(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
 }

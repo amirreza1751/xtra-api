@@ -2,7 +2,7 @@ package com.xtra.api.unit.service.admin;
 
 import com.xtra.api.mapper.admin.ChannelMapper;
 import com.xtra.api.mapper.admin.ChannelStartMapper;
-import com.xtra.api.model.Channel;
+import com.xtra.api.model.stream.Channel;
 import com.xtra.api.repository.ChannelRepository;
 import com.xtra.api.repository.EpgChannelRepository;
 import com.xtra.api.repository.StreamInputRepository;
@@ -50,9 +50,9 @@ class ChannelServiceTest {
 
     @Test
     public void testUpdate() {
-        when(this.channelRepository.findById((Long) any())).thenThrow(new RuntimeException("An error occurred"));
+        when(this.channelRepository.findById(any())).thenThrow(new RuntimeException("An error occurred"));
         this.channelService.update(123L, new Channel(), true);
-        verify(this.channelRepository).findById((Long) any());
+        verify(this.channelRepository).findById(any());
     }
 
 }

@@ -1,7 +1,9 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
-import com.xtra.api.model.*;
+import com.xtra.api.model.collection.CollectionVod;
+import com.xtra.api.model.collection.CollectionVodId;
+import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.vod.Series;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
 import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.repository.CollectionRepository;
@@ -51,5 +53,19 @@ public abstract class SeriesMapper {
     public Set<Long> convertToCollectionIds(Set<CollectionVod> collectionVods) {
         if (collectionVods == null) return null;
         return collectionVods.stream().map(collectionVod -> collectionVod.getCollection().getId()).collect(Collectors.toSet());
+    }
+
+    public Set<CollectionVod> convertToCollections(Set<Long> ids, Series series) {
+        Set<CollectionVod> collectionVodSet = new HashSet<>();
+
+        for (Long id : ids) {
+            CollectionVod collectionVod = new CollectionVod(new CollectionVodId(id, series.getId()));
+            var collection = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Collection", id.toString()));
+            collectionVod.setVod(series);
+            collectionVod.setCollection(collection);
+            collectionVodSet.add(collectionVod);
+        }
+
+        return collectionVodSet;
     }
 }

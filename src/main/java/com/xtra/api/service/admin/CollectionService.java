@@ -2,17 +2,21 @@ package com.xtra.api.service.admin;
 
 import com.google.common.collect.Sets;
 import com.xtra.api.mapper.admin.CollectionMapper;
-import com.xtra.api.model.*;
+import com.xtra.api.model.collection.Collection;
+import com.xtra.api.model.collection.CollectionStream;
+import com.xtra.api.model.collection.CollectionStreamId;
+import com.xtra.api.model.collection.CollectionVod;
+import com.xtra.api.model.vod.Vod;
 import com.xtra.api.projection.admin.collection.CollectionInsertView;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionStreamRepository;
-import com.xtra.api.repository.StreamRepository;
 import com.xtra.api.repository.VodRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,9 +25,10 @@ import static com.xtra.api.util.Utilities.wrapSearchString;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
+@Validated
 public class CollectionService extends CrudService<Collection, Long, CollectionRepository> {
     private final CollectionMapper mapper;
-    private final StreamService<Stream, StreamRepository<Stream>> streamService;
+    private final StreamService streamService;
     private final VodService<Vod, VodRepository> vodService;
     private final CollectionStreamRepository csRepository;
 
@@ -65,7 +70,7 @@ public class CollectionService extends CrudService<Collection, Long, CollectionR
         collection.setId(id);
         var newColl = mapper.convertToEntity(collection);
         var oldColl = findByIdOrFail(id);
-        copyProperties(oldColl, newColl, "downloadListCollections", "streams", "vods");
+        copyProperties(newColl, oldColl, "downloadListCollections", "streams", "vods");
         if (newColl.getStreams() != null) {
             var obsoleteStreams = Sets.difference(oldColl.getStreams(), newColl.getStreams()).immutableCopy();
             oldColl.removeStreams(obsoleteStreams);

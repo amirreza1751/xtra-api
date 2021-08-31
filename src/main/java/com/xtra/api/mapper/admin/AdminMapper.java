@@ -1,9 +1,9 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.model.Admin;
-import com.xtra.api.model.Role;
-import com.xtra.api.projection.admin.user.admin.AdminInsertView;
+import com.xtra.api.model.role.Role;
+import com.xtra.api.model.user.Admin;
 import com.xtra.api.projection.admin.user.UserSimpleView;
+import com.xtra.api.projection.admin.user.admin.AdminInsertView;
 import com.xtra.api.projection.admin.user.admin.AdminView;
 import com.xtra.api.service.admin.RoleService;
 import org.mapstruct.AfterMapping;
@@ -22,7 +22,7 @@ public abstract class AdminMapper {
 
     public abstract Admin convertToEntity(AdminInsertView view);
 
-    Role convertToId(Long roleId) {
+    public Role convertToId(Long roleId) {
         if (roleId == null)
             return null;//todo throw exception
         return roleService.findByIdOrFail(roleId);
@@ -45,4 +45,5 @@ public abstract class AdminMapper {
         return role.getId();
     }
 
+    public abstract UserSimpleView convertToUserSimpleView(Admin admin);
 }

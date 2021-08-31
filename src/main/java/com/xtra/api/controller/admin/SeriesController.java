@@ -1,8 +1,8 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.Episode;
-import com.xtra.api.model.Series;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
+import com.xtra.api.projection.admin.series.SeriesBatchDeleteView;
+import com.xtra.api.projection.admin.series.SeriesBatchUpdateView;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
 import com.xtra.api.projection.admin.series.SeriesView;
 import com.xtra.api.service.admin.SeriesService;
@@ -34,7 +34,7 @@ public class SeriesController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Series> addSeries(@RequestBody SeriesInsertView series) {
+    public ResponseEntity<SeriesView> addSeries(@RequestBody SeriesInsertView series) {
         return ResponseEntity.ok(seriesService.add(series));
     }
 
@@ -49,20 +49,22 @@ public class SeriesController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    // Batch Actions
+    @PatchMapping("/batch")
+    public ResponseEntity<?> updateAll(@RequestBody SeriesBatchUpdateView seriesBatchUpdateView) {
+        seriesService.updateAll(seriesBatchUpdateView);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/batch")
+    public ResponseEntity<?> deleteAll(@RequestBody SeriesBatchDeleteView seriesBatchDeleteView) {
+        seriesService.deleteAll(seriesBatchDeleteView);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     //Episodes
     @PostMapping("/{id}/episodes")
-    public ResponseEntity<Series> addEpisode(@PathVariable Long id, @RequestBody EpisodeInsertView episodeInsertView) {
+    public ResponseEntity<SeriesView> addEpisode(@PathVariable Long id, @RequestBody EpisodeInsertView episodeInsertView) {
         return ResponseEntity.ok(seriesService.addEpisode(id, episodeInsertView));
-    }
-
-    @PatchMapping("/{id}/episodes/{episodeId}")
-    public ResponseEntity<Series> editEpisode(@PathVariable Long id, @PathVariable Long episodeId, @RequestBody EpisodeInsertView episodeInsertView) {
-        return ResponseEntity.ok(seriesService.editEpisode(id, episodeId, episodeInsertView));
-    }
-
-    @DeleteMapping("/{id}/episodes/{episodeId}")
-    public ResponseEntity<Series> deleteEpisode(@PathVariable Long id, @PathVariable Long episodeId) {
-        seriesService.deleteEpisode(id, episodeId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

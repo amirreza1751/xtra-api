@@ -1,9 +1,7 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.model.Connection;
-import com.xtra.api.model.ConnectionId;
-import com.xtra.api.projection.admin.ConnectionIdView;
-import com.xtra.api.projection.admin.ConnectionView;
+import com.xtra.api.model.line.Connection;
+import com.xtra.api.projection.admin.connection.ConnectionView;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,16 +15,12 @@ public abstract class ConnectionMapper {
     @Mapping(source = "line.username", target = "lineUsername")
     @Mapping(source = "stream.name", target = "streamName")
     @Mapping(source = "server.name", target = "serverName")
+    @Mapping(source = "userIp", target = "ip")
     public abstract ConnectionView convertToView(Connection connection);
-
 
     @AfterMapping
     void durationCalculation(final Connection connection, @MappingTarget final ConnectionView connectionView) {
-        connectionView.setDuration(Duration.between(connection.getStartDate(), connection.getLastRead()).toMillis());
+        connectionView.setDuration(Duration.between(connection.getStartDate(), connection.getLastRead()).toSeconds());
     }
-
-    public abstract ConnectionIdView convertToView(ConnectionId connectionId);
-
-    public abstract ConnectionId convertToEntity(ConnectionIdView connectionIdView);
 
 }

@@ -1,16 +1,15 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.projection.admin.line.LineBatchDeleteView;
-import com.xtra.api.projection.admin.line.LineBatchInsertView;
-import com.xtra.api.projection.admin.line.LineInsertView;
-import com.xtra.api.projection.admin.line.LineView;
+import com.xtra.api.projection.admin.line.*;
+import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.service.admin.AdminLineServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
@@ -23,14 +22,19 @@ public class LineController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<LineView>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                                   @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+    public ResponseEntity<Page<LineListView>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                                       @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(lineService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineView> getLine(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.getById(id));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<UserSimpleView>> getLineList(@RequestParam String search) {
+        return ResponseEntity.ok(lineService.getLineList(search));
     }
 
     @PostMapping("")
@@ -73,11 +77,11 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/{id}/kill_connections")
+/*    @GetMapping("/{id}/kill_connections")
     public ResponseEntity<String> killLineConnections(@PathVariable Long id) {
         lineService.killAllConnections(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
+    }*/
 
     @GetMapping("/download/{id}")
     public ResponseEntity<String> AdminDownloadLine(@PathVariable Long id) {

@@ -1,9 +1,9 @@
 package com.xtra.api.unit.service.reseller;
 
 import com.xtra.api.mapper.reseller.ResellerLineMapper;
-import com.xtra.api.model.Line;
-import com.xtra.api.model.Package;
-import com.xtra.api.model.Reseller;
+import com.xtra.api.model.line.Line;
+import com.xtra.api.model.line.Package;
+import com.xtra.api.model.user.Reseller;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.service.admin.PackageService;
@@ -53,7 +53,7 @@ public class ResellerLineServiceTest {
 
         doReturn(pack).when(packageService).findByIdOrFail(anyLong());
         doReturn(line).when(resellerLineService).findByIdOrFail(anyLong());
-        resellerLineService.extendLine(0L, 0L);
+        resellerLineService.extendLine(0L, 0L, "");
 
         doReturn(line).when(repository).save(line);
         //incomplete

@@ -1,21 +1,16 @@
 package com.xtra.api.projection.system;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LineAuth {
     private String lineToken;
     private String mediaToken;
     private String ipAddress;
     private String userAgent;
-
-    public LineAuth(String lineToken, String mediaToken, String ipAddress, String userAgent) {
-        this.lineToken = lineToken;
-        this.mediaToken = mediaToken;
-        this.ipAddress = ipAddress;
-        this.userAgent = userAgent;
-    }
-
-    public LineAuth() {
-    }
+    private String serverToken;
 }

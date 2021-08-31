@@ -1,6 +1,6 @@
 package com.xtra.api.config;
 
-import com.xtra.api.exception.handler.CustomAsyncExceptionHandler;
+import com.xtra.api.exception.CustomAsyncExceptionHandler;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;

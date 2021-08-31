@@ -1,7 +1,7 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.DownloadListMapper;
-import com.xtra.api.model.DownloadList;
+import com.xtra.api.model.download_list.DownloadList;
 import com.xtra.api.repository.DownloadListRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

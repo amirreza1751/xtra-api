@@ -1,15 +1,15 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.AdminLineMapper;
-import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.line.LineBatchDeleteView;
-import com.xtra.api.projection.admin.line.LineBatchInsertView;
-import com.xtra.api.projection.admin.line.LineInsertView;
-import com.xtra.api.projection.admin.line.LineView;
+import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.line.Line;
+import com.xtra.api.projection.admin.line.*;
+import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.RoleRepository;
+import com.xtra.api.repository.VodConnectionRepository;
+import com.xtra.api.repository.UserRepository;
 import com.xtra.api.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -30,13 +32,13 @@ public class AdminLineServiceImpl extends LineService {
 
     @Autowired
     public AdminLineServiceImpl(LineRepository repository, ConnectionRepository connectionRepository, AdminLineMapper lineMapper
-            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
-        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, UserRepository userRepository, VodConnectionRepository vodConnectionRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository, userRepository,vodConnectionRepository);
         this.lineMapper = lineMapper;
     }
 
-    public Page<LineView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(lineMapper::convertToView);
+    public Page<LineListView> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(lineMapper::convertToListView);
     }
 
     public LineView getById(Long id) {
@@ -96,14 +98,12 @@ public class AdminLineServiceImpl extends LineService {
     public void updateLineBlock(Long id, boolean blocked) {
         Line line = findByIdOrFail(id);
         line.setBlocked(blocked);
-        killAllConnections(id);
         repository.save(line);
     }
 
     public void updateLineBan(Long id, boolean banned) {
         Line line = findByIdOrFail(id);
         line.setBanned(banned);
-        killAllConnections(id);
         repository.save(line);
     }
 
@@ -111,6 +111,7 @@ public class AdminLineServiceImpl extends LineService {
     public Line updateOrFail(Long id, Line newLine) {
         Line oldLine = findByIdOrFail(id);
         copyProperties(newLine, oldLine, "id", "lineToken", "currentConnections", "role");
+        oldLine.setPassword(bCryptPasswordEncoder.encode(newLine.getPassword()));
         return repository.save(oldLine);
     }
 
@@ -125,5 +126,9 @@ public class AdminLineServiceImpl extends LineService {
 
     public ResponseEntity<String> downloadLinePlaylist(Long lineId) {
         return downloadLinePlaylist(findByIdOrFail(lineId));
+    }
+
+    public List<UserSimpleView> getLineList(String search) {
+        return repository.findByLineToken(search).stream().map(lineMapper::convertToUserSimpleView).collect(Collectors.toList());
     }
 }

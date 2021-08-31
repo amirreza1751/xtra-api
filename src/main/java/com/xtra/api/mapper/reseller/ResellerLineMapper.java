@@ -1,16 +1,18 @@
 package com.xtra.api.mapper.reseller;
 
-import com.xtra.api.exception.EntityNotFoundException;
-import com.xtra.api.model.DownloadList;
-import com.xtra.api.model.DownloadListCollection;
-import com.xtra.api.model.Line;
+import com.xtra.api.model.download_list.DownloadList;
+import com.xtra.api.model.download_list.DownloadListCollection;
+import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.line.Line;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
-import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.projection.reseller.line.LineCreateView;
+import com.xtra.api.projection.reseller.line.LineUpdateView;
+import com.xtra.api.projection.reseller.line.LineView;
 import com.xtra.api.repository.CollectionRepository;
 import org.apache.commons.lang3.RandomUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
@@ -28,6 +30,9 @@ public abstract class ResellerLineMapper {
 
     @Mapping(source = "collections", target = "defaultDownloadList")
     public abstract Line convertToEntity(LineCreateView lineView);
+
+    @Mapping(source = "collections", target = "defaultDownloadList")
+    public abstract Line convertToEntity(LineUpdateView lineView, @MappingTarget Line line);
 
     DownloadList convertCollectionIdsToDownloadList(LinkedHashSet<Long> collectionIds) {
         if (collectionIds == null || collectionIds.size() == 0)

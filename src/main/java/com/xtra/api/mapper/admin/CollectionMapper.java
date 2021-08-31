@@ -1,7 +1,7 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
-import com.xtra.api.model.*;
+import com.xtra.api.model.collection.*;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.projection.admin.MediaPair;
 import com.xtra.api.projection.admin.collection.CollectionInsertView;
 import com.xtra.api.projection.admin.collection.CollectionSimplifiedView;
@@ -84,12 +84,14 @@ public abstract class CollectionMapper {
                 }
                 break;
             case CHANNEL:
-                i = 0;
-                for (var id : input.getChannels()) {
-                    CollectionStream collectionStream = new CollectionStream(new CollectionStreamId(input.getId(), id));
-                    collectionStream.setOrder(i++);
-                    collectionStream.setCollection(collection);
-                    collection.addStream(collectionStream);
+                if (input.getChannels() != null){
+                    i = 0;
+                    for (var id : input.getChannels()) {
+                        CollectionStream collectionStream = new CollectionStream(new CollectionStreamId(input.getId(), id));
+                        collectionStream.setOrder(i++);
+                        collectionStream.setCollection(collection);
+                        collection.addStream(collectionStream);
+                    }
                 }
                 break;
         }

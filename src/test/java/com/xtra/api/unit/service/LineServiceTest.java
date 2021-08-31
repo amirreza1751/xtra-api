@@ -1,6 +1,6 @@
 package com.xtra.api.unit.service;
 
-import com.xtra.api.model.Line;
+import com.xtra.api.model.line.Line;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.service.LineService;

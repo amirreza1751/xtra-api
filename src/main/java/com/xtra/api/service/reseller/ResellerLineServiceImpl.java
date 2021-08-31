@@ -1,17 +1,20 @@
 package com.xtra.api.service.reseller;
 
-import com.xtra.api.exception.ActionNotAllowedException;
-import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.reseller.ResellerLineMapper;
-import com.xtra.api.model.Line;
-import com.xtra.api.model.Package;
-import com.xtra.api.model.Reseller;
+import com.xtra.api.model.exception.ActionNotAllowedException;
+import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.line.Line;
+import com.xtra.api.model.line.Package;
+import com.xtra.api.model.user.CreditLogReason;
+import com.xtra.api.model.user.Reseller;
+import com.xtra.api.model.user.ResellerLogAction;
 import com.xtra.api.projection.reseller.line.LineCreateView;
+import com.xtra.api.projection.reseller.line.LineUpdateView;
 import com.xtra.api.projection.reseller.line.LineView;
-import com.xtra.api.repository.ConnectionRepository;
-import com.xtra.api.repository.LineRepository;
-import com.xtra.api.repository.RoleRepository;
+import com.xtra.api.repository.*;
+import com.xtra.api.service.CreditLogService;
 import com.xtra.api.service.LineService;
+import com.xtra.api.service.admin.LogService;
 import com.xtra.api.service.admin.PackageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +25,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 
+import static com.xtra.api.model.exception.ErrorCode.LINE_NEVER_EXPIRES;
+import static com.xtra.api.model.exception.ErrorCode.RESELLER_CREDIT_LOW;
 import static com.xtra.api.service.system.UserAuthService.getCurrentReseller;
 
 @Service
@@ -30,13 +36,19 @@ import static com.xtra.api.service.system.UserAuthService.getCurrentReseller;
 public class ResellerLineServiceImpl extends LineService {
     private final ResellerLineMapper lineMapper;
     private final PackageService packageService;
+    private final ResellerRepository resellerRepository;
+    private final CreditLogService creditLogService;
+    private final LogService logService;
 
     @Autowired
     protected ResellerLineServiceImpl(LineRepository repository, ResellerLineMapper lineMapper, ConnectionRepository connectionRepository, PackageService packageService
-            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
-        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository);
+            , BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, ResellerRepository resellerRepository, CreditLogService creditLogService, UserRepository userRepository, LogService logService, VodConnectionRepository vodConnectionRepository) {
+        super(repository, connectionRepository, bCryptPasswordEncoder, roleRepository, userRepository, vodConnectionRepository);
         this.lineMapper = lineMapper;
         this.packageService = packageService;
+        this.resellerRepository = resellerRepository;
+        this.creditLogService = creditLogService;
+        this.logService = logService;
     }
 
     public Page<LineView> getAllLines(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -48,30 +60,56 @@ public class ResellerLineServiceImpl extends LineService {
     }
 
     public LineView createLine(LineCreateView createView) {
+        var _package = packageService.findByIdOrFail(createView.getPackageId());
         Line line = lineMapper.convertToEntity(createView);
-        line.setOwner(getCurrentReseller());
-        return lineMapper.convertToView(insert(line));
+        var owner = getCurrentReseller();
+        var initialCredit = owner.getCredits();
+        var packageCredits = _package.getCredits();
+        line.setOwner(owner);
+        line.setMaxConnections(_package.getMaxConnections());
+        line.setExpireDate(LocalDateTime.now().plus(_package.getDuration()));
+        if (initialCredit >= packageCredits) {
+            owner.setCredits(initialCredit - packageCredits);
+            var res = insert(line);
+            resellerRepository.save(owner);
+            creditLogService.saveCreditChangeLog(owner, owner, initialCredit, -packageCredits, CreditLogReason.RESELLER_LINE_CREATE_EXTEND, "");
+            logService.saveResellerLog(owner, line, LocalDateTime.now(), ResellerLogAction.NEW_LINE);
+            return lineMapper.convertToView(res);
+        }
+        throw new ActionNotAllowedException("User Credit is Low", RESELLER_CREDIT_LOW);
     }
 
 
-    public LineView updateLine(Long id, LineCreateView createView) {
-        return lineMapper.convertToView(updateOrFail(id, lineMapper.convertToEntity(createView)));
+    public LineView updateLine(Long id, LineUpdateView updateView) {
+        var line = lineMapper.convertToEntity(updateView, findByIdOrFail(id));
+        return lineMapper.convertToView(repository.save(line));
     }
 
-    public LineView extendLine(Long id, Long packageId) {
+    public LineView extendLine(Long id, Long packageId, String notes) {
         Package pack = packageService.findByIdOrFail(packageId);
         Line line = findByIdOrFail(id);
-        line.setExpireDate(line.getExpireDate().plus(pack.getDuration()));
-        line.setMaxConnections(pack.getMaxConnections());
+        if (line.isNeverExpire()) {
+            throw new ActionNotAllowedException("Line never expires", LINE_NEVER_EXPIRES);
+        }
 
         var owner = getCurrentReseller();
-        var currentCredits = owner.getCredits();
+        var initialCredit = owner.getCredits();
         var packageCredits = pack.getCredits();
-        if (currentCredits >= packageCredits) {
-            owner.setCredits(currentCredits - packageCredits);
+
+        if (initialCredit >= packageCredits) {
+            if (line.isExpired())
+                line.setExpireDate(LocalDateTime.now().plus(pack.getDuration()));
+            else
+                line.setExpireDate(line.getExpireDate().plus(pack.getDuration()));
+            line.setMaxConnections(pack.getMaxConnections());
+            line.setResellerNotes(notes);
+            owner.setCredits(initialCredit - packageCredits);
+            resellerRepository.save(owner);
+            creditLogService.saveCreditChangeLog(owner, owner, initialCredit, -packageCredits, CreditLogReason.RESELLER_LINE_CREATE_EXTEND, "");
+            logService.saveResellerLog(owner, line, LocalDateTime.now(), ResellerLogAction.EXTEND_LINE);
             return lineMapper.convertToView(repository.save(line));
         }
-        throw new ActionNotAllowedException("LOW_CREDIT", "User Credit is Low");
+        throw new ActionNotAllowedException("User Credit is Low", RESELLER_CREDIT_LOW);
     }
 
     @Override
@@ -81,20 +119,24 @@ public class ResellerLineServiceImpl extends LineService {
         if (!repository.existsByOwnerAndId(owner, id))
             entityNotFoundException("id", id);
         repository.deleteLineByOwnerAndId(owner, id);
+
+        logService.saveResellerLog(owner, findByIdOrFail(id), LocalDateTime.now(), ResellerLogAction.DELETE_LINE);
     }
 
     public void updateLineBlock(Long id, boolean blocked) {
         Line line = findLineByOwnerAndIdOrFail(getCurrentReseller(), id);
         line.setBlocked(blocked);
-        killAllConnections(id);
         repository.save(line);
+
+        logService.saveResellerLog(getCurrentReseller(), line, LocalDateTime.now(), ResellerLogAction.BLOCK_LINE);
     }
 
     public void updateLineBan(Long id, boolean banned) {
         Line line = findLineByOwnerAndIdOrFail(getCurrentReseller(), id);
         line.setBanned(banned);
-        killAllConnections(id);
         repository.save(line);
+
+        logService.saveResellerLog(getCurrentReseller(), line, LocalDateTime.now(), ResellerLogAction.BAN_LINE);
     }
 
     private Line findLineByOwnerAndIdOrFail(Reseller owner, Long id) {

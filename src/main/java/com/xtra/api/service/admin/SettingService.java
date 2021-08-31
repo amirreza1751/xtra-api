@@ -1,11 +1,14 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.SettingMapper;
 import com.xtra.api.model.Setting;
+import com.xtra.api.model.event.SettingChangedEvent;
+import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.setting.SettingType;
 import com.xtra.api.projection.admin.SettingView;
 import com.xtra.api.repository.SettingRepository;
 import com.xtra.api.service.CrudService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,10 +20,12 @@ import java.util.stream.Collectors;
 @Service
 public class SettingService extends CrudService<Setting, String, SettingRepository> {
     private final SettingMapper settingMapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
-    protected SettingService(SettingRepository repository, SettingMapper settingMapper) {
+    protected SettingService(SettingRepository repository, SettingMapper settingMapper, ApplicationEventPublisher applicationEventPublisher) {
         super(repository, "Setting");
         this.settingMapper = settingMapper;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -40,5 +45,8 @@ public class SettingService extends CrudService<Setting, String, SettingReposito
             setting.setValue(s.getValue());
             repository.save(setting);
         });
+        var backupSetting = settings.stream().filter(settingView -> settingView.getKey().equals("backup_interval")).findFirst();
+        backupSetting.ifPresent(settingView -> System.out.println("fired"));
+        backupSetting.ifPresent(settingView -> applicationEventPublisher.publishEvent(new SettingChangedEvent(settingView, SettingType.BACKUP)));
     }
 }

@@ -1,8 +1,10 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.File;
+import com.xtra.api.model.server.File;
+import com.xtra.api.projection.EntityListItem;
+import com.xtra.api.projection.admin.server.ServerInfo;
+import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.server.ServerView;
-import com.xtra.api.projection.admin.server.SimpleServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
 import com.xtra.api.service.admin.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +27,14 @@ public class ServerController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<SimpleServerView>> getServers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
+    public ResponseEntity<Page<ServerInfo>> getServers(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(serverService.getAll(search, pageNo, pageSize, sortBy, sortDir));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<EntityListItem>> getServerList(@RequestParam String search) {
+        return ResponseEntity.ok(serverService.getServerList(search));
     }
 
     @GetMapping("/{id}")
@@ -36,13 +43,13 @@ public class ServerController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ServerView> addServer(@Valid @RequestBody ServerView server) {
-        return ResponseEntity.ok(serverService.add(server));
+    public ResponseEntity<ServerView> addServer(@Valid @RequestBody ServerInsertView insertView) {
+        return ResponseEntity.ok(serverService.add(insertView));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ServerView> updateServer(@PathVariable Long id, @RequestBody ServerView server) {
-        return ResponseEntity.ok(serverService.save(id, server));
+    public ResponseEntity<ServerView> updateServer(@PathVariable Long id, @RequestBody ServerInsertView insertView) {
+        return ResponseEntity.ok(serverService.save(id, insertView));
     }
 
     @DeleteMapping("/{id}")
@@ -63,12 +70,14 @@ public class ServerController {
 
     @GetMapping("/{id}/streams/start")
     public ResponseEntity<Boolean> startAllChannelsOnServer(@PathVariable Long id) {
-        return ResponseEntity.ok(serverService.startAllChannelsOnServer(id));
+        serverService.startAllChannelsOnServer(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}/streams/stop")
     public ResponseEntity<Boolean> stopAllChannelsOnServer(@PathVariable Long id) {
-        return ResponseEntity.ok(serverService.stopAllChannelsOnServer(id));
+        serverService.stopAllChannelsOnServer(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}/streams/restart")
