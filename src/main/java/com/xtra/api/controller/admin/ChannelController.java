@@ -8,14 +8,12 @@ import com.xtra.api.service.admin.ChannelService;
 import com.xtra.api.service.admin.StreamServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -112,12 +110,6 @@ public class ChannelController {
         channelService.updateServersList(channel_id, serverIds);
     }
 
-    //Play a Channel
-    @GetMapping("/play/{line_token}/{stream_token}")
-    public void playChannel(@PathVariable String stream_token, @PathVariable String line_token, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String channelLink = channelService.playChannel(stream_token, line_token, request);
-        response.sendRedirect(channelLink);
-    }
 
     @GetMapping("/{id}/change-source")
     public ResponseEntity<Integer> changeSource(@PathVariable Long id, @RequestHeader(value = "token", required = false) String token) {
