@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +21,12 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
+    @NotNull
     private String name;
+
+    @NotNull
     private String color;
 
     @Enumerated(EnumType.STRING)
@@ -35,7 +42,7 @@ public class Role {
     public Role() {
     }
 
-    public Role(Long id){
+    public Role(Long id) {
         setId(id);
     }
 

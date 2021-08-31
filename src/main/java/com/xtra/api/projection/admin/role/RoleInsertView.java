@@ -12,11 +12,11 @@ import java.util.Set;
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class RoleInsertView {
-    @NotBlank( message = "role name can not be empty" )
-    @NotNull
+    @NotBlank(message = "role name can not be empty")
     private String name;
     private String color;
 
+    @NotNull
     private UserType type;
     private Set<String> permissions;
 }

@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 public class RoleService extends CrudService<Role, Long, RoleRepository> {
 
     private final RoleMapper roleMapper;
@@ -44,7 +46,7 @@ public class RoleService extends CrudService<Role, Long, RoleRepository> {
     }
 
 
-    public RoleView updateOrFail(Long id, RoleInsertView view) {
+    public RoleView updateOrFail(Long id, @Validated RoleInsertView view) {
         var oldRole = findByIdOrFail(id);
         oldRole = roleMapper.updateEntity(view, oldRole);
         return roleMapper.convertToDto(repository.save(oldRole));
