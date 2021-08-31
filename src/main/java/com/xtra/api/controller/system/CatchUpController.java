@@ -8,14 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController("systemCatchUpController")
-@RequestMapping("/catch-up/")
+@RequestMapping("/system")
 public class CatchUpController {
 
     private final CatchUpService catchUpService;
 
     @Autowired
     public CatchUpController(CatchUpService catchUpService) {
-
         this.catchUpService = catchUpService;
     }
 
