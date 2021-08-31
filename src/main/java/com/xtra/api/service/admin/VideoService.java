@@ -2,7 +2,6 @@ package com.xtra.api.service.admin;
 
 
 import com.xtra.api.model.server.Server;
-import com.xtra.api.model.stream.Channel;
 import com.xtra.api.model.vod.Video;
 import com.xtra.api.repository.VideoRepository;
 import com.xtra.api.service.CrudService;
@@ -59,5 +58,11 @@ public class VideoService extends CrudService<Video, Long, VideoRepository> {
         Server server = loadBalancingService.findLeastConnServerForVod(servers);
 
         return "http://" + server.getIp() + ":" + server.getCorePort() + "/vod/" + line_token + "/" + video_token;
+    }
+
+    public void updateVideoPath(Long id, String videoPath) {
+        var video = findByIdOrFail(id);
+        video.setLocation(videoPath);
+        repository.save(video);
     }
 }

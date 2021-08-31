@@ -26,11 +26,6 @@ public class VideoController {
         return ResponseEntity.ok(videoService.updateVideo(id, video));
     }
 
-    @GetMapping("/token/{video_token}")
-    public ResponseEntity<Video> getVideoByToken(@PathVariable("video_token") String videoToken) {
-        return ResponseEntity.ok(videoService.getByToken(videoToken));
-    }
-
     //Play a Video
     @GetMapping("/play/{line_token}/{video_token}")
     public void playVideo(@PathVariable String video_token, @PathVariable String line_token, HttpServletRequest request, HttpServletResponse response) throws IOException {
