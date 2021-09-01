@@ -72,7 +72,8 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         var savedEntity = repository.save(movie);
 
         if (encode) {
-            serverService.sendEncodeRequest(movie.getVideos().stream().findFirst().get());
+            var video = movie.getVideos().stream().findFirst().get();
+            serverService.sendEncodeRequest(video.getVideoServers().stream().findFirst().get().getServer(), video);
         }
         ExecutorService executor = Executors.newFixedThreadPool(1);
         executor.execute(() -> {
@@ -168,7 +169,8 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
     public Movie encode(Long id) {
         var movie = findByIdOrFail(id);
-        serverService.sendEncodeRequest(movie.getVideos().stream().findFirst().get());
+        var video = movie.getVideos().stream().findFirst().get();
+        serverService.sendEncodeRequest(video.getVideoServers().stream().findFirst().get().getServer(), video);
         return repository.save(movie);
     }
 
