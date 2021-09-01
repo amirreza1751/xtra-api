@@ -3,6 +3,8 @@ package com.xtra.api.repository;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.user.Reseller;
 import com.xtra.api.projection.admin.analytics.ConnectionsCountResult;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,6 +33,7 @@ public interface LineRepository extends JpaRepository<Line, Long> {
 
     void deleteLineByOwnerAndId(Reseller owner, Long id);
 
+
     @Query(nativeQuery = true,
             value = "SELECT  count(distinct line_id) as online_users_count, count(id) as connections_count\n" +
                     "FROM (\n" +
@@ -38,7 +41,7 @@ public interface LineRepository extends JpaRepository<Line, Long> {
                     "         union\n" +
                     "         select * from connection\n" +
                     "         ) as tbl;")
-    List<ConnectionsCountResult> countOnlineUsers();
+    ConnectionsCountResult countOnlineUsers();
 
     List<Line> findAllByUsernameContains(String username);
 

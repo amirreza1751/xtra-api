@@ -29,8 +29,8 @@ public class AnalyticsService {
         AnalyticsData data = new AnalyticsData();
         data.setResellerCount(resellerRepository.count());
         data.setPendingResellerCount(resellerRepository.countByIsVerifiedFalse());
-        data.setOnlineUsersCount(lineRepository.countOnlineUsers().get(0).onlineUsersCount());
-        data.setConnectionsCount(lineRepository.countOnlineUsers().get(0).connectionsCount());
+        data.setOnlineUsersCount(lineRepository.countOnlineUsers().onlineUsersCount());
+        data.setConnectionsCount(lineRepository.countOnlineUsers().connectionsCount());
         data.setOnlineChannelsCount(0);
         return data;
     }
