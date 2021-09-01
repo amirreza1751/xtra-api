@@ -8,12 +8,12 @@ import java.util.List;
 public class AnalyticsData {
     private long resellerCount;
     private long pendingResellerCount;
-    private long onlineUserCount;
+    private long onlineUsersCount;
     private long connectionsCount;
     private long onlineChannelsCount;
     private long offlineChannelsCount;
-    private int totalInput;
-    private int totalOutput;
+    private long totalInput;
+    private long totalOutput;
 
     private List<ServerSummary> serverSummaryList;
 }

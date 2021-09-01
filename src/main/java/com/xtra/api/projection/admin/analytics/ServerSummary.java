@@ -12,5 +12,9 @@ public class ServerSummary {
     private String corePort;
     private String nginxPort;
     private String interfaceName;
+    private long connectionsCount;
+    private long onlineUserCount;
+    private long onlineChannelsCount;
+    private long offlineChannelsCount;
     private ResourceView resource;
 }
