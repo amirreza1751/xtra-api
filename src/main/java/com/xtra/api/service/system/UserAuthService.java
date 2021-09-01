@@ -88,8 +88,8 @@ public class UserAuthService {
         com.xtra.api.model.user.User currentUser = getCurrentUser();
         if (currentUser.isUsing2FA())
             throw new RuntimeException("2FA is already activated.");
-        if (currentUser.getEmail() == null)
-            throw new RuntimeException(" User does not have the email address.");
+        if (currentUser.getUsername() == null)
+            throw new RuntimeException(" User does not have any username.");
 
         //Generating Secret
         SecureRandom random = new SecureRandom();
@@ -100,7 +100,7 @@ public class UserAuthService {
         currentUser.set_2FASec(secret);
         repository.save(currentUser);
 
-        String otpAuth = getGoogleAuthenticatorBarCode(secret, currentUser.getEmail(), "xtra");
+        String otpAuth = getGoogleAuthenticatorBarCode(secret, currentUser.getUsername(), "xtra");
         return createQRCode(otpAuth, 200, 200);
     }
 
