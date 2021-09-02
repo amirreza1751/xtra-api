@@ -193,8 +193,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return repository.findByName(search);
     }
 
-    public void sendEncodeRequest(Video video) {
-        new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", video, String.class);
+    public void sendEncodeRequest(Server server, Video video) {
+        new RestTemplate().postForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/encode/", video, String.class);
     }
 
     public List<VideoInfo> getMediaInfo(Server server, List<Video> videoList) {
