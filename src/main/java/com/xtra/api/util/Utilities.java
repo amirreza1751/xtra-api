@@ -1,17 +1,15 @@
 package com.xtra.api.util;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
-import java.util.zip.GZIPInputStream;
 
+@Log4j2
 public class Utilities {
     public static String wrapSearchString(String text) {
         return "%" + text + "%";
@@ -30,25 +28,6 @@ public class Utilities {
         }
         var length = RandomUtils.nextInt(minSize, maxSize);
         return RandomStringUtils.random(length, characters);
-    }
-
-    public static void decompressGzipFile(String gzipFile, String newFile) {
-        try {
-            FileInputStream fis = new FileInputStream(gzipFile);
-            GZIPInputStream gis = new GZIPInputStream(fis);
-            FileOutputStream fos = new FileOutputStream(newFile);
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = gis.read(buffer)) != -1) {
-                fos.write(buffer, 0, len);
-            }
-            //close resources
-            fos.close();
-            gis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public static void copyClassProperties(Object src, Object trg, Iterable<Field> props) {
