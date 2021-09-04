@@ -11,7 +11,6 @@ import java.util.Set;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class MovieImport {
     private String name;
-
-    private MovieInfoInsertView info;
+    private int tmdbId;
     private Set<VideoInsertView> videos;
 }
