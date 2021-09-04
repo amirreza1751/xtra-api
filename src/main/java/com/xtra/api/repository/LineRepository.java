@@ -33,14 +33,7 @@ public interface LineRepository extends JpaRepository<Line, Long> {
 
     void deleteLineByOwnerAndId(Reseller owner, Long id);
 
-
-    @Query(nativeQuery = true,
-            value = "SELECT  count(distinct line_id) as online_users_count, count(id) as connections_count\n" +
-                    "FROM (\n" +
-                    "         select * from vod_connection\n" +
-                    "         union\n" +
-                    "         select * from connection\n" +
-                    "         ) as tbl;")
+    @Query(nativeQuery = true, value = "SELECT  count(distinct line_id) as onlineUsersCount, count(id) as connectionsCount FROM (select * from vod_connection union select * from connection) as tbl;")
     ConnectionsCountResult countOnlineUsers();
 
     List<Line> findAllByUsernameContains(String username);
