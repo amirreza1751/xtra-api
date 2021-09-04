@@ -8,7 +8,7 @@ import java.util.List;
 public class ResourceView {
 
     private double cpuMaxFreq;
-    private List<Double> cpuCurrentFreq;
+    private double cpuCurrentFreq;
     private double memoryTotal;
     private double memoryAvailable;
     private String networkName;
