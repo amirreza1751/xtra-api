@@ -87,7 +87,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
                 .build();
     }
 
-    public List<File> getFiles(Server server, String path) {
+    public List<File> getFiles(Long serverId, String path) {
+        var server = findByIdOrFail(serverId);
         List<File> result = null;
         try {
             result = new RestTemplate().getForObject(server.getIp() + ":" + server.getCorePort() + "/file/list_files?path=" + path, List.class);

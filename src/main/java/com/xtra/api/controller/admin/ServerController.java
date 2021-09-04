@@ -69,8 +69,7 @@ public class ServerController {
     @PreAuthorize("hasAnyAuthority({'servers_manage'})")
     @GetMapping("{id}/files")
     public ResponseEntity<List<File>> getFileList(@PathVariable Long id, @RequestParam String path) {
-        var server = serverService.findByIdOrFail(id);
-        return ResponseEntity.ok(serverService.getFiles(server, path));
+        return ResponseEntity.ok(serverService.getFiles(id, path));
     }
 
     @PreAuthorize("hasAnyAuthority({'servers_manage'})")
