@@ -91,7 +91,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         var server = findByIdOrFail(serverId);
         List<File> result = null;
         try {
-            result = new RestTemplate().getForObject(server.getIp() + ":" + server.getCorePort() + "/file/list_files?path=" + path, List.class);
+            result = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/file/list_files?path=" + path, List.class);
         } catch (HttpClientErrorException exception) {
             System.out.println(exception.getMessage());
         }
