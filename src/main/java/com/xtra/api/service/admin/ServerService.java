@@ -87,10 +87,10 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
                 .build();
     }
 
-    public List<File> getFiles(Long id, String path) {
+    public List<File> getFiles(Server server, String path) {
         List<File> result = null;
         try {
-            result = new RestTemplate().getForObject(corePath + ":" + corePort + "/file/list_files?path=" + path, List.class);
+            result = new RestTemplate().getForObject(server.getIp() + ":" + server.getCorePort() + "/file/list_files?path=" + path, List.class);
         } catch (HttpClientErrorException exception) {
             System.out.println(exception.getMessage());
         }
