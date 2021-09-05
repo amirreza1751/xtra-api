@@ -12,13 +12,15 @@ public class AnalyticsService {
     final private LineRepository lineRepository;
     final private StreamServerRepository streamServerRepository;
     final private ResourceRepository resourceRepository;
+    final private ServerRepository serverRepository;
 
     @Autowired
-    public AnalyticsService(ResellerRepository resellerRepository, ConnectionRepository connectionRepository, LineRepository lineRepository, ChannelRepository channelRepository, ServerService serverService, StreamServerRepository streamServerRepository, ResourceRepository resourceRepository) {
+    public AnalyticsService(ResellerRepository resellerRepository, ConnectionRepository connectionRepository, LineRepository lineRepository, ChannelRepository channelRepository, ServerService serverService, StreamServerRepository streamServerRepository, ResourceRepository resourceRepository, ServerRepository serverRepository) {
         this.resellerRepository = resellerRepository;
         this.lineRepository = lineRepository;
         this.streamServerRepository = streamServerRepository;
         this.resourceRepository = resourceRepository;
+        this.serverRepository = serverRepository;
     }
 
     public AnalyticsData getData() {
@@ -31,6 +33,7 @@ public class AnalyticsService {
         data.setOfflineChannelsCount(streamServerRepository.countByStreamDetails_StreamStatusIs(StreamStatus.OFFLINE));
         data.setTotalInput(resourceRepository.networksBytesSum().getNetworkBytesRecv());
         data.setTotalOutput(resourceRepository.networksBytesSum().getNetworkBytesSent());
+        data.setServerSummaryList(serverRepository.getServerSummaryList());
         return data;
     }
 }

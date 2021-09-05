@@ -1,20 +1,40 @@
 package com.xtra.api.projection.admin.analytics;
 
-import com.xtra.api.projection.admin.server.resource.ResourceView;
-import lombok.Data;
 
-@Data
-public class ServerSummary {
-    private Long id;
-    private String name;
-    private String domainName;
-    private String ip;
-    private String corePort;
-    private String nginxPort;
-    private String interfaceName;
-    private long connectionsCount;
-    private long onlineUsersCount;
-    private long onlineChannelsCount;
-    private long offlineChannelsCount;
-    private ResourceView resource;
+public interface ServerSummary {
+    String getName();
+
+    String getDomainName();
+
+    String getIp();
+
+    String getCorePort();
+
+    String getNginxPort();
+
+    String getInterfaceName();
+
+    Long getConnectionsCount();
+
+    Long getOnlineUsersCount();
+
+    Long getOnlineChannelsCount();
+
+    Long getOfflineChannelsCount();
+
+    Double getCpuMaxFreq();
+
+    Double getCpuCurrentFreq();
+
+    Double getMemoryTotal();
+
+    Double getMemoryAvailable();
+
+    String getNetworkName();
+
+    Long getNetworkBytesSent();
+
+    Long getNetworkBytesRecv();
+
+    Long getUpTime();
 }

@@ -15,5 +15,5 @@ public class AnalyticsData {
     private long totalInput;
     private long totalOutput;
 
-    private List<ServerSummary> serverSummaryList;
+    List<ServerSummary> serverSummaryList;
 }
