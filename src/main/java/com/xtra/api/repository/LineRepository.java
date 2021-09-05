@@ -38,5 +38,6 @@ public interface LineRepository extends JpaRepository<Line, Long> {
 
     List<Line> findAllByUsernameContains(String username);
 
+    long countAllByOwner(Reseller owner);
 
 }

@@ -2,6 +2,7 @@ package com.xtra.api.repository;
 
 
 import com.xtra.api.model.line.Connection;
+import com.xtra.api.model.user.Reseller;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -29,4 +30,5 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
     void deleteAllByLastReadIsLessThanEqual(LocalDateTime lastRead);
 
+    long countDistinctByLine_OwnerIs(Reseller Owner);
 }
