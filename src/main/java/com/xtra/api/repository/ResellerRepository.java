@@ -26,4 +26,5 @@ public interface ResellerRepository extends JpaRepository<Reseller, Long> {
     Page<Reseller> findAllByOwner(Reseller owner, Pageable pageable);
 
     long countByIsVerifiedFalse();
+    long countByOwner(Reseller owner);
 }
