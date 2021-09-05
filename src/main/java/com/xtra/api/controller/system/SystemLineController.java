@@ -3,11 +3,13 @@ package com.xtra.api.controller.system;
 import com.xtra.api.model.line.LineStatus;
 import com.xtra.api.projection.system.LineAuth;
 import com.xtra.api.service.system.SystemLineServiceImpl;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/lines")
+@RequestMapping("/system")
 public class SystemLineController {
 
     private final SystemLineServiceImpl lineService;
@@ -26,8 +28,5 @@ public class SystemLineController {
         return lineService.canLinePlayVod(lineAuth);
     }
 
-    @GetMapping("/get_id/{line_token}")
-    public ResponseEntity<Long> getLineByToken(@PathVariable("line_token") String lineToken) {
-        return ResponseEntity.ok(lineService.getLineIdByToken(lineToken));
-    }
+
 }

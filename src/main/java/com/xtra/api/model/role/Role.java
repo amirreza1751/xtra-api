@@ -1,19 +1,18 @@
 package com.xtra.api.model.role;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.line.Package;
 import com.xtra.api.model.user.UserType;
 import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Table(
         uniqueConstraints =
         @UniqueConstraint(columnNames = {"name", "type"})
@@ -22,7 +21,12 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
+    @NotNull
     private String name;
+
+    @NotNull
     private String color;
 
     @Enumerated(EnumType.STRING)
@@ -38,7 +42,7 @@ public class Role {
     public Role() {
     }
 
-    public Role(Long id){
+    public Role(Long id) {
         setId(id);
     }
 

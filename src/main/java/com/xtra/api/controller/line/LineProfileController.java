@@ -8,12 +8,14 @@ import com.xtra.api.projection.line.line.LineView;
 import com.xtra.api.service.line.LineLineServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController()
 @RequestMapping("line/profile")
+@PreAuthorize("hasAnyRole({'LINE'})")
 public class LineProfileController {
     private final LineLineServiceImpl lineService;
 

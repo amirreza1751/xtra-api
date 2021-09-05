@@ -51,7 +51,7 @@ public class LineLineServiceImpl extends LineService {
 
     public LineView updateProfileSecurity(@Valid LineSecurityUpdateView updateView) {
         var line = getCurrentLine();
-        if (!line.getPassword().equals(bCryptPasswordEncoder.encode(updateView.getPassword())))
+        if (!bCryptPasswordEncoder.matches(updateView.getPassword(), line.getPassword()))
             throw new ActionNotAllowedException("Incorrect Password", ErrorCode.INCORRECT_PASSWORD);
         if (!updateView.getAllowedIps().isEmpty())
             line.setAllowedIps(updateView.getAllowedIps());
@@ -62,7 +62,7 @@ public class LineLineServiceImpl extends LineService {
 
     public void updateProfilePassword(@Valid PasswordUpdateView updateView) {
         var line = getCurrentLine();
-        if (!line.getPassword().equals(bCryptPasswordEncoder.encode(updateView.getOldPassword())))
+        if (!bCryptPasswordEncoder.matches(updateView.getOldPassword(), line.getPassword()))
             throw new ActionNotAllowedException("Incorrect Password", ErrorCode.INCORRECT_PASSWORD);
         line.setPassword(bCryptPasswordEncoder.encode(updateView.getNewPassword()));
         repository.save(line);

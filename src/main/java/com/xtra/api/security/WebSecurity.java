@@ -56,6 +56,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                         // -- Swagger UI v3 (OpenAPI)
                         "/v3/api-docs/**",
                         "/swagger-ui/**").permitAll()
+                .antMatchers("/system/**").permitAll()
+                .antMatchers("/play/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), userRepository, logService))
@@ -65,7 +67,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
             response.setContentType("application/json;charset=UTF-8");
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            if (response.getStatus() != 460 && response.getStatus()!= 461)
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             try {
                 response.getWriter().write(new JSONObject()
                         .put("timestamp", LocalDateTime.now())

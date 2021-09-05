@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,6 +51,9 @@ public class BackupService extends CrudService<Backup, Long, BackupRepository> i
 
     @Value("${spring.datasource.url}")
     String dbUrl;
+
+    @Value("${backup-dir:'/home/backup'}")
+    String backupPath;
 
     public BackupService(BackupRepository backupRepository, ProcessService processService, TaskScheduler dynamicTaskScheduler, BackupMapper backupMapper) {
         super(backupRepository, "Backup");
@@ -104,7 +108,14 @@ public class BackupService extends CrudService<Backup, Long, BackupRepository> i
                 dbAndTables.append(table).append(" ");
             }
         }
-        var path = System.getProperty("user.home") + File.separator + "backups" + File.separator;
+
+        try {
+            Files.createDirectory(Path.of(backupPath));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+
+        var path = backupPath + File.separator;
         var name = "backup-";
         if (manual)
             name += "manual";

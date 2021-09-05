@@ -2,10 +2,11 @@ package com.xtra.api.service.admin;
 
 
 import com.xtra.api.model.server.Server;
-import com.xtra.api.model.stream.Channel;
 import com.xtra.api.model.vod.Video;
+import com.xtra.api.projection.system.VodStatusView;
 import com.xtra.api.repository.VideoRepository;
 import com.xtra.api.service.CrudService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ public class VideoService extends CrudService<Video, Long, VideoRepository> {
     private final LoadBalancingService loadBalancingService;
 
     @Autowired
-    protected VideoService(VideoRepository videoRepository, LoadBalancingService loadBalancingService){
+    protected VideoService(VideoRepository videoRepository, LoadBalancingService loadBalancingService) {
         super(videoRepository, "Video");
         this.loadBalancingService = loadBalancingService;
     }
@@ -35,7 +36,7 @@ public class VideoService extends CrudService<Video, Long, VideoRepository> {
     }
 
     @Override
-    public Video updateOrFail(Long id, Video newVideo){
+    public Video updateOrFail(Long id, Video newVideo) {
         Video oldVideo = findByIdOrFail(id);
         copyProperties(newVideo, oldVideo, "id", "token", "subtitles", "audios", "videoServers");
         oldVideo.getSubtitles().retainAll(newVideo.getSubtitles());
@@ -59,5 +60,13 @@ public class VideoService extends CrudService<Video, Long, VideoRepository> {
         Server server = loadBalancingService.findLeastConnServerForVod(servers);
 
         return "http://" + server.getIp() + ":" + server.getCorePort() + "/vod/" + line_token + "/" + video_token;
+    }
+
+    public void updateVodStatus(Long id, VodStatusView statusView) {
+        var video = findByIdOrFail(id);
+        if (StringUtils.isNotEmpty(statusView.getLocation()))
+            video.setLocation(statusView.getLocation());
+        video.setEncodeStatus(statusView.getStatus());
+        repository.save(video);
     }
 }

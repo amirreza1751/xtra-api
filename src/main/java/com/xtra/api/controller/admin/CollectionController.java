@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/collections")
+@PreAuthorize("hasAnyRole({'ADMIN', 'SUPER_ADMIN'})")
 public class CollectionController {
     private final CollectionService collectionService;
     private final CollectionMapper collectionMapper;
@@ -23,27 +25,32 @@ public class CollectionController {
         this.collectionMapper = collectionMapper;
     }
 
+    @PreAuthorize("hasAnyAuthority({'collections_manage'})")
     @GetMapping("")
     public ResponseEntity<Page<CollectionSimplifiedView>> getCollections(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                                                          @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(collectionService.findAll(search, pageNo, pageSize, sortBy, sortDir).map(collectionMapper::convertToSimpleDto));
     }
 
+    @PreAuthorize("hasAnyAuthority({'collections_manage'})")
     @GetMapping("/{id}")
     public ResponseEntity<CollectionView> getCollection(@PathVariable Long id) {
         return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.findByIdOrFail(id)));
     }
 
+    @PreAuthorize("hasAnyAuthority({'collections_manage'})")
     @PostMapping("")
     public ResponseEntity<CollectionView> addCollection(@RequestBody CollectionInsertView collectionInsertView) {
         return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.insert(collectionMapper.convertToEntity(collectionInsertView))));
     }
 
+    @PreAuthorize("hasAnyAuthority({'collections_manage'})")
     @PatchMapping("/{id}")
     public ResponseEntity<CollectionView> updateCollection(@PathVariable Long id, @RequestBody CollectionInsertView collection) {
         return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.updateOrFail(id, collection)));
     }
 
+    @PreAuthorize("hasAnyAuthority({'collections_manage'})")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCollection(@PathVariable Long id) {
         collectionService.deleteOrFail(id);

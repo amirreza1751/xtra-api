@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@PreAuthorize("hasAnyRole({'ADMIN', 'SUPER_ADMIN'})")
 @RestController
 public class TeleRecordController {
 
@@ -18,6 +20,7 @@ public class TeleRecordController {
         this.teleRecordService = teleRecordService;
     }
 
+    @PreAuthorize("hasAnyAuthority({'movies_manage'})")
     @GetMapping("/channels/{id}/tele-records")
     public ResponseEntity<Page<TeleRecordListView>> getAll(@PathVariable Long id,
                                                            @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
@@ -25,6 +28,7 @@ public class TeleRecordController {
         return ResponseEntity.ok(teleRecordService.findAllByChannel(id, pageNo, pageSize, sortBy, sortDir));
     }
 
+    @PreAuthorize("hasAnyAuthority({'movies_manage'})")
     @DeleteMapping("/tele-records/{id}")
     public ResponseEntity<?> deleteTeleRecord(@PathVariable Long id) {
         teleRecordService.deleteOrFail(id);

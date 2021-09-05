@@ -6,10 +6,12 @@ import com.xtra.api.service.admin.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/connections")
+@PreAuthorize("hasAnyRole({'ADMIN', 'SUPER_ADMIN'})")
 public class ConnectionController {
     final private ConnectionService connectionService;
 
@@ -24,6 +26,7 @@ public class ConnectionController {
         return ResponseEntity.ok(connectionService.getActiveConnections(pageNo, pageSize, sortBy, sortDir));
     }
 
+    @PreAuthorize("hasAnyAuthority({'connection_manage'})")
     @PostMapping("block-ip")
     public ResponseEntity<?> blockIpAddress(@RequestBody BlockIpRequest blockIpRequest) {
         connectionService.blockIp(blockIpRequest);

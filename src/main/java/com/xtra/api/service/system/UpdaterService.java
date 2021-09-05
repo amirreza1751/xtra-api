@@ -16,12 +16,9 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static com.xtra.api.util.Utilities.decompressGzipFile;
 
 @Service
 @Log4j2
@@ -63,7 +60,9 @@ public class UpdaterService {
                                 }
                             } else {
                                 //Check if need to update geoIp
-                                if (format.parse(modifiedDate).after(new Date(databaseDir.lastModified()))) {
+                                var newDate = format.parse(modifiedDate);
+                                var olDate = new Date(databaseDir.lastModified());
+                                if (newDate.after(olDate)) {
                                     downloadNewDatabase();
                                 } else
                                     log.info("GeoIp is already the latest version");
@@ -83,19 +82,39 @@ public class UpdaterService {
             URL website = new URL(maxmindUrl);
             ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 
-            FileOutputStream fos = new FileOutputStream(tempDir + "/geoIp-new.gz");
+            FileOutputStream fos = new FileOutputStream(tempDir + "/geolite.tar.gz");
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
             //@todo Check File Integrity
-
             //Decompress gzip file
-            decompressGzipFile(tempDir + "/geoIp-new.gz", tempDir + "/geoIp-new");
-            Files.move(Path.of(tempDir + "/geoIp-new"), Path.of(dbPath), StandardCopyOption.REPLACE_EXISTING);
+            if (decompressDatabaseFile(tempDir + "/geolite.tar.gz", Path.of(dbPath).getParent().toString())) {
+                log.info("Geoip database successfully updated!");
+            }
+            Files.deleteIfExists(Path.of(tempDir + "/geolite.tar.gz"));
 
-        } catch (IOException e) {
+
+        } catch (IOException | NullPointerException e) {
             log.error("Error while updating geoip database");
             log.error(e.getMessage());
         }
+
+    }
+
+    private boolean decompressDatabaseFile(String gzipFile, String newFile) {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.directory(new File(newFile));
+        processBuilder.command("tar", "-xzfm", gzipFile, "--wildcards", "--no-anchored", "*.mmdb", "--strip-components=1", "-m");
+        try {
+            Process process = processBuilder.start();
+            if (process.waitFor() != 0) {
+                log.error("Error while extracting database");
+                return false;
+            }
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return true;
 
     }
 
