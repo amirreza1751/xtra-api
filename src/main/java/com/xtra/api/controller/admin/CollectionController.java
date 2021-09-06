@@ -1,8 +1,7 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.mapper.admin.CollectionMapper;
 import com.xtra.api.projection.admin.collection.CollectionInsertView;
-import com.xtra.api.projection.admin.collection.CollectionSimplifiedView;
+import com.xtra.api.projection.admin.collection.CollectionSimpleView;
 import com.xtra.api.projection.admin.collection.CollectionView;
 import com.xtra.api.service.admin.CollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,37 +16,35 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("hasAnyRole({'ADMIN', 'SUPER_ADMIN'})")
 public class CollectionController {
     private final CollectionService collectionService;
-    private final CollectionMapper collectionMapper;
 
     @Autowired
-    public CollectionController(CollectionService collectionService, CollectionMapper collectionMapper) {
+    public CollectionController(CollectionService collectionService) {
         this.collectionService = collectionService;
-        this.collectionMapper = collectionMapper;
     }
 
     @PreAuthorize("hasAnyAuthority({'collections_manage'})")
     @GetMapping("")
-    public ResponseEntity<Page<CollectionSimplifiedView>> getCollections(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
-                                                                         @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(collectionService.findAll(search, pageNo, pageSize, sortBy, sortDir).map(collectionMapper::convertToSimpleDto));
+    public ResponseEntity<Page<CollectionSimpleView>> getCollections(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+                                                                     @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+        return ResponseEntity.ok(collectionService.listCollectionsSimple(pageNo, pageSize, sortBy, sortDir));
     }
 
     @PreAuthorize("hasAnyAuthority({'collections_manage'})")
     @GetMapping("/{id}")
     public ResponseEntity<CollectionView> getCollection(@PathVariable Long id) {
-        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.findByIdOrFail(id)));
+        return ResponseEntity.ok(collectionService.findViewById(id));
     }
 
     @PreAuthorize("hasAnyAuthority({'collections_manage'})")
     @PostMapping("")
     public ResponseEntity<CollectionView> addCollection(@RequestBody CollectionInsertView collectionInsertView) {
-        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.insert(collectionMapper.convertToEntity(collectionInsertView))));
+        return ResponseEntity.ok(collectionService.add(collectionInsertView));
     }
 
     @PreAuthorize("hasAnyAuthority({'collections_manage'})")
     @PatchMapping("/{id}")
     public ResponseEntity<CollectionView> updateCollection(@PathVariable Long id, @RequestBody CollectionInsertView collection) {
-        return ResponseEntity.ok(collectionMapper.convertToDto(collectionService.updateOrFail(id, collection)));
+        return ResponseEntity.ok(collectionService.save(id, collection));
     }
 
     @PreAuthorize("hasAnyAuthority({'collections_manage'})")
