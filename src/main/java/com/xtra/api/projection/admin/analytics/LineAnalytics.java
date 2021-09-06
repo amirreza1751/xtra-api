@@ -7,11 +7,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ResellerAnalytics {
-    private long subResellersCount;
-    private long onlineUsersCount;
-    private long linesCount;
-    private List<ResellerExpiringLines> expiringLines;
+public class LineAnalytics {
+    private String expireDate;
     private List<MovieView> recentMovies;
     private List<SeriesView> recentSeries;
 }

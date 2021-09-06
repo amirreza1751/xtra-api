@@ -10,5 +10,6 @@ import java.util.Optional;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     Page<Movie> findAllByNameContainsOrInfoPlotContainsOrInfoCastContainsOrInfoDirectorContainsOrInfoGenresContainsOrInfoCountryContains(String name, String plot, String cast, String director, String genres, String country, Pageable pageable);
+
     List<Movie> findTop10ByOrderByCreatedDateDesc();
 }
