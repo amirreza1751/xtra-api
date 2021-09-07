@@ -4,6 +4,7 @@ import com.xtra.api.projection.admin.ChangingServerPair;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.projection.admin.epg.EpgDetails;
+import com.xtra.api.repository.filter.ChannelFilter;
 import com.xtra.api.service.admin.ChannelService;
 import com.xtra.api.service.admin.StreamServerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,11 @@ public class ChannelController {
     // Stream CRUD
     @PreAuthorize("hasAnyAuthority({'channels_manage'})")
     @GetMapping("")
-    public ResponseEntity<Page<ChannelInfo>> getChannels(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
-            , @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
-        return ResponseEntity.ok(channelService.getAll(search, pageNo, pageSize, sortBy, sortDir));
+    public ResponseEntity<Page<ChannelInfo>> getChannels(
+            @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
+            @RequestParam(required = false) String search, @RequestParam(required = false, name = "name") String name,
+            @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+        return ResponseEntity.ok(channelService.getAll(pageNo, pageSize, sortBy, sortDir, new ChannelFilter(name, search)));
     }
 
     @PreAuthorize("hasAnyAuthority({'channels_manage'})")
