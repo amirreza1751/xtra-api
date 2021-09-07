@@ -1,18 +1,20 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.model.collection.CollectionStreamId;
-import com.xtra.api.model.collection.CollectionVod;
 import com.xtra.api.model.collection.CollectionVodId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.mapper.admin.MovieMapper;
-import com.xtra.api.model.server.Server;
-import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.movie.*;
-import com.xtra.api.projection.admin.videoInfo.VideoInfoView;
 import com.xtra.api.repository.CollectionVodRepository;
 import com.xtra.api.repository.MovieRepository;
 import com.xtra.api.repository.VideoRepository;
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbMovies;
+import info.movito.themoviedbapi.model.Credits;
+import info.movito.themoviedbapi.model.Genre;
+import info.movito.themoviedbapi.model.MovieDb;
+import info.movito.themoviedbapi.model.people.PersonCast;
+import info.movito.themoviedbapi.model.people.PersonCrew;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,8 @@ import org.springframework.validation.annotation.Validated;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -135,10 +139,74 @@ public class MovieService extends VodService<Movie, MovieRepository> {
             insertView.setCollections(collections);
             insertView.setServers(servers);
             insertView.setName(movie.getName());
-            insertView.setInfo(movie.getInfo());
+            insertView.setInfo(getMovieInfo(movie.getTmdbId()));
             insertView.setVideos(movie.getVideos());
             insert(movieMapper.convertToEntity(insertView), encode);
         }
+    }
+
+    public MovieInfoInsertView getMovieInfo(int tmdbId)    {
+        TmdbMovies movies = new TmdbApi("0edee3d3e5acd5c5a46d304175c0166e").getMovies();
+        MovieDb movieInfo = movies.getMovie(tmdbId, "en", TmdbMovies.MovieMethod.credits, TmdbMovies.MovieMethod.videos);
+        Credits credits = movieInfo.getCredits();
+        List<info.movito.themoviedbapi.model.Video> videos = movieInfo.getVideos();
+        MovieInfoInsertView view = new MovieInfoInsertView();
+        view.setPosterPath("https://image.tmdb.org/t/p/w600_and_h900_bestv2" + movieInfo.getPosterPath());
+        view.setBackdropPath("https://image.tmdb.org/t/p/w1280" + movieInfo.getBackdropPath());
+        view.setPlot(movieInfo.getOverview());
+        StringBuilder casts = new StringBuilder();
+        var castCount = 0;
+        for (PersonCast cast: movieInfo.getCast()) {
+            castCount += 1;
+            if (castCount <= 5) {
+                if (casts.length() > 0) {
+                    casts.append(", ");
+                }
+                casts.append(cast.getName());
+            }
+        }
+        view.setCast(casts.toString());
+
+        var director = "";
+        for (PersonCrew crew : credits.getCrew()) {
+            if (crew.getDepartment().equals("Directing")) {
+                director = crew.getName();
+            }
+        }
+        view.setDirector(director);
+
+        StringBuilder genres = new StringBuilder();
+        var genresCount = 0;
+        for (Genre genre: movieInfo.getGenres()) {
+            genresCount += 1;
+            if (genresCount <= 3) {
+                if (genres.length() > 0) {
+                    genres.append(", ");
+                }
+                genres.append(genre.getName());
+            }
+        }
+        view.setGenres(genres.toString());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(movieInfo.getReleaseDate(), formatter);
+        view.setReleaseDate(localDate);
+
+        view.setRuntime(movieInfo.getRuntime());
+
+        var youtubeTrailer = "";
+        for (info.movito.themoviedbapi.model.Video video : videos) {
+            if (video.getType().equals("Trailer") && video.getSite().equals("YouTube"))
+                youtubeTrailer = "https://www.youtube.com/watch?v=" + video.getKey();
+        }
+        view.setYoutubeTrailer(youtubeTrailer);
+
+        view.setRating(movieInfo.getUserRating());
+        if (movieInfo.getProductionCountries().size() > 0)
+            view.setCountry(movieInfo.getProductionCountries().get(0).getName());
+
+
+        return view;
     }
 
     public List<Subtitle> updateSubtitles(Long id, Long vidId, List<Subtitle> subtitles) {
