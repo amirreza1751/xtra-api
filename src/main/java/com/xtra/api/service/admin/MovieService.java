@@ -5,7 +5,6 @@ import com.xtra.api.model.collection.CollectionVodId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.movie.*;
-import com.xtra.api.repository.CollectionVodRepository;
 import com.xtra.api.repository.MovieRepository;
 import com.xtra.api.repository.VideoRepository;
 import com.xtra.api.repository.filter.MovieFilter;
@@ -40,16 +39,14 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     private final ServerService serverService;
     private final VideoRepository videoRepository;
     private final MovieMapper movieMapper;
-    private final CollectionVodRepository collectionVodRepository;
     private final QMovie movie = QMovie.movie;
 
     @Autowired
-    protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository, MovieMapper movieMapper, CollectionVodRepository collectionVodRepository) {
+    protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository, MovieMapper movieMapper) {
         super(repository);
         this.serverService = serverService;
         this.videoRepository = videoRepository;
         this.movieMapper = movieMapper;
-        this.collectionVodRepository = collectionVodRepository;
     }
 
     @Override
