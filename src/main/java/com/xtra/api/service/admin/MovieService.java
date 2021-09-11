@@ -1,6 +1,7 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.MovieMapper;
+import com.xtra.api.model.collection.CollectionVod;
 import com.xtra.api.model.collection.CollectionVodId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.vod.*;
@@ -95,35 +96,39 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     }
 
     public void saveAll(MovieBatchUpdateView movieBatchUpdateView, boolean encode) {
-//        var movieIds = movieBatchUpdateView.getMovieIds();
-//        var serverIds = movieBatchUpdateView.getServerIds();
-//        var collectionIds = movieBatchUpdateView.getCollectionIds();
-//
-//        if (movieIds != null) {
-//            for (Long movieId : movieIds) {
-//                var movie = repository.findById(movieId).orElseThrow(() -> new EntityNotFoundException("Movie", movieId.toString()));
-//
-//                if (collectionIds.size() > 0) {
-//                    Set<CollectionVod> collectionMovieSet = movieMapper.convertToCollections(collectionIds, movie);
-//                    if (!movieBatchUpdateView.getKeepCollections())
-//                        movie.getCollectionAssigns().retainAll(collectionMovieSet);
-//                    movie.getCollectionAssigns().addAll(collectionMovieSet);
-//                }
-//
-//                if (serverIds.size() > 0) {
-//                    Set<ServerVod> serverVods = movieMapper.convertToServers(serverIds, movie);
-//                    if (!movieBatchUpdateView.getKeepServers())
-//                        movie.getServerVods().retainAll(serverVods);
-//                    movie.getServerVods().addAll(serverVods);
-//                }
-//
-//                if (encode) {
-//                    serverService.sendEncodeRequest(movie.getVideos().stream().findFirst().get());
-//                }
-//
-//                repository.save(movie);
-//            }
-//        }
+        var movieIds = movieBatchUpdateView.getMovieIds();
+        var serverIds = movieBatchUpdateView.getServerIds();
+        var collectionIds = movieBatchUpdateView.getCollectionIds();
+
+        if (movieIds != null) {
+            for (Long movieId : movieIds) {
+                var movie = repository.findById(movieId).orElseThrow(() -> new EntityNotFoundException("Movie", movieId.toString()));
+
+                if (collectionIds.size() > 0) {
+                    Set<CollectionVod> collectionMovieSet = movieMapper.convertToCollections(collectionIds, movie);
+                    if (!movieBatchUpdateView.getKeepCollections())
+                        movie.getCollectionAssigns().retainAll(collectionMovieSet);
+                    movie.getCollectionAssigns().addAll(collectionMovieSet);
+                }
+
+                if (serverIds.size() > 0) {
+                    movie.getVideos().forEach(video -> {
+                        Set<VideoServer> videoServers = movieMapper.convertToVideoServers(serverIds, movie);
+
+                        if (!movieBatchUpdateView.getKeepServers())
+                            video.getVideoServers().retainAll(videoServers);
+                        video.getVideoServers().addAll(videoServers);
+                    });
+                }
+
+                if (encode) {
+                    var video = movie.getVideos().stream().findFirst().get();
+                    serverService.sendEncodeRequest(video.getVideoServers().stream().findFirst().get().getServer(), video);
+                }
+
+                repository.save(movie);
+            }
+        }
     }
 
     public void deleteAll(MovieBatchDeleteView movieView) {
