@@ -110,7 +110,7 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
 
                     if (stream.getStreamInputs().size() > 0) {
                         playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\"Sports\",").append(stream.getName()).append("\n");
-                        playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/channels/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
+                        playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/channel/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
                     }
 
                 }
