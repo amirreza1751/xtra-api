@@ -1,8 +1,10 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.CategoryMapper;
-import com.xtra.api.model.Category;
+import com.xtra.api.model.category.Category;
 import com.xtra.api.projection.admin.category.CategoryInsertView;
+import com.xtra.api.projection.admin.category.CategorySummaryView;
+import com.xtra.api.projection.admin.category.CategoryUpdateView;
 import com.xtra.api.projection.admin.category.CategoryView;
 import com.xtra.api.repository.CategoryRepository;
 import com.xtra.api.service.CrudService;
@@ -12,12 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @Validated
-public class CategoryService extends CrudService<Category, String, CategoryRepository> {
+public class CategoryService extends CrudService<Category, Long, CategoryRepository> {
     private final CategoryMapper categoryMapper;
 
     @Autowired
@@ -31,12 +30,23 @@ public class CategoryService extends CrudService<Category, String, CategoryRepos
         return null;
     }
 
-    public List<CategoryView> getCategories() {
-        return repository.findAll().stream().map(categoryMapper::convertToView).collect(Collectors.toList());
+    public CategoryView getViewById(Long id) {
+        return categoryMapper.convertToView(findByIdOrFail(id));
     }
 
-    public CategoryView save(CategoryInsertView insertView) {
+    public CategorySummaryView getCategories() {
+        return categoryMapper.convertToSummaryView(repository.findAll());
+    }
+
+    public CategoryView add(CategoryInsertView insertView) {
         return categoryMapper.convertToView(insert(categoryMapper.toEntity(insertView)));
+    }
+
+    public CategoryView save(Long id, CategoryUpdateView updateView) {
+        var cat = findByIdOrFail(id);
+        cat.setName(updateView.getName());
+        cat.setAdult(updateView.isAdult());
+        return categoryMapper.convertToView(insert(cat));
     }
 
 }

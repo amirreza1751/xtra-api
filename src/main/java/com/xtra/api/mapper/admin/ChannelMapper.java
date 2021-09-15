@@ -1,18 +1,14 @@
 package com.xtra.api.mapper.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.xtra.api.model.*;
-import com.xtra.api.projection.admin.channel.*;
-import com.xtra.api.repository.CollectionRepository;
-import com.xtra.api.repository.CollectionStreamRepository;
-import com.xtra.api.repository.EpgChannelRepository;
-import com.xtra.api.repository.ServerRepository;
+import com.xtra.api.model.category.CategoryStream;
+import com.xtra.api.model.category.CategoryStreamId;
 import com.xtra.api.model.collection.CollectionStream;
 import com.xtra.api.model.collection.CollectionStreamId;
 import com.xtra.api.model.epg.EpgChannel;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.stream.*;
+import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.projection.admin.epg.EpgDetails;
 import com.xtra.api.repository.*;
 import org.mapstruct.*;
@@ -24,10 +20,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 
 @Mapper(componentModel = "spring")
 public abstract class ChannelMapper {
@@ -42,8 +42,19 @@ public abstract class ChannelMapper {
     private EpgChannelRepository epgChannelRepository;
     @Autowired
     private ConnectionRepository connectionRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
+    @Mapping(target = "streamServers", ignore = true)
+    @Mapping(target = "collectionAssigns", ignore = true)
+    @Mapping(target = "categories", ignore = true)
     public abstract Channel convertToEntity(ChannelInsertView channelView);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "streamServers", ignore = true)
+    @Mapping(target = "collectionAssigns", ignore = true)
+    @Mapping(target = "categories", ignore = true)
+    public abstract Channel convertToEntity(ChannelInsertView channelView, @MappingTarget final Channel channel);
 
     @AfterMapping
     void convertServerIdsAndCollectionIds(final ChannelInsertView channelView, @MappingTarget final Channel channel) {
@@ -61,7 +72,7 @@ public abstract class ChannelMapper {
             Set<StreamServer> streamServers = new HashSet<>();
             for (Long serverId : serverIds) {
                 var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
-                StreamServer streamServer = new StreamServer(new StreamServerId(null, serverId));
+                StreamServer streamServer = new StreamServer(new StreamServerId(channel.getId(), serverId));
                 //insert catch-up server
                 if (channelView.getCatchUp() != null && server.getId().equals(channelView.getCatchUp())) {
                     streamServer.setCatchUp(true);
@@ -76,7 +87,8 @@ public abstract class ChannelMapper {
                 streamServer.setStream(channel);
                 streamServers.add(streamServer);
             }
-            channel.setStreamServers(streamServers);
+            channel.getStreamServers().retainAll(streamServers);
+            channel.getStreamServers().addAll(streamServers);
         }
 
         var collectionIds = channelView.getCollections();
@@ -92,31 +104,53 @@ public abstract class ChannelMapper {
                 collectionStream.setStream(channel);
                 collectionStreams.add(collectionStream);
             }
-            channel.setCollectionAssigns(collectionStreams);
+            channel.getCollectionAssigns().retainAll(collectionStreams);
+            channel.getCollectionAssigns().addAll(collectionStreams);
+        }
+
+        var categoryIds = channelView.getCategories();
+        if (categoryIds != null) {
+            Set<CategoryStream> categoryStreams = new HashSet<>();
+            for (var id : categoryIds) {
+                var categoryStream = new CategoryStream();
+                categoryStream.setId(new CategoryStreamId(id, channel.getId()));
+                categoryStream.setStream(channel);
+                categoryStream.setCategory(categoryRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Category", id)));
+                categoryStreams.add(categoryStream);
+            }
+            channel.getCategories().retainAll(categoryStreams);
+            channel.getCategories().addAll(categoryStreams);
         }
     }
 
-    @Mapping(source = "streamServers", target = "servers")
-    @Mapping(source = "collectionAssigns", target = "collections")
     @Mapping(source = "epgChannel", target = "epgDetails")
+    @Mapping(target = "collections", ignore = true)
+    @Mapping(target = "servers", ignore = true)
+    @Mapping(target = "categories", ignore = true)
     public abstract ChannelView convertToView(Channel channel);
 
     @AfterMapping
-    void convertCatchupDetails(final Channel channel, @MappingTarget final ChannelView channelView) {
-        var catchUp = channel.getStreamServers().stream().filter(StreamServer::isCatchUp).findFirst();
+    protected void convertAdditionalFieldsForView(Channel channel, @MappingTarget final ChannelView channelView) {
+        //@todo optimize query
+        channelView.setServers(emptyIfNull(channel.getStreamServers())
+                .stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet()));
+
+        channelView.setCollections(emptyIfNull(channel.getCollectionAssigns())
+                .stream().map(collectionStream -> collectionStream.getCollection().getId()).collect(Collectors.toSet()));
+
+        channelView.setCategories(emptyIfNull(channel.getCategories())
+                .stream().map(categoryStream -> categoryStream.getCategory().getId()).collect(Collectors.toSet()));
+
+
+        var catchUp = emptyIfNull(channel.getStreamServers()).stream().filter(StreamServer::isCatchUp).findFirst();
         if (catchUp.isPresent()) {
             channelView.setCatchUp(catchUp.get().getServer().getId());
             channelView.setCatchUpDays(catchUp.get().getCatchUpDays());
         }
+        var onDemand = channel.getStreamServers().stream().filter(StreamServer::isOnDemand).findFirst();
+        onDemand.ifPresent(streamServer -> channelView.setOnDemand(streamServer.getServer().getId()));
     }
 
-    @AfterMapping
-    void convertOnDemandDetails(final Channel channel, @MappingTarget final ChannelView channelView) {
-        var onDemand = channel.getStreamServers().stream().filter(StreamServer::isOnDemand).findFirst();
-        if (onDemand.isPresent()) {
-            channelView.setOnDemand(onDemand.get().getServer().getId());
-        }
-    }
 
     public EpgDetails map(EpgChannel epgChannel) {
         if (epgChannel == null)
@@ -126,11 +160,6 @@ public abstract class ChannelMapper {
         epgDetails.setLanguage(epgChannel.getLanguage());
         epgDetails.setName(epgChannel.getName());
         return epgDetails;
-    }
-
-    public Set<Long> convertToServerIds(Set<StreamServer> streamServers) {
-        if (streamServers == null) return null;
-        return streamServers.stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
     }
 
     public Set<StreamServer> convertToServers(Set<Long> ids, Channel channel) {
@@ -161,10 +190,6 @@ public abstract class ChannelMapper {
         return collectionStreamSet;
     }
 
-    public Set<Long> convertToCollectionIds(Set<CollectionStream> collectionStreams) {
-        if (collectionStreams == null) return null;
-        return collectionStreams.stream().map(collectionStream -> collectionStream.getCollection().getId()).collect(Collectors.toSet());
-    }
 
     @Mapping(source = "streamServers", target = "channelInfos")
     @Mapping(source = "channel", target = "totalUsers", qualifiedByName = "getTotalUsers")
@@ -254,12 +279,12 @@ public abstract class ChannelMapper {
             InputStream inputStream = document.getInputStream();
             new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
                     .lines().forEach((line) -> {
-                        if (line.contains("tvg-name")) {
-                            names.add(line.substring(line.indexOf(",") + 1));
-                        } else {
-                            inputs.add(line);
-                        }
-                    });
+                if (line.contains("tvg-name")) {
+                    names.add(line.substring(line.indexOf(",") + 1));
+                } else {
+                    inputs.add(line);
+                }
+            });
 
 
             for (int i = 0; i < names.size(); i++) {

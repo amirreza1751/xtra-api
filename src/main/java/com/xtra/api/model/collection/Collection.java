@@ -1,9 +1,6 @@
 package com.xtra.api.model.collection;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.xtra.api.model.Category;
 import com.xtra.api.model.download_list.DownloadListCollection;
-import com.xtra.api.model.MediaType;
 import lombok.Data;
 import lombok.ToString;
 
@@ -13,21 +10,15 @@ import java.util.Set;
 
 @Entity
 @Data
-@ToString(exclude = {"downloadListCollections","streams","vods", "category"})
+@ToString(exclude = {"downloadListCollections", "streams", "vods"})
 public class Collection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private MediaType type;
-
     @OneToMany(mappedBy = "collection", cascade = CascadeType.REMOVE)
     private Set<DownloadListCollection> downloadListCollections;
-
-    @ManyToOne(optional = false)
-    private Category category;
 
     @OrderBy("order ASC")
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)
@@ -35,7 +26,6 @@ public class Collection {
 
     @OrderBy("order ASC")
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)
-    @JsonManagedReference
     private Set<CollectionVod> vods;
 
     public void addStream(CollectionStream stream) {

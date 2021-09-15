@@ -1,6 +1,5 @@
 package com.xtra.api.model.stream;
 
-import com.xtra.api.model.stream.Stream;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -10,4 +9,7 @@ import javax.persistence.Entity;
 @Entity
 @Data
 public class Radio extends Stream {
+    public Radio() {
+        setStreamType(StreamType.RADIO);
+    }
 }

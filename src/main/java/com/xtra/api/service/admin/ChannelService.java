@@ -3,7 +3,6 @@ package com.xtra.api.service.admin;
 import com.xtra.api.mapper.admin.ChannelMapper;
 import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.collection.CollectionStream;
-import com.xtra.api.model.collection.CollectionStreamId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.*;
@@ -19,18 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
 import static com.xtra.api.util.Utilities.wrapSearchString;
@@ -113,37 +104,21 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
         return savedEntity;
     }
 
+    public ChannelView save(Long id, ChannelInsertView channelView, boolean restart) {
+        return channelMapper.convertToView(update(id, channelMapper.convertToEntity(channelView, findByIdOrFail(id)), restart));
+    }
+
     public Channel update(Long id, Channel channel, boolean restart) {
-        Channel oldChannel = findByIdOrFail(id);
-        copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "collections", "lineActivities", "streamServers", "collectionAssigns", "advancedStreamOptions", "streamToken");
-
-        //remove old servers from channel and add new ones
-        if (channel.getStreamServers() != null) {
-            oldChannel.getStreamServers().clear();
-            oldChannel.getStreamServers().addAll(channel.getStreamServers().stream().peek(streamServer -> {
-                streamServer.setId(new StreamServerId(oldChannel.getId(), streamServer.getServer().getId()));
-                streamServer.setStream(oldChannel);
-            }).collect(Collectors.toSet()));
-        }
-//        //remove old collections from channel and add new ones
-        if (channel.getCollectionAssigns() != null) {
-            oldChannel.getCollectionAssigns().clear();
-            oldChannel.getCollectionAssigns().addAll(channel.getCollectionAssigns().stream().peek(collectionStream -> {
-                collectionStream.setId(new CollectionStreamId(collectionStream.getCollection().getId(), oldChannel.getId()));
-                collectionStream.setStream(oldChannel);
-            }).collect(Collectors.toSet()));
-        }
-
         if (channel.getStreamInputs() != null) {
-            oldChannel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
+            channel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
         }
 
         if (channel.getAdvancedStreamOptions() != null) {
-            var oldOptions = oldChannel.getAdvancedStreamOptions();
+            var oldOptions = channel.getAdvancedStreamOptions();
             copyProperties(channel.getAdvancedStreamOptions(), oldOptions, "id");
-            oldChannel.setAdvancedStreamOptions(oldOptions);
+            channel.setAdvancedStreamOptions(oldOptions);
         }
-        var savedEntity = repository.save(oldChannel);
+        var savedEntity = repository.save(channel);
         if (savedEntity.getStreamServers() != null) {
             var serverIds = savedEntity.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
             if (restart) {
@@ -161,10 +136,6 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
         for (Server server : super.getServersForStream(channel, serverIds)) {
             serverService.sendAsyncStartRequest(server, channelMapper.convertToChannelStart(channel, 0));
         }
-    }
-
-    public ChannelView save(Long id, ChannelInsertView channelView, boolean restart) {
-        return channelMapper.convertToView(update(id, channelMapper.convertToEntity(channelView), restart));
     }
 
     public void saveAll(ChannelBatchInsertView channelBatchInsertView, boolean restart) {
@@ -212,7 +183,7 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
 
     public void importChannels(ChannelImportView importView) {
         List<ChannelInsertView> insertViews = channelMapper.addChannels(importView);
-        for (ChannelInsertView insertView:insertViews) {
+        for (ChannelInsertView insertView : insertViews) {
             if (!repository.existsByName(insertView.getName()))
                 insert(channelMapper.convertToEntity(insertView), false);
 

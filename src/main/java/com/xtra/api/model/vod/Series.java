@@ -26,4 +26,8 @@ public class Series extends Vod {
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private SeriesInfo info;
+
+    public Series() {
+        setVodType(VodType.SERIES);
+    }
 }
