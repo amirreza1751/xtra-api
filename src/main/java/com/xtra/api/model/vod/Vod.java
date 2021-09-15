@@ -1,11 +1,12 @@
 package com.xtra.api.model.vod;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.xtra.api.model.category.CategoryVod;
 import com.xtra.api.model.collection.CollectionVod;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -23,7 +24,9 @@ public class Vod {
     private VodType vodType;
 
     @OneToMany(mappedBy = "vod", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    @JsonManagedReference
     private Set<CollectionVod> collectionAssigns;
+
+    @OneToMany(mappedBy = "vod", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<CategoryVod> categories;
 
 }

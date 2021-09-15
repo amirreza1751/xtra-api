@@ -1,6 +1,5 @@
 package com.xtra.api.model.collection;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xtra.api.model.vod.Vod;
 import lombok.Data;
@@ -25,7 +24,6 @@ public class CollectionVod {
 
     @MapsId("collectionId")
     @ManyToOne
-    @JsonBackReference
     private Collection collection;
 
     @Column(name = "`order`")

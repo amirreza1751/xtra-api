@@ -1,6 +1,5 @@
 package com.xtra.api.model.collection;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.xtra.api.model.download_list.DownloadListCollection;
 import lombok.Data;
 import lombok.ToString;
@@ -27,7 +26,6 @@ public class Collection {
 
     @OrderBy("order ASC")
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)
-    @JsonManagedReference
     private Set<CollectionVod> vods;
 
     public void addStream(CollectionStream stream) {

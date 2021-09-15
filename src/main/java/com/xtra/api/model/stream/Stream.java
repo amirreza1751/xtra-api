@@ -1,5 +1,6 @@
 package com.xtra.api.model.stream;
 
+import com.xtra.api.model.category.CategoryStream;
 import com.xtra.api.model.collection.CollectionStream;
 import com.xtra.api.model.epg.EpgChannel;
 import com.xtra.api.model.line.Connection;
@@ -51,11 +52,13 @@ public class Stream {
     private TranscodeProfile transcodeProfile;
 
     @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private Set<StreamServer> streamServers;
-
+    private Set<StreamServer> streamServers = new HashSet<>();
 
     @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private Set<CollectionStream> collectionAssigns;
+    private Set<CategoryStream> categories = new HashSet<>();
+
+    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private Set<CollectionStream> collectionAssigns = new HashSet<>();
 
     @ElementCollection
     private List<String> streamInputs;
