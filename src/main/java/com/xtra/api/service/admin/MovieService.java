@@ -39,14 +39,16 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
     private final ServerService serverService;
     private final VideoRepository videoRepository;
+    private final VideoService videoService;
     private final MovieMapper movieMapper;
     private final QMovie movie = QMovie.movie;
 
     @Autowired
-    protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository, MovieMapper movieMapper) {
+    protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository, VideoService videoService, MovieMapper movieMapper) {
         super(repository);
         this.serverService = serverService;
         this.videoRepository = videoRepository;
+        this.videoService = videoService;
         this.movieMapper = movieMapper;
     }
 
@@ -246,11 +248,11 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return video.getAudios();
     }
 
-    public Movie encode(Long id) {
+    public void encode(Long id) {
         var movie = findByIdOrFail(id);
-        var video = movie.getVideos().stream().findFirst().get();
-        serverService.sendEncodeRequest(video.getVideoServers().stream().findFirst().get().getServer(), video);
-        return repository.save(movie);
+        movie.getVideos().forEach(video -> {
+            videoService.encode(video.getId());
+        });
     }
 
     public MovieView save(Long id, MovieInsertView movieInsertView, boolean encode) {

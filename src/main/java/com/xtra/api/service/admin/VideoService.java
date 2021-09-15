@@ -2,6 +2,7 @@ package com.xtra.api.service.admin;
 
 
 import com.xtra.api.model.server.Server;
+import com.xtra.api.model.vod.Movie;
 import com.xtra.api.model.vod.Video;
 import com.xtra.api.projection.system.VodStatusView;
 import com.xtra.api.repository.VideoRepository;
@@ -23,11 +24,13 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public class VideoService extends CrudService<Video, Long, VideoRepository> {
 
     private final LoadBalancingService loadBalancingService;
+    private final ServerService serverService;
 
     @Autowired
-    protected VideoService(VideoRepository videoRepository, LoadBalancingService loadBalancingService) {
+    protected VideoService(VideoRepository videoRepository, LoadBalancingService loadBalancingService, ServerService serverService) {
         super(videoRepository, "Video");
         this.loadBalancingService = loadBalancingService;
+        this.serverService = serverService;
     }
 
     @Override
@@ -68,5 +71,12 @@ public class VideoService extends CrudService<Video, Long, VideoRepository> {
             video.setLocation(statusView.getLocation());
         video.setEncodeStatus(statusView.getStatus());
         repository.save(video);
+    }
+
+    public void encode(Long id) {
+        var video = findByIdOrFail(id);
+        video.getVideoServers().forEach(videoServer -> {
+            serverService.sendEncodeRequest(videoServer.getServer(), video);
+        });
     }
 }

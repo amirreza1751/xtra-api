@@ -46,6 +46,13 @@ public class EpisodeController {
     }
 
     @PreAuthorize("hasAnyAuthority({'episodes_manage'})")
+    @GetMapping("/{id}/encode")
+    public ResponseEntity<?> encodeEpisode(@PathVariable Long id) {
+        episodeService.encode(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PreAuthorize("hasAnyAuthority({'episodes_manage'})")
     // Batch Actions
     @PatchMapping("/batch")
     public ResponseEntity<?> updateAll(@RequestBody EpisodeBatchUpdateView episodeBatchUpdateView) {

@@ -86,8 +86,9 @@ public class MovieController {
 
     @PreAuthorize("hasAnyAuthority({'movies_manage'})")
     @GetMapping("/{id}/encode")
-    public ResponseEntity<Movie> encodeMovie(@PathVariable Long id) {
-        return ResponseEntity.ok(movieService.encode(id));
+    public ResponseEntity<?> encodeMovie(@PathVariable Long id) {
+        movieService.encode(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PreAuthorize("hasAnyAuthority({'movies_manage'})")

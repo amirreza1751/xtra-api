@@ -33,14 +33,16 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
     private final SeriesRepository seriesRepository;
     private final SeriesService seriesService;
     private final VideoRepository videoRepository;
+    private final VideoService videoService;
 
-    protected EpisodeService(EpisodeRepository repository, EpisodeMapper episodeMapper, SeasonMapper seasonMapper, SeriesRepository seriesRepository, SeriesService seriesService, VideoRepository videoRepository) {
+    protected EpisodeService(EpisodeRepository repository, EpisodeMapper episodeMapper, SeasonMapper seasonMapper, SeriesRepository seriesRepository, SeriesService seriesService, VideoRepository videoRepository, VideoService videoService) {
         super(repository, "Episode");
         this.episodeMapper = episodeMapper;
         this.seasonMapper = seasonMapper;
         this.seriesRepository = seriesRepository;
         this.seriesService = seriesService;
         this.videoRepository = videoRepository;
+        this.videoService = videoService;
     }
 
     @Override
@@ -174,5 +176,11 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
                 deleteEpisode(episodeId);
             }
         }
+    }
+    public void encode(Long id) {
+        var episode = findByIdOrFail(id);
+        episode.getVideos().forEach(video -> {
+            videoService.encode(video.getId());
+        });
     }
 }
