@@ -32,8 +32,6 @@ public class CatchUpScheduler {
             for (StreamServer streamServer : streamServers){
                 if (streamServer.isCatchUp() && !streamServer.isRecording() && streamServer.getStream().getEpgChannel()!= null && streamServer.getStream().getEpgChannel().getEpgPrograms() != null && streamServer.getStream().getEpgChannel().getEpgPrograms().size() > 0){
                     Optional<EpgProgram> result = streamServer.getStream().getEpgChannel().getEpgPrograms().stream().filter(epgProgram -> epgProgram.getId().getStart().withZoneSameInstant(ZoneOffset.UTC).toString().equals(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).format(formatter))).findAny();
-                    streamServer.getStream().getEpgChannel().getEpgPrograms().forEach(item -> {
-                    });
                     result.ifPresent(epgProgram -> {
                         //Send record request to server.
                         CatchupRecordView catchupRecordView = new CatchupRecordView(epgProgram.getId().getTitle(), epgProgram.getId().getStart(), epgProgram.getId().getStop(), streamServer.getStream().getStreamInputs().get(streamServer.getSelectedSource()), streamServer.getCatchUpDays());
