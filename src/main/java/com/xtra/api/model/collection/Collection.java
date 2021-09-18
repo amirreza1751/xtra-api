@@ -18,15 +18,15 @@ public class Collection {
     private String name;
 
     @OneToMany(mappedBy = "collection", cascade = CascadeType.REMOVE)
-    private Set<DownloadListCollection> downloadListCollections;
+    private Set<DownloadListCollection> downloadListCollections = new HashSet<>();
 
     @OrderBy("order ASC")
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)
-    private Set<CollectionStream> streams;
+    private Set<CollectionStream> streams = new HashSet<>();
 
     @OrderBy("order ASC")
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "collection", orphanRemoval = true)
-    private Set<CollectionVod> vods;
+    private Set<CollectionVod> vods = new HashSet<>();
 
     public void addStream(CollectionStream stream) {
         if (streams == null) streams = new HashSet<>();
