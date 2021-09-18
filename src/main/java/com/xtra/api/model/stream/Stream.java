@@ -9,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -61,6 +63,7 @@ public class Stream {
     private Set<CollectionStream> collectionAssigns = new HashSet<>();
 
     @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<String> streamInputs;
 
     @OneToMany(mappedBy = "stream")
