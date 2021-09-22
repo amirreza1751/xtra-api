@@ -1,71 +1,121 @@
 package com.xtra.api.service.system;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.xtra.api.util.Utilities.decompressGzipFile;
-
 @Service
+@Log4j2
 public class UpdaterService {
     @Value("${maxmind.license-key}")
     private String maxmindLicenseKey;
 
     @Value("${temp-dir}")
-    private String tempPath;
+    private String tempDir;
 
     @Value("${maxmind.dbPath}")
     private String dbPath;
 
+    private String maxmindUrl;
+
+    @PostConstruct
+    public void init() {
+        this.maxmindUrl = String.format("https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=%s&suffix=tar.gz", maxmindLicenseKey);
+    }
+
     @Scheduled(initialDelay = 1000 * 10, fixedDelay = 1000 * 3600 * 24)
     public void updateMaxmindGeoIp() {
-        String maxmindUrl = "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=" + maxmindLicenseKey + "&suffix=tar.gz";
         WebClient webClient = WebClient.create(maxmindUrl);
-        webClient.head().exchange().doOnSuccess(clientResponse -> {
-            var tmp = clientResponse.headers().asHttpHeaders().get("Last-Modified");
-            if (tmp != null) {
-                var modifiedDate = tmp.get(0);
-                SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+        webClient.head().retrieve().toBodilessEntity().map(HttpEntity::getHeaders).subscribe(headers ->
+                {
+                    var tmp = headers.get("Last-Modified");
+                    if (tmp != null) {
+                        var modifiedDate = tmp.get(0);
+                        SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 
-                try {
-                    //Check if need to update geoIp
-                    if (format.parse(modifiedDate).after(new Date())) {
-                        //Download file
-                        URL website = new URL(maxmindUrl);
-                        ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-                        FileOutputStream fos = new FileOutputStream(tempPath + "geoIp-new.gz");
-                        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-
-                        //@todo Check File Integrity
-
-                        //Decompress gzip file
-                        decompressGzipFile(tempPath + "geoIp-new.gz", tempPath + "geoIp-new");
-                        File file = new File(tempPath + "geoIp-new" + "\\" + "GeoLite2-City.mmdb");
-                        File dbFile = new File(dbPath);
-                        if (!file.renameTo(dbFile)) {
-                            System.out.println("could not update geoIp database");
+                        try {
+                            //Check if db does not exists
+                            File databaseDir = new File(dbPath);
+                            if (!databaseDir.exists()) {
+                                if (!databaseDir.getParentFile().mkdirs() && !databaseDir.getParentFile().exists()) {
+                                    log.error("Could not create directory " + databaseDir.getParentFile() + " for database");
+                                } else {
+                                    downloadNewDatabase();
+                                }
+                            } else {
+                                //Check if need to update geoIp
+                                var newDate = format.parse(modifiedDate);
+                                var olDate = new Date(databaseDir.lastModified());
+                                if (newDate.after(olDate)) {
+                                    downloadNewDatabase();
+                                } else
+                                    log.info("GeoIp is already the latest version");
+                            }
+                        } catch (ParseException e) {
+                            log.error("Error in reading new database headers");
                         }
-                    } else
-                        System.out.println("GeoIp is already the latest version");
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                } catch (IOException exception) {
-                    System.out.println("could not update geoIp database");
+                    }
                 }
+        );
+    }
+
+    private void downloadNewDatabase() {
+        try {
+            //Download file
+            log.info("Downloading new GeoIp database...");
+            URL website = new URL(maxmindUrl);
+            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+
+            FileOutputStream fos = new FileOutputStream(tempDir + "/geolite.tar.gz");
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+
+            //@todo Check File Integrity
+            //Decompress gzip file
+            if (decompressDatabaseFile(tempDir + "/geolite.tar.gz", Path.of(dbPath).getParent().toString())) {
+                log.info("Geoip database successfully updated!");
+            }
+            Files.deleteIfExists(Path.of(tempDir + "/geolite.tar.gz"));
+
+
+        } catch (IOException | NullPointerException e) {
+            log.error("Error while updating geoip database");
+            log.error(e.getMessage());
+        }
+
+    }
+
+    private boolean decompressDatabaseFile(String gzipFile, String newFile) {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.directory(new File(newFile));
+        processBuilder.command("tar", "-xzfm", gzipFile, "--wildcards", "--no-anchored", "*.mmdb", "--strip-components=1", "-m");
+        try {
+            Process process = processBuilder.start();
+            if (process.waitFor() != 0) {
+                log.error("Error while extracting database");
+                return false;
             }
 
-        }).block();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return true;
+
     }
 
 }

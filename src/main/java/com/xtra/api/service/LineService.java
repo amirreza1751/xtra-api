@@ -7,10 +7,7 @@ import com.xtra.api.model.download_list.DownloadListCollection;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.user.UserType;
-import com.xtra.api.repository.ConnectionRepository;
-import com.xtra.api.repository.LineRepository;
-import com.xtra.api.repository.RoleRepository;
-import com.xtra.api.repository.UserRepository;
+import com.xtra.api.repository.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,20 +27,22 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
     protected final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    protected final VodConnectionRepository vodConnectionRepository;
 
-    @Value("${server.address}")
+    @Value("${server.external.address}")
     private String serverAddress;
 
     @Value("${server.port}")
     private String serverPort;
 
 
-    protected LineService(LineRepository repository, ConnectionRepository connectionRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, UserRepository userRepository) {
+    protected LineService(LineRepository repository, ConnectionRepository connectionRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, UserRepository userRepository, VodConnectionRepository vodConnectionRepository) {
         super(repository, "Line");
         this.connectionRepository = connectionRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
+        this.vodConnectionRepository = vodConnectionRepository;
     }
 
     @Override
@@ -111,7 +110,7 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
 
                     if (stream.getStreamInputs().size() > 0) {
                         playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\"Sports\",").append(stream.getName()).append("\n");
-                        playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/channels/play/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
+                        playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/channel/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
                     }
 
                 }
@@ -136,5 +135,9 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
 
     public long getConnectionsCount(Long lineId) {
         return connectionRepository.countAllByLineId(lineId);
+    }
+
+    public long getVodConnectionsCount(Long lineId) {
+        return vodConnectionRepository.countAllByLineId(lineId);
     }
 }

@@ -1,12 +1,21 @@
 package com.xtra.api.service.admin;
 
+import com.xtra.api.mapper.admin.BackupMapper;
+import com.xtra.api.model.Backup;
+import com.xtra.api.model.ProcessHandler;
 import com.xtra.api.model.event.SettingChangedEvent;
 import com.xtra.api.model.setting.BackupInterval;
+import com.xtra.api.projection.BackupView;
 import com.xtra.api.projection.admin.SettingView;
+import com.xtra.api.repository.BackupRepository;
+import com.xtra.api.service.CrudService;
 import com.xtra.api.service.ProcessService;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
@@ -14,18 +23,25 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 
 @Service
-public class BackupService implements SchedulingConfigurer {
+@Log4j2
+public class BackupService extends CrudService<Backup, Long, BackupRepository> implements SchedulingConfigurer {
     private final ProcessService processService;
     private ScheduledTaskRegistrar scheduledTaskRegistrar;
     private final TaskScheduler dynamicTaskScheduler;
     private ScheduledFuture<?> scheduledBackup;
     private BackupInterval backupInterval = BackupInterval.NONE;
+    private final BackupMapper backupMapper;
 
     @Value("${spring.datasource.username}")
     String dbUsername;
@@ -36,9 +52,14 @@ public class BackupService implements SchedulingConfigurer {
     @Value("${spring.datasource.url}")
     String dbUrl;
 
-    public BackupService(ProcessService processService, TaskScheduler dynamicTaskScheduler) {
+    @Value("${backup-dir:'/home/backup'}")
+    String backupPath;
+
+    public BackupService(BackupRepository backupRepository, ProcessService processService, TaskScheduler dynamicTaskScheduler, BackupMapper backupMapper) {
+        super(backupRepository, "Backup");
         this.processService = processService;
         this.dynamicTaskScheduler = dynamicTaskScheduler;
+        this.backupMapper = backupMapper;
     }
 
     @Override
@@ -87,16 +108,51 @@ public class BackupService implements SchedulingConfigurer {
                 dbAndTables.append(table).append(" ");
             }
         }
-        var path = System.getProperty("user.home") + File.separator + "backups" + File.separator;
-        path += "backup-";
+
+        try {
+            Files.createDirectory(Path.of(backupPath));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+
+        var path = backupPath + File.separator;
+        var name = "backup-";
         if (manual)
-            path += "manual";
+            name += "manual";
         else
-            path += "automatic";
-        path += "_" + LocalDateTime.now() + ".sql";
+            name += "automatic";
+        name += "_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss")) + ".sql";
+        path += name;
         String cmd = String.format("/usr/bin/mysqldump -u%s -p%s --add-drop-table %s -r %s",
                 dbUsername, dbPassword, dbAndTables.toString().trim(), path);
-        processService.runProcess(cmd.split(" "));
+        String fileName = name;
+        String finalPath = path;
+        processService.runProcess(cmd.split(" "), new ProcessHandler(() -> {
+            long size;
+            try {
+                size = Files.size(Paths.get(finalPath));
+                var backup = new Backup(fileName, size, LocalDateTime.now());
+                repository.save(backup);
+            } catch (IOException e) {
+                log.error("could not get file size of file with path: " + finalPath + File.separator + fileName);
+            }
+
+        }));
     }
 
+    public Page<BackupView> getBackupList(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
+        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(backupMapper::convertToView);
+    }
+
+    @Override
+    protected Page<Backup> findWithSearch(String search, Pageable page) {
+        return null;
+    }
+
+    public void restoreBackup(Long id) {
+        var backup = findByIdOrFail(id);
+        var path = System.getProperty("user.home") + File.separator + "backups" + File.separator;
+//        String cmd = String.format("/usr/bin/mysql -u%s -p%s --add-drop-table %s -r %s",
+//                dbUsername, dbPassword, dbAndTables.toString().trim(), path + File.separator + backup.getFileName());
+    }
 }

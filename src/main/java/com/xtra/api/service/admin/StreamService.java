@@ -45,7 +45,11 @@ public class StreamService extends CrudService<Stream, Long, StreamRepository> {
             for (var streamServer : server.getStreamServers()) {
                 var status = statuses.stream().filter(details -> details.getStreamId().equals(streamServer.getId().getStreamId())).findFirst();
                 if (status.isPresent()) {
-                    copyProperties(streamMapper.convertToEntity(status.get()), streamServer.getStreamDetails(), "id");
+                    var details = streamMapper.convertToEntity(status.get());
+                    if (streamServer.getStreamDetails() == null)
+                        streamServer.setStreamDetails(details);
+                    else
+                        copyProperties(details, streamServer.getStreamDetails(), "id");
                     streamServer.getStreamDetails().setStreamStatus(StreamStatus.ONLINE);
                 } else {
                     streamServer.setStreamDetails(new StreamDetails());

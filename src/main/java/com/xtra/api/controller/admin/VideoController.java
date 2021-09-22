@@ -22,8 +22,4 @@ public class VideoController {
         return ResponseEntity.ok(videoService.updateVideo(id, video));
     }
 
-    @GetMapping("/token/{video_token}")
-    public ResponseEntity<Video> getVideoByToken(@PathVariable("video_token") String videoToken) {
-        return ResponseEntity.ok(videoService.getByToken(videoToken));
-    }
 }

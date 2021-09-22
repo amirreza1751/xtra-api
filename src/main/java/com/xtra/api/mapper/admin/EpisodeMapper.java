@@ -75,4 +75,19 @@ public abstract class EpisodeMapper {
         episodeView.setServers(servers);
     }
 
+    public Set<VideoServer> convertToVideoServers(Set<Long> serverIds, Episode episode){
+        Set<VideoServer> videoServers = new HashSet<>();
+        if (serverIds.size() > 0 ){
+            for (Video video : episode.getVideos()){
+                for (Long serverId : serverIds){
+                    var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
+                    VideoServer videoServer = new VideoServer(new VideoServerId(video.getId(), serverId));
+                    videoServer.setVideo(video);
+                    videoServer.setServer(server);
+                    videoServers.add(videoServer);
+                }
+            }
+        }
+        return videoServers;
+    }
 }

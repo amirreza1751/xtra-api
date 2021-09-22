@@ -3,11 +3,13 @@ package com.xtra.api.model.stream;
 import com.xtra.api.model.server.Server;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Data
+@ToString(exclude = {"server"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class StreamServer {
     @EmbeddedId

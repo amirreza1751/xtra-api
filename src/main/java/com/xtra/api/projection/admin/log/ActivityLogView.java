@@ -12,9 +12,6 @@ public class ActivityLogView {
     private String lineUsername;
     private String streamName;
     private String serverName;
-    private Long lineId;
-    private Long streamId;
-    private Long serverId;
     private String ip;
     private String player;
     private String country;

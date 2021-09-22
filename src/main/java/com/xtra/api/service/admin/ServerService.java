@@ -87,10 +87,11 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
                 .build();
     }
 
-    public List<File> getFiles(Long id, String path) {
+    public List<File> getFiles(Long serverId, String path) {
+        var server = findByIdOrFail(serverId);
         List<File> result = null;
         try {
-            result = new RestTemplate().getForObject(corePath + ":" + corePort + "/file/list_files?path=" + path, List.class);
+            result = new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/file/list_files?path=" + path, List.class);
         } catch (HttpClientErrorException exception) {
             System.out.println(exception.getMessage());
         }
@@ -193,8 +194,8 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return repository.findByName(search);
     }
 
-    public void sendEncodeRequest(Video video) {
-        new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/encode/", video, String.class);
+    public void sendEncodeRequest(Server server, Video video) {
+        new RestTemplate().postForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/encode/", video, String.class);
     }
 
     public List<VideoInfo> getMediaInfo(Server server, List<Video> videoList) {

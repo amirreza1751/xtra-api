@@ -1,8 +1,11 @@
 package com.xtra.api.model.server;
 
 import com.xtra.api.model.stream.StreamServer;
+import com.xtra.api.model.vod.VideoServer;
 import lombok.Data;
 import lombok.ToString;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
@@ -28,4 +31,9 @@ public class Server {
 
     @OneToOne(cascade = CascadeType.MERGE)
     private Resource resource;
+
+    @OneToMany( mappedBy = "server", cascade = CascadeType.MERGE, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @ToString.Exclude
+    private List<VideoServer> videoServers;
 }

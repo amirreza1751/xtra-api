@@ -53,7 +53,7 @@ public class ResellerLineServiceTest {
 
         doReturn(pack).when(packageService).findByIdOrFail(anyLong());
         doReturn(line).when(resellerLineService).findByIdOrFail(anyLong());
-        resellerLineService.extendLine(0L, 0L);
+        resellerLineService.extendLine(0L, 0L, "");
 
         doReturn(line).when(repository).save(line);
         //incomplete

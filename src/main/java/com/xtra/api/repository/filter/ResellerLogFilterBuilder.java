@@ -11,7 +11,7 @@ public class ResellerLogFilterBuilder {
 
     public Predicate build(ResellerLogFilter filter) {
         var filterPred = new OptionalBooleanBuilder(LOG.isNotNull())
-                .notNullAnd(LOG.reseller.id::eq, filter.getResellerId())
+                .notNullAnd(LOG.resellerUsername::contains, filter.getResellerUsername())
                 .notNullAnd(LOG.action::eq, filter.getAction())
                 .notNullAnd(LOG.date::after, filter.getDateFrom())
                 .notNullAnd(LOG.date::before, filter.getDateTo())
@@ -19,6 +19,6 @@ public class ResellerLogFilterBuilder {
         if (filter.getSearch() == null)
             return filterPred;
         return filterPred.andAnyOf(
-                LOG.reseller.username.containsIgnoreCase(filter.getSearch()));
+                LOG.resellerUsername.containsIgnoreCase(filter.getSearch()));
     }
 }

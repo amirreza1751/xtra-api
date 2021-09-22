@@ -3,14 +3,16 @@ package com.xtra.api.service.admin;
 import com.xtra.api.mapper.admin.ChannelMapper;
 import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.collection.CollectionStream;
-import com.xtra.api.model.collection.CollectionStreamId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.*;
+import com.xtra.api.model.user.QCreditLog;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.projection.admin.epg.EpgDetails;
 import com.xtra.api.repository.*;
+import com.xtra.api.repository.filter.ChannelFilter;
+import com.xtra.api.util.OptionalBooleanBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +38,8 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
     private final StreamInputRepository streamInputRepository;
     private final ServerRepository serverRepository;
     private final ConnectionRepository connectionRepository;
+    private final QChannel channel = QChannel.channel;
+
 
 
     @Autowired
@@ -55,9 +59,21 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
     }
 
 
-    public Page<ChannelInfo> getAll(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
-        return findAll(search, pageNo, pageSize, sortBy, sortDir).map(channelMapper::convertToChannelInfo);
+    public Page<ChannelInfo> getAll(int pageNo, int pageSize, String sortBy, String sortDir, ChannelFilter filter) {
+        var predicate = new OptionalBooleanBuilder(channel.isNotNull())
+                .notNullAnd(channel.name::contains, filter.getName())
+                .build();
+        var search = filter.getSearch();
+        if (search != null) {
+            predicate = predicate.andAnyOf(
+                    channel.name.containsIgnoreCase(search),
+                    channel.notes.containsIgnoreCase(search),
+                    channel.streamInputs.any().containsIgnoreCase(search)
+            );
+        }
+        return repository.findAll(predicate, getSortingPageable(pageNo, pageSize, sortBy, sortDir)).map(channelMapper::convertToChannelInfo);
     }
+
 
     public ChannelView getViewById(Long id) {
         return channelMapper.convertToView(findByIdOrFail(id));
@@ -88,37 +104,21 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
         return savedEntity;
     }
 
+    public ChannelView save(Long id, ChannelInsertView channelView, boolean restart) {
+        return channelMapper.convertToView(update(id, channelMapper.convertToEntity(channelView, findByIdOrFail(id)), restart));
+    }
+
     public Channel update(Long id, Channel channel, boolean restart) {
-        Channel oldChannel = findByIdOrFail(id);
-        copyProperties(channel, oldChannel, "id", "currentInput", "currentConnections", "collections", "lineActivities", "streamServers", "collectionAssigns", "advancedStreamOptions", "streamToken");
-
-        //remove old servers from channel and add new ones
-        if (channel.getStreamServers() != null) {
-            oldChannel.getStreamServers().clear();
-            oldChannel.getStreamServers().addAll(channel.getStreamServers().stream().peek(streamServer -> {
-                streamServer.setId(new StreamServerId(oldChannel.getId(), streamServer.getServer().getId()));
-                streamServer.setStream(oldChannel);
-            }).collect(Collectors.toSet()));
-        }
-//        //remove old collections from channel and add new ones
-        if (channel.getCollectionAssigns() != null) {
-            oldChannel.getCollectionAssigns().clear();
-            oldChannel.getCollectionAssigns().addAll(channel.getCollectionAssigns().stream().peek(collectionStream -> {
-                collectionStream.setId(new CollectionStreamId(collectionStream.getCollection().getId(), oldChannel.getId()));
-                collectionStream.setStream(oldChannel);
-            }).collect(Collectors.toSet()));
-        }
-
         if (channel.getStreamInputs() != null) {
-            oldChannel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
+            channel.setStreamInputs(channel.getStreamInputs().stream().distinct().collect(Collectors.toList()));
         }
 
         if (channel.getAdvancedStreamOptions() != null) {
-            var oldOptions = oldChannel.getAdvancedStreamOptions();
+            var oldOptions = channel.getAdvancedStreamOptions();
             copyProperties(channel.getAdvancedStreamOptions(), oldOptions, "id");
-            oldChannel.setAdvancedStreamOptions(oldOptions);
+            channel.setAdvancedStreamOptions(oldOptions);
         }
-        var savedEntity = repository.save(oldChannel);
+        var savedEntity = repository.save(channel);
         if (savedEntity.getStreamServers() != null) {
             var serverIds = savedEntity.getStreamServers().stream().map(streamServer -> streamServer.getServer().getId()).collect(Collectors.toSet());
             if (restart) {
@@ -136,10 +136,6 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
         for (Server server : super.getServersForStream(channel, serverIds)) {
             serverService.sendAsyncStartRequest(server, channelMapper.convertToChannelStart(channel, 0));
         }
-    }
-
-    public ChannelView save(Long id, ChannelInsertView channelView, boolean restart) {
-        return channelMapper.convertToView(update(id, channelMapper.convertToEntity(channelView), restart));
     }
 
     public void saveAll(ChannelBatchInsertView channelBatchInsertView, boolean restart) {
@@ -182,6 +178,15 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
             for (Long channelId : channelIds) {
                 deleteOrFail(channelId);
             }
+        }
+    }
+
+    public void importChannels(ChannelImportView importView) {
+        List<ChannelInsertView> insertViews = channelMapper.addChannels(importView);
+        for (ChannelInsertView insertView : insertViews) {
+            if (!repository.existsByName(insertView.getName()))
+                insert(channelMapper.convertToEntity(insertView), false);
+
         }
     }
 

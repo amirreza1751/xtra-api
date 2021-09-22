@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.xtra.api.model.line.LoginLog;
 import com.xtra.api.model.line.LoginLogStatus;
-import com.xtra.api.model.user.User;
+import com.xtra.api.projection.auth.UserCredentials;
 import com.xtra.api.repository.UserRepository;
 import com.xtra.api.service.admin.LogService;
+import com.xtra.api.service.system.UserAuthService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,8 +47,18 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
         try {
-            User creds = new ObjectMapper()
-                    .readValue(req.getInputStream(), User.class);
+            UserCredentials creds = new ObjectMapper()
+                    .readValue(req.getInputStream(), UserCredentials.class);
+            var user = userRepository.findByUsername(creds.getUsername()).orElseThrow(() -> new UsernameNotFoundException(creds.getUsername()));
+            if (user.isUsing2FA()){
+                int responseCode = 0;
+                if (creds.getTotp() == null)
+                {
+                    res.sendError(460, "Totp is required.");
+                } else if (!UserAuthService.getTOTPCode(user.get_2FASec()).equals(creds.getTotp())){
+                    res.sendError(461, "Incorrect Totp");
+                }
+            }
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -93,6 +104,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         user.setLastLoginIp(ipAddress);
         userRepository.save(user);
 
-        logService.saveLoginLog(new LoginLog(user, user.getUserType(), ipAddress, LoginLogStatus.SUCCESS, LocalDateTime.now()));
+        logService.saveLoginLog(new LoginLog(user.getUsername(), user.getUserType(), ipAddress, LoginLogStatus.SUCCESS, LocalDateTime.now()));
     }
 }

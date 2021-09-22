@@ -2,11 +2,18 @@ package com.xtra.api.repository;
 
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.user.Reseller;
+import com.xtra.api.projection.admin.analytics.ConnectionsCountResult;
+import com.xtra.api.projection.admin.analytics.ExpiringLines;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface LineRepository extends JpaRepository<Line, Long> {
@@ -28,5 +35,12 @@ public interface LineRepository extends JpaRepository<Line, Long> {
 
     void deleteLineByOwnerAndId(Reseller owner, Long id);
 
+    @Query(nativeQuery = true, value = "SELECT  count(distinct line_id) as onlineUsersCount, count(id) as connectionsCount FROM (select * from vod_connection union select * from connection) as tbl;")
+    ConnectionsCountResult countOnlineUsers();
+
     List<Line> findAllByUsernameContains(String username);
+
+    long countAllByOwner(Reseller owner);
+
+    List<ExpiringLines> findAllByExpireDateLessThanEqualAndOwnerIs(LocalDateTime localDateTime, Reseller owner);
 }

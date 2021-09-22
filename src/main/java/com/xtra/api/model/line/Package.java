@@ -1,7 +1,5 @@
 package com.xtra.api.model.line;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.download_list.DownloadList;
 import com.xtra.api.model.role.Role;
 import com.xtra.api.model.stream.StreamProtocol;
@@ -19,7 +17,6 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Package {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,13 +1,9 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.LogMapper;
-import com.xtra.api.model.line.Connection;
-import com.xtra.api.model.line.LoginLog;
-import com.xtra.api.model.line.QActivityLog;
-import com.xtra.api.model.line.QLoginLog;
+import com.xtra.api.model.line.*;
 import com.xtra.api.model.stream.StreamProtocol;
-import com.xtra.api.model.user.QResellerLog;
-import com.xtra.api.model.user.ResellerLog;
+import com.xtra.api.model.user.*;
 import com.xtra.api.projection.admin.log.ActivityLogView;
 import com.xtra.api.projection.admin.log.LoginLogView;
 import com.xtra.api.projection.admin.log.ResellerLogView;
@@ -71,8 +67,8 @@ public class LogService {
         try (CSVPrinter printer = new CSVPrinter(writer,
                 CSVFormat.DEFAULT.withHeader("Line", "Stream", "Server", "Ip", "Player", "Country", "Start", "Stop", "Duration", "Output"))) {
             for (var log : logs) {
-                printer.printRecord(log.getLine().getUsername(), log.getStream().getName(),
-                        log.getServer().getName(), log.getIp(), log.getPlayer(), log.getCountry(),
+                printer.printRecord(log.getLineUsername(), log.getStreamName(),
+                        log.getServerName(), log.getIp(), log.getPlayer(), log.getCountry(),
                         log.getStart(), log.getStop(), log.getDuration(), log.getOutput());
             }
         } catch (IOException e) {
@@ -90,6 +86,11 @@ public class LogService {
             return log;
         }).collect(Collectors.toList());
         activityLogRepository.saveAll(activityLogs);
+    }
+
+    public void clearActivityLogs() {
+        var logs = activityLogRepository.findAll();
+        activityLogRepository.deleteAll(logs);
     }
 
     protected Pageable getSortingPageable(int pageNo, int pageSize, String sortBy, String sortDir) {
@@ -127,7 +128,7 @@ public class LogService {
         try (CSVPrinter printer = new CSVPrinter(writer,
                 CSVFormat.DEFAULT.withHeader("ID", "User", "Type", "Ip", "Status", "Date"))) {
             for (var log : logs) {
-                printer.printRecord(log.getId(), log.getUser().getUsername(), log.getType(),
+                printer.printRecord(log.getId(), log.getUsername(), log.getType(),
                         log.getIp(), log.getStatus(), log.getDate());
             }
         } catch (IOException e) {
@@ -136,14 +137,19 @@ public class LogService {
         return new ByteArrayResource(writer.toString().getBytes(StandardCharsets.UTF_8));
     }
 
+    public void clearLoginLogs() {
+        var logs = loginLogRepository.findAll();
+        loginLogRepository.deleteAll(logs);
+    }
+
     public Page<ResellerLogView> getResellerLogs(int pageNo, int pageSize, String sortBy, String sortDir, ResellerLogFilter filter) {
         var builder = new ResellerLogFilterBuilder();
         var predicate = builder.build(filter);
         return resellerLogRepository.findAll(predicate, getSortingPageable(pageNo, pageSize, sortBy, sortDir)).map(logMapper::convertToResellerLogView);
     }
 
-    public void saveResellerLog(ResellerLog resellerLog) {
-        resellerLogRepository.save(resellerLog);
+    public void saveResellerLog(Reseller reseller, User user, LocalDateTime date, ResellerLogAction action) {
+        resellerLogRepository.save(new ResellerLog(reseller.getUsername(), user.getUsername(), user.getUserType(), date, action));
     }
 
     public ByteArrayResource downloadResellerLogsAsCsv(LocalDateTime dateFrom, LocalDateTime dateTo) {
@@ -154,9 +160,9 @@ public class LogService {
         var logs = resellerLogRepository.findAll(predicate);
         StringWriter writer = new StringWriter();
         try (CSVPrinter printer = new CSVPrinter(writer,
-                CSVFormat.DEFAULT.withHeader("ID", "Reseller", "User/Subreseller", "Action", "Date"))) {
+                CSVFormat.DEFAULT.withHeader("ID", "Reseller", "User/Subreseller", "Type", "Action", "Date"))) {
             for (var log : logs) {
-                printer.printRecord(log.getId(), log.getReseller().getUsername(), log.getUser().getUsername(),
+                printer.printRecord(log.getId(), log.getResellerUsername(), log.getTargetUsername(), log.getTargetType(),
                         log.getAction(), log.getDate());
             }
         } catch (IOException e) {
@@ -165,12 +171,8 @@ public class LogService {
         return new ByteArrayResource(writer.toString().getBytes(StandardCharsets.UTF_8));
     }
 
-    public void clearResellerLogs(LocalDateTime dateFrom, LocalDateTime dateTo) {
-        var predicate = new OptionalBooleanBuilder(resellerLog.isNotNull())
-                .notNullAnd(resellerLog.date::after, dateFrom)
-                .notNullAnd(resellerLog.date::before, dateTo)
-                .build();
-        var logs = resellerLogRepository.findAll(predicate);
+    public void clearResellerLogs() {
+        var logs = resellerLogRepository.findAll();
         resellerLogRepository.deleteAll(logs);
     }
 

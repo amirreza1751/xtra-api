@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 public class LoginLogView {
     private Long id;
     private String username;
-    private String userId;
     private UserType type;
     private String ip;
     private LoginLogStatus status;

@@ -1,12 +1,16 @@
 package com.xtra.api.model.stream;
 
+import com.xtra.api.model.category.CategoryStream;
 import com.xtra.api.model.collection.CollectionStream;
 import com.xtra.api.model.epg.EpgChannel;
 import com.xtra.api.model.line.Connection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -22,6 +26,7 @@ import java.util.Set;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
+@ToString(exclude = {"epgChannel"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class Stream {
@@ -49,13 +54,16 @@ public class Stream {
     private TranscodeProfile transcodeProfile;
 
     @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private Set<StreamServer> streamServers;
-
+    private Set<StreamServer> streamServers = new HashSet<>();
 
     @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private Set<CollectionStream> collectionAssigns;
+    private Set<CategoryStream> categories = new HashSet<>();
+
+    @OneToMany(mappedBy = "stream", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private Set<CollectionStream> collectionAssigns = new HashSet<>();
 
     @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<String> streamInputs;
 
     @OneToMany(mappedBy = "stream")

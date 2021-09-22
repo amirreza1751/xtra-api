@@ -1,7 +1,6 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.ConnectionMapper;
-import com.xtra.api.mapper.admin.LogMapper;
 import com.xtra.api.model.line.BlockedIp;
 import com.xtra.api.model.line.Connection;
 import com.xtra.api.projection.admin.connection.BlockIpRequest;
@@ -56,7 +55,7 @@ public class ConnectionService extends CrudService<Connection, Long, ConnectionR
     public void blockIp(BlockIpRequest blockIpRequest) {
         var blockedIp = blockedIpRepository.findById(blockIpRequest.getIpAddress())
                 .orElse(new BlockedIp(blockIpRequest.getIpAddress()));
-        blockedIp.setUntil(blockIpRequest.getUntil());
+        blockedIp.setUntil(LocalDateTime.now().plus(blockIpRequest.getDuration()));
         blockedIpRepository.save(blockedIp);
     }
 }

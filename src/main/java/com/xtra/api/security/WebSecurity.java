@@ -45,7 +45,20 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, SIGN_IN_URL).permitAll()
                 .antMatchers(HttpMethod.POST, "users/login").permitAll()
-                .anyRequest().permitAll()
+                .antMatchers(// -- Swagger UI v2
+                        "/v2/api-docs",
+                        "/swagger-resources",
+                        "/swagger-resources/**",
+                        "/configuration/ui",
+                        "/configuration/security",
+                        "/swagger-ui.html",
+                        "/webjars/**",
+                        // -- Swagger UI v3 (OpenAPI)
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**").permitAll()
+                .antMatchers("/system/**").permitAll()
+                .antMatchers("/play/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), userRepository, logService))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager(), userDetailsService))
@@ -54,7 +67,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
             response.setContentType("application/json;charset=UTF-8");
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            if (response.getStatus() != 460 && response.getStatus()!= 461)
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             try {
                 response.getWriter().write(new JSONObject()
                         .put("timestamp", LocalDateTime.now())

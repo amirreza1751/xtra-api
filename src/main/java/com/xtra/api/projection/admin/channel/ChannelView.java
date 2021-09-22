@@ -28,6 +28,7 @@ public class ChannelView {
 
     private Set<Long> servers;
     private Set<Long> collections;
+    private Set<Long> categories;
 
     private List<ChannelServerInfo> infos;
     private EpgDetails epgDetails;

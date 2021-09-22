@@ -15,14 +15,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public abstract class LogMapper {
 
-    @Mapping(source = "line.id", target = "lineId")
-    @Mapping(source = "stream.id", target = "streamId")
-    @Mapping(source = "server.id", target = "serverId")
+    public abstract ActivityLogView convertToActivityLogView(ActivityLog activityLog);
+
     @Mapping(source = "line.username", target = "lineUsername")
     @Mapping(source = "stream.name", target = "streamName")
     @Mapping(source = "server.name", target = "serverName")
-    public abstract ActivityLogView convertToActivityLogView(ActivityLog activityLog);
-
     @Mapping(source = "userIp", target = "ip")
     @Mapping(source = "startDate", target = "start")
     @Mapping(source = "lastRead", target = "stop")
@@ -30,21 +27,10 @@ public abstract class LogMapper {
     @Mapping(target = "id", ignore = true)
     public abstract ActivityLog convertConnectionToActivityLog(Connection connection);
 
-    @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "user.username", target = "username")
     public abstract LoginLogView convertToLoginLogView(LoginLog loginLog);
 
-    @Mapping(source = "reseller.id", target = "resellerId")
-    @Mapping(source = "reseller.username", target = "resellerUsername")
-    @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "user.username", target = "userUsername")
     public abstract ResellerLogView convertToResellerLogView(ResellerLog resellerLog);
 
-    @Mapping(source = "actor.id",target = "actorId")
-    @Mapping(source = "actor.username",target = "actorUsername")
-    @Mapping(source = "actor.userType",target = "actorUserType")
-    @Mapping(source = "target.id",target = "targetId")
-    @Mapping(source = "target.username",target = "targetUsername")
     @Mapping(source = "reason.text",target = "reason")
     public abstract CreditLogView convertToCreditLogView(CreditLog creditLog);
 }

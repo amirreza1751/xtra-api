@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -24,15 +23,12 @@ import java.util.stream.Collectors;
 @Service
 @Validated
 public class UserService extends CrudService<User, Long, UserRepository> {
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserMapper userMapper;
     private final BlockedIpRepository blockedIpRepository;
     private final LoginLogRepository loginLogRepository;
 
-
-    protected UserService(UserRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper, BlockedIpRepository blockedIpRepository, LoginLogRepository loginLogRepository) {
+    protected UserService(UserRepository repository, UserMapper userMapper, BlockedIpRepository blockedIpRepository, LoginLogRepository loginLogRepository) {
         super(repository, "User");
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userMapper = userMapper;
         this.blockedIpRepository = blockedIpRepository;
         this.loginLogRepository = loginLogRepository;
@@ -43,11 +39,6 @@ public class UserService extends CrudService<User, Long, UserRepository> {
         return null;
     }
 
-    @Override
-    public User insert(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        return super.insert(user);
-    }
 
     public Page<UserView> getAllViews(String search, int pageNo, int pageSize, String sortBy, String sortDir) {
         return (super.findAll(search, pageNo, pageSize, sortBy, sortDir).map(userMapper::convertToView));

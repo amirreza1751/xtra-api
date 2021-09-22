@@ -8,10 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController("resellerLineController")
 @RequestMapping("users/current/lines")
+@PreAuthorize("hasAnyRole({'RESELLER'})")
 public class LineController {
     private final ResellerLineServiceImpl lineService;
 
@@ -41,9 +45,9 @@ public class LineController {
         return ResponseEntity.ok(lineService.updateLine(id, updateView));
     }
 
-    @GetMapping("/{id}/extend")
-    public ResponseEntity<LineView> extendResellerLine(@PathVariable Long id, @RequestParam Long packageId) {
-        return ResponseEntity.ok(lineService.extendLine(id, packageId));
+    @PostMapping("/{id}/extend")
+    public ResponseEntity<LineView> extendResellerLine(@PathVariable Long id, @RequestParam(name = "package_id") Long packageId, @RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(lineService.extendLine(id, packageId, body.getOrDefault("notes", "")));
     }
 
     @DeleteMapping("/{id}")

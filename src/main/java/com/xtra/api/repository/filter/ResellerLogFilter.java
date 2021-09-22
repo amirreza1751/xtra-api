@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class ResellerLogFilter {
     private LocalDateTime dateFrom;
     private LocalDateTime dateTo;
-    private Long resellerId;
+    private String resellerUsername;
     private ResellerLogAction action;
     private String search;
 

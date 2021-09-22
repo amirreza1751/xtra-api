@@ -8,11 +8,10 @@ import java.time.LocalDateTime;
 
 @Data
 public class ResellerLogView {
-    private Long resellerId;
     private String resellerUsername;
     private String action;
-    private Long userId;
-    private String userUsername;
+    private String targetUsername;
+    private UserType targetType;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime date;
 }

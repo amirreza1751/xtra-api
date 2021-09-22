@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
+@PreAuthorize("hasAnyRole({'ADMIN', 'SUPER_ADMIN'})")
 public class LineController {
     private final AdminLineServiceImpl lineService;
 
@@ -21,56 +23,66 @@ public class LineController {
         this.lineService = lineService;
     }
 
+    @PreAuthorize("hasAnyAuthority({'lines_manage'})")
     @GetMapping("")
     public ResponseEntity<Page<LineListView>> getLines(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize,
                                                        @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(lineService.getAll(search, pageNo, pageSize, sortBy, sortDir));
     }
 
+    @PreAuthorize("hasAnyAuthority({'lines_manage'})")
     @GetMapping("/{id}")
     public ResponseEntity<LineView> getLine(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.getById(id));
     }
 
+    @PreAuthorize("hasAnyAuthority({'lines_manage'})")
     @GetMapping("/list")
     public ResponseEntity<List<UserSimpleView>> getLineList(@RequestParam String search) {
         return ResponseEntity.ok(lineService.getLineList(search));
     }
 
+    @PreAuthorize("hasAnyAuthority({'lines_manage'})")
     @PostMapping("")
     public ResponseEntity<LineView> addLine(@RequestBody LineInsertView insertView) {
         return ResponseEntity.ok(lineService.add(insertView));
     }
 
+    @PreAuthorize("hasAnyAuthority({'lines_manage'})")
     @PatchMapping("/{id}")
     public ResponseEntity<LineView> updateLine(@PathVariable Long id, @RequestBody LineInsertView insertView) {
         return ResponseEntity.ok(lineService.save(id, insertView));
     }
 
+    @PreAuthorize("hasAnyAuthority({'lines_manage'})")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteLine(@PathVariable Long id) {
         lineService.deleteOrFail(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PreAuthorize("hasAnyAuthority({'lines_manage'})")
     @PatchMapping("/batch")
     public ResponseEntity<?> updateLines(@RequestBody LineBatchInsertView insertView) {
         lineService.saveAll(insertView);
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAnyAuthority({'lines_manage'})")
     @DeleteMapping("/batch")
     public ResponseEntity<?> deleteChannels(@RequestBody LineBatchDeleteView view) {
         lineService.deleteAll(view);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PreAuthorize("hasAnyAuthority({'lines_manage'})")
     @PatchMapping("/{id}/block/{blocked}")
     public ResponseEntity<?> setLineBlocked(@PathVariable Long id, @PathVariable boolean blocked) {
         lineService.updateLineBlock(id, blocked);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PreAuthorize("hasAnyAuthority({'lines_manage'})")
     @PatchMapping("/{id}/ban/{banned}")
     public ResponseEntity<?> setLineBanned(@PathVariable Long id, @PathVariable boolean banned) {
         lineService.updateLineBan(id, banned);
@@ -83,6 +95,7 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }*/
 
+    @PreAuthorize("hasAnyAuthority({'lines_manage'})")
     @GetMapping("/download/{id}")
     public ResponseEntity<String> AdminDownloadLine(@PathVariable Long id) {
         return lineService.downloadLinePlaylist(id);

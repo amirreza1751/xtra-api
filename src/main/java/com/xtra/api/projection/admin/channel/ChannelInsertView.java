@@ -34,6 +34,7 @@ public class ChannelInsertView {
     private Set<Long> servers;
     @NotNull(message = "collections can not be empty")
     private Set<Long> collections;
+    private Set<Long> categories;
     private EpgDetails epgDetails;
     private AdvancedStreamOptions advancedStreamOptions;
 

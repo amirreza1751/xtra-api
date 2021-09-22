@@ -57,6 +57,12 @@ dependencies {
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation "org.projectlombok:lombok:${lombokVersion}"
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    implementation 'com.github.javafaker:javafaker:1.0.2'
+    implementation 'com.zaxxer:nuprocess:2.0.2'
+    implementation group: 'de.taimos', name: 'totp', version: '1.0'
+    implementation group: 'commons-codec', name: 'commons-codec', version: '1.15'
+    implementation group: 'com.google.zxing', name: 'javase', version: '3.4.0'
+    implementation group: 'com.github.holgerbrandl', name: 'themoviedbapi', version:'1.12'
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     compileOnly 'org.springframework.boot:spring-boot-devtools'
@@ -89,7 +95,7 @@ configurations {
 
 jib{
     from{
-        image='docker://adoptopenjdk:11-jre'
+        image='adoptopenjdk:11-jre'
     }
     to {
         image = 'registry.gitlab.com/xtrapanel/xtra-api'

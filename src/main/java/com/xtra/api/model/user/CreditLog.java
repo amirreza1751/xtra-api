@@ -14,12 +14,9 @@ public class CreditLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    private User actor;
-
-    @OneToOne
-    private Reseller target;
-
+    private String actorUsername;
+    private UserType actorType;
+    private String targetUsername;
     private int initialCredits;
     private int finalCredits;
     private int changeAmount;
@@ -31,9 +28,10 @@ public class CreditLog {
     @Column(columnDefinition = "text")
     private String description;
 
-    public CreditLog(User actor, Reseller target, int initialCredits, int finalCredits, int changeAmount, LocalDateTime date, CreditLogReason reason, String description) {
-        this.actor = actor;
-        this.target = target;
+    public CreditLog(String actorUsername, UserType actorType, String targetUsername, int initialCredits, int finalCredits, int changeAmount, LocalDateTime date, CreditLogReason reason, String description) {
+        this.actorUsername = actorUsername;
+        this.actorType = actorType;
+        this.targetUsername = targetUsername;
         this.initialCredits = initialCredits;
         this.finalCredits = finalCredits;
         this.changeAmount = changeAmount;
