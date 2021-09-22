@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -206,6 +207,14 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
 
             TmdbTvEpisodes tvEpisodes = new TmdbApi("0edee3d3e5acd5c5a46d304175c0166e").getTvEpisodes();
             TvEpisode episodeInfo = tvEpisodes.getEpisode(episode.getTmdbId(), episode.getEpisodeNumber(), episode.getEpisodeNumber(),"en", TmdbTvEpisodes.EpisodeMethod.credits, TmdbTvEpisodes.EpisodeMethod.videos);
+
+            insertView.setImageUrl("https://image.tmdb.org/t/p/w300" + episodeInfo.getStillPath());
+            insertView.setPlot(episodeInfo.getOverview());
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate localDate = LocalDate.parse(episodeInfo.getAirDate(), formatter);
+            insertView.setReleaseDate(localDate);
+            insertView.setRating(episodeInfo.getVoteAverage());
 
             insertView.setSeason(episode.getSeason());
             insertView.setVideos(episode.getVideos());
