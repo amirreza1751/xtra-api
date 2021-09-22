@@ -43,26 +43,26 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getViewById(id));
     }
 
-    @PreAuthorize("hasAnyAuthority({'movies_add'})")
+    @PreAuthorize("hasAnyAuthority({'movies_manage'})")
     @PostMapping(value = {"", "/{encode}"})
     public ResponseEntity<MovieView> addMovie(@RequestBody MovieInsertView movie, @PathVariable(required = false) boolean encode) {
         return ResponseEntity.ok(movieService.add(movie, encode));
     }
 
-    @PreAuthorize("hasAnyAuthority({'movies_import'})")
-    @PostMapping(value = {"/import", "/{encode}"})
+    @PreAuthorize("hasAnyAuthority({'movies_manage'})")
+    @PostMapping(value = {"/import", "/import/{encode}"})
     public ResponseEntity<?> importMovies(@RequestBody MovieImportView movieImportView, @PathVariable(required = false) boolean encode) {
         movieService.importMovies(movieImportView, encode);
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAnyAuthority({'movies_edit'})")
+    @PreAuthorize("hasAnyAuthority({'movies_manage'})")
     @PatchMapping(value = {"/{id}", "{id}/{encode}"})
     public ResponseEntity<MovieView> updateMovie(@PathVariable Long id, @RequestBody MovieInsertView movie, @PathVariable(required = false) boolean encode) {
         return ResponseEntity.ok(movieService.save(id, movie, encode));
     }
 
-    @PreAuthorize("hasAnyAuthority({'movies_delete'})")
+    @PreAuthorize("hasAnyAuthority({'movies_manage'})")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
         movieService.deleteOrFail(id);
@@ -70,14 +70,14 @@ public class MovieController {
     }
 
     // Batch Actions
-    @PreAuthorize("hasAnyAuthority({'movies_batch_edit'})")
+    @PreAuthorize("hasAnyAuthority({'movies_manage'})")
     @PatchMapping(value = {"/batch", "/batch/{encode}"})
     public ResponseEntity<?> updateMovies(@RequestBody MovieBatchUpdateView movieView, @PathVariable(required = false) boolean encode) {
         movieService.saveAll(movieView, encode);
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAnyAuthority({'movies_batch_delete'})")
+    @PreAuthorize("hasAnyAuthority({'movies_manage'})")
     @DeleteMapping("/batch")
     public ResponseEntity<?> deleteMovies(@RequestBody MovieBatchDeleteView movieView) {
         movieService.deleteAll(movieView);
