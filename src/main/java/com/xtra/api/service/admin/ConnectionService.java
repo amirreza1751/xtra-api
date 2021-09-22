@@ -55,7 +55,7 @@ public class ConnectionService extends CrudService<Connection, Long, ConnectionR
     public void blockIp(BlockIpRequest blockIpRequest) {
         var blockedIp = blockedIpRepository.findById(blockIpRequest.getIpAddress())
                 .orElse(new BlockedIp(blockIpRequest.getIpAddress()));
-        blockedIp.setUntil(blockIpRequest.getUntil());
+        blockedIp.setUntil(LocalDateTime.now().plus(blockIpRequest.getDuration()));
         blockedIpRepository.save(blockedIp);
     }
 }
