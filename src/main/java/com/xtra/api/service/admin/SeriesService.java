@@ -8,7 +8,10 @@ import com.xtra.api.mapper.admin.SeasonMapper;
 import com.xtra.api.mapper.admin.SeriesMapper;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.vod.*;
+import com.xtra.api.projection.admin.episode.EpisodeImport;
+import com.xtra.api.projection.admin.episode.EpisodeImportView;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
+import com.xtra.api.projection.admin.movie.MovieImport;
 import com.xtra.api.projection.admin.series.SeriesBatchDeleteView;
 import com.xtra.api.projection.admin.series.SeriesBatchUpdateView;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
@@ -17,6 +20,11 @@ import com.xtra.api.repository.CollectionVodRepository;
 import com.xtra.api.repository.SeriesRepository;
 import com.xtra.api.repository.VideoRepository;
 import com.xtra.api.service.CrudService;
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbMovies;
+import info.movito.themoviedbapi.TmdbTvEpisodes;
+import info.movito.themoviedbapi.model.MovieDb;
+import info.movito.themoviedbapi.model.tv.TvEpisode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -186,7 +195,36 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         }
     }
 
-    public void generateToken(Episode episode){
+    public void importEpisodes(Long id, EpisodeImportView importView) {
+        var servers = importView.getServers();
+        var episodes = importView.getEpisodes();
+
+        for (EpisodeImport episode : episodes) {
+            EpisodeInsertView insertView = new EpisodeInsertView();
+            insertView.setEpisodeNumber(episode.getEpisodeNumber());
+            insertView.setEpisodeName(episode.getEpisodeName());
+            insertView.setNotes(importView.getNotes());
+
+            TmdbTvEpisodes tvEpisodes = new TmdbApi("0edee3d3e5acd5c5a46d304175c0166e").getTvEpisodes();
+            TvEpisode episodeInfo = tvEpisodes.getEpisode(episode.getTmdbId(), episode.getEpisodeNumber(), episode.getEpisodeNumber(),"en", TmdbTvEpisodes.EpisodeMethod.credits, TmdbTvEpisodes.EpisodeMethod.videos);
+
+            insertView.setImageUrl("https://image.tmdb.org/t/p/w300" + episodeInfo.getStillPath());
+            insertView.setPlot(episodeInfo.getOverview());
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate localDate = LocalDate.parse(episodeInfo.getAirDate(), formatter);
+            insertView.setReleaseDate(localDate);
+            insertView.setRating(episodeInfo.getVoteAverage());
+
+            insertView.setSeason(episode.getSeason());
+            insertView.setVideos(episode.getVideos());
+            insertView.setServers(servers);
+
+            addEpisode(id, insertView);
+        }
+    }
+
+    public void generateToken(Episode episode) {
         String token;
         for (Video video : episode.getVideos()){
             do {

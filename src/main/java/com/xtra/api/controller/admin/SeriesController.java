@@ -1,5 +1,6 @@
 package com.xtra.api.controller.admin;
 
+import com.xtra.api.projection.admin.episode.EpisodeImportView;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
 import com.xtra.api.projection.admin.series.SeriesBatchDeleteView;
 import com.xtra.api.projection.admin.series.SeriesBatchUpdateView;
@@ -76,5 +77,12 @@ public class SeriesController {
     @PostMapping("/{id}/episodes")
     public ResponseEntity<SeriesView> addEpisode(@PathVariable Long id, @RequestBody EpisodeInsertView episodeInsertView) {
         return ResponseEntity.ok(seriesService.addEpisode(id, episodeInsertView));
+    }
+
+    @PreAuthorize("hasAnyAuthority({'series_manage'})")
+    @PostMapping("/{id}/episodes/import")
+    public ResponseEntity<?> importEpisodes(@PathVariable Long id, @RequestBody EpisodeImportView episodeImportView) {
+        seriesService.importEpisodes(id, episodeImportView);
+        return ResponseEntity.ok().build();
     }
 }
