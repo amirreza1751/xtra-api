@@ -32,4 +32,5 @@ public class MovieInfo {
     private String youtubeTrailer;
     private float rating;
     private String country;
+    private int tmdbId;
 }
