@@ -7,11 +7,11 @@ import com.xtra.api.mapper.admin.EpisodeMapper;
 import com.xtra.api.mapper.admin.SeasonMapper;
 import com.xtra.api.mapper.admin.SeriesMapper;
 import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.setting.Settings;
 import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.episode.EpisodeImport;
 import com.xtra.api.projection.admin.episode.EpisodeImportView;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
-import com.xtra.api.projection.admin.movie.MovieImport;
 import com.xtra.api.projection.admin.series.SeriesBatchDeleteView;
 import com.xtra.api.projection.admin.series.SeriesBatchUpdateView;
 import com.xtra.api.projection.admin.series.SeriesInsertView;
@@ -21,9 +21,7 @@ import com.xtra.api.repository.SeriesRepository;
 import com.xtra.api.repository.VideoRepository;
 import com.xtra.api.service.CrudService;
 import info.movito.themoviedbapi.TmdbApi;
-import info.movito.themoviedbapi.TmdbMovies;
 import info.movito.themoviedbapi.TmdbTvEpisodes;
-import info.movito.themoviedbapi.model.MovieDb;
 import info.movito.themoviedbapi.model.tv.TvEpisode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -54,6 +52,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     private final SeasonMapper seasonMapper;
     private final VideoRepository videoRepository;
     private final ServerService serverService;
+    private final SettingService settingService;
 
     @Autowired
     protected SeriesService(SeriesRepository repository,
@@ -61,7 +60,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                             CollectionVodRepository collectionVodRepository,
                             EpisodeMapper episodeMapper,
                             SeasonMapper seasonMapper,
-                            VideoRepository videoRepository, ServerService serverService) {
+                            VideoRepository videoRepository, ServerService serverService, SettingService settingService) {
         super(repository, "Series");
         this.seriesMapper = seriesMapper;
         this.collectionVodRepository = collectionVodRepository;
@@ -69,6 +68,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         this.seasonMapper = seasonMapper;
         this.videoRepository = videoRepository;
         this.serverService = serverService;
+        this.settingService = settingService;
     }
 
     @Override
@@ -205,7 +205,8 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             insertView.setEpisodeName(episode.getEpisodeName());
             insertView.setNotes(importView.getNotes());
 
-            TmdbTvEpisodes tvEpisodes = new TmdbApi("0edee3d3e5acd5c5a46d304175c0166e").getTvEpisodes();
+            String tmdb_apikey = this.settingService.getSetting(Settings.TMDB_APIKEY);
+            TmdbTvEpisodes tvEpisodes = new TmdbApi(tmdb_apikey).getTvEpisodes();
             TvEpisode episodeInfo = tvEpisodes.getEpisode(episode.getTmdbId(), episode.getEpisodeNumber(), episode.getEpisodeNumber(),"en", TmdbTvEpisodes.EpisodeMethod.credits, TmdbTvEpisodes.EpisodeMethod.videos);
 
             insertView.setImageUrl("https://image.tmdb.org/t/p/w300" + episodeInfo.getStillPath());

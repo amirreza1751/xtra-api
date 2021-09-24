@@ -4,6 +4,7 @@ import com.xtra.api.mapper.admin.MovieMapper;
 import com.xtra.api.model.collection.CollectionVod;
 import com.xtra.api.model.collection.CollectionVodId;
 import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.setting.Settings;
 import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.movie.*;
 import com.xtra.api.repository.MovieRepository;
@@ -40,15 +41,17 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     private final ServerService serverService;
     private final VideoRepository videoRepository;
     private final VideoService videoService;
+    private final SettingService settingService;
     private final MovieMapper movieMapper;
     private final QMovie movie = QMovie.movie;
 
     @Autowired
-    protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository, VideoService videoService, MovieMapper movieMapper) {
+    protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository, VideoService videoService, SettingService settingService, MovieMapper movieMapper) {
         super(repository);
         this.serverService = serverService;
         this.videoRepository = videoRepository;
         this.videoService = videoService;
+        this.settingService = settingService;
         this.movieMapper = movieMapper;
     }
 
@@ -158,8 +161,9 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         }
     }
 
-    public MovieInfoInsertView getMovieInfo(int tmdbId)    {
-        TmdbMovies movies = new TmdbApi("0edee3d3e5acd5c5a46d304175c0166e").getMovies();
+    public MovieInfoInsertView getMovieInfo(int tmdbId) {
+        String tmdb_apikey = this.settingService.getSetting(Settings.TMDB_APIKEY);
+        TmdbMovies movies = new TmdbApi(tmdb_apikey).getMovies();
         MovieDb movieInfo = movies.getMovie(tmdbId, "en", TmdbMovies.MovieMethod.credits, TmdbMovies.MovieMethod.videos);
         Credits credits = movieInfo.getCredits();
         List<info.movito.themoviedbapi.model.Video> videos = movieInfo.getVideos();
@@ -169,7 +173,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         view.setPlot(movieInfo.getOverview());
         StringBuilder casts = new StringBuilder();
         var castCount = 0;
-        for (PersonCast cast: movieInfo.getCast()) {
+        for (PersonCast cast : movieInfo.getCast()) {
             castCount += 1;
             if (castCount <= 5) {
                 if (casts.length() > 0) {
@@ -190,7 +194,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
         StringBuilder genres = new StringBuilder();
         var genresCount = 0;
-        for (Genre genre: movieInfo.getGenres()) {
+        for (Genre genre : movieInfo.getGenres()) {
             genresCount += 1;
             if (genresCount <= 3) {
                 if (genres.length() > 0) {

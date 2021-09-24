@@ -49,4 +49,8 @@ public class SettingService extends CrudService<Setting, String, SettingReposito
         backupSetting.ifPresent(settingView -> System.out.println("fired"));
         backupSetting.ifPresent(settingView -> applicationEventPublisher.publishEvent(new SettingChangedEvent(settingView, SettingType.BACKUP)));
     }
+
+    public String getSetting(String key) {
+        return findByIdOrFail(key).getValue();
+    }
 }

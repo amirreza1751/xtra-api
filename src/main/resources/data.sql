@@ -30,3 +30,4 @@ insert ignore into permission (name, description, user_type) values ('backup_man
 
 
 insert ignore into setting (id, value) value ('backup_interval', '');
+insert ignore into setting (id, value) value ('tmdb_apikey', '');
