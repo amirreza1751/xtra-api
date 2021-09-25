@@ -168,6 +168,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         Credits credits = movieInfo.getCredits();
         List<info.movito.themoviedbapi.model.Video> videos = movieInfo.getVideos();
         MovieInfoInsertView view = new MovieInfoInsertView();
+        view.setTmdbId(tmdbId);
         view.setPosterPath("https://image.tmdb.org/t/p/w600_and_h900_bestv2" + movieInfo.getPosterPath());
         view.setBackdropPath("https://image.tmdb.org/t/p/w1280" + movieInfo.getBackdropPath());
         view.setPlot(movieInfo.getOverview());

@@ -20,4 +20,5 @@ public class MovieInfoInsertView {
     private String youtubeTrailer;
     private float rating;
     private String country;
+    private int tmdbId;
 }

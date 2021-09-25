@@ -31,4 +31,5 @@ public class SeriesInfo {
     private String youtubeTrailer;
     private float rating;
     private String country;
+    private int tmdbId;
 }
