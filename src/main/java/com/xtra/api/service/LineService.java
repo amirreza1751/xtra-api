@@ -2,11 +2,16 @@ package com.xtra.api.service;
 
 import com.xtra.api.model.collection.Collection;
 import com.xtra.api.model.collection.CollectionStream;
+import com.xtra.api.model.collection.CollectionVod;
 import com.xtra.api.model.download_list.DownloadList;
 import com.xtra.api.model.download_list.DownloadListCollection;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.user.UserType;
+import com.xtra.api.model.vod.Movie;
+import com.xtra.api.model.vod.Video;
+import com.xtra.api.model.vod.Vod;
+import com.xtra.api.model.vod.VodType;
 import com.xtra.api.repository.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -113,6 +118,18 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
                         playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/channel/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
                     }
 
+                }
+
+                Set<CollectionVod> vods = collection.getVods();
+                for (CollectionVod cVod : vods) {
+                    if (cVod.getVod().getVodType().equals(VodType.MOVIE)) {
+                        Movie movie = (Movie) cVod.getVod();
+                        Set<Video> videos = movie.getVideos();
+                        for (Video video: videos) {
+                            playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(movie.getName()).append("\" group-title=\"Sports\",").append(movie.getName()).append("\n");
+                            playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/video/").append(line.getLineToken()).append("/").append(video.getToken()).append("\n");
+                        }
+                    }
                 }
             }
         }

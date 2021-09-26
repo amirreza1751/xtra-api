@@ -198,6 +198,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     public void importEpisodes(Long id, EpisodeImportView importView) {
         var servers = importView.getServers();
         var episodes = importView.getEpisodes();
+        var serie = findByIdOrFail(id);
 
         for (EpisodeImport episode : episodes) {
             EpisodeInsertView insertView = new EpisodeInsertView();
@@ -206,8 +207,11 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             insertView.setNotes(importView.getNotes());
 
             String tmdb_apikey = this.settingService.getSetting(Settings.TMDB_APIKEY);
+            System.out.println(tmdb_apikey);
             TmdbTvEpisodes tvEpisodes = new TmdbApi(tmdb_apikey).getTvEpisodes();
-            TvEpisode episodeInfo = tvEpisodes.getEpisode(episode.getTmdbId(), episode.getEpisodeNumber(), episode.getEpisodeNumber(),"en", TmdbTvEpisodes.EpisodeMethod.credits, TmdbTvEpisodes.EpisodeMethod.videos);
+            System.out.println(tvEpisodes);
+            TvEpisode episodeInfo = tvEpisodes.getEpisode(serie.getInfo().getTmdbId(), episode.getSeason().getSeasonNumber(), episode.getEpisodeNumber(),"en", TmdbTvEpisodes.EpisodeMethod.credits, TmdbTvEpisodes.EpisodeMethod.videos);
+            System.out.println(episodeInfo);
 
             insertView.setImageUrl("https://image.tmdb.org/t/p/w300" + episodeInfo.getStillPath());
             insertView.setPlot(episodeInfo.getOverview());
