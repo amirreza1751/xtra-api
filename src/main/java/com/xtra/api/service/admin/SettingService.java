@@ -34,8 +34,8 @@ public class SettingService extends CrudService<Setting, String, SettingReposito
     }
 
 
-    public List<SettingView> getSettings(List<String> settingKeys) {
-        return repository.findAllById(settingKeys).stream().map(settingMapper::toView).collect(Collectors.toList());
+    public List<SettingView> getSettings() {
+        return repository.findAll().stream().map(settingMapper::toView).collect(Collectors.toList());
     }
 
     @Transactional
@@ -50,7 +50,11 @@ public class SettingService extends CrudService<Setting, String, SettingReposito
         backupSetting.ifPresent(settingView -> applicationEventPublisher.publishEvent(new SettingChangedEvent(settingView, SettingType.BACKUP)));
     }
 
-    public String getSetting(String key) {
+    public SettingView getSetting(String key) {
+        return settingMapper.toView(findByIdOrFail(key));
+    }
+
+    public String getSettingValue(String key) {
         return findByIdOrFail(key).getValue();
     }
 }

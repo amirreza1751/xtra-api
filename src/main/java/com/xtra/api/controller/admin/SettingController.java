@@ -20,8 +20,14 @@ public class SettingController {
 
     @PreAuthorize("hasAnyAuthority({'setting_manage'})")
     @GetMapping("")
-    public ResponseEntity<List<SettingView>> getSettingValues(@RequestBody List<String> settingKeys) {
-        return ResponseEntity.ok(settingService.getSettings(settingKeys));
+    public ResponseEntity<List<SettingView>> getAllSettingValues() {
+        return ResponseEntity.ok(settingService.getSettings());
+    }
+
+    @PreAuthorize("hasAnyAuthority({'setting_manage'})")
+    @GetMapping("/{setting_key}")
+    public ResponseEntity<SettingView> getSettingValue(@PathVariable(name = "setting_key") String settingKey) {
+        return ResponseEntity.ok(settingService.getSetting(settingKey));
     }
 
     @PreAuthorize("hasAnyAuthority({'setting_manage'})")
