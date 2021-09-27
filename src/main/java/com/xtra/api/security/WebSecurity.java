@@ -58,6 +58,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                         "/swagger-ui/**").permitAll()
                 .antMatchers("/system/**").permitAll()
                 .antMatchers("/play/**").permitAll()
+                .antMatchers("/mags/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), userRepository, logService))
