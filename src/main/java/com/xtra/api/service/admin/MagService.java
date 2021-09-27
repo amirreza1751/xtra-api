@@ -1,6 +1,7 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.model.mag.MagDevice;
+import com.xtra.api.repository.CategoryRepository;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.MagEventRepository;
 import com.xtra.api.repository.MagRepository;
@@ -34,11 +35,13 @@ import java.util.stream.Collectors;
 public class MagService extends CrudService<MagDevice, Long, MagRepository> {
     private final ConnectionRepository connectionRepository;
     private final MagEventRepository magEventRepository;
+    private final CategoryRepository categoryRepository;
 
-    protected MagService(MagRepository repository, ConnectionRepository connectionRepository, MagEventRepository magEventRepository) {
+    protected MagService(MagRepository repository, ConnectionRepository connectionRepository, MagEventRepository magEventRepository, CategoryRepository categoryRepository) {
         super(repository, "Mag");
         this.connectionRepository = connectionRepository;
         this.magEventRepository = magEventRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public ResponseEntity<?> handlePortalRequest(String userIp, String userAgent, String token, String requestType, String requestAction, String serialNumber, String mac, String version, String stbType, String imageVersion, String deviceId, String deviceId2, String hwVersion, String gMode, Long eventActiveId) {
@@ -93,7 +96,7 @@ public class MagService extends CrudService<MagDevice, Long, MagRepository> {
                         break;
                     case "get_preload_images":
                         var mod = gMode != null ? "i_" + gMode : "i";
-                        var links = Arrays.asList("template/{0}/{1}/loading.png", "template/{0}/{1}/horoscope_menu_button_1_6_a.png", "template/{0}/{1}/ico_info.png", "template/{0}/{1}/mb_pass_bg.png", "template/{0}/{1}/mm_ico_info.png", "template/{0}/{1}/footer_menu_act.png", "template/{0}/{1}/_2_cloudy.png", "template/{0}/{1}/footer_sidepanel.png", "template/{0}/{1}/footer_search.png", "template/{0}/{1}/v_menu_1a.png", "template/{0}/{1}/loading_bg.gif", "template/{0}/{1}/horoscope_menu_button_1_11_b.png", "template/{0}/{1}/mb_table_act01.png", "template/{0}/{1}/horoscope_menu_button_1_11_a.png", "template/{0}/{1}/tv_table.png", "template/{0}/{1}/vol_1.png", "template/{0}/{1}/mb_prev_bg.png", "template/{0}/{1}/horoscope_menu_button_1_8_b.png", "template/{0}/{1}/mm_ico_youtube.png", "template/{0}/{1}/horoscope_menu_button_1_4_a.png", "template/{0}/{1}/tv_table_arrows.png", "template/{0}/{1}/horoscope_menu_button_1_9_a.png", "template/{0}/{1}/horoscope_menu_button_1_10_a.png", "template/{0}/{1}/1x1.gif", "template/{0}/{1}/mm_ico_karaoke.png", "template/{0}/{1}/mm_ico_video.png", "template/{0}/{1}/mb_table05.png", "template/{0}/{1}/mb_table_act02.png", "template/{0}/{1}/tv_table_separator.png", "template/{0}/{1}/mb_icons.png", "template/{0}/{1}/footer_btn.png", "template/{0}/{1}/horoscope_menu_button_1_5_b.png", "template/{0}/{1}/mm_ico_audio.png", "template/{0}/{1}/_7_hail.png", "template/{0}/{1}/mb_table_act05.png", "template/{0}/{1}/_9_snow.png", "template/{0}/{1}/v_menu_4.png", "template/{0}/{1}/_3_pasmurno.png", "template/{0}/{1}/low_q.png", "template/{0}/{1}/mm_ico_setting.png", "template/{0}/{1}/mb_context_borders.png", "template/{0}/{1}/input_episode_bg.png", "template/{0}/{1}/mb_table_act04.png", "template/{0}/{1}/mm_hor_bg3.png", "template/{0}/{1}/black85.png", "template/{0}/{1}/pause_btn.png", "template/{0}/{1}/ico_error26.png", "template/{0}/{1}/input_episode.png", "template/{0}/{1}/epg_red_mark.png", "template/{0}/{1}/footer_sidepanel_act.png", "template/{0}/{1}/horoscope_menu_button_1_3_b.png", "template/{0}/{1}/mb_pass_input.png", "template/{0}/{1}/footer_bg2.png", "template/{0}/{1}/osd_bg.png", "template/{0}/{1}/epg_orange_mark.png", "template/{0}/{1}/mm_ico_mb.png", "template/{0}/{1}/ears_arrow_l.png", "template/{0}/{1}/hr_filminfo.png", "template/{0}/{1}/mm_ico_rec.png", "template/{0}/{1}/mm_ico_account.png", "template/{0}/{1}/mb_icon_rec.png", "template/{0}/{1}/mm_hor_left.png", "template/{0}/{1}/mb_table04.png", "template/{0}/{1}/mb_player.png", "template/{0}/{1}/footer_search_act2.png", "template/{0}/{1}/input_channel_bg.png", "template/{0}/{1}/horoscope_menu_button_1_12_a.png", "template/{0}/{1}/horoscope_menu_button_1_9_b.png", "template/{0}/{1}/mm_ico_android.png", "template/{0}/{1}/bg.png", "template/{0}/{1}/mm_hor_right.png", "template/{0}/{1}/mb_quality.png", "template/{0}/{1}/mb_table02.png", "template/{0}/{1}/bg2.png", "template/{0}/{1}/horoscope_menu_button_1_1_a.png", "template/{0}/{1}/osd_line_pos.png", "template/{0}/{1}/input_channel.png", "template/{0}/{1}/horoscope_menu_button_1_7_a.png", "template/{0}/{1}/arr_right.png", "template/{0}/{1}/mm_ico_radio.png", "template/{0}/{1}/ico_confirm.png", "template/{0}/{1}/osd_btn.png", "template/{0}/{1}/osd_time.png", "template/{0}/{1}/footer_menu.png", "template/{0}/{1}/volume_off.png", "template/{0}/{1}/btn2.png", "template/{0}/{1}/mm_ico_internet.png", "template/{0}/{1}/volume_bg.png", "template/{0}/{1}/horoscope_menu_button_1_1_b.png", "template/{0}/{1}/v_menu_2b.png", "template/{0}/{1}/horoscope_menu_button_1_3_a.png", "template/{0}/{1}/horoscope_menu_button_1_4_b.png", "template/{0}/{1}/_255_NA.png", "template/{0}/{1}/_1_sun_cl.png", "template/{0}/{1}/horoscope_menu_button_1_10_b.png", "template/{0}/{1}/25alfa_20.png", "template/{0}/{1}/mb_table_act06.png", "template/{0}/{1}/input.png", "template/{0}/{1}/tv_table_focus.png", "template/{0}/{1}/skip.png", "template/{0}/{1}/epg_green_mark.png", "template/{0}/{1}/mm_vert_cell.png", "template/{0}/{1}/_1_moon_cl.png", "template/{0}/{1}/modal_bg.png", "template/{0}/{1}/_4_short_rain.png", "template/{0}/{1}/ears_arrow_r.png", "template/{0}/{1}/mm_ico_default.png", "template/{0}/{1}/osd_line.png", "template/{0}/{1}/mb_table07.png", "template/{0}/{1}/mm_ico_usb.png", "template/{0}/{1}/mb_context_bg.png", "template/{0}/{1}/footer_sidepanel_r.png", "template/{0}/{1}/horoscope_menu_button_1_2_a.png", "template/{0}/{1}/v_menu_1b.png", "template/{0}/{1}/mb_table03.png", "template/{0}/{1}/mb_table_act03.png", "template/{0}/{1}/mb_table01.png", "template/{0}/{1}/mm_ico_dm.png", "template/{0}/{1}/horoscope_menu_button_1_5_a.png", "template/{0}/{1}/horoscope_menu_button_1_6_b.png", "template/{0}/{1}/footer_sidepanel_l.png", "template/{0}/{1}/footer_sidepanel_line.png", "template/{0}/{1}/mm_ico_tv.png", "template/{0}/{1}/mb_table06.png", "template/{0}/{1}/mb_scroll_bg.png", "template/{0}/{1}/_8_rain_swon.png", "template/{0}/{1}/mb_scroll.png", "template/{0}/{1}/v_menu_2a.png", "template/{0}/{1}/v_menu_5.png", "template/{0}/{1}/horoscope_menu_button_1_2_b.png", "template/{0}/{1}/_10_heavy_snow.png", "template/{0}/{1}/aspect_bg.png", "template/{0}/{1}/_0_moon.png", "template/{0}/{1}/volume_bar.png", "template/{0}/{1}/v_menu_3.png", "template/{0}/{1}/mm_hor_bg1.png", "template/{0}/{1}/horoscope_menu_button_1_12_b.png", "template/{0}/{1}/mm_ico_ex.png", "template/{0}/{1}/footer_bg.png", "template/{0}/{1}/footer_sidepanel_arr.png", "template/{0}/{1}/mb_icon_scrambled.png", "template/{0}/{1}/ico_alert.png", "template/{0}/{1}/mm_ico_apps.png", "template/{0}/{1}/input_act.png", "template/{0}/{1}/ears.png", "template/{0}/{1}/horoscope_menu_button_1_8_a.png", "template/{0}/{1}/mm_hor_bg2.png", "template/{0}/{1}/arr_left.png", "template/{0}/{1}/horoscope_menu_button_1_7_b.png", "template/{0}/{1}/footer_search_act.png", "template/{0}/{1}/_0_sun.png", "template/{0}/{1}/_6_lightning.png", "template/{0}/{1}/osd_rec.png", "template/{0}/{1}/tv_prev_bg.png", "template/{0}/{1}/_5_rain.png");
+                        var links = Arrays.asList("template/%s/%s/loading.png", "template/%s/%s/horoscope_menu_button_1_6_a.png", "template/%s/%s/ico_info.png", "template/%s/%s/mb_pass_bg.png", "template/%s/%s/mm_ico_info.png", "template/%s/%s/footer_menu_act.png", "template/%s/%s/_2_cloudy.png", "template/%s/%s/footer_sidepanel.png", "template/%s/%s/footer_search.png", "template/%s/%s/v_menu_1a.png", "template/%s/%s/loading_bg.gif", "template/%s/%s/horoscope_menu_button_1_11_b.png", "template/%s/%s/mb_table_act01.png", "template/%s/%s/horoscope_menu_button_1_11_a.png", "template/%s/%s/tv_table.png", "template/%s/%s/vol_1.png", "template/%s/%s/mb_prev_bg.png", "template/%s/%s/horoscope_menu_button_1_8_b.png", "template/%s/%s/mm_ico_youtube.png", "template/%s/%s/horoscope_menu_button_1_4_a.png", "template/%s/%s/tv_table_arrows.png", "template/%s/%s/horoscope_menu_button_1_9_a.png", "template/%s/%s/horoscope_menu_button_1_10_a.png", "template/%s/%s/1x1.gif", "template/%s/%s/mm_ico_karaoke.png", "template/%s/%s/mm_ico_video.png", "template/%s/%s/mb_table05.png", "template/%s/%s/mb_table_act02.png", "template/%s/%s/tv_table_separator.png", "template/%s/%s/mb_icons.png", "template/%s/%s/footer_btn.png", "template/%s/%s/horoscope_menu_button_1_5_b.png", "template/%s/%s/mm_ico_audio.png", "template/%s/%s/_7_hail.png", "template/%s/%s/mb_table_act05.png", "template/%s/%s/_9_snow.png", "template/%s/%s/v_menu_4.png", "template/%s/%s/_3_pasmurno.png", "template/%s/%s/low_q.png", "template/%s/%s/mm_ico_setting.png", "template/%s/%s/mb_context_borders.png", "template/%s/%s/input_episode_bg.png", "template/%s/%s/mb_table_act04.png", "template/%s/%s/mm_hor_bg3.png", "template/%s/%s/black85.png", "template/%s/%s/pause_btn.png", "template/%s/%s/ico_error26.png", "template/%s/%s/input_episode.png", "template/%s/%s/epg_red_mark.png", "template/%s/%s/footer_sidepanel_act.png", "template/%s/%s/horoscope_menu_button_1_3_b.png", "template/%s/%s/mb_pass_input.png", "template/%s/%s/footer_bg2.png", "template/%s/%s/osd_bg.png", "template/%s/%s/epg_orange_mark.png", "template/%s/%s/mm_ico_mb.png", "template/%s/%s/ears_arrow_l.png", "template/%s/%s/hr_filminfo.png", "template/%s/%s/mm_ico_rec.png", "template/%s/%s/mm_ico_account.png", "template/%s/%s/mb_icon_rec.png", "template/%s/%s/mm_hor_left.png", "template/%s/%s/mb_table04.png", "template/%s/%s/mb_player.png", "template/%s/%s/footer_search_act2.png", "template/%s/%s/input_channel_bg.png", "template/%s/%s/horoscope_menu_button_1_12_a.png", "template/%s/%s/horoscope_menu_button_1_9_b.png", "template/%s/%s/mm_ico_android.png", "template/%s/%s/bg.png", "template/%s/%s/mm_hor_right.png", "template/%s/%s/mb_quality.png", "template/%s/%s/mb_table02.png", "template/%s/%s/bg2.png", "template/%s/%s/horoscope_menu_button_1_1_a.png", "template/%s/%s/osd_line_pos.png", "template/%s/%s/input_channel.png", "template/%s/%s/horoscope_menu_button_1_7_a.png", "template/%s/%s/arr_right.png", "template/%s/%s/mm_ico_radio.png", "template/%s/%s/ico_confirm.png", "template/%s/%s/osd_btn.png", "template/%s/%s/osd_time.png", "template/%s/%s/footer_menu.png", "template/%s/%s/volume_off.png", "template/%s/%s/btn2.png", "template/%s/%s/mm_ico_internet.png", "template/%s/%s/volume_bg.png", "template/%s/%s/horoscope_menu_button_1_1_b.png", "template/%s/%s/v_menu_2b.png", "template/%s/%s/horoscope_menu_button_1_3_a.png", "template/%s/%s/horoscope_menu_button_1_4_b.png", "template/%s/%s/_255_NA.png", "template/%s/%s/_1_sun_cl.png", "template/%s/%s/horoscope_menu_button_1_10_b.png", "template/%s/%s/25alfa_20.png", "template/%s/%s/mb_table_act06.png", "template/%s/%s/input.png", "template/%s/%s/tv_table_focus.png", "template/%s/%s/skip.png", "template/%s/%s/epg_green_mark.png", "template/%s/%s/mm_vert_cell.png", "template/%s/%s/_1_moon_cl.png", "template/%s/%s/modal_bg.png", "template/%s/%s/_4_short_rain.png", "template/%s/%s/ears_arrow_r.png", "template/%s/%s/mm_ico_default.png", "template/%s/%s/osd_line.png", "template/%s/%s/mb_table07.png", "template/%s/%s/mm_ico_usb.png", "template/%s/%s/mb_context_bg.png", "template/%s/%s/footer_sidepanel_r.png", "template/%s/%s/horoscope_menu_button_1_2_a.png", "template/%s/%s/v_menu_1b.png", "template/%s/%s/mb_table03.png", "template/%s/%s/mb_table_act03.png", "template/%s/%s/mb_table01.png", "template/%s/%s/mm_ico_dm.png", "template/%s/%s/horoscope_menu_button_1_5_a.png", "template/%s/%s/horoscope_menu_button_1_6_b.png", "template/%s/%s/footer_sidepanel_l.png", "template/%s/%s/footer_sidepanel_line.png", "template/%s/%s/mm_ico_tv.png", "template/%s/%s/mb_table06.png", "template/%s/%s/mb_scroll_bg.png", "template/%s/%s/_8_rain_swon.png", "template/%s/%s/mb_scroll.png", "template/%s/%s/v_menu_2a.png", "template/%s/%s/v_menu_5.png", "template/%s/%s/horoscope_menu_button_1_2_b.png", "template/%s/%s/_10_heavy_snow.png", "template/%s/%s/aspect_bg.png", "template/%s/%s/_0_moon.png", "template/%s/%s/volume_bar.png", "template/%s/%s/v_menu_3.png", "template/%s/%s/mm_hor_bg1.png", "template/%s/%s/horoscope_menu_button_1_12_b.png", "template/%s/%s/mm_ico_ex.png", "template/%s/%s/footer_bg.png", "template/%s/%s/footer_sidepanel_arr.png", "template/%s/%s/mb_icon_scrambled.png", "template/%s/%s/ico_alert.png", "template/%s/%s/mm_ico_apps.png", "template/%s/%s/input_act.png", "template/%s/%s/ears.png", "template/%s/%s/horoscope_menu_button_1_8_a.png", "template/%s/%s/mm_hor_bg2.png", "template/%s/%s/arr_left.png", "template/%s/%s/horoscope_menu_button_1_7_b.png", "template/%s/%s/footer_search_act.png", "template/%s/%s/_0_sun.png", "template/%s/%s/_6_lightning.png", "template/%s/%s/osd_rec.png", "template/%s/%s/tv_prev_bg.png", "template/%s/%s/_5_rain.png");
                         links = links.stream().map(s -> String.format(s, stalkerTheme, mod)).collect(Collectors.toList());
                         var images = new JSONArray().putAll(links);
                         response = response.put("js", images);
@@ -178,15 +181,42 @@ public class MagService extends CrudService<MagDevice, Long, MagRepository> {
                 }
             case "itv":
                 switch (requestAction) {
-
+                    case "create_link":
+                    case "set_claim":
+                    case "set_fav":
+                    case "get_fav_ids":
+                    case "get_all_channels":
+                    case "get_ordered_list":
+                    case "get_all_fav_channels":
+                    case "get_epg_info":
+                    case "set_fav_status":
+                        response = response.put("js", new JSONArray());
+                    case "get_short_epg":
+                    case "set_played":
+                        response = response.put("js", true);
+                        break;
+                    case "set_last_id":
+                    case "get_genres":
+                        //todo show all categories
+                        var categories = categoryRepository.findAllByType(com.xtra.api.model.MediaType.CHANNEL);
+                        var data = new JSONArray();
+                        int num = 0;
+                        for (var cat : categories) {
+                            data.put(new JSONObject().put("id", cat.getId()).put("title", cat.getName()).put("modified", "").put("number", num++).put("alias", cat.getName().toLowerCase()).put("censored", cat.isAdult() ? 1 : 0));
+                        }
+                        response.put("js", data);
+                        break;
                 }
             case "remote_pvr":
                 switch (requestAction) {
-
+                    case "get_active_recordings":
+                        response.put("js", new JSONArray());
+                        break;
                 }
             case "media_favorites":
                 switch (requestAction) {
-
+                    case "get_all":
+                        response.put("js", "");
                 }
             case "tvreminder":
                 switch (requestAction) {
@@ -194,7 +224,16 @@ public class MagService extends CrudService<MagDevice, Long, MagRepository> {
                 }
             case "vod":
                 switch (requestAction) {
-
+                    case "get_categories":
+                        //todo show all
+                        var categories = categoryRepository.findAllByTypeIn(List.of(com.xtra.api.model.MediaType.MOVIE, com.xtra.api.model.MediaType.SERIES));
+                        var data = new JSONArray();
+                        int num = 0;
+                        for (var cat : categories) {
+                            data.put(new JSONObject().put("id", cat.getId()).put("title", cat.getName()).put("modified", "").put("number", num++).put("alias", cat.getName().toLowerCase()).put("censored", cat.isAdult() ? 1 : 0));
+                        }
+                        response.put("js", data);
+                        break;
                 }
             case "series":
                 switch (requestAction) {
