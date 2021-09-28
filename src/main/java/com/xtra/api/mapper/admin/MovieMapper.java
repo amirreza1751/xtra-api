@@ -10,15 +10,15 @@ import com.xtra.api.model.vod.VideoServerId;
 import com.xtra.api.projection.admin.movie.*;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.CollectionVodRepository;
+import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ServerRepository;
-import lombok.NonNull;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
-import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,11 +33,17 @@ public abstract class MovieMapper {
     @Autowired
     private ServerRepository serverRepository;
     @Autowired
-    private ServerMapper serverMapper;
+    private LineRepository lineRepository;
+
+    @Value("${server.external.address}")
+    private String serverAddress;
+
+    @Value("${server.port}")
+    private String serverPort;
 
     public abstract Movie convertToEntity(MovieInsertView movieView);
 
-//    @Mapping(source = "videos.videoServers.serverId", target = "servers")
+    //    @Mapping(source = "videos.videoServers.serverId", target = "servers")
     @Mapping(source = "collectionAssigns", target = "collections")
     public abstract MovieView convertToView(Movie movie);
 
@@ -110,25 +116,28 @@ public abstract class MovieMapper {
 
         return collectionVodSet;
     }
+
     @AfterMapping
-    public void convertToServers(final Movie movie, @MappingTarget MovieView movieView){
+    public void convertToServers(final Movie movie, @MappingTarget MovieView movieView) {
         Set<Long> servers = new HashSet<>();
-        for (Video video : movie.getVideos()){
+        for (Video video : movie.getVideos()) {
             servers.addAll(video.getVideoServers().stream().map(videoServer -> videoServer.getServer().getId()).collect(Collectors.toSet()));
         }
         movieView.setServers(servers);
     }
 
     @AfterMapping
-    public void assignInfo(final Movie movie, @MappingTarget MovieListView movieListView){
+    public void assignInfo(final Movie movie, @MappingTarget MovieListView movieListView) {
         movieListView.setDuration(movie.getInfo() != null ? movie.getInfo().getRuntime() : 0);
-        if (!movie.getVideos().isEmpty()){
+        if (!movie.getVideos().isEmpty()) {
             //set server info
             movieListView.setServerInfoList(movie.getVideos().iterator().next().getVideoServers().stream().map(videoServer -> new MovieServerInfo(videoServer.getServer().getName())).collect(Collectors.toList()));
             //set video info
             movieListView.setVideoInfoList(movie.getVideos().stream().map(video -> {
                 if (video.getVideoInfo() != null) {
-                    return new MovieVideoInfo(video.getLocation(), video.getVideoInfo().getResolution(), video.getVideoInfo().getVideoCodec(), video.getVideoInfo().getAudioCodec(), video.getVideoInfo().getDuration(), video.getEncodeStatus());
+                    var system_line = lineRepository.findByUsername("system_line");
+                    String link = system_line.map(line -> "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken()).orElse("");
+                    return new MovieVideoInfo(video.getLocation(), video.getVideoInfo().getResolution(), video.getVideoInfo().getVideoCodec(), video.getVideoInfo().getAudioCodec(), link, video.getVideoInfo().getDuration(), video.getEncodeStatus());
                 } else return null;
             }).collect(Collectors.toList()));
         }

@@ -1,11 +1,11 @@
 package com.xtra.api.service.admin;
 
-import com.xtra.api.model.collection.CollectionVod;
-import com.xtra.api.model.collection.CollectionVodId;
-import com.xtra.api.model.exception.EntityAlreadyExistsException;
 import com.xtra.api.mapper.admin.EpisodeMapper;
 import com.xtra.api.mapper.admin.SeasonMapper;
 import com.xtra.api.mapper.admin.SeriesMapper;
+import com.xtra.api.model.collection.CollectionVod;
+import com.xtra.api.model.collection.CollectionVodId;
+import com.xtra.api.model.exception.EntityAlreadyExistsException;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.setting.Settings;
 import com.xtra.api.model.vod.*;
@@ -205,7 +205,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             insertView.setEpisodeName(episode.getEpisodeName());
             insertView.setNotes(importView.getNotes());
 
-            String tmdb_apikey = this.settingService.getSetting(Settings.TMDB_APIKEY);
+            String tmdb_apikey = this.settingService.getSettingValue(Settings.TMDB_APIKEY);
             TmdbTvEpisodes tvEpisodes = new TmdbApi(tmdb_apikey).getTvEpisodes();
             TvEpisode episodeInfo = tvEpisodes.getEpisode(episode.getTmdbId(), episode.getEpisodeNumber(), episode.getEpisodeNumber(),"en", TmdbTvEpisodes.EpisodeMethod.credits, TmdbTvEpisodes.EpisodeMethod.videos);
 

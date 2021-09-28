@@ -13,6 +13,7 @@ public class MovieVideoInfo {
     private String resolution;
     private String videoCodec;
     private String audioCodec;
+    private String link;
     private Duration duration;
     private EncodeStatus encodeStatus;
 }
