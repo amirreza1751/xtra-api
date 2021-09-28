@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+
 @Service
 @Validated
 public class CategoryService extends CrudService<Category, Long, CategoryRepository> {
@@ -38,11 +40,11 @@ public class CategoryService extends CrudService<Category, Long, CategoryReposit
         return categoryMapper.convertToSummaryView(repository.findAll());
     }
 
-    public CategoryView add(CategoryInsertView insertView) {
+    public CategoryView add(@Valid CategoryInsertView insertView) {
         return categoryMapper.convertToView(insert(categoryMapper.toEntity(insertView)));
     }
 
-    public CategoryView save(Long id, CategoryUpdateView updateView) {
+    public CategoryView save(Long id, @Valid CategoryUpdateView updateView) {
         var cat = findByIdOrFail(id);
         cat.setName(updateView.getName());
         cat.setAdult(updateView.isAdult());
