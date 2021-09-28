@@ -157,4 +157,8 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
     public long getVodConnectionsCount(Long lineId) {
         return vodConnectionRepository.countAllByLineId(lineId);
     }
+
+    public long totalConnectionsCount(Long lineId){
+        return getConnectionsCount(lineId) + getVodConnectionsCount(lineId);
+    }
 }

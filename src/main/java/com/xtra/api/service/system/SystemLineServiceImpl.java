@@ -77,7 +77,7 @@ public class SystemLineServiceImpl extends LineService {
             var stream = streamByToken.get();
             var server = serverByToken.get();
 
-            var currentConnections = getConnectionsCount(line.getId());
+            var currentConnections = totalConnectionsCount(line.getId());
             var connection = connectionRepository.findByLineLineTokenAndServerTokenAndStream_StreamTokenAndUserIp(lineAuth.getLineToken(), lineAuth.getServerToken(), lineAuth.getMediaToken(), lineAuth.getIpAddress())
                     .orElse(new Connection(line, stream, server, lineAuth.getIpAddress()));
             if (connection.getId() == null) {
@@ -123,7 +123,7 @@ public class SystemLineServiceImpl extends LineService {
             var video = videoByToken.get();
             var server = serverByToken.get();
 
-            var currentConnections = getVodConnectionsCount(line.getId());
+            var currentConnections = totalConnectionsCount(line.getId());
             var vodConnection = vodConnectionRepository.findByLineLineTokenAndServerTokenAndVideo_tokenAndUserIp(lineAuth.getLineToken(), lineAuth.getServerToken(), lineAuth.getMediaToken(), lineAuth.getIpAddress())
                     .orElse(new VodConnection(line, video, server, lineAuth.getIpAddress()));
             if (vodConnection.getId() == null) {
