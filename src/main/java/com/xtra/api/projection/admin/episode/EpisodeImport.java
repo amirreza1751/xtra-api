@@ -21,6 +21,7 @@ public class EpisodeImport {
     private int episodeNumber;
     @NotBlank(message = "Episode name can not be empty")
     private String episodeName;
+    private int tmdbId;
 
     @NotNull(message = "season can not be empty")
     private SeasonInsertView season;

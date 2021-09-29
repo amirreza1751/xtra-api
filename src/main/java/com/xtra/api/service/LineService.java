@@ -2,14 +2,11 @@ package com.xtra.api.service;
 
 import com.xtra.api.model.collection.Collection;
 import com.xtra.api.model.collection.CollectionStream;
-import com.xtra.api.model.collection.CollectionVod;
 import com.xtra.api.model.download_list.DownloadList;
 import com.xtra.api.model.download_list.DownloadListCollection;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.user.UserType;
-import com.xtra.api.model.vod.*;
-import com.xtra.api.projection.admin.episode.EpisodeImport;
 import com.xtra.api.repository.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -112,33 +109,10 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
                     Stream stream = cStream.getStream();
 
                     if (stream.getStreamInputs().size() > 0) {
-                        playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\""). append(collection.getName()).append("\",").append(stream.getName()).append("\n");
+                        playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(stream.getName()).append("\" group-title=\"Sports\",").append(stream.getName()).append("\n");
                         playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/channel/").append(line.getLineToken()).append("/").append(stream.getStreamToken()).append("\n");
                     }
 
-                }
-
-                Set<CollectionVod> vods = collection.getVods();
-                for (CollectionVod cVod : vods) {
-                    if (cVod.getVod().getVodType().equals(VodType.MOVIE)) {
-                        Movie movie = (Movie) cVod.getVod();
-                        Set<Video> videos = movie.getVideos();
-                        for (Video video: videos) {
-                            playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(movie.getName()).append("\" group-title=\""). append(collection.getName()).append("\",").append(movie.getName()).append("\n");
-                            playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/video/").append(line.getLineToken()).append("/").append(video.getToken()).append("\n");
-                        }
-                    } else if (cVod.getVod().getVodType().equals(VodType.SERIES)) {
-                        Series series = (Series) cVod.getVod();
-                        for (Season season : series.getSeasons()) {
-                            for (Episode episode : season.getEpisodes()) {
-                                Set<Video> videos = episode.getVideos();
-                                for (Video video: videos) {
-                                    playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(episode.getEpisodeName()).append("\" group-title=\""). append(collection.getName()).append("\",").append(episode.getEpisodeName()).append("\n");
-                                    playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/video/").append(line.getLineToken()).append("/").append(video.getToken()).append("\n");
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }

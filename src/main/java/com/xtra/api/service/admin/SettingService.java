@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,9 +36,9 @@ public class SettingService extends CrudService<Setting, String, SettingReposito
     }
 
 
-    public Map<String, String> getSettings(List<String> settingKeys) {
-        Map<String, String> settings = null;
-        List<Setting> settingList  = repository.findAllById(settingKeys);
+    public Map<String, String> getSettings() {
+        Map<String, String> settings = new HashMap<>();
+        List<Setting> settingList  = repository.findAll();
 
         for (Setting setting:settingList) {
             settings.put(setting.getId(), setting.getValue());
@@ -46,18 +47,22 @@ public class SettingService extends CrudService<Setting, String, SettingReposito
     }
 
     @Transactional
-    public void updateSettingValues(List<SettingView> settings) {
-        settings.forEach(s -> {
-            var setting = repository.findById(s.getKey()).orElseThrow(() -> new EntityNotFoundException("Setting"));
-            setting.setValue(s.getValue());
+    public void updateSettingValues(Map<String, String> settings) {
+        settings.forEach((key, value) -> {
+            var setting = repository.findById(key).orElseThrow(() -> new EntityNotFoundException("Setting"));
+            setting.setValue(value);
             repository.save(setting);
         });
-        var backupSetting = settings.stream().filter(settingView -> settingView.getKey().equals("backup_interval")).findFirst();
-        backupSetting.ifPresent(settingView -> System.out.println("fired"));
-        backupSetting.ifPresent(settingView -> applicationEventPublisher.publishEvent(new SettingChangedEvent(settingView, SettingType.BACKUP)));
+//        var backupSetting = settings.stream().filter(settingView -> settingView.getKey().equals("backup_interval")).findFirst();
+//        backupSetting.ifPresent(settingView -> System.out.println("fired"));
+//        backupSetting.ifPresent(settingView -> applicationEventPublisher.publishEvent(new SettingChangedEvent(settingView, SettingType.BACKUP)));
     }
 
-    public String getSetting(String key) {
+    public SettingView getSetting(String key) {
+        return settingMapper.toView(findByIdOrFail(key));
+    }
+
+    public String getSettingValue(String key) {
         return findByIdOrFail(key).getValue();
     }
 }

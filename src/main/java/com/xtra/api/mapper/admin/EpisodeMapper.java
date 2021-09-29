@@ -6,11 +6,13 @@ import com.xtra.api.model.vod.Video;
 import com.xtra.api.model.vod.VideoServer;
 import com.xtra.api.model.vod.VideoServerId;
 import com.xtra.api.projection.admin.episode.*;
+import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ServerRepository;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +22,14 @@ import java.util.stream.Collectors;
 public abstract class EpisodeMapper {
     @Autowired
     private ServerRepository serverRepository;
+    @Autowired
+    private LineRepository lineRepository;
+
+    @Value("${server.external.address}")
+    private String serverAddress;
+
+    @Value("${server.port}")
+    private String serverPort;
 
     public abstract EpisodeView convertToView(Episode episode);
 
@@ -46,40 +56,42 @@ public abstract class EpisodeMapper {
     }
 
     @AfterMapping
-    void assignInfo(final Episode episode, @MappingTarget final EpisodeListView episodeListView){
-        if (!episode.getVideos().isEmpty()){
+    void assignInfo(final Episode episode, @MappingTarget final EpisodeListView episodeListView) {
+        if (!episode.getVideos().isEmpty()) {
             //set server info
             episodeListView.setServerInfoList(episode.getVideos().iterator().next().getVideoServers().stream().map(videoServer -> new EpisodeServerInfo(videoServer.getServer().getName())).collect(Collectors.toList()));
             //set video info
             episodeListView.setVideoInfos(episode.getVideos().stream().map(video -> {
                 if (video.getVideoInfo() != null) {
-                    return new EpisodeVideoInfo(video.getLocation(), video.getVideoInfo().getResolution(), video.getVideoInfo().getVideoCodec(), video.getVideoInfo().getAudioCodec(), video.getVideoInfo().getDuration());
+                    var system_line = lineRepository.findByUsername("system_line");
+                    String link = system_line.map(line -> "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken()).orElse("");
+                    return new EpisodeVideoInfo(video.getLocation(), video.getVideoInfo().getResolution(), video.getVideoInfo().getVideoCodec(), link, video.getVideoInfo().getAudioCodec(), video.getVideoInfo().getDuration());
                 } else return null;
             }).collect(Collectors.toList()));
         }
         //set related season info and episode info
-        if (episode.getSeason() != null){
+        if (episode.getSeason() != null) {
             episodeListView.setSeasonNumber(episode.getSeason().getSeasonNumber());
-            if (episode.getSeason().getSeries() != null){
+            if (episode.getSeason().getSeries() != null) {
                 episodeListView.setSeriesName(episode.getSeason().getSeries().getName());
             }
         }
     }
 
     @AfterMapping
-    public void convertToServerIds(final Episode episode, @MappingTarget final EpisodeView episodeView){
+    public void convertToServerIds(final Episode episode, @MappingTarget final EpisodeView episodeView) {
         Set<Long> servers = new HashSet<>();
-        for (Video video : episode.getVideos()){
+        for (Video video : episode.getVideos()) {
             servers.addAll(video.getVideoServers().stream().map(videoServer -> videoServer.getServer().getId()).collect(Collectors.toSet()));
         }
         episodeView.setServers(servers);
     }
 
-    public Set<VideoServer> convertToVideoServers(Set<Long> serverIds, Episode episode){
+    public Set<VideoServer> convertToVideoServers(Set<Long> serverIds, Episode episode) {
         Set<VideoServer> videoServers = new HashSet<>();
-        if (serverIds.size() > 0 ){
-            for (Video video : episode.getVideos()){
-                for (Long serverId : serverIds){
+        if (serverIds.size() > 0) {
+            for (Video video : episode.getVideos()) {
+                for (Long serverId : serverIds) {
                     var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
                     VideoServer videoServer = new VideoServer(new VideoServerId(video.getId(), serverId));
                     videoServer.setVideo(video);

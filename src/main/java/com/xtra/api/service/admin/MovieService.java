@@ -162,7 +162,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     }
 
     public MovieInfoInsertView getMovieInfo(int tmdbId) {
-        String tmdb_apikey = this.settingService.getSetting(Settings.TMDB_APIKEY);
+        String tmdb_apikey = this.settingService.getSettingValue(Settings.TMDB_APIKEY);
         TmdbMovies movies = new TmdbApi(tmdb_apikey).getMovies();
         MovieDb movieInfo = movies.getMovie(tmdbId, "en", TmdbMovies.MovieMethod.credits, TmdbMovies.MovieMethod.videos);
         Credits credits = movieInfo.getCredits();
@@ -266,7 +266,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
     public Movie updateOrFail(Long id, Movie newMovie, boolean encode) {
         var oldMovie = findByIdOrFail(id);
-        copyProperties(newMovie, oldMovie, "id", "collectionAssigns", "videos", "servers");
+        copyProperties(newMovie, oldMovie, "id", "collectionAssigns", "videos", "servers", "categories");
 
         //remove old collections from Movie and add new collections
         if (newMovie.getCollectionAssigns() != null) {
