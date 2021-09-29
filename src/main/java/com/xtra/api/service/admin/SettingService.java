@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,8 +35,14 @@ public class SettingService extends CrudService<Setting, String, SettingReposito
     }
 
 
-    public List<SettingView> getSettings(List<String> settingKeys) {
-        return repository.findAllById(settingKeys).stream().map(settingMapper::toView).collect(Collectors.toList());
+    public Map<String, String> getSettings(List<String> settingKeys) {
+        Map<String, String> settings = null;
+        List<Setting> settingList  = repository.findAllById(settingKeys);
+
+        for (Setting setting:settingList) {
+            settings.put(setting.getId(), setting.getValue());
+        }
+        return settings;
     }
 
     @Transactional
