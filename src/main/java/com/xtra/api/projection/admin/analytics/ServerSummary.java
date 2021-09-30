@@ -24,7 +24,7 @@ public interface ServerSummary {
 
     Double getCpuMaxFreq();
 
-    Double getCpuCurrentFreq();
+    Double getCpuLoad();
 
     Double getMemoryTotal();
 
