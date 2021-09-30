@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("settings")
@@ -20,7 +21,7 @@ public class SettingController {
 
     @PreAuthorize("hasAnyAuthority({'setting_manage'})")
     @GetMapping("")
-    public ResponseEntity<List<SettingView>> getAllSettingValues() {
+    public ResponseEntity<Map<String, String>> getAllSettingValues() {
         return ResponseEntity.ok(settingService.getSettings());
     }
 
@@ -32,7 +33,7 @@ public class SettingController {
 
     @PreAuthorize("hasAnyAuthority({'setting_manage'})")
     @PatchMapping("")
-    public ResponseEntity<Void> updateSettingValues(@RequestBody List<SettingView> settings) {
+    public ResponseEntity<Void> updateSettingValues(@RequestBody Map<String, String> settings) {
         settingService.updateSettingValues(settings);
         return ResponseEntity.ok().build();
     }
