@@ -18,8 +18,7 @@ public class Resource {
     private Long id;
 
     private double cpuMaxFreq;
-    @ElementCollection
-    private List<Double> cpuCurrentFreq;
+    private double cpuLoad;
 
     private double memoryTotal;
     private double memoryAvailable;
