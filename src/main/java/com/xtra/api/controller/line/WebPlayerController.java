@@ -1,10 +1,10 @@
 package com.xtra.api.controller.line;
 
-import com.xtra.api.mapper.line.LineMovieMapperImpl;
+import com.xtra.api.projection.line.channel.ChannelPlayListView;
 import com.xtra.api.projection.line.movie.MoviePlayListView;
 import com.xtra.api.projection.line.movie.MoviePlayView;
+import com.xtra.api.service.line.LineChannelService;
 import com.xtra.api.service.line.LineMovieService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("webplayer")
 @PreAuthorize("hasAnyRole({'LINE'})")
 public class WebPlayerController {
-    private final LineMovieService lineService;
+    private final LineMovieService lineMovieService;
+    private final LineChannelService lineChannelService;
 
-    public WebPlayerController(LineMovieService lineService) {
-        this.lineService = lineService;
+    public WebPlayerController(LineMovieService lineMovieService, LineChannelService lineChannelService) {
+        this.lineMovieService = lineMovieService;
+        this.lineChannelService = lineChannelService;
     }
 
     @GetMapping("/movies")
@@ -25,13 +27,19 @@ public class WebPlayerController {
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(required = false) String search,
             @RequestParam(required = false) String sortBy, @RequestParam(required = false) Long categoryId
     ) {
-        return ResponseEntity.ok(lineService.getMoviesPlaylist(pageNo, search, sortBy, categoryId));
+        return ResponseEntity.ok(lineMovieService.getMoviesPlaylist(pageNo, search, sortBy, categoryId));
     }
 
     @GetMapping("/movies/{id}")
     public ResponseEntity<MoviePlayView> getMovie(@PathVariable(required = false) Long id) {
-        return ResponseEntity.ok(lineService.getMovie(id));
+        return ResponseEntity.ok(lineMovieService.getMovie(id));
     }
 
-
+    @GetMapping("/channels")
+    public ResponseEntity<Page<ChannelPlayListView>> getChannelPlaylist(
+            @RequestParam(defaultValue = "0") int pageNo, @RequestParam(required = false) String search,
+            @RequestParam(required = false) String sortBy, @RequestParam(required = false) Long categoryId
+    ) {
+        return ResponseEntity.ok(lineChannelService.getChannelPlaylist(pageNo, search, sortBy, categoryId));
+    }
 }

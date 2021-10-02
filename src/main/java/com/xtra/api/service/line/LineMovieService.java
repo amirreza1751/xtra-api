@@ -62,8 +62,9 @@ public class LineMovieService extends VodService<Movie, MovieRepository> {
     public Page<MoviePlayListView> getMoviesPlaylist(int pageNo, String search, String sortBy, Long categoryId) {
         return repository.findAll(getSortingPageable(pageNo, 50, sortBy, "desc")).map(movieMapper::convertToPlayListView);
     }
-    
+
     public MoviePlayView getMovie(Long id) {
         return movieMapper.convertToPlayView(findByIdOrFail(id));
     }
+
 }
