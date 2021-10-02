@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.stream.Collectors;
 
 import static com.xtra.api.service.system.UserAuthService.getCurrentLine;
+import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 
 @Mapper(componentModel = "spring")
 public abstract class LineMovieMapper {
@@ -29,6 +30,7 @@ public abstract class LineMovieMapper {
     @Mapping(source = "info.rating", target = "rating")
     @Mapping(source = "info.country", target = "country")
     @Mapping(source = "info.releaseDate", target = "releaseDate")
+    @Mapping(target = "categories", ignore = true)
     public abstract MoviePlayListView convertToPlayListView(Movie movie);
 
     @Mapping(source = "info.posterPath", target = "posterPath")
@@ -43,6 +45,12 @@ public abstract class LineMovieMapper {
     @Mapping(source = "info.runtime", target = "runtime")
     @Mapping(source = "info.youtubeTrailer", target = "youtubeTrailer")
     public abstract MoviePlayView convertToPlayView(Movie movie);
+
+    @AfterMapping
+    public void assignCategories(final Movie movie, @MappingTarget MoviePlayListView moviePlayView) {
+        moviePlayView.setCategories(emptyIfNull(movie.getCategories())
+                .stream().map(categoryStream -> categoryStream.getCategory().getId()).collect(Collectors.toSet()));
+    }
 
     @AfterMapping
     public void assignLink(final Movie movie, @MappingTarget MoviePlayView moviePlayView) {

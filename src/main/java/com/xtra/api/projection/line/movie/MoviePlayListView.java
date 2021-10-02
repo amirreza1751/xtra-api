@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -16,4 +17,6 @@ public class MoviePlayListView {
     private float rating;
     private String country;
     private LocalDate releaseDate;
+
+    private Set<Long> categories;
 }
