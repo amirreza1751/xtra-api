@@ -9,6 +9,7 @@ import com.xtra.api.projection.admin.downloadlist.DownloadListView;
 import com.xtra.api.projection.line.LineSecurityView;
 import com.xtra.api.projection.line.line.LineSecurityUpdateView;
 import com.xtra.api.projection.line.line.LineView;
+import com.xtra.api.projection.line.movie.MoviePlayListView;
 import com.xtra.api.repository.*;
 import com.xtra.api.service.DownloadListService;
 import com.xtra.api.service.LineService;
@@ -83,6 +84,5 @@ public class LineLineServiceImpl extends LineService {
     public DownloadListView getDownloadList() {
         return downloadListMapper.convertToView(getCurrentLine().getDefaultDownloadList());
     }
-
 
 }
