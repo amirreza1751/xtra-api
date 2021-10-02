@@ -65,7 +65,7 @@ public abstract class EpisodeMapper {
                 if (video.getVideoInfo() != null) {
                     var system_line = lineRepository.findByUsername("system_line");
                     String link = system_line.map(line -> "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken()).orElse("");
-                    return new EpisodeVideoInfo(video.getLocation(), video.getVideoInfo().getResolution(), video.getVideoInfo().getVideoCodec(), link, video.getVideoInfo().getAudioCodec(), video.getVideoInfo().getDuration());
+                    return new EpisodeVideoInfo(video.getLocation(), video.getVideoInfo().getResolution(), video.getVideoInfo().getVideoCodec(), video.getVideoInfo().getAudioCodec(), link, video.getVideoInfo().getDuration());
                 } else return null;
             }).collect(Collectors.toList()));
         }
