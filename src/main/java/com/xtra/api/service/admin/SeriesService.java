@@ -197,30 +197,35 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     public void importEpisodes(Long id, EpisodeImportView importView) {
         var servers = importView.getServers();
         var episodes = importView.getEpisodes();
+        var series = findByIdOrFail(id);
 
         for (EpisodeImport episode : episodes) {
-            EpisodeInsertView insertView = new EpisodeInsertView();
-            insertView.setEpisodeNumber(episode.getEpisodeNumber());
-            insertView.setEpisodeName(episode.getEpisodeName());
-            insertView.setNotes(importView.getNotes());
+            try {
 
-            String tmdb_apikey = this.settingService.getSettingValue(Settings.TMDB_APIKEY);
-            TmdbTvEpisodes tvEpisodes = new TmdbApi(tmdb_apikey).getTvEpisodes();
-            TvEpisode episodeInfo = tvEpisodes.getEpisode(episode.getTmdbId(), episode.getEpisodeNumber(), episode.getEpisodeNumber(), "en", TmdbTvEpisodes.EpisodeMethod.credits, TmdbTvEpisodes.EpisodeMethod.videos);
+                EpisodeInsertView insertView = new EpisodeInsertView();
+                insertView.setEpisodeNumber(episode.getEpisodeNumber());
+                insertView.setEpisodeName(episode.getEpisodeName());
+                insertView.setNotes(importView.getNotes());
 
-            insertView.setImageUrl("https://image.tmdb.org/t/p/w300" + episodeInfo.getStillPath());
-            insertView.setPlot(episodeInfo.getOverview());
+                String tmdb_apikey = this.settingService.getSettingValue(Settings.TMDB_APIKEY);
+                TmdbTvEpisodes tvEpisodes = new TmdbApi(tmdb_apikey).getTvEpisodes();
+                TvEpisode episodeInfo = tvEpisodes.getEpisode(series.getInfo().getTmdbId(), episode.getSeason().getSeasonNumber(), episode.getEpisodeNumber(), "en", TmdbTvEpisodes.EpisodeMethod.credits, TmdbTvEpisodes.EpisodeMethod.videos);
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate localDate = LocalDate.parse(episodeInfo.getAirDate(), formatter);
-            insertView.setReleaseDate(localDate);
-            insertView.setRating(episodeInfo.getVoteAverage());
+                insertView.setImageUrl("https://image.tmdb.org/t/p/w300" + episodeInfo.getStillPath());
+                insertView.setPlot(episodeInfo.getOverview());
 
-            insertView.setSeason(episode.getSeason());
-            insertView.setVideos(episode.getVideos());
-            insertView.setServers(servers);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate localDate = LocalDate.parse(episodeInfo.getAirDate(), formatter);
+                insertView.setReleaseDate(localDate);
+                insertView.setRating(episodeInfo.getVoteAverage());
 
-            addEpisode(id, insertView);
+                insertView.setSeason(episode.getSeason());
+                insertView.setVideos(episode.getVideos());
+                insertView.setServers(servers);
+
+                addEpisode(id, insertView);
+            } catch (EntityAlreadyExistsException ignored) {
+            }
         }
     }
 
