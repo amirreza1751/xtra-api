@@ -12,11 +12,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Series extends Vod {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
     private String year;
     private LocalDate lastUpdated;
 
@@ -29,5 +26,10 @@ public class Series extends Vod {
 
     public Series() {
         setVodType(VodType.SERIES);
+    }
+
+    public Series(Long id) {
+        this();
+        setId(id);
     }
 }

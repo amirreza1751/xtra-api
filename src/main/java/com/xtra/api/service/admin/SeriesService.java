@@ -100,10 +100,9 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
 
     public Series update(Long id, Series series) {
         var oldSeries = findByIdOrFail(id);
-        copyProperties(series, oldSeries, "id", "collectionAssigns", "seasons");
+        copyProperties(series, oldSeries, "id", "collectionAssigns", "seasons", "categories");
         if (series.getCollectionAssigns() != null) {
-            List<CollectionVod> collectionVodListToDelete = new ArrayList<>(oldSeries.getCollectionAssigns());
-            collectionVodRepository.deleteInBatch(collectionVodListToDelete);
+            oldSeries.getCollectionAssigns().clear();
             oldSeries.getCollectionAssigns().addAll(series.getCollectionAssigns().stream().peek(collectionVod -> {
                 collectionVod.setId(new CollectionVodId(collectionVod.getCollection().getId(), oldSeries.getId()));
                 collectionVod.setVod(oldSeries);
@@ -207,7 +206,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
 
             String tmdb_apikey = this.settingService.getSettingValue(Settings.TMDB_APIKEY);
             TmdbTvEpisodes tvEpisodes = new TmdbApi(tmdb_apikey).getTvEpisodes();
-            TvEpisode episodeInfo = tvEpisodes.getEpisode(episode.getTmdbId(), episode.getEpisodeNumber(), episode.getEpisodeNumber(),"en", TmdbTvEpisodes.EpisodeMethod.credits, TmdbTvEpisodes.EpisodeMethod.videos);
+            TvEpisode episodeInfo = tvEpisodes.getEpisode(episode.getTmdbId(), episode.getEpisodeNumber(), episode.getEpisodeNumber(), "en", TmdbTvEpisodes.EpisodeMethod.credits, TmdbTvEpisodes.EpisodeMethod.videos);
 
             insertView.setImageUrl("https://image.tmdb.org/t/p/w300" + episodeInfo.getStillPath());
             insertView.setPlot(episodeInfo.getOverview());
@@ -227,7 +226,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
 
     public void generateToken(Episode episode) {
         String token;
-        for (Video video : episode.getVideos()){
+        for (Video video : episode.getVideos()) {
             do {
                 token = generateRandomString(8, 12, false);
             } while (videoRepository.findByToken(token).isPresent());
@@ -235,9 +234,10 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             video.setEncodeStatus(EncodeStatus.NOT_ENCODED);
         }
     }
-    public void updateNumberOfEpisodes(Series series){
-        if (series.getSeasons() != null){
-            for (Season season : series.getSeasons()){
+
+    public void updateNumberOfEpisodes(Series series) {
+        if (series.getSeasons() != null) {
+            for (Season season : series.getSeasons()) {
                 season.setNoOfEpisodes(season.getEpisodes().size());
             }
         }
