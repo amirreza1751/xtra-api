@@ -28,6 +28,12 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasAnyAuthority({'category_manage'})")
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryView> getCategorie(@PathVariable Long id) {
+        return ResponseEntity.ok(categoryService.getViewById(id));
+    }
+
+    @PreAuthorize("hasAnyAuthority({'category_manage'})")
     @PostMapping("")
     public ResponseEntity<CategoryView> addCategory(@RequestBody CategoryInsertView insertView) {
         return ResponseEntity.ok(categoryService.add(insertView));

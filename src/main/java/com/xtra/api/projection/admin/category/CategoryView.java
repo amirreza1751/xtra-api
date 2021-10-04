@@ -12,5 +12,4 @@ public class CategoryView {
     private String name;
     private MediaType type;
     private boolean isAdult;
-    private List<EntityListItem> contents;
 }
