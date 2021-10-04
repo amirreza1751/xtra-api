@@ -50,17 +50,19 @@ public abstract class CollectionMapper {
 
     private void addVod(List<Long> ids, final Collection collection) {
         var i = 0;
-        for (var id : ids) {
-            CollectionVod collectionVod = new CollectionVod(new CollectionVodId(collection.getId(), id));
-            collectionVod.setOrder(i++);
-            collectionVod.setCollection(collection);
-            collectionVod.setVod(vodRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Vod", id)));
-            collection.addVod(collectionVod);
-        }
+        if (ids != null)
+            for (var id : ids) {
+                CollectionVod collectionVod = new CollectionVod(new CollectionVodId(collection.getId(), id));
+                collectionVod.setOrder(i++);
+                collectionVod.setCollection(collection);
+                collectionVod.setVod(vodRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Vod", id)));
+                collection.addVod(collectionVod);
+            }
     }
 
     private void addStream(List<Long> ids, final Collection collection) {
         var i = 0;
+        if (ids != null)
         for (var id : ids) {
             CollectionStream collectionStream = new CollectionStream(new CollectionStreamId(collection.getId(), id));
             collectionStream.setOrder(i++);
