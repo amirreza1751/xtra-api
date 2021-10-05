@@ -4,6 +4,7 @@ package com.xtra.api.service.admin;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.vod.Movie;
 import com.xtra.api.model.vod.Video;
+import com.xtra.api.model.vod.VideoInfo;
 import com.xtra.api.projection.system.VodStatusView;
 import com.xtra.api.repository.VideoRepository;
 import com.xtra.api.service.CrudService;
@@ -16,6 +17,8 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -70,6 +73,7 @@ public class VideoService extends CrudService<Video, Long, VideoRepository> {
         if (StringUtils.isNotEmpty(statusView.getLocation()))
             video.setLocation(statusView.getLocation());
         video.setEncodeStatus(statusView.getStatus());
+        updateVideoInfo(Set.of(video));
         repository.save(video);
     }
 
@@ -78,5 +82,14 @@ public class VideoService extends CrudService<Video, Long, VideoRepository> {
         video.getVideoServers().forEach(videoServer -> {
             serverService.sendEncodeRequest(videoServer.getServer(), video);
         });
+    }
+
+    public void updateVideoInfo(Set<Video> videoSet) {
+        var videoInfoList = serverService.getMediaInfo(videoSet.iterator().next().getVideoServers().iterator().next().getServer(), new ArrayList<>(videoSet));
+        Iterator<Video> videosIterator = videoSet.iterator();
+        Iterator<VideoInfo> videoInfosIterator = videoInfoList.iterator();
+        while (videoInfosIterator.hasNext() && videosIterator.hasNext()) {
+            videosIterator.next().setVideoInfo(videoInfosIterator.next());
+        }
     }
 }
