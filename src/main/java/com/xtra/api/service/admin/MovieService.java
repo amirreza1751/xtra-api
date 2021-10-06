@@ -85,18 +85,13 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         for (Video video : movie.getVideos()) {
             this.generateToken(video);
         }
-        var savedEntity = repository.save(movie);
 
+        videoService.updateVideoInfo(movie.getVideos());
+        var savedEntity = repository.save(movie);
         if (encode) {
             var video = movie.getVideos().stream().findFirst().get();
             serverService.sendEncodeRequest(video.getVideoServers().stream().findFirst().get().getServer(), video);
         }
-        ExecutorService executor = Executors.newFixedThreadPool(1);
-        executor.execute(() -> {
-            updateVideoInfo(savedEntity.getVideos());
-            repository.save(savedEntity);
-        });
-        executor.shutdown();
         return savedEntity;
     }
 
@@ -298,7 +293,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         oldMovie.getVideos().addAll(videosToAdd);
         ExecutorService executor = Executors.newFixedThreadPool(1);
         executor.execute(() -> {
-            updateVideoInfo(oldMovie.getVideos());
+            videoService.updateVideoInfo(oldMovie.getVideos());
             repository.save(oldMovie);
         });
         executor.shutdown();
@@ -334,12 +329,5 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
     }
 
-    public void updateVideoInfo(Set<Video> videoSet) {
-        var videoInfoList = serverService.getMediaInfo(videoSet.iterator().next().getVideoServers().iterator().next().getServer(), new ArrayList<>(videoSet));
-        Iterator<Video> videosIterator = videoSet.iterator();
-        Iterator<VideoInfo> videoInfosIterator = videoInfoList.iterator();
-        while (videoInfosIterator.hasNext() && videosIterator.hasNext()) {
-            videosIterator.next().setVideoInfo(videoInfosIterator.next());
-        }
-    }
+
 }

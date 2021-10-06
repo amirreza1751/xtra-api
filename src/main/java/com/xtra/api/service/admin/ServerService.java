@@ -46,6 +46,7 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
+import java.net.ConnectException;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -199,7 +200,13 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
     public List<VideoInfo> getMediaInfo(Server server, List<Video> videoList) {
-        return Arrays.asList(Objects.requireNonNull(new RestTemplate().postForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/info/", videoList, VideoInfo[].class)));
+        try {
+            return Arrays.asList(Objects.requireNonNull(new RestTemplate().postForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/info/", videoList, VideoInfo[].class)));
+        }
+        catch (Exception e)
+        {
+            return videoList.stream().map(video -> video.getVideoInfo()).collect(Collectors.toList());
+        }
     }
 
     public String SetAudioRequest(Movie movie) {
