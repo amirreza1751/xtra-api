@@ -2,6 +2,7 @@ package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.exception.EntityNotFoundException;
+import com.xtra.api.model.stream.Channel;
 import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.stream.StreamDetails;
 import com.xtra.api.model.stream.StreamStatus;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -23,11 +25,14 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 public class StreamService extends CrudService<Stream, Long, StreamRepository> {
     private final StreamMapper streamMapper;
     private final ServerService serverService;
+    private final ChannelService channelService;
 
-    protected StreamService(StreamRepository repository, StreamMapper streamMapper, ServerService serverService) {
+
+    protected StreamService(StreamRepository repository, StreamMapper streamMapper, ServerService serverService, ChannelService channelService) {
         super(repository, "Stream");
         this.streamMapper = streamMapper;
         this.serverService = serverService;
+        this.channelService = channelService;
     }
 
     @Override
@@ -48,8 +53,12 @@ public class StreamService extends CrudService<Stream, Long, StreamRepository> {
                     var details = streamMapper.convertToEntity(status.get());
                     if (streamServer.getStreamDetails() == null)
                         streamServer.setStreamDetails(details);
-                    else
+                    else{
                         copyProperties(details, streamServer.getStreamDetails(), "id");
+                        if (streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.OFFLINE)){
+                            channelService.startStreamOnServers((Channel) streamServer.getStream(), Set.of(streamServer.getServer().getId()));
+                        }
+                    }
                     streamServer.getStreamDetails().setStreamStatus(StreamStatus.ONLINE);
                 } else {
                     streamServer.setStreamDetails(new StreamDetails());
