@@ -4,7 +4,6 @@ import com.xtra.api.mapper.admin.EpisodeMapper;
 import com.xtra.api.mapper.admin.SeasonMapper;
 import com.xtra.api.mapper.admin.SeriesMapper;
 import com.xtra.api.model.collection.CollectionVod;
-import com.xtra.api.model.collection.CollectionVodId;
 import com.xtra.api.model.exception.EntityAlreadyExistsException;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.setting.Settings;
@@ -37,10 +36,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 @Validated
@@ -87,7 +84,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
 
     public SeriesView add(SeriesInsertView seriesInsertView) {
         seriesInsertView.setLastUpdated(LocalDate.now());
-        return seriesMapper.convertToView(this.insert(seriesMapper.convertToEntity(seriesInsertView)));
+        return seriesMapper.convertToView(insert(seriesMapper.convertToEntity(seriesInsertView)));
     }
 
     public Series insert(Series series) {
@@ -95,20 +92,9 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     }
 
     public SeriesView save(Long id, SeriesInsertView seriesInsertView) {
-        return seriesMapper.convertToView(this.update(id, seriesMapper.convertToEntity(seriesInsertView)));
-    }
-
-    public Series update(Long id, Series series) {
         var oldSeries = findByIdOrFail(id);
-        copyProperties(series, oldSeries, "id", "collectionAssigns", "seasons", "categories");
-        if (series.getCollectionAssigns() != null) {
-            oldSeries.getCollectionAssigns().clear();
-            oldSeries.getCollectionAssigns().addAll(series.getCollectionAssigns().stream().peek(collectionVod -> {
-                collectionVod.setId(new CollectionVodId(collectionVod.getCollection().getId(), oldSeries.getId()));
-                collectionVod.setVod(oldSeries);
-            }).collect(Collectors.toSet()));
-        }
-        return repository.save(oldSeries);
+        var series = seriesMapper.convertToEntity(seriesInsertView, oldSeries);
+        return seriesMapper.convertToView(repository.save(series));
     }
 
     public void deleteSeries(Long id) {

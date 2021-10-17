@@ -97,7 +97,7 @@ public abstract class ChannelMapper {
             for (var id : collectionIds) {
                 var collectionStream = new CollectionStream();
                 var orderCount = collectionStreamRepository.countAllByIdCollectionId(id);
-                collectionStream.setOrder(orderCount + 1);
+                collectionStream.setOrder(orderCount);
                 var col = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("collection", id.toString()));
                 collectionStream.setId(new CollectionStreamId(id, null));
                 collectionStream.setCollection(col);

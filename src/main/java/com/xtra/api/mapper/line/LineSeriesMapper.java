@@ -1,9 +1,8 @@
 package com.xtra.api.mapper.line;
 
 import com.xtra.api.model.vod.Episode;
-import com.xtra.api.model.vod.Season;
 import com.xtra.api.model.vod.Series;
-import com.xtra.api.projection.line.series.SeasonPlayView;
+import com.xtra.api.projection.line.series.EpisodePlayView;
 import com.xtra.api.projection.line.series.SeriesPlayListView;
 import com.xtra.api.projection.line.series.SeriesPlayView;
 import org.mapstruct.AfterMapping;
@@ -27,11 +26,7 @@ public abstract class LineSeriesMapper {
 
     @Mapping(source = "info.posterUrl", target = "posterPath")
     @Mapping(source = "info.posterUrl", target = "backdropPath")
-    @Mapping(source = "info.genres", target = "genres")
-    @Mapping(source = "info.releaseDate", target = "releaseDate")
-    @Mapping(source = "info.runtime", target = "runtime")
-    @Mapping(source = "info.rating", target = "rating")
-    @Mapping(source = "info.country", target = "country")
+    @Mapping(source = "info", target = ".")
     @Mapping(target = "categories", ignore = true)
     public abstract SeriesPlayListView convertToPlaylist(Series series);
 
@@ -41,13 +36,9 @@ public abstract class LineSeriesMapper {
                 .stream().map(categoryVod -> categoryVod.getCategory().getName()).collect(Collectors.toSet()));
     }
 
+    @Mapping(source = "info", target = ".")
     @Mapping(source = "info.posterUrl", target = "posterPath")
     @Mapping(source = "info.posterUrl", target = "backdropPath")
-    @Mapping(source = "info.genres", target = "genres")
-    @Mapping(source = "info.releaseDate", target = "releaseDate")
-    @Mapping(source = "info.runtime", target = "runtime")
-    @Mapping(source = "info.rating", target = "rating")
-    @Mapping(source = "info.country", target = "country")
     @Mapping(target = "categories", ignore = true)
     public abstract SeriesPlayView convertToPlayView(Series series);
 
@@ -56,24 +47,13 @@ public abstract class LineSeriesMapper {
         playView.setCategories(emptyIfNull(series.getCategories())
                 .stream().map(categoryVod -> categoryVod.getCategory().getName()).collect(Collectors.toSet()));
 
-        playView.getSeasons().iterator().next().getEpisodes().iterator().next().setLinks(series.getSeasons().iterator().next().getEpisodes().iterator().next().getVideos().stream().map(video -> {
-            var line = getCurrentLine();
-            return "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken();
-        }).collect(Collectors.toList()));
+    }
 
-//        for (Season season: series.getSeasons()) {
-//            for (Episode episode: season.getEpisodes()) {
-//                if (!episode.getVideos().isEmpty()) {
-//                    //set video info
-//                    playView.setLinks(series.getSeasons().stream().map(video -> {
-//                        if (video.getVideoInfo() != null) {
-//                            var line = getCurrentLine();
-//                            return "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken();
-//                        } else return "";
-//                    }).collect(Collectors.toList()));
-//                }
-//            }
-//        }
+    public abstract EpisodePlayView convertToEpisodePlayView(Episode episode);
 
+    @AfterMapping
+    public void addLinksToEpisodes(final Episode episode, @MappingTarget final EpisodePlayView playView) {
+        var line = getCurrentLine();
+        playView.setLinks(episode.getVideos().stream().map(video -> "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken()).collect(Collectors.toList()));
     }
 }

@@ -20,5 +20,6 @@ public class SeriesView {
 
     private SeriesInfo info;
     private Set<Long> collections;
+    private Set<Long> categories;
     private List<Season> seasons;
 }

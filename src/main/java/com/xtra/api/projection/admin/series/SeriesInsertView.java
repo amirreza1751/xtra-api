@@ -17,4 +17,5 @@ public class SeriesInsertView {
 
     private SeriesInfo info;
     private Set<Long> collections;
+    private Set<Long> categories;
 }

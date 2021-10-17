@@ -4,10 +4,11 @@ import com.xtra.api.model.vod.Series;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.List;
 
-public interface SeriesRepository extends JpaRepository<Series, Long> {
+public interface SeriesRepository extends JpaRepository<Series, Long>, QuerydslPredicateExecutor<Series> {
     Page<Series> findAllByNameContainsOrInfoPlotContainsOrInfoCastContainsOrInfoDirectorContainsOrInfoGenresContainsOrInfoCountryContains(String name, String plot, String cast, String director, String genres, String country, Pageable pageable);
 
     List<Series> findTop10ByOrderByCreatedDateDesc();

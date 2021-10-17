@@ -9,7 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -27,10 +27,10 @@ public class Vod {
     private VodType vodType;
 
     @OneToMany(mappedBy = "vod", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private Set<CollectionVod> collectionAssigns;
+    private Set<CollectionVod> collectionAssigns = new HashSet<>();
 
     @OneToMany(mappedBy = "vod", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private List<CategoryVod> categories;
+    private Set<CategoryVod> categories = new HashSet<>();
 
     @Column(name = "created_date", nullable = false, updatable = false)
     @CreationTimestamp

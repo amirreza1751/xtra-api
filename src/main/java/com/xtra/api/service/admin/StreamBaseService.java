@@ -49,6 +49,7 @@ public abstract class StreamBaseService<S extends Stream, R extends StreamBaseRe
     }
 
     protected List<Server> getServersForStream(Stream stream, Set<Long> serverIds) {
+        // return all servers if serverIds is empty
         if (serverIds == null || serverIds.size() == 0)
             return stream.getStreamServers().stream().map(StreamServer::getServer).collect(Collectors.toList());
         return stream.getStreamServers().stream().map(StreamServer::getServer)

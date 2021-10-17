@@ -30,34 +30,31 @@ public class WebPlayerController {
     @GetMapping("/movies")
     public ResponseEntity<Page<MoviePlayListView>> getMoviesPlaylist(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(required = false) String search,
-            @RequestParam(required = false) String sortBy, @RequestParam(required = false) Long categoryId
-    ) {
+            @RequestParam(required = false) String sortBy, @RequestParam(required = false) Long categoryId) {
         return ResponseEntity.ok(lineMovieService.getMoviesPlaylist(pageNo, search, sortBy, categoryId));
     }
 
     @GetMapping("/movies/{id}")
-    public ResponseEntity<MoviePlayView> getMovie(@PathVariable(required = true) Long id) {
+    public ResponseEntity<MoviePlayView> getMovie(@PathVariable Long id) {
         return ResponseEntity.ok(lineMovieService.getMovie(id));
     }
 
     @GetMapping("/channels")
     public ResponseEntity<Page<ChannelPlayListView>> getChannelPlaylist(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(required = false) String search,
-            @RequestParam(required = false) String sortBy, @RequestParam(required = false) Long categoryId
-    ) {
+            @RequestParam(required = false) String sortBy, @RequestParam(required = false) Long categoryId) {
         return ResponseEntity.ok(lineChannelService.getChannelPlaylist(pageNo, search, sortBy, categoryId));
     }
 
     @GetMapping("/series")
     public ResponseEntity<Page<SeriesPlayListView>> getSeriesPlaylist(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(required = false) String search,
-            @RequestParam(required = false) String sortBy, @RequestParam(required = false) Long categoryId
-    ) {
+            @RequestParam(required = false) String sortBy, @RequestParam(required = false) Long categoryId) {
         return ResponseEntity.ok(lineSeriesService.getSeriesPlaylist(pageNo, search, sortBy, categoryId));
     }
 
     @GetMapping("/series/{id}")
-    public ResponseEntity<SeriesPlayView> getSeries(@PathVariable(required = true) Long id) {
+    public ResponseEntity<SeriesPlayView> getSeries(@PathVariable Long id) {
         return ResponseEntity.ok(lineSeriesService.getSeries(id));
     }
 
