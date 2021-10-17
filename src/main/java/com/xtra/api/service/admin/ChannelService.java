@@ -6,7 +6,6 @@ import com.xtra.api.model.collection.CollectionStream;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.*;
-import com.xtra.api.model.user.QCreditLog;
 import com.xtra.api.projection.admin.StreamInputPair;
 import com.xtra.api.projection.admin.channel.*;
 import com.xtra.api.projection.admin.epg.EpgDetails;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -134,6 +134,12 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
 
     public void startStreamOnServers(Channel channel, Set<Long> serverIds) {
         for (Server server : super.getServersForStream(channel, serverIds)) {
+            var streamServer = server.getStreamServers().stream().filter(streamServerItem -> streamServerItem.getStream().getId().equals(channel.getId())).findFirst();
+            if (streamServer.isPresent()){
+                var localDateTime = LocalDateTime.now();
+                streamServer.get().setLastStarted(localDateTime);
+                serverService.saveStreamServer(streamServer.get()); // Set current date time to last started property.
+            }
             serverService.sendAsyncStartRequest(server, channelMapper.convertToChannelStart(channel, 0));
         }
     }

@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -20,6 +21,7 @@ public class StreamServer {
     private int catchUpDays = 0;
     private boolean recording = false;
     private boolean isOnDemand = false;
+    private LocalDateTime lastStarted;
 
     @ManyToOne
     @MapsId("streamId")
