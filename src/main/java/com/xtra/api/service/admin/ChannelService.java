@@ -149,8 +149,10 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
         var serverIds = channelBatchInsertView.getServerIds();
         var collectionIds = channelBatchInsertView.getCollectionIds();
 
+        System.out.println(channelIds);
         if (channelIds != null) {
             for (Long channelId : channelIds) {
+                System.out.println(channelId);
                 var channel = repository.findById(channelId).orElseThrow(() -> new EntityNotFoundException("Channel", channelId.toString()));
                 AdvancedStreamOptions aso = channel.getAdvancedStreamOptions();
 
@@ -172,10 +174,10 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
                 if (restart) {
                     startStreamOnServers(channel, serverIds);
                 }
+
+                repository.save(channel);
             }
-
         }
-
     }
 
     public void deleteAll(ChannelBatchDeleteView channelBatchDeleteView) {
