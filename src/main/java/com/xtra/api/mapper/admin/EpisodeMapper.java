@@ -85,6 +85,13 @@ public abstract class EpisodeMapper {
             servers.addAll(video.getVideoServers().stream().map(videoServer -> videoServer.getServer().getId()).collect(Collectors.toSet()));
         }
         episodeView.setServers(servers);
+
+        if (episode.getSeason() != null) {
+            if (episode.getSeason().getSeries() != null) {
+                episodeView.setSeriesTmdbId(episode.getSeason().getSeries().getInfo().getTmdbId());
+            }
+        }
+
     }
 
     public Set<VideoServer> convertToVideoServers(Set<Long> serverIds, Episode episode) {

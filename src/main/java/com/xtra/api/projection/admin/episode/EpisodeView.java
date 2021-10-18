@@ -23,4 +23,5 @@ public class EpisodeView {
     private SeasonInsertView season;
     private Set<VideoView> videos;
     private Set<Long> servers;
+    private int seriesTmdbId;
 }
