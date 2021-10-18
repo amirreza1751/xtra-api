@@ -37,7 +37,6 @@ public class Stream {
 
     @NotNull
     @Size(min = 5, message = "The Name must be at least 5 characters")
-    @Column(unique = true)
     private String name;
     private String logo;
     private StreamType streamType;
