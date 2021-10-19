@@ -61,11 +61,11 @@ public abstract class EpisodeMapper {
             //set server info
             episodeListView.setServerInfoList(episode.getVideos().iterator().next().getVideoServers().stream().map(videoServer -> new EpisodeServerInfo(videoServer.getServer().getName())).collect(Collectors.toList()));
             //set video info
-            episodeListView.setVideoInfos(episode.getVideos().stream().map(video -> {
+            episodeListView.setVideoInfoList(episode.getVideos().stream().map(video -> {
                 if (video.getVideoInfo() != null) {
                     var system_line = lineRepository.findByUsername("system_line");
                     String link = system_line.map(line -> "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken()).orElse("");
-                    return new EpisodeVideoInfo(video.getLocation(), video.getVideoInfo().getResolution(), video.getVideoInfo().getVideoCodec(), video.getVideoInfo().getAudioCodec(), link, video.getVideoInfo().getDuration());
+                    return new EpisodeVideoInfo(video.getLocation(), video.getVideoInfo().getResolution(), video.getVideoInfo().getVideoCodec(), video.getVideoInfo().getAudioCodec(), link, video.getVideoInfo().getDuration(), video.getEncodeStatus());
                 } else return null;
             }).collect(Collectors.toList()));
         }
