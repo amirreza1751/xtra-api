@@ -11,5 +11,5 @@ public class EpisodeListView {
     private String seriesName;
     private int seasonNumber;
     private List<EpisodeServerInfo> serverInfoList;
-    private List<EpisodeVideoInfo> videoInfos;
+    private List<EpisodeVideoInfo> videoInfoList;
 }
