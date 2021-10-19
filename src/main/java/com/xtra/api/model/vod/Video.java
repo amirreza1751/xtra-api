@@ -16,20 +16,22 @@ public class Video {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @EqualsAndHashCode.Include
-    private String location;
+
     private String token;
 
-    @Enumerated(EnumType.STRING)
-    private EncodeStatus encodeStatus;
+    //save reference file
+    //generate files id+res
+    //store subs,and audios to sub folder
+    //
+
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private VideoInfo videoInfo;
 
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Subtitle> subtitles = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Audio> audios = new ArrayList<>();
-
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private VideoInfo videoInfo;
 
     @OneToMany(mappedBy = "video", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private Set<VideoServer> videoServers;

@@ -26,7 +26,10 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -82,15 +85,12 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     }
 
     public Movie insert(Movie movie, boolean encode) {
-        for (Video video : movie.getVideos()) {
-            this.generateToken(video);
-        }
-
-        videoService.updateVideoInfo(movie.getVideos());
+        var video = movie.getVideo();
+        this.generateToken(video);
+        //videoService.updateVideoInfo(movie.getVideos());
         var savedEntity = repository.save(movie);
         if (encode) {
-            var video = movie.getVideos().stream().findFirst().get();
-            serverService.sendEncodeRequest(video.getVideoServers().stream().findFirst().get().getServer(), video);
+            encode(movie);
         }
         return savedEntity;
     }
@@ -248,19 +248,25 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return video.getAudios();
     }
 
-    public void encode(Long id) {
-        var movie = findByIdOrFail(id);
-        movie.getVideos().forEach(video -> {
-            videoService.encode(video.getId());
-        });
+    public void encode(Movie movie) {
+        var serverIds = movie.getVideo().getVideoServers().stream().map(videoServer -> videoServer.getId().getServerId()).collect(Collectors.toList());
+        for (var serverId : serverIds) {
+            serverService.sendEncodeRequest(serverId, movie.getVideo());
+        }
     }
 
-    public MovieView save(Long id, MovieInsertView movieInsertView, boolean encode) {
+    public void encode(Long id) {
+        var movie = findByIdOrFail(id);
+        encode(movie);
+    }
+
+    public MovieView update(Long id, MovieInsertView movieInsertView, boolean encode) {
+        var oldMovie = findByIdOrFail(id);
         return movieMapper.convertToView(updateOrFail(id, movieMapper.convertToEntity(movieInsertView), encode));
     }
 
     public Movie updateOrFail(Long id, Movie newMovie, boolean encode) {
-        var oldMovie = findByIdOrFail(id);
+
         copyProperties(newMovie, oldMovie, "id", "collectionAssigns", "videos", "servers", "categories");
 
         //remove old collections from Movie and add new collections

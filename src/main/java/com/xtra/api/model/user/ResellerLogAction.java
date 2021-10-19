@@ -12,8 +12,7 @@ public enum ResellerLogAction {
     DELETE_LINE("Reseller deleted line"),
     NEW_SUBRESELLER("Reseller created new subreseller"),
     CREDIT_CHANGE_SUBRESELLER("Reseller changed credit of subreseller"),
-    DELETE_SUBRESELLER("Reseller deleted subreseller"),
-    ;
+    DELETE_SUBRESELLER("Reseller deleted subreseller");
 
     private final String text;
 

@@ -4,11 +4,9 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.Duration;
+import java.util.List;
 
 @Data
 @Entity
@@ -18,7 +16,10 @@ public class VideoInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String resolution;
+    @Enumerated(EnumType.STRING)
+    @ElementCollection
+    private List<Resolution> resolutions;
+
     private String videoCodec;
     private String audioCodec;
     private Duration duration;

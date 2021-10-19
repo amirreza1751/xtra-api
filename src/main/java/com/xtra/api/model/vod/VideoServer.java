@@ -28,6 +28,11 @@ public class VideoServer {
     @MapsId("serverId")
     Server server;
 
+    @Enumerated(EnumType.STRING)
+    private EncodeStatus encodeStatus;
+
+    private String location;
+
     public VideoServer(VideoServerId id) {
         this.id = id;
     }

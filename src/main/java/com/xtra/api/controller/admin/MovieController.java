@@ -1,7 +1,6 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.model.vod.Audio;
-import com.xtra.api.model.vod.Movie;
 import com.xtra.api.model.vod.Subtitle;
 import com.xtra.api.model.vod.VideoInfo;
 import com.xtra.api.projection.admin.movie.*;
@@ -59,7 +58,7 @@ public class MovieController {
     @PreAuthorize("hasAnyAuthority({'movies_manage'})")
     @PatchMapping(value = {"/{id}", "{id}/{encode}"})
     public ResponseEntity<MovieView> updateMovie(@PathVariable Long id, @RequestBody MovieInsertView movie, @PathVariable(required = false) boolean encode) {
-        return ResponseEntity.ok(movieService.save(id, movie, encode));
+        return ResponseEntity.ok(movieService.update(id, movie, encode));
     }
 
     @PreAuthorize("hasAnyAuthority({'movies_manage'})")
