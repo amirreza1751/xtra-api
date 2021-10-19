@@ -172,10 +172,10 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
                 if (restart) {
                     startStreamOnServers(channel, serverIds);
                 }
+
+                repository.save(channel);
             }
-
         }
-
     }
 
     public void deleteAll(ChannelBatchDeleteView channelBatchDeleteView) {
