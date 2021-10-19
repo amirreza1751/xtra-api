@@ -150,12 +150,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                 existingEpisodes.add(episode);
                 season.get().setSeries(series);
                 this.updateNumberOfEpisodes(series);
-                ExecutorService executor = Executors.newFixedThreadPool(1);
-                executor.execute(() -> {
-                    updateVideoInfo(episode.getVideos());
-                    repository.save(series);
-                });
-                executor.shutdown();
+                updateVideoInfo(episode.getVideos());
                 return seriesMapper.convertToView(repository.save(series));
             }
         } else {
@@ -170,12 +165,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             existingSeasons.add(newSeason);
             series.setSeasons(existingSeasons);
             this.updateNumberOfEpisodes(series);
-            ExecutorService executor = Executors.newFixedThreadPool(1);
-            executor.execute(() -> {
                 updateVideoInfo(episode.getVideos());
-                repository.save(series);
-            });
-            executor.shutdown();
             return seriesMapper.convertToView(repository.save(series));
         }
     }
