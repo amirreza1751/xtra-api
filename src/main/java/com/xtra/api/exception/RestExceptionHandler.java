@@ -64,7 +64,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     protected ResponseEntity<?> handleValidationExceptions(DataIntegrityViolationException ex,WebRequest request){
         String path = ((ServletWebRequest) request).getRequest().getRequestURI();
-        ApiError apiError = new ApiError(path, "", "Exists!", "");
+        ApiError apiError = new ApiError(path, "", "Entity already exists!", "");
         return buildResponseEntity(apiError, HttpStatus.BAD_REQUEST);
     }
 
