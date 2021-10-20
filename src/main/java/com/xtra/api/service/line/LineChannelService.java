@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Validated
@@ -38,9 +39,9 @@ public class LineChannelService extends StreamBaseService<Channel, ChannelReposi
         return repository.findAll(getSortingPageable(pageNo, 50, sortBy, "desc")).map(channelMapper::convertToPlaylistView);
     }
 
-//    public List<ChannelPlayListView> getHot10ChannelsPlaylist() {
-//        return repository.findAllByCountByStream();
-//    }
+    public List<ChannelPlayListView> getHot10ChannelsPlaylist() {
+        return repository.Top10Channels().stream().map(channelMapper::convertToPlaylistView).collect(Collectors.toList());
+    }
 
     @Override
     protected Page<Channel> findWithSearch(String search, Pageable page) {

@@ -54,10 +54,10 @@ public class WebPlayerController {
     }
 
 
-//    @GetMapping("/channels/hot10")
-//    public ResponseEntity<List<MoviePlayListView>> getHot10ChannelsPlaylist() {
-//        return ResponseEntity.ok(lineChannelService.getHot10ChannelsPlaylist());
-//    }
+    @GetMapping("/channels/hot10")
+    public ResponseEntity<List<ChannelPlayListView>> getHot10ChannelsPlaylist() {
+        return ResponseEntity.ok(lineChannelService.getHot10ChannelsPlaylist());
+    }
 
     @GetMapping("/series")
     public ResponseEntity<Page<SeriesPlayListView>> getSeriesPlaylist(

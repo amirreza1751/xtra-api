@@ -31,6 +31,4 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
     void deleteAllByLastReadIsLessThanEqual(LocalDateTime lastRead);
 
     long countDistinctByLine_OwnerIs(Reseller Owner);
-
-    List<Connection> findAllByCountByStream();
 }
