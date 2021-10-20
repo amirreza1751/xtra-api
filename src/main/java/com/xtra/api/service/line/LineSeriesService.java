@@ -5,6 +5,7 @@ import com.xtra.api.mapper.line.LineSeriesMapper;
 import com.xtra.api.model.category.QCategoryVod;
 import com.xtra.api.model.vod.QSeries;
 import com.xtra.api.model.vod.Series;
+import com.xtra.api.projection.line.movie.MoviePlayListView;
 import com.xtra.api.projection.line.series.SeriesPlayListView;
 import com.xtra.api.projection.line.series.SeriesPlayView;
 import com.xtra.api.repository.SeriesRepository;
@@ -14,6 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Validated
@@ -39,6 +43,10 @@ public class LineSeriesService extends CrudService<Series, Long, SeriesRepositor
 
     public SeriesPlayView getSeries(Long id) {
         return seriesMapper.convertToPlayView(findByIdOrFail(id));
+    }
+
+    public List<SeriesPlayListView> getLast10SeriesPlaylist() {
+        return repository.findTop10ByOrderByCreatedDateDesc().stream().map(seriesMapper::convertToPlaylist).collect(Collectors.toList());
     }
 
     @Override

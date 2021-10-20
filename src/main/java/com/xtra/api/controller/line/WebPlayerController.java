@@ -66,6 +66,10 @@ public class WebPlayerController {
         return ResponseEntity.ok(lineSeriesService.getSeriesPlaylist(pageNo, search, sortBy, categoryId));
     }
 
+    @GetMapping("/series/last10")
+    public ResponseEntity<List<SeriesPlayListView>> getLast10SeriesPlaylist() {
+        return ResponseEntity.ok(lineSeriesService.getLast10SeriesPlaylist());
+    }
     @GetMapping("/series/{id}")
     public ResponseEntity<SeriesPlayView> getSeries(@PathVariable Long id) {
         return ResponseEntity.ok(lineSeriesService.getSeries(id));
