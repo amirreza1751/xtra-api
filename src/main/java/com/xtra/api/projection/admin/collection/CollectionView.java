@@ -14,7 +14,6 @@ public class CollectionView {
     private Long id;
     private String name;
     private String categoryName;
-    private MediaType type;
     private Set<MediaPair<Long, String>> channels;
     private Set<MediaPair<Long, String>> movies;
     private Set<MediaPair<Long, String>> series;
