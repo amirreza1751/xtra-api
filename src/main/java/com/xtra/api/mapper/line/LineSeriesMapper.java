@@ -34,9 +34,10 @@ public abstract class LineSeriesMapper {
     public void assignCollections(final Series series, @MappingTarget SeriesPlayListView playListView) {
         playListView.setCategories(emptyIfNull(series.getCategories())
                 .stream().map(categoryVod -> categoryVod.getCategory().getName()).collect(Collectors.toSet()));
+
+        playListView.setId(series.getId());
     }
 
-    @Mapping(source = "info", target = ".")
     @Mapping(source = "info.posterUrl", target = "posterPath")
     @Mapping(source = "info.posterUrl", target = "backdropPath")
     @Mapping(target = "categories", ignore = true)

@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("webplayer")
 @PreAuthorize("hasAnyRole({'LINE'})")
@@ -34,6 +36,11 @@ public class WebPlayerController {
         return ResponseEntity.ok(lineMovieService.getMoviesPlaylist(pageNo, search, sortBy, categoryId));
     }
 
+    @GetMapping("/movies/last10")
+    public ResponseEntity<List<MoviePlayListView>> getLast10MoviesPlaylist() {
+        return ResponseEntity.ok(lineMovieService.getLast10MoviesPlaylist());
+    }
+
     @GetMapping("/movies/{id}")
     public ResponseEntity<MoviePlayView> getMovie(@PathVariable Long id) {
         return ResponseEntity.ok(lineMovieService.getMovie(id));
@@ -45,6 +52,12 @@ public class WebPlayerController {
             @RequestParam(required = false) String sortBy, @RequestParam(required = false) Long categoryId) {
         return ResponseEntity.ok(lineChannelService.getChannelPlaylist(pageNo, search, sortBy, categoryId));
     }
+
+
+//    @GetMapping("/channels/hot10")
+//    public ResponseEntity<List<MoviePlayListView>> getHot10ChannelsPlaylist() {
+//        return ResponseEntity.ok(lineChannelService.getHot10ChannelsPlaylist());
+//    }
 
     @GetMapping("/series")
     public ResponseEntity<Page<SeriesPlayListView>> getSeriesPlaylist(
