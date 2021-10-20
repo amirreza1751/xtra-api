@@ -20,6 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Validated
 public class LineChannelService extends StreamBaseService<Channel, ChannelRepository> {
@@ -34,6 +37,10 @@ public class LineChannelService extends StreamBaseService<Channel, ChannelReposi
 
     public Page<ChannelPlayListView> getChannelPlaylist(int pageNo, String search, String sortBy, Long categoryId) {
         return repository.findAll(getSortingPageable(pageNo, 50, sortBy, "desc")).map(channelMapper::convertToPlaylistView);
+    }
+
+    public List<ChannelPlayListView> getHot10ChannelsPlaylist() {
+        return repository.Top10Channels().stream().map(channelMapper::convertToPlaylistView).collect(Collectors.toList());
     }
 
     @Override
