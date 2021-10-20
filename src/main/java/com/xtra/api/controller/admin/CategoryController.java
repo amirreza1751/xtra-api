@@ -40,6 +40,12 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasAnyAuthority({'category_manage'})")
+    @PostMapping("/order")
+    public ResponseEntity<CategorySummaryView> orderCategory(@RequestBody CategorySummaryView insertView) {
+        return ResponseEntity.ok(categoryService.order(insertView));
+    }
+
+    @PreAuthorize("hasAnyAuthority({'category_manage'})")
     @PatchMapping("/{id}")
     public ResponseEntity<CategoryView> updateCategory(@PathVariable Long id, @RequestBody CategoryUpdateView updateView) {
         return ResponseEntity.ok(categoryService.save(id, updateView));
