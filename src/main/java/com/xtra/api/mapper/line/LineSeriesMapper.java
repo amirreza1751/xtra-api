@@ -41,6 +41,7 @@ public abstract class LineSeriesMapper {
     @Mapping(source = "info.posterUrl", target = "posterPath")
     @Mapping(source = "info.posterUrl", target = "backdropPath")
     @Mapping(target = "categories", ignore = true)
+    @Mapping(source = "info", target = ".")
     public abstract SeriesPlayView convertToPlayView(Series series);
 
     @AfterMapping
