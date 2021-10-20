@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class CreditLogView {
     private String actorUsername;
-    private UserType actorUserType;
+    private UserType actorType;
     private String targetUsername;
     private int initialCredits;
     private int finalCredits;
