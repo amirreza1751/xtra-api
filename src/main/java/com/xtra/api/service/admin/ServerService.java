@@ -8,7 +8,6 @@ import com.xtra.api.model.server.Resource;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.StreamServer;
 import com.xtra.api.model.vod.Movie;
-import com.xtra.api.model.vod.Video;
 import com.xtra.api.model.vod.VideoInfo;
 import com.xtra.api.projection.EntityListItem;
 import com.xtra.api.projection.admin.catchup.CatchupRecordView;
@@ -17,6 +16,7 @@ import com.xtra.api.projection.admin.server.ServerInfo;
 import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
+import com.xtra.api.projection.admin.video.EncodeRequest;
 import com.xtra.api.projection.system.CoreConfiguration;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.ServerRepository;
@@ -47,7 +47,11 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
 import java.net.URI;
-import java.util.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -98,6 +102,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return result;
     }
 
+    //@todo separate server methods from request methods
     public void sendStartRequest(Server server, ChannelStart channelStartData) {
         this.webClient
                 .post()
@@ -198,16 +203,24 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         new RestTemplate().postForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/encode/", video, String.class);
     }*/
 
-    public void sendEncodeRequest(Long serverId, Video video) {
-        var server = findByIdOrFail(serverId);
-        new RestTemplate().postForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/encode/", video, String.class);
+    public void sendEncodeRequest(Server server, EncodeRequest encodeRequest) {
+        //@todo migrate to webclient
+        new RestTemplate().postForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/encode", encodeRequest, String.class);
     }
 
-    public List<VideoInfo> getMediaInfo(Server server, List<Video> videoList) {
+    public void sendBatchEncodeRequest(Server server, List<EncodeRequest> encodeRequests) {
+        //@todo migrate to webclient
+        new RestTemplate().postForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/batch-encode", encodeRequests, String.class);
+    }
+
+
+    public VideoInfo getMediaInfo(Server server, String videoPath) {
+        var encodedPath = URLEncoder.encode(videoPath, StandardCharsets.UTF_8);
+        //@todo migrate to webclient
         try {
-            return Arrays.asList(Objects.requireNonNull(new RestTemplate().postForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/info/", videoList, VideoInfo[].class)));
+            return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/info?path=" + encodedPath, VideoInfo.class);
         } catch (Exception e) {
-            return videoList.stream().map(video -> video.getVideoInfo()).collect(Collectors.toList());
+            return new VideoInfo();
         }
     }
 
@@ -230,7 +243,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return repository.findByToken(token);
     }
 
-    public List<Server> findByIdIn(List<Long> ids) {
+    public List<Server> findByIdIn(Iterable<Long> ids) {
         return repository.findByIdIn(ids);
     }
 

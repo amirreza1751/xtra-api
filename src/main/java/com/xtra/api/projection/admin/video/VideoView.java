@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.vod.Audio;
 import com.xtra.api.model.vod.EncodeStatus;
 import com.xtra.api.model.vod.Subtitle;
-import com.xtra.api.projection.admin.videoInfo.VideoInfoView;
 import lombok.Data;
 
 import java.util.List;

@@ -7,7 +7,10 @@ import com.xtra.api.model.collection.CollectionVod;
 import com.xtra.api.model.exception.EntityAlreadyExistsException;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.setting.Settings;
-import com.xtra.api.model.vod.*;
+import com.xtra.api.model.vod.Episode;
+import com.xtra.api.model.vod.Season;
+import com.xtra.api.model.vod.Series;
+import com.xtra.api.model.vod.Video;
 import com.xtra.api.projection.admin.episode.EpisodeImport;
 import com.xtra.api.projection.admin.episode.EpisodeImportView;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
@@ -31,11 +34,8 @@ import org.springframework.validation.annotation.Validated;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
 
@@ -150,7 +150,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                 existingEpisodes.add(episode);
                 season.get().setSeries(series);
                 this.updateNumberOfEpisodes(series);
-                updateVideoInfo(episode.getVideos());
+                updateSourceVideoInfo(episode.getVideo());
                 return seriesMapper.convertToView(repository.save(series));
             }
         } else {
@@ -165,13 +165,13 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
             existingSeasons.add(newSeason);
             series.setSeasons(existingSeasons);
             this.updateNumberOfEpisodes(series);
-                updateVideoInfo(episode.getVideos());
+            updateSourceVideoInfo(episode.getVideo());
             return seriesMapper.convertToView(repository.save(series));
         }
     }
 
     public void importEpisodes(Long id, EpisodeImportView importView) {
-        var servers = importView.getServers();
+        var servers = importView.getTargetServers();
         var episodes = importView.getEpisodes();
         var series = findByIdOrFail(id);
 
@@ -196,8 +196,8 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                 insertView.setRating(episodeInfo.getVoteAverage());
 
                 insertView.setSeason(episode.getSeason());
-                insertView.setVideos(episode.getVideos());
-                insertView.setServers(servers);
+                insertView.setVideo(episode.getVideo());
+                insertView.setTargetServers(servers);
 
                 addEpisode(id, insertView);
             } catch (EntityAlreadyExistsException ignored) {
@@ -206,14 +206,12 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     }
 
     public void generateToken(Episode episode) {
+        var video = episode.getVideo();
         String token;
-        for (Video video : episode.getVideos()) {
-            do {
-                token = generateRandomString(8, 12, false);
-            } while (videoRepository.findByToken(token).isPresent());
-            video.setToken(token);
-            video.setEncodeStatus(EncodeStatus.NOT_ENCODED);
-        }
+        do {
+            token = generateRandomString(8, 12, false);
+        } while (videoRepository.findByToken(token).isPresent());
+        video.setToken(token);
     }
 
     public void updateNumberOfEpisodes(Series series) {
@@ -224,12 +222,8 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
         }
     }
 
-    public void updateVideoInfo(Set<Video> videoSet) {
-        var videoInfoList = serverService.getMediaInfo(videoSet.iterator().next().getVideoServers().iterator().next().getServer(), new ArrayList<>(videoSet));
-        Iterator<Video> videosIterator = videoSet.iterator();
-        Iterator<VideoInfo> videoInfosIterator = videoInfoList.iterator();
-        while (videoInfosIterator.hasNext() && videosIterator.hasNext()) {
-            videosIterator.next().setVideoInfo(videoInfosIterator.next());
-        }
+    private void updateSourceVideoInfo(Video video) {
+        video.setSourceVideoInfo(serverService.getMediaInfo(video.getSourceServer(), video.getSourceLocation()));
     }
+
 }

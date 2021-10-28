@@ -10,7 +10,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -30,6 +29,7 @@ public class EpisodeInsertView {
 
     @NotNull(message = "season can not be empty")
     private SeasonInsertView season;
-    private List<VideoInsertView> videos;
-    private Set<Long> servers;
+    private VideoInsertView video;
+    private Long sourceServer;
+    private Set<Long> targetServers;
 }

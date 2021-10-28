@@ -1,6 +1,5 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.model.line.Connection;
 import com.xtra.api.model.line.VodConnection;
 import com.xtra.api.projection.admin.connection.ConnectionView;
 import org.mapstruct.AfterMapping;
@@ -21,8 +20,9 @@ public abstract class VodConnectionMapper {
     @AfterMapping
     void durationCalculation(final VodConnection vodConnection, @MappingTarget final ConnectionView vodConnectionView) {
         vodConnectionView.setDuration(Duration.between(vodConnection.getStartDate(), vodConnection.getLastRead()).toSeconds());
-        String[] location = vodConnection.getVideo().getLocation().split("/");
-        vodConnectionView.setStreamName(location[location.length-1]);
+        //@todo fix name
+        /*String[] location = vodConnection.getVideo().getLocation().split("/");
+        vodConnectionView.setStreamName(location[location.length-1]);*/
     }
 
 }

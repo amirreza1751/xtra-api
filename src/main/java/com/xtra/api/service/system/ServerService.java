@@ -1,10 +1,10 @@
 package com.xtra.api.service.system;
 
 import com.xtra.api.mapper.admin.ChannelMapper;
-import com.xtra.api.model.exception.EntityNotFoundException;
-import com.xtra.api.model.stream.Channel;
 import com.xtra.api.model.ChannelList;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.server.Server;
+import com.xtra.api.model.stream.Channel;
 import com.xtra.api.model.stream.StreamServerId;
 import com.xtra.api.model.vod.TeleRecord;
 import com.xtra.api.model.vod.Video;
@@ -66,8 +66,9 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         streamServer.ifPresent(item -> {
 
             Video video = new Video();
-            movieService.generateToken(video);
-            video.setLocation(catchupRecordView.getLocation());
+            movieService.generateVideoToken(video);
+            //@todo location
+            //video.setLocation(catchupRecordView.getLocation());
 
             VideoServer videoServer = new VideoServer(new VideoServerId(null, server.getId()));
             videoServer.setVideo(video);

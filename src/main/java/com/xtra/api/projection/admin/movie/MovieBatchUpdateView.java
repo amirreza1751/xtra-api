@@ -2,24 +2,22 @@ package com.xtra.api.projection.admin.movie;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.xtra.api.model.vod.Resolution;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class MovieBatchUpdateView {
-//    private String readNative;
-//    private String streamAll;
-//    private String directSource;
-//    private String genTimestamps;
-//    private String rtmpOutput;
+    private Set<Long> movies;
+    private Set<Long> targetServers;
+    private Set<Long> collections;
+    private List<Resolution> targetResolutions;
 
-    private Set<Long> movieIds;
-    private Set<Long> serverIds;
-    private Set<Long> collectionIds;
-
-    private Boolean keepServers;
-    private Boolean keepCollections;
+    private boolean addResolutions;
+    private boolean addServers;
+    private boolean addCollections;
 }

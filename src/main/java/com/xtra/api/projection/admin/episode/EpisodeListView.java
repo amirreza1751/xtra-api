@@ -1,5 +1,6 @@
 package com.xtra.api.projection.admin.episode;
 
+import com.xtra.api.projection.admin.video.VideoInfoView;
 import lombok.Data;
 
 import java.util.List;
@@ -10,6 +11,7 @@ public class EpisodeListView {
     private String episodeName;
     private String seriesName;
     private int seasonNumber;
-    private List<EpisodeServerInfo> serverInfoList;
-    private List<EpisodeVideoInfo> videoInfoList;
+    private String link;
+    private List<String> servers;
+    private List<VideoInfoView> targetVideos;
 }

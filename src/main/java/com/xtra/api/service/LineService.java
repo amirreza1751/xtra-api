@@ -120,20 +120,18 @@ public abstract class LineService extends CrudService<Line, Long, LineRepository
                 for (CollectionVod cVod : vods) {
                     if (cVod.getVod().getVodType().equals(VodType.MOVIE)) {
                         Movie movie = (Movie) cVod.getVod();
-                        Set<Video> videos = movie.getVideos();
-                        for (Video video : videos) {
-                            playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(movie.getName()).append("\" group-title=\"").append(collection.getName()).append("\",").append(movie.getName()).append("\n");
-                            playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/video/").append(line.getLineToken()).append("/").append(video.getToken()).append("\n");
-                        }
+                        var video = movie.getVideo();
+                        playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(movie.getName()).append("\" group-title=\"").append(collection.getName()).append("\",").append(movie.getName()).append("\n");
+                        playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/video/").append(line.getLineToken()).append("/").append(video.getToken()).append("\n");
+
                     } else if (cVod.getVod().getVodType().equals(VodType.SERIES)) {
                         Series series = (Series) cVod.getVod();
                         for (Season season : series.getSeasons()) {
                             for (Episode episode : season.getEpisodes()) {
-                                Set<Video> videos = episode.getVideos();
-                                for (Video video : videos) {
-                                    playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(episode.getEpisodeName()).append("\" group-title=\"").append(collection.getName()).append("\",").append(episode.getEpisodeName()).append("\n");
-                                    playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/video/").append(line.getLineToken()).append("/").append(video.getToken()).append("\n");
-                                }
+                                var video = episode.getVideo();
+                                playlist.append("#EXTINF:-1 tvg-id=\"\" tvg-name=\"").append(episode.getEpisodeName()).append("\" group-title=\"").append(collection.getName()).append("\",").append(episode.getEpisodeName()).append("\n");
+                                playlist.append("http://").append(serverAddress).append(":").append(serverPort).append("/api/play/video/").append(line.getLineToken()).append("/").append(video.getToken()).append("\n");
+
                             }
                         }
                     }

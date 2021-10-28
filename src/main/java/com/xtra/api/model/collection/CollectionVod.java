@@ -36,4 +36,9 @@ public class CollectionVod {
     public CollectionVod() {
         id = new CollectionVodId();
     }
+
+    public CollectionVod(Collection collection, Vod vod) {
+        this.collection = collection;
+        this.vod = vod;
+    }
 }

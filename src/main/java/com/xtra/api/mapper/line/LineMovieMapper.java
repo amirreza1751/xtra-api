@@ -1,15 +1,12 @@
 package com.xtra.api.mapper.line;
 
 import com.xtra.api.model.vod.Movie;
-import com.xtra.api.projection.admin.movie.MovieVideoInfo;
 import com.xtra.api.projection.line.movie.MoviePlayListView;
 import com.xtra.api.projection.line.movie.MoviePlayView;
-import com.xtra.api.service.line.LineLineServiceImpl;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.stream.Collectors;
@@ -55,14 +52,8 @@ public abstract class LineMovieMapper {
     @AfterMapping
     public void assignLink(final Movie movie, @MappingTarget MoviePlayView moviePlayView) {
         moviePlayView.setDuration(movie.getInfo() != null ? movie.getInfo().getRuntime() : 0);
-        if (!movie.getVideos().isEmpty()) {
-            //set video info
-            moviePlayView.setLinks(movie.getVideos().stream().map(video -> {
-                if (video.getVideoInfo() != null) {
-                    var line = getCurrentLine();
-                    return "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken();
-                } else return "";
-            }).collect(Collectors.toList()));
-        }
+        var line = getCurrentLine();
+        var video = movie.getVideo();
+        moviePlayView.setLink("http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken());
     }
 }

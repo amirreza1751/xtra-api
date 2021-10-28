@@ -6,7 +6,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.Duration;
-import java.util.List;
 
 @Data
 @Entity
@@ -15,12 +14,14 @@ public class VideoInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Duration duration;
+    private Resolution resolution;
 
     @Enumerated(EnumType.STRING)
-    @ElementCollection
-    private List<Resolution> resolutions;
+    private VideoCodec videoCodec;
 
-    private String videoCodec;
-    private String audioCodec;
-    private Duration duration;
+    @Enumerated(EnumType.STRING)
+    private AudioCodec audioCodec;
+
+    private String fileSize;
 }

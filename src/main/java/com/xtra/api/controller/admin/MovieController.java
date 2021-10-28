@@ -1,9 +1,7 @@
 package com.xtra.api.controller.admin;
 
-import com.xtra.api.model.vod.Audio;
-import com.xtra.api.model.vod.Subtitle;
-import com.xtra.api.model.vod.VideoInfo;
 import com.xtra.api.projection.admin.movie.*;
+import com.xtra.api.projection.admin.video.EncodeResponse;
 import com.xtra.api.repository.filter.MovieFilter;
 import com.xtra.api.service.admin.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/movies")
@@ -32,7 +27,7 @@ public class MovieController {
     @GetMapping("")
     public ResponseEntity<Page<MovieListView>> getAll(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "25") int pageSize
             , @RequestParam(required = false) String search, @RequestParam(required = false, name = "name") String name,
-              @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
+                                                      @RequestParam(required = false) String sortBy, @RequestParam(required = false) String sortDir) {
         return ResponseEntity.ok(movieService.getAll(pageNo, pageSize, sortBy, sortDir, new MovieFilter(name, search)));
     }
 
@@ -90,28 +85,12 @@ public class MovieController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PreAuthorize("hasAnyAuthority({'movies_manage'})")
-    @PatchMapping("/{id}/videos/{vidId}/subtitles")
-    public ResponseEntity<List<Subtitle>> updateSubtitles(@PathVariable Long id, @PathVariable Long vidId, @RequestBody List<Subtitle> subtitles) {
-        return ResponseEntity.ok(movieService.updateSubtitles(id, vidId, subtitles));
-    }
-
-    @PreAuthorize("hasAnyAuthority({'movies_manage'})")
-    @PatchMapping("{id}/videos/{vidId}/audios")
-    public ResponseEntity<List<Audio>> updateAudios(@PathVariable Long id, @PathVariable Long vidId, @RequestBody List<Audio> audios) {
-        return ResponseEntity.ok(movieService.updateAudios(id, vidId, audios));
-    }
-
-    @PatchMapping("/{id}/videos/{vidId}/encode_status")
-    public ResponseEntity<?> setEncodeStatus(@PathVariable Long id, @PathVariable Long vidId, @RequestBody Map<String, String> encodeResult) {
-        movieService.updateEncodeStatus(id, vidId, encodeResult);
+    @PatchMapping("/{id}/encode_status")
+    public ResponseEntity<?> updateEncodeStatus(@PathVariable Long id, @RequestHeader(value = "server_token") String serverToken,
+                                                @RequestBody EncodeResponse encodeResponse) {
+        movieService.updateEncodeStatus(id, serverToken, encodeResponse);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PatchMapping("/{id}/videos/{vidId}/media_info")
-    public ResponseEntity<?> setMediaInfo(@PathVariable Long id, @PathVariable Long vidId, @RequestBody VideoInfo mediaInfo) {
-        movieService.updateMediaInfo(id, vidId, mediaInfo);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
 
 }

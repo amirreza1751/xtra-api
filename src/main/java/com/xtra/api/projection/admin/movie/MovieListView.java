@@ -2,6 +2,8 @@ package com.xtra.api.projection.admin.movie;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.xtra.api.model.vod.EncodeStatus;
+import com.xtra.api.projection.admin.video.VideoInfoView;
 import lombok.Data;
 
 import java.util.List;
@@ -12,6 +14,8 @@ public class MovieListView {
     private Long id;
     private String name;
     private int duration;
-    private List<MovieServerInfo> serverInfoList;
-    private List<MovieVideoInfo> videoInfoList;
+    private String link;
+    private EncodeStatus encodeStatus;
+    private List<String> servers;
+    private List<VideoInfoView> targetVideos;
 }

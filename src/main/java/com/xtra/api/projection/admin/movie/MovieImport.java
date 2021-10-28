@@ -2,15 +2,17 @@ package com.xtra.api.projection.admin.movie;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.xtra.api.model.vod.Resolution;
 import com.xtra.api.projection.admin.video.VideoInsertView;
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class MovieImport {
     private String name;
     private int tmdbId;
-    private Set<VideoInsertView> videos;
+    private VideoInsertView sourceVideo;
+    private List<Resolution> targetResolutions;
 }

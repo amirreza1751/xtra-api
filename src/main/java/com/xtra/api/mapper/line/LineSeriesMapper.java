@@ -54,6 +54,7 @@ public abstract class LineSeriesMapper {
     @AfterMapping
     public void addLinksToEpisodes(final Episode episode, @MappingTarget final EpisodePlayView playView) {
         var line = getCurrentLine();
-        playView.setLinks(episode.getVideos().stream().map(video -> "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken()).collect(Collectors.toList()));
+        var video = episode.getVideo();
+        playView.setLink("http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken());
     }
 }
