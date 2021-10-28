@@ -3,7 +3,6 @@ package com.xtra.api.model.line;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.server.Server;
-import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.vod.Video;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -7,9 +7,7 @@ import com.xtra.api.model.collection.CollectionVodId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.movie.*;
-import com.xtra.api.projection.admin.video.AudioDetails;
-import com.xtra.api.projection.admin.video.SubtitleDetails;
-import com.xtra.api.projection.admin.video.VideoInfoView;
+import com.xtra.api.projection.admin.video.*;
 import com.xtra.api.repository.*;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -78,7 +76,8 @@ public abstract class MovieMapper {
                 var collectionVod = new CollectionVod(new CollectionVodId(id, movie.getId()));
                 var orderCount = collectionVodRepository.countAllByIdCollectionId(id);
                 collectionVod.setOrder(orderCount);
-                var col = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("collection", id.toString()));
+                var col = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Collection", id.toString()));
+                collectionVod.setId(new CollectionVodId(id, movie.getId()));
                 collectionVod.setCollection(col);
                 collectionVod.setVod(movie);
                 collectionVods.add(collectionVod);
@@ -106,26 +105,34 @@ public abstract class MovieMapper {
 
     abstract Subtitle toSubtitle(SubtitleDetails subtitleDetails);
 
+    abstract AudioDetails toAudioDetails(Audio audio);
+
+    abstract SubtitleDetails toSubtitleDetails(Subtitle subtitle);
+
     @Mapping(target = "collections", ignore = true)
     @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "name", source = "info.name")
     public abstract MovieView convertToView(Movie movie);
 
     @AfterMapping
     public void addRelationshipsToView(final Movie movie, @MappingTarget MovieView movieView) {
-        Set<Long> servers = movie.getVideo().getVideoServers().stream().map(videoServer -> videoServer.getServer().getId()).collect(Collectors.toSet());
+        var servers = movie.getVideo().getVideoServers().stream().map(videoServer -> new ServerIdEncodeStatus(videoServer.getServer().getId(), videoServer.getEncodeStatus())).collect(Collectors.toSet());
         movieView.setServers(servers);
         movieView.setCollections(movie.getCollectionAssigns().stream().map(collectionVod -> collectionVod.getCollection().getId()).collect(Collectors.toSet()));
         movieView.setCategories(movie.getCategories().stream().map(categoryVod -> categoryVod.getId().getCategoryId()).collect(Collectors.toSet()));
+        var video = movie.getVideo();
+        movieView.setSourceAudios(video.getSourceAudios().stream().map(this::toAudioDetails).collect(Collectors.toList()));
+        movieView.setSourceSubtitles(video.getSourceSubtitles().stream().map(this::toSubtitleDetails).collect(Collectors.toList()));
+        movieView.setTargetVideosInfos(video.getTargetVideosInfos().stream().map(this::toVideoInfoView).collect(Collectors.toList()));
     }
 
-    @Mapping(source = "movie.video.encodeStatus", target = "encodeStatus")
     @Mapping(source = "name", target = "name")
     public abstract MovieListView convertToListView(Movie movie);
 
     @AfterMapping
     public void assignInfo(final Movie movie, @MappingTarget MovieListView movieListView) {
         movieListView.setDuration(movie.getInfo() != null ? movie.getInfo().getRuntime() : 0);
-        movieListView.setServers(movie.getVideo().getVideoServers().stream().map(videoServer -> videoServer.getServer().getName()).collect(Collectors.toList()));
+        movieListView.setServers(movie.getVideo().getVideoServers().stream().map(videoServer -> new ServerEncodeStatus(videoServer.getServer().getName(), videoServer.getEncodeStatus())).collect(Collectors.toList()));
         movieListView.setTargetVideos(movie.getVideo().getTargetVideosInfos().stream().map(this::toVideoInfoView).collect(Collectors.toList()));
 
         var system_line = lineRepository.findByUsername("system_line");
@@ -134,35 +141,6 @@ public abstract class MovieMapper {
     }
 
     abstract VideoInfoView toVideoInfoView(VideoInfo videoInfo);
-
-    /*public Set<VideoServer> convertToVideoServers(Set<Long> ids, Movie movie) {
-        Set<VideoServer> videoServers = new HashSet<>();
-        for (Video video : movie.getVideos()) {
-            for (Long serverId : ids) {
-                VideoServer videoServer = new VideoServer(new VideoServerId(video.getId(), serverId));
-                var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
-                videoServer.setServer(server);
-                videoServer.setVideo(video);
-                videoServers.add(videoServer);
-            }
-        }
-
-        return videoServers;
-    }*/
-
-    public Set<CollectionVod> convertToCollections(Set<Long> ids, Movie movie) {
-        Set<CollectionVod> collectionVodSet = new HashSet<>();
-
-        for (Long id : ids) {
-            CollectionVod collectionVod = new CollectionVod(new CollectionVodId(id, movie.getId()));
-            var collection = collectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Collection", id.toString()));
-            collectionVod.setVod(movie);
-            collectionVod.setCollection(collection);
-            collectionVodSet.add(collectionVod);
-        }
-
-        return collectionVodSet;
-    }
 
     public List<Movie> convertToMovieList(MovieImportView importView) {
         var movies = new ArrayList<Movie>();

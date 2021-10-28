@@ -67,8 +67,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
 
             Video video = new Video();
             movieService.generateVideoToken(video);
-            //@todo location
-            //video.setLocation(catchupRecordView.getLocation());
+            video.setSourceLocation(catchupRecordView.getLocation());
 
             VideoServer videoServer = new VideoServer(new VideoServerId(null, server.getId()));
             videoServer.setVideo(video);

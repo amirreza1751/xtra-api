@@ -1,8 +1,9 @@
 package com.xtra.api.controller.system;
 
 import com.xtra.api.model.vod.Video;
-import com.xtra.api.projection.system.VodStatusView;
+import com.xtra.api.projection.admin.video.EncodeResponse;
 import com.xtra.api.service.admin.VideoService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,9 +21,10 @@ public class SystemVideoController {
         return ResponseEntity.ok(videoService.getByToken(videoToken));
     }
 
-    @PatchMapping("{id}")
-    public ResponseEntity<Video> updateVodStatus(@PathVariable Long id, @RequestBody VodStatusView statusView) {
-        videoService.updateVodStatus(id, statusView);
-        return ResponseEntity.ok().build();
+    @PatchMapping("/{id}/encode_status")
+    public ResponseEntity<?> updateEncodeStatus(@PathVariable Long id, @RequestHeader(value = "server_token") String serverToken,
+                                                @RequestBody EncodeResponse encodeResponse) {
+        videoService.updateEncodeStatus(id, serverToken, encodeResponse);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

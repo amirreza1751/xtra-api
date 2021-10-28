@@ -34,8 +34,6 @@ public abstract class EpisodeMapper {
     @Value("${server.port}")
     private String serverPort;
 
-    public abstract EpisodeView convertToView(Episode episode);
-
     public abstract EpisodeListView convertToListView(Episode episode);
 
     public abstract Episode updateEntity(EpisodeInsertView episodeInsertView, @MappingTarget final Episode episode);
@@ -80,6 +78,8 @@ public abstract class EpisodeMapper {
             }
         }
     }
+
+    public abstract EpisodeView convertToView(Episode episode);
 
     @AfterMapping
     public void convertToServerIds(final Episode episode, @MappingTarget final EpisodeView episodeView) {

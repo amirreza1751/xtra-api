@@ -8,7 +8,6 @@ import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.movie.*;
 import com.xtra.api.projection.admin.video.AudioDetails;
 import com.xtra.api.projection.admin.video.EncodeRequest;
-import com.xtra.api.projection.admin.video.EncodeResponse;
 import com.xtra.api.repository.CollectionRepository;
 import com.xtra.api.repository.MovieRepository;
 import com.xtra.api.repository.VideoRepository;
@@ -162,6 +161,7 @@ public class MovieService extends VodService<Movie, MovieRepository> {
 
     private EncodeRequest createEncodeRequest(Video video) {
         var encodeRequest = new EncodeRequest();
+        encodeRequest.setVideoId(video.getId());
         encodeRequest.setSourceLocation(video.getSourceLocation());
         encodeRequest.setSourceAudios(video.getSourceAudios().stream().map(audio -> new AudioDetails(audio.getLocation(), audio.getLanguage())).collect(Collectors.toList()));
         encodeRequest.setTargetResolutions(video.getTargetResolutions());
@@ -255,16 +255,4 @@ public class MovieService extends VodService<Movie, MovieRepository> {
         return view;
     }
 
-
-    //@todo receive
-    public void updateEncodeStatus(Long id, String serverToken, EncodeResponse encodeResponse) {
-        var movie = findByIdOrFail(id);
-        var video = movie.getVideo();
-        serverService.findByServerToken(serverToken).ifPresent(server -> {
-            video.setEncodeStatus(encodeResponse.getEncodeStatus());
-            video.getTargetVideosInfos().clear();
-            video.getTargetVideosInfos().addAll(encodeResponse.getTargetVideoInfos());
-            videoRepository.save(video);
-        });
-    }
 }

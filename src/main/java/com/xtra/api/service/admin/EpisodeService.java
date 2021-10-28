@@ -4,14 +4,12 @@ import com.xtra.api.mapper.admin.EpisodeMapper;
 import com.xtra.api.mapper.admin.SeasonMapper;
 import com.xtra.api.model.exception.EntityAlreadyExistsException;
 import com.xtra.api.model.exception.EntityNotFoundException;
-import com.xtra.api.model.vod.Episode;
-import com.xtra.api.model.vod.Season;
-import com.xtra.api.model.vod.Video;
-import com.xtra.api.model.vod.VideoServer;
+import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.episode.*;
+import com.xtra.api.projection.admin.video.AudioDetails;
+import com.xtra.api.projection.admin.video.EncodeRequest;
 import com.xtra.api.repository.EpisodeRepository;
 import com.xtra.api.repository.SeriesRepository;
-import com.xtra.api.repository.VideoRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,17 +30,15 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
     private final SeasonMapper seasonMapper;
     private final SeriesRepository seriesRepository;
     private final SeriesService seriesService;
-    private final VideoRepository videoRepository;
     private final VideoService videoService;
     private final ServerService serverService;
 
-    protected EpisodeService(EpisodeRepository repository, EpisodeMapper episodeMapper, SeasonMapper seasonMapper, SeriesRepository seriesRepository, SeriesService seriesService, VideoRepository videoRepository, VideoService videoService, ServerService serverService) {
+    protected EpisodeService(EpisodeRepository repository, EpisodeMapper episodeMapper, SeasonMapper seasonMapper, SeriesRepository seriesRepository, SeriesService seriesService, VideoService videoService, ServerService serverService) {
         super(repository, "Episode");
         this.episodeMapper = episodeMapper;
         this.seasonMapper = seasonMapper;
         this.seriesRepository = seriesRepository;
         this.seriesService = seriesService;
-        this.videoRepository = videoRepository;
         this.videoService = videoService;
         this.serverService = serverService;
     }
@@ -67,13 +63,13 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
         var oldSeason = oldEpisode.getSeason();
         var series = oldSeason.getSeries();
         copyProperties(episodeToSave, oldEpisode, "id", "season", "videos", "servers");
-        if (oldSeason.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()) { //replacing in the same season
+        if (oldSeason.getSeasonNumber() == episodeInsertView.getSeason().getSeasonNumber()) {
+            //replacing in the same season
             for (Episode episodeItem : oldSeason.getEpisodes()) {
                 if (episodeToSave.getEpisodeNumber() == episodeItem.getEpisodeNumber() && !episodeId.equals(episodeItem.getId())) {
                     throw new EntityAlreadyExistsException();
                 }
             }
-
 
         } else { // moving to another existing season
             oldSeason.getEpisodes().remove(oldEpisode);
@@ -90,7 +86,8 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
                 List<Episode> episodes = newSeason.get().getEpisodes();
                 episodes.add(oldEpisode);
                 oldEpisode.setSeason(newSeason.get());
-            } else { //new season has to be created
+            } else {
+                //new season has to be created
                 var seasonToCreate = seasonMapper.convertToEntity(episodeInsertView.getSeason());
                 List<Episode> episodes = new ArrayList<>();
                 episodes.add(oldEpisode);
@@ -161,10 +158,24 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
 
     public void encode(Long id) {
         var episode = findByIdOrFail(id);
-        videoService.encode(episode.getVideo().getId());
+        var videoServers = episode.getVideo().getVideoServers();
+        for (var videoServer : videoServers) {
+            serverService.sendEncodeRequest(videoServer.getServer(), createEncodeRequest(episode.getVideo()));
+        }
     }
 
     private void updateSourceVideoInfo(Video video) {
         video.setSourceVideoInfo(serverService.getMediaInfo(video.getSourceServer(), video.getSourceLocation()));
+    }
+
+    private EncodeRequest createEncodeRequest(Video video) {
+        var encodeRequest = new EncodeRequest();
+        encodeRequest.setVideoId(video.getId());
+        encodeRequest.setSourceLocation(video.getSourceLocation());
+        encodeRequest.setSourceAudios(video.getSourceAudios().stream().map(audio -> new AudioDetails(audio.getLocation(), audio.getLanguage())).collect(Collectors.toList()));
+        encodeRequest.setTargetResolutions(video.getTargetResolutions());
+        encodeRequest.setTargetAudioCodec(AudioCodec.AAC);
+        encodeRequest.setTargetVideoCodec(VideoCodec.H264);
+        return encodeRequest;
     }
 }

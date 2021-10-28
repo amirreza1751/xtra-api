@@ -36,9 +36,10 @@ public abstract class LineSeriesMapper {
                 .stream().map(categoryVod -> categoryVod.getCategory().getName()).collect(Collectors.toSet()));
     }
 
-    @Mapping(source = "info", target = ".")
+
     @Mapping(source = "info.posterUrl", target = "posterPath")
     @Mapping(source = "info.posterUrl", target = "backdropPath")
+    @Mapping(source = "info", target = ".")
     @Mapping(target = "categories", ignore = true)
     public abstract SeriesPlayView convertToPlayView(Series series);
 

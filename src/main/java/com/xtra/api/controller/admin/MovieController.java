@@ -1,7 +1,6 @@
 package com.xtra.api.controller.admin;
 
 import com.xtra.api.projection.admin.movie.*;
-import com.xtra.api.projection.admin.video.EncodeResponse;
 import com.xtra.api.repository.filter.MovieFilter;
 import com.xtra.api.service.admin.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,13 +83,5 @@ public class MovieController {
         movieService.encode(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-    @PatchMapping("/{id}/encode_status")
-    public ResponseEntity<?> updateEncodeStatus(@PathVariable Long id, @RequestHeader(value = "server_token") String serverToken,
-                                                @RequestBody EncodeResponse encodeResponse) {
-        movieService.updateEncodeStatus(id, serverToken, encodeResponse);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
 
 }

@@ -22,25 +22,13 @@ public abstract class LineMovieMapper {
     @Value("${server.port}")
     private String serverPort;
 
-    @Mapping(source = "info.posterPath", target = "posterPath")
-    @Mapping(source = "info.backdropPath", target = "backdropPath")
-    @Mapping(source = "info.rating", target = "rating")
-    @Mapping(source = "info.country", target = "country")
-    @Mapping(source = "info.releaseDate", target = "releaseDate")
+    @Mapping(source = "info", target = ".")
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "categories", ignore = true)
     public abstract MoviePlayListView convertToPlayListView(Movie movie);
 
-    @Mapping(source = "info.posterPath", target = "posterPath")
-    @Mapping(source = "info.backdropPath", target = "backdropPath")
-    @Mapping(source = "info.rating", target = "rating")
-    @Mapping(source = "info.country", target = "country")
-    @Mapping(source = "info.releaseDate", target = "releaseDate")
-    @Mapping(source = "info.plot", target = "plot")
-    @Mapping(source = "info.cast", target = "cast")
-    @Mapping(source = "info.director", target = "director")
-    @Mapping(source = "info.genres", target = "genres")
-    @Mapping(source = "info.runtime", target = "runtime")
-    @Mapping(source = "info.youtubeTrailer", target = "youtubeTrailer")
+    @Mapping(source = "info", target = ".")
+    @Mapping(target = "id", ignore = true)
     public abstract MoviePlayView convertToPlayView(Movie movie);
 
     @AfterMapping

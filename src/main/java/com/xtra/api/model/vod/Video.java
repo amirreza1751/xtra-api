@@ -21,9 +21,6 @@ public class Video {
     private String token;
 
     @Enumerated(EnumType.STRING)
-    private EncodeStatus encodeStatus = EncodeStatus.NOT_ENCODED;
-
-    @Enumerated(EnumType.STRING)
     @ElementCollection
     private List<Resolution> targetResolutions;
 

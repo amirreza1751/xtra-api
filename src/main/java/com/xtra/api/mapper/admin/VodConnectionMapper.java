@@ -20,9 +20,8 @@ public abstract class VodConnectionMapper {
     @AfterMapping
     void durationCalculation(final VodConnection vodConnection, @MappingTarget final ConnectionView vodConnectionView) {
         vodConnectionView.setDuration(Duration.between(vodConnection.getStartDate(), vodConnection.getLastRead()).toSeconds());
-        //@todo fix name
-        /*String[] location = vodConnection.getVideo().getLocation().split("/");
-        vodConnectionView.setStreamName(location[location.length-1]);*/
+        String[] location = vodConnection.getVideo().getSourceLocation().split("/");
+        vodConnectionView.setStreamName(location[location.length - 1]);
     }
 
 }

@@ -11,7 +11,6 @@ import java.time.LocalDate;
 public class MoviePlayView {
     private Long id;
     private String link;
-
     private String name;
     private int duration;
     private String posterPath;
