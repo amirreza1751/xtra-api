@@ -16,5 +16,6 @@ public class ChannelInfo {
     private String logo;
     private boolean epg;
     private long totalUsers;
+    private String link;
     private Set<ChannelServerInfo> channelInfos;
 }
