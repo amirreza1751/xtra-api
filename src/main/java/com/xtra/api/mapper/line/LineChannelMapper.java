@@ -4,6 +4,7 @@ import com.xtra.api.model.stream.Channel;
 import com.xtra.api.model.stream.StreamServer;
 import com.xtra.api.projection.admin.channel.ChannelView;
 import com.xtra.api.projection.line.channel.ChannelPlayListView;
+import com.xtra.api.projection.line.channel.ChannelPlayView;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -39,4 +40,13 @@ public abstract class LineChannelMapper {
         var line = getCurrentLine();
         playListView.setLink("http://" + serverAddress + ":" + serverPort + "/api/play/channel/" + line.getLineToken() + "/" + channel.getStreamToken());
     }
+
+    public abstract ChannelPlayView convertToPlayView(Channel channel);
+
+    @AfterMapping
+    protected void convertAdditionalFieldsForView(Channel channel, @MappingTarget final ChannelPlayView playView) {
+        var line = getCurrentLine();
+        playView.setLink("http://" + serverAddress + ":" + serverPort + "/api/play/channel/" + line.getLineToken() + "/" + channel.getStreamToken());
+    }
+
 }
