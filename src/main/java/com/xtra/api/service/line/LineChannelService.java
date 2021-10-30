@@ -6,6 +6,7 @@ import com.xtra.api.mapper.system.StreamMapper;
 import com.xtra.api.model.stream.Channel;
 import com.xtra.api.model.vod.Movie;
 import com.xtra.api.projection.line.channel.ChannelPlayListView;
+import com.xtra.api.projection.line.channel.ChannelPlayView;
 import com.xtra.api.projection.line.movie.MoviePlayListView;
 import com.xtra.api.projection.line.movie.MoviePlayView;
 import com.xtra.api.repository.ChannelRepository;
@@ -41,6 +42,10 @@ public class LineChannelService extends StreamBaseService<Channel, ChannelReposi
 
     public List<ChannelPlayListView> getHot10ChannelsPlaylist() {
         return repository.Top10Channels().stream().map(channelMapper::convertToPlaylistView).collect(Collectors.toList());
+    }
+
+    public ChannelPlayView getChannel(Long id) {
+        return this.channelMapper.convertToPlayView(findByIdOrFail(id));
     }
 
     @Override
