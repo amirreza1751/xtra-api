@@ -111,7 +111,6 @@ public abstract class MovieMapper {
 
     @Mapping(target = "collections", ignore = true)
     @Mapping(target = "categories", ignore = true)
-    @Mapping(target = "name", source = "info.name")
     public abstract MovieView convertToView(Movie movie);
 
     @AfterMapping

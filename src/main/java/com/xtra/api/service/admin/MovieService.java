@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 public class MovieService extends VodService<Movie, MovieRepository> {
 
     private final ServerService serverService;
-    private final VideoRepository videoRepository;
     private final SettingService settingService;
     private final MovieMapper movieMapper;
     private final CollectionRepository collectionRepository;
@@ -47,7 +46,6 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     protected MovieService(MovieRepository repository, ServerService serverService, VideoRepository videoRepository, SettingService settingService, MovieMapper movieMapper, CollectionRepository collectionRepository) {
         super(repository, videoRepository);
         this.serverService = serverService;
-        this.videoRepository = videoRepository;
         this.settingService = settingService;
         this.movieMapper = movieMapper;
         this.collectionRepository = collectionRepository;
