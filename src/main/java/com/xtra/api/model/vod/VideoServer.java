@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
 @Entity
@@ -26,6 +27,7 @@ public class VideoServer {
     @MapsId("serverId")
     Server server;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private EncodeStatus encodeStatus = EncodeStatus.NOT_ENCODED;
 

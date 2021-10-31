@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.collections4.ListUtils.emptyIfNull;
+
 @Mapper(componentModel = "spring")
 public abstract class MovieMapper {
 
@@ -42,9 +44,13 @@ public abstract class MovieMapper {
     @Value("${server.port}")
     private String serverPort;
 
+    @Mapping(target = "video.sourceLocation", source = "sourceLocation")
+    @Mapping(target = "video.targetResolutions", source = "targetResolutions")
     @Mapping(target = "categories", ignore = true)
     public abstract Movie convertToEntity(MovieInsertView movieView);
 
+    @Mapping(target = "video.sourceLocation", source = "sourceLocation")
+    @Mapping(target = "video.targetResolutions", source = "targetResolutions")
     @Mapping(target = "categories", ignore = true)
     @Mapping(target = "video", ignore = true)
     public abstract Movie updateEntityFromInsertView(MovieInsertView movieView, @MappingTarget final Movie movie);
@@ -52,6 +58,7 @@ public abstract class MovieMapper {
     @AfterMapping
     void addRelationshipsToEntity(final MovieInsertView insertView, @MappingTarget final Movie movie) {
         var video = movie.getVideo();
+
         video.getSourceAudios().clear();
         video.getSourceAudios().addAll(insertView.getSourceAudios().stream().map(this::toAudio).collect(Collectors.toList()));
 
@@ -111,18 +118,22 @@ public abstract class MovieMapper {
 
     @Mapping(target = "collections", ignore = true)
     @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "sourceLocation", source = "video.sourceLocation")
+    @Mapping(target = "sourceServer", source = "video.sourceServer.id")
     public abstract MovieView convertToView(Movie movie);
 
     @AfterMapping
     public void addRelationshipsToView(final Movie movie, @MappingTarget MovieView movieView) {
-        var servers = movie.getVideo().getVideoServers().stream().map(videoServer -> new ServerIdEncodeStatus(videoServer.getServer().getId(), videoServer.getEncodeStatus())).collect(Collectors.toSet());
-        movieView.setServers(servers);
-        movieView.setCollections(movie.getCollectionAssigns().stream().map(collectionVod -> collectionVod.getCollection().getId()).collect(Collectors.toSet()));
-        movieView.setCategories(movie.getCategories().stream().map(categoryVod -> categoryVod.getId().getCategoryId()).collect(Collectors.toSet()));
+        movieView.setCollections(movie.getCollectionAssigns().stream().map(collectionVod -> collectionVod.getCollection().getId()).collect(Collectors.toList()));
+        movieView.setCategories(movie.getCategories().stream().map(categoryVod -> categoryVod.getId().getCategoryId()).collect(Collectors.toList()));
         var video = movie.getVideo();
-        movieView.setSourceAudios(video.getSourceAudios().stream().map(this::toAudioDetails).collect(Collectors.toList()));
-        movieView.setSourceSubtitles(video.getSourceSubtitles().stream().map(this::toSubtitleDetails).collect(Collectors.toList()));
-        movieView.setTargetVideosInfos(video.getTargetVideosInfos().stream().map(this::toVideoInfoView).collect(Collectors.toList()));
+        if (video != null) {
+            var servers = emptyIfNull(movie.getVideo().getVideoServers()).stream().map(videoServer -> new ServerIdEncodeStatus(videoServer.getServer().getId(), videoServer.getEncodeStatus())).collect(Collectors.toList());
+            movieView.setServers(servers);
+            movieView.setSourceAudios(video.getSourceAudios().stream().map(this::toAudioDetails).collect(Collectors.toList()));
+            movieView.setSourceSubtitles(video.getSourceSubtitles().stream().map(this::toSubtitleDetails).collect(Collectors.toList()));
+            movieView.setTargetVideosInfos(emptyIfNull(video.getTargetVideosInfos()).stream().map(this::toVideoInfoView).collect(Collectors.toList()));
+        }
     }
 
     @Mapping(source = "name", target = "name")
@@ -131,12 +142,14 @@ public abstract class MovieMapper {
     @AfterMapping
     public void assignInfo(final Movie movie, @MappingTarget MovieListView movieListView) {
         movieListView.setDuration(movie.getInfo() != null ? movie.getInfo().getRuntime() : 0);
-        movieListView.setServers(movie.getVideo().getVideoServers().stream().map(videoServer -> new ServerEncodeStatus(videoServer.getServer().getName(), videoServer.getEncodeStatus())).collect(Collectors.toList()));
-        movieListView.setTargetVideos(movie.getVideo().getTargetVideosInfos().stream().map(this::toVideoInfoView).collect(Collectors.toList()));
-
-        var system_line = lineRepository.findByUsername("system_line");
-        String link = system_line.map(line -> "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + movie.getVideo().getToken()).orElse("");
-        movieListView.setLink(link);
+        if (movie.getVideo() != null) {
+            var video = movie.getVideo();
+            movieListView.setServers(video.getVideoServers().stream().map(videoServer -> new ServerEncodeStatus(videoServer.getServer().getName(), videoServer.getEncodeStatus())).collect(Collectors.toList()));
+            movieListView.setTargetVideos(video.getTargetVideosInfos().stream().map(this::toVideoInfoView).collect(Collectors.toList()));
+            var system_line = lineRepository.findByUsername("system_line");
+            String link = system_line.map(line -> "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken()).orElse("");
+            movieListView.setLink(link);
+        }
     }
 
     abstract VideoInfoView toVideoInfoView(VideoInfo videoInfo);
@@ -161,7 +174,7 @@ public abstract class MovieMapper {
             video.setSourceAudios(sourceVideo.getSourceAudios().stream().map(this::toAudio).collect(Collectors.toList()));
             var videoServer = new VideoServer(video, sourceServer);
             videoServer.setTargetDirectoryLocation(sourceVideo.getLocation());
-            video.setVideoServers(Set.of(videoServer));
+            video.setVideoServers(List.of(videoServer));
             movie.setVideo(video);
             movies.add(movie);
         }

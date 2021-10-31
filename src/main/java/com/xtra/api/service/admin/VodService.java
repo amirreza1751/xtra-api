@@ -12,8 +12,8 @@ public abstract class VodService<T extends Vod, R extends JpaRepository<T, Long>
 
     protected final VideoRepository videoRepository;
 
-    protected VodService(R repository, VideoRepository videoRepository) {
-        super(repository, "VOD");
+    protected VodService(R repository, VideoRepository videoRepository, String entityName) {
+        super(repository, entityName);
         this.videoRepository = videoRepository;
     }
 

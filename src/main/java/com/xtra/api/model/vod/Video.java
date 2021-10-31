@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
@@ -33,7 +32,7 @@ public class Video {
     private VideoInfo sourceVideoInfo;
 
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private List<VideoInfo> targetVideosInfos;
+    private List<VideoInfo> targetVideosInfos = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Subtitle> sourceSubtitles = new ArrayList<>();
@@ -42,5 +41,5 @@ public class Video {
     private List<Audio> sourceAudios = new ArrayList<>();
 
     @OneToMany(mappedBy = "video", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private Set<VideoServer> videoServers;
+    private List<VideoServer> videoServers = new ArrayList<>();
 }

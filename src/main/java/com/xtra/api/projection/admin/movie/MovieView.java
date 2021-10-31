@@ -10,7 +10,6 @@ import com.xtra.api.projection.admin.video.VideoInfoView;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -28,7 +27,7 @@ public class MovieView {
     private List<SubtitleDetails> sourceSubtitles;
     private List<AudioDetails> sourceAudios;
 
-    private Set<Long> collections;
-    private Set<Long> categories;
-    private Set<ServerIdEncodeStatus> servers;
+    private List<Long> collections;
+    private List<Long> categories;
+    private List<ServerIdEncodeStatus> servers;
 }

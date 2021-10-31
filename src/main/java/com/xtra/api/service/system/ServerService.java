@@ -22,8 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service("systemServerService")
@@ -72,7 +72,7 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
             VideoServer videoServer = new VideoServer(new VideoServerId(null, server.getId()));
             videoServer.setVideo(video);
             videoServer.setServer(server);
-            Set<VideoServer> videoServers = new HashSet<>();
+            List<VideoServer> videoServers = new ArrayList<>();
             videoServers.add(videoServer);
 
             video.setVideoServers(videoServers);

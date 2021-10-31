@@ -21,7 +21,7 @@ public class LineMovieService extends VodService<Movie, MovieRepository> {
 
     @Autowired
     protected LineMovieService(MovieRepository repository, LineMovieMapper movieMapper, VideoRepository videoRepository) {
-        super(repository, videoRepository);
+        super(repository, videoRepository, "Movie");
         this.movieMapper = movieMapper;
     }
 

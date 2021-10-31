@@ -17,7 +17,8 @@ import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public abstract class EpisodeMapper {
     void assignServerRelations(final EpisodeInsertView episodeInsertView, @MappingTarget final Episode episode) {
         if (episodeInsertView.getTargetServers() != null) {
             var video = episode.getVideo();
-            Set<VideoServer> videoServers = new HashSet<>();
+            List<VideoServer> videoServers = new ArrayList<>();
             for (Long id : episodeInsertView.getTargetServers()) {
                 VideoServer videoServer = new VideoServer();
                 var server = serverRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Server", id.toString()));
