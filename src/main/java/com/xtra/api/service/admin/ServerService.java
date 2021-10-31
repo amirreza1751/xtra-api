@@ -7,8 +7,6 @@ import com.xtra.api.model.server.File;
 import com.xtra.api.model.server.Resource;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.StreamServer;
-import com.xtra.api.model.vod.Movie;
-import com.xtra.api.model.vod.VideoInfo;
 import com.xtra.api.projection.EntityListItem;
 import com.xtra.api.projection.admin.catchup.CatchupRecordView;
 import com.xtra.api.projection.admin.channel.ChannelStart;
@@ -17,6 +15,7 @@ import com.xtra.api.projection.admin.server.ServerInsertView;
 import com.xtra.api.projection.admin.server.ServerView;
 import com.xtra.api.projection.admin.server.resource.ResourceView;
 import com.xtra.api.projection.admin.video.EncodeRequest;
+import com.xtra.api.projection.admin.video.VideoInfoView;
 import com.xtra.api.projection.system.CoreConfiguration;
 import com.xtra.api.repository.ConnectionRepository;
 import com.xtra.api.repository.ServerRepository;
@@ -27,7 +26,6 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,11 +65,6 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     private final ServerMapper serverMapper;
     private final WebClient webClient;
     private final ChannelMapper channelMapper;
-
-    @Value("${core.apiPath}")
-    private String corePath;
-    @Value("${core.apiPort}")
-    private String corePort;
 
     @Autowired
     protected ServerService(ServerRepository repository, ConnectionRepository connectionRepository, StreamServerRepository streamServerRepository, ServerMapper serverMapper, WebClient.Builder webClientBuilder, ChannelMapper channelMapper) {
@@ -199,9 +192,6 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
         return repository.findByName(search);
     }
 
-    /*public void sendEncodeRequest(Server server, Video video) {
-        new RestTemplate().postForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/encode/", video, String.class);
-    }*/
 
     public void sendEncodeRequest(Server server, EncodeRequest encodeRequest) {
         //@todo migrate to webclient
@@ -214,30 +204,21 @@ public class ServerService extends CrudService<Server, Long, ServerRepository> {
     }
 
 
-    public VideoInfo getMediaInfo(Server server, String videoPath) {
+    public VideoInfoView getMediaInfo(Server server, String videoPath) {
         var encodedPath = URLEncoder.encode(videoPath, StandardCharsets.UTF_8);
         //@todo migrate to webclient
         try {
-            return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/info?path=" + encodedPath, VideoInfo.class);
+            return new RestTemplate().getForObject("http://" + server.getIp() + ":" + server.getCorePort() + "/vod/info?path=" + encodedPath, VideoInfoView.class);
         } catch (Exception e) {
-            return new VideoInfo();
+            return new VideoInfoView();
         }
     }
-
-    public String SetAudioRequest(Movie movie) {
-        return new RestTemplate().postForObject(corePath + ":" + corePort + "/vod/set_audios/", movie, String.class);
-    }
-
 
     @Override
     protected Page<Server> findWithSearch(String search, Pageable page) {
         return null;
     }
 
-
-    public String sendPlayRequest(String stream_token, String line_token, Server server) {
-        return new RestTemplate().getForObject(getServerAddress(server) + "/streams?line_token=" + line_token + "&stream_token=" + stream_token + "&extension=m3u8", String.class);
-    }
 
     public Optional<Server> findByServerToken(String token) {
         return repository.findByToken(token);

@@ -30,16 +30,14 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
     private final SeasonMapper seasonMapper;
     private final SeriesRepository seriesRepository;
     private final SeriesService seriesService;
-    private final VideoService videoService;
     private final ServerService serverService;
 
-    protected EpisodeService(EpisodeRepository repository, EpisodeMapper episodeMapper, SeasonMapper seasonMapper, SeriesRepository seriesRepository, SeriesService seriesService, VideoService videoService, ServerService serverService) {
+    protected EpisodeService(EpisodeRepository repository, EpisodeMapper episodeMapper, SeasonMapper seasonMapper, SeriesRepository seriesRepository, SeriesService seriesService, ServerService serverService) {
         super(repository, "Episode");
         this.episodeMapper = episodeMapper;
         this.seasonMapper = seasonMapper;
         this.seriesRepository = seriesRepository;
         this.seriesService = seriesService;
-        this.videoService = videoService;
         this.serverService = serverService;
     }
 
@@ -165,7 +163,7 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
     }
 
     private void updateSourceVideoInfo(Video video) {
-        video.setSourceVideoInfo(serverService.getMediaInfo(video.getSourceServer(), video.getSourceLocation()));
+        video.setSourceVideoInfo(episodeMapper.toVideoInfo(serverService.getMediaInfo(video.getSourceServer(), video.getSourceLocation())));
     }
 
     private EncodeRequest createEncodeRequest(Video video) {

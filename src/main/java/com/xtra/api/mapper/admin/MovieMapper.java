@@ -7,7 +7,8 @@ import com.xtra.api.model.collection.CollectionVodId;
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.vod.*;
 import com.xtra.api.projection.admin.movie.*;
-import com.xtra.api.projection.admin.video.*;
+import com.xtra.api.projection.admin.video.ServerEncodeStatus;
+import com.xtra.api.projection.admin.video.ServerIdEncodeStatus;
 import com.xtra.api.repository.*;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.collections4.ListUtils.emptyIfNull;
 
 @Mapper(componentModel = "spring")
-public abstract class MovieMapper {
+public abstract class MovieMapper extends VideoMapper {
 
     @Autowired
     private CollectionVodRepository collectionVodRepository;
@@ -58,23 +59,23 @@ public abstract class MovieMapper {
     @AfterMapping
     void addRelationshipsToEntity(final MovieInsertView insertView, @MappingTarget final Movie movie) {
         var video = movie.getVideo();
+        if (video != null) {
+            video.getSourceAudios().clear();
+            video.getSourceAudios().addAll(insertView.getSourceAudios().stream().map(this::toAudio).collect(Collectors.toList()));
 
-        video.getSourceAudios().clear();
-        video.getSourceAudios().addAll(insertView.getSourceAudios().stream().map(this::toAudio).collect(Collectors.toList()));
+            video.getSourceSubtitles().clear();
+            video.getSourceSubtitles().addAll(insertView.getSourceSubtitles().stream().map(this::toSubtitle).collect(Collectors.toList()));
 
-        video.getSourceSubtitles().clear();
-        video.getSourceSubtitles().addAll(insertView.getSourceSubtitles().stream().map(this::toSubtitle).collect(Collectors.toList()));
+            var serverId = insertView.getSourceServer();
+            var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
+            video.setSourceServer(server);
 
-        var serverId = insertView.getSourceServer();
-        var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
-        video.setSourceServer(server);
-
-        VideoServer videoServer = new VideoServer(new VideoServerId(video.getId(), serverId));
-        videoServer.setServer(server);
-        videoServer.setVideo(video);
-        video.getVideoServers().clear();
-        video.getVideoServers().add(videoServer);
-
+            VideoServer videoServer = new VideoServer(new VideoServerId(video.getId(), serverId));
+            videoServer.setServer(server);
+            videoServer.setVideo(video);
+            video.getVideoServers().clear();
+            video.getVideoServers().add(videoServer);
+        }
 
         var collectionIds = insertView.getCollections();
         if (collectionIds != null) {
@@ -108,13 +109,7 @@ public abstract class MovieMapper {
         }
     }
 
-    abstract Audio toAudio(AudioDetails audioDetails);
 
-    abstract Subtitle toSubtitle(SubtitleDetails subtitleDetails);
-
-    abstract AudioDetails toAudioDetails(Audio audio);
-
-    abstract SubtitleDetails toSubtitleDetails(Subtitle subtitle);
 
     @Mapping(target = "collections", ignore = true)
     @Mapping(target = "categories", ignore = true)
@@ -151,8 +146,6 @@ public abstract class MovieMapper {
             movieListView.setLink(link);
         }
     }
-
-    abstract VideoInfoView toVideoInfoView(VideoInfo videoInfo);
 
     public List<Movie> convertToMovieList(MovieImportView importView) {
         var movies = new ArrayList<Movie>();

@@ -2,13 +2,11 @@ package com.xtra.api.mapper.admin;
 
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.vod.Episode;
-import com.xtra.api.model.vod.VideoInfo;
 import com.xtra.api.model.vod.VideoServer;
 import com.xtra.api.model.vod.VideoServerId;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
 import com.xtra.api.projection.admin.episode.EpisodeListView;
 import com.xtra.api.projection.admin.episode.EpisodeView;
-import com.xtra.api.projection.admin.video.VideoInfoView;
 import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ServerRepository;
 import org.mapstruct.AfterMapping;
@@ -23,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
-public abstract class EpisodeMapper {
+public abstract class EpisodeMapper extends VideoMapper {
     @Autowired
     private ServerRepository serverRepository;
     @Autowired
@@ -93,7 +91,5 @@ public abstract class EpisodeMapper {
             }
         }
     }
-
-    abstract VideoInfoView toVideoInfoView(VideoInfo videoInfo);
 
 }

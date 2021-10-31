@@ -103,8 +103,8 @@ public class MovieService extends VodService<Movie, MovieRepository> {
     private void updateVideoInfo(Movie movie) {
         var video = movie.getVideo();
         var server = video.getVideoServers().stream().findFirst().orElseThrow(() -> new RuntimeException("at least one server is required"));
-        var videoInfo = serverService.getMediaInfo(server.getServer(), video.getSourceLocation());
-        movie.getVideo().setSourceVideoInfo(videoInfo);
+        var infoView = serverService.getMediaInfo(server.getServer(), video.getSourceLocation());
+        movie.getVideo().setSourceVideoInfo(movieMapper.toVideoInfo(infoView));
     }
 
     public void encode(Movie movie) {

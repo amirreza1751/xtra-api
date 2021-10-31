@@ -223,7 +223,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     }
 
     private void updateSourceVideoInfo(Video video) {
-        video.setSourceVideoInfo(serverService.getMediaInfo(video.getSourceServer(), video.getSourceLocation()));
+        video.setSourceVideoInfo(episodeMapper.toVideoInfo(serverService.getMediaInfo(video.getSourceServer(), video.getSourceLocation())));
     }
 
 }
