@@ -25,6 +25,7 @@ import com.xtra.api.service.CrudService;
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.TmdbTvEpisodes;
 import info.movito.themoviedbapi.model.tv.TvEpisode;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -196,7 +197,7 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
                 insertView.setRating(episodeInfo.getVoteAverage());
 
                 insertView.setSeason(episode.getSeason());
-                insertView.setVideo(episode.getVideo());
+//                insertView.setVideo(episode.getVideo());
                 insertView.setTargetServers(servers);
 
                 addEpisode(id, insertView);
@@ -223,7 +224,8 @@ public class SeriesService extends CrudService<Series, Long, SeriesRepository> {
     }
 
     private void updateSourceVideoInfo(Video video) {
-        video.setSourceVideoInfo(episodeMapper.toVideoInfo(serverService.getMediaInfo(video.getSourceServer(), video.getSourceLocation())));
+        if (video != null && StringUtils.isNotEmpty((video.getSourceLocation())))
+            video.setSourceVideoInfo(episodeMapper.toVideoInfo(serverService.getMediaInfo(video.getSourceServer(), video.getSourceLocation())));
     }
 
 }

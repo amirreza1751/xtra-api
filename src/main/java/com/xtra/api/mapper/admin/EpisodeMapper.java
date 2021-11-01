@@ -2,6 +2,7 @@ package com.xtra.api.mapper.admin;
 
 import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.vod.Episode;
+import com.xtra.api.model.vod.Video;
 import com.xtra.api.model.vod.VideoServer;
 import com.xtra.api.model.vod.VideoServerId;
 import com.xtra.api.projection.admin.episode.EpisodeInsertView;
@@ -11,6 +12,7 @@ import com.xtra.api.repository.LineRepository;
 import com.xtra.api.repository.ServerRepository;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,24 +39,28 @@ public abstract class EpisodeMapper extends VideoMapper {
 
     public abstract Episode updateEntity(EpisodeInsertView episodeInsertView, @MappingTarget final Episode episode);
 
+    @Mapping(source = "sourceLocation", target = "video.sourceLocation")
     public abstract Episode convertToEntity(EpisodeInsertView episodeInsertView);
 
     @AfterMapping
     void assignServerRelations(final EpisodeInsertView episodeInsertView, @MappingTarget final Episode episode) {
+        var video = episode.getVideo();
+        if (video == null) {
+            video = new Video();
+        }
         if (episodeInsertView.getTargetServers() != null) {
-            var video = episode.getVideo();
             List<VideoServer> videoServers = new ArrayList<>();
             for (Long id : episodeInsertView.getTargetServers()) {
                 VideoServer videoServer = new VideoServer();
                 var server = serverRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Server", id.toString()));
-                videoServer.setId(new VideoServerId(null, id));
+                videoServer.setId(new VideoServerId(video.getId(), id));
                 videoServer.setServer(server);
                 videoServer.setVideo(video);
                 videoServers.add(videoServer);
             }
             video.setVideoServers(videoServers);
-
         }
+        episode.setVideo(video);
     }
 
     @AfterMapping
@@ -83,11 +89,13 @@ public abstract class EpisodeMapper extends VideoMapper {
     @AfterMapping
     public void convertToServerIds(final Episode episode, @MappingTarget final EpisodeView episodeView) {
         var video = episode.getVideo();
-        Set<Long> servers = video.getVideoServers().stream().map(videoServer -> videoServer.getServer().getId()).collect(Collectors.toSet());
-        episodeView.setServers(servers);
-        if (episode.getSeason() != null) {
-            if (episode.getSeason().getSeries() != null) {
-                episodeView.setSeriesTmdbId(episode.getSeason().getSeries().getInfo().getTmdbId());
+        if (video != null) {
+            Set<Long> servers = video.getVideoServers().stream().map(videoServer -> videoServer.getServer().getId()).collect(Collectors.toSet());
+            episodeView.setServers(servers);
+            if (episode.getSeason() != null) {
+                if (episode.getSeason().getSeries() != null) {
+                    episodeView.setSeriesTmdbId(episode.getSeason().getSeries().getInfo().getTmdbId());
+                }
             }
         }
     }

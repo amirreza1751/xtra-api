@@ -3,13 +3,15 @@ package com.xtra.api.projection.admin.episode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.projection.admin.season.SeasonInsertView;
-import com.xtra.api.projection.admin.video.VideoInsertView;
+import com.xtra.api.projection.admin.video.AudioDetails;
+import com.xtra.api.projection.admin.video.SubtitleDetails;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -29,7 +31,9 @@ public class EpisodeInsertView {
 
     @NotNull(message = "season can not be empty")
     private SeasonInsertView season;
-    private VideoInsertView video;
     private Long sourceServer;
+    private String sourceLocation;
+    private List<AudioDetails> sourceAudios;
+    private List<SubtitleDetails> sourceSubtitles;
     private Set<Long> targetServers;
 }

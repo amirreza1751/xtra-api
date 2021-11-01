@@ -34,6 +34,9 @@ public class UpdaterService {
 
     private String maxmindUrl;
 
+    @Value("${geoip.update:false}")
+    private boolean geoipUpdate;
+
     @PostConstruct
     public void init() {
         this.maxmindUrl = String.format("https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=%s&suffix=tar.gz", maxmindLicenseKey);
@@ -41,6 +44,8 @@ public class UpdaterService {
 
     @Scheduled(initialDelay = 1000 * 10, fixedDelay = 1000 * 3600 * 24)
     public void updateMaxmindGeoIp() {
+        if (!geoipUpdate)
+            return;
         WebClient webClient = WebClient.create(maxmindUrl);
         webClient.head().retrieve().toBodilessEntity().map(HttpEntity::getHeaders).subscribe(headers ->
                 {
