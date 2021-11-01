@@ -13,6 +13,7 @@ import com.xtra.api.projection.admin.epg.EpgDetails;
 import com.xtra.api.repository.*;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -44,6 +45,14 @@ public abstract class ChannelMapper {
     private ConnectionRepository connectionRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private LineRepository lineRepository;
+
+    @Value("${server.external.address}")
+    private String serverAddress;
+
+    @Value("${server.port}")
+    private String serverPort;
 
     @Mapping(target = "streamServers", ignore = true)
     @Mapping(target = "collectionAssigns", ignore = true)
@@ -194,6 +203,13 @@ public abstract class ChannelMapper {
     @Mapping(source = "channel", target = "totalUsers", qualifiedByName = "getTotalUsers")
     @Mapping(target = "epg", expression = "java(channel.getEpgChannel()!=null)")
     public abstract ChannelInfo convertToChannelInfo(Channel channel);
+
+    @AfterMapping
+    public void assignLink(final Channel channel, @MappingTarget ChannelInfo channelInfo) {
+        var system_line = lineRepository.findByUsername("system_line");
+        String link = system_line.map(line -> "http://" + serverAddress + ":" + serverPort + "/api/play/channel/" + line.getLineToken() + "/" + channel.getStreamToken()).orElse("");
+        channelInfo.setLink(link);
+    }
 
     @Named("getTotalUsers")
     long getTotalUsers(Channel channel) {

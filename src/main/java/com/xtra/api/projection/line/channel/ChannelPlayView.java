@@ -1,21 +1,14 @@
-package com.xtra.api.projection.admin.channel;
+package com.xtra.api.projection.line.channel;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
-import java.util.Set;
-
-
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ChannelInfo {
-
+public class ChannelPlayView {
     private Long id;
     private String name;
     private String logo;
-    private boolean epg;
-    private long totalUsers;
     private String link;
-    private Set<ChannelServerInfo> channelInfos;
 }

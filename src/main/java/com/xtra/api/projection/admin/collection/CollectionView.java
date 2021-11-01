@@ -2,7 +2,6 @@ package com.xtra.api.projection.admin.collection;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.MediaType;
 import com.xtra.api.projection.admin.MediaPair;
 import lombok.Data;
 
@@ -14,7 +13,6 @@ public class CollectionView {
     private Long id;
     private String name;
     private String categoryName;
-    private MediaType type;
     private Set<MediaPair<Long, String>> channels;
     private Set<MediaPair<Long, String>> movies;
     private Set<MediaPair<Long, String>> series;

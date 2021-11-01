@@ -51,4 +51,37 @@ public class CategoryService extends CrudService<Category, Long, CategoryReposit
         return categoryMapper.convertToView(insert(cat));
     }
 
+    public CategorySummaryView order(CategorySummaryView summaryView) {
+        var i = 0;
+        for (var categoryView : summaryView.getChannelCategories()) {
+            Category category = findByIdOrFail(categoryView.getId());
+            category.setOrder(i++);
+            repository.save(category);
+        }
+
+        i = 0;
+        for (var categoryView : summaryView.getMovieCategories()) {
+            Category category = findByIdOrFail(categoryView.getId());
+            category.setOrder(i++);
+            repository.save(category);
+        }
+
+        i = 0;
+        for (var categoryView : summaryView.getSeriesCategories()) {
+            Category category = findByIdOrFail(categoryView.getId());
+            category.setOrder(i++);
+            repository.save(category);
+        }
+
+        i = 0;
+        for (var categoryView : summaryView.getRadioCategories()) {
+            Category category = findByIdOrFail(categoryView.getId());
+            category.setOrder(i++);
+            repository.save(category);
+        }
+
+
+        return categoryMapper.convertToSummaryView(repository.findAll());
+    }
+
 }

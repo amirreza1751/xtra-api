@@ -38,4 +38,8 @@ public class LineMovieService extends VodService<Movie, MovieRepository> {
         return movieMapper.convertToPlayView(findByIdOrFail(id));
     }
 
+    public List<MoviePlayListView> getLast10MoviesPlaylist() {
+        return repository.findTop10ByOrderByCreatedDateDesc().stream().map(movieMapper::convertToPlayListView).collect(Collectors.toList());
+    }
+
 }

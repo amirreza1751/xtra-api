@@ -5,26 +5,33 @@ import com.xtra.api.mapper.line.LineSeriesMapper;
 import com.xtra.api.model.category.QCategoryVod;
 import com.xtra.api.model.vod.QSeries;
 import com.xtra.api.model.vod.Series;
+import com.xtra.api.projection.line.series.EpisodePlayView;
 import com.xtra.api.projection.line.series.SeriesPlayListView;
 import com.xtra.api.projection.line.series.SeriesPlayView;
 import com.xtra.api.repository.SeriesRepository;
 import com.xtra.api.service.CrudService;
+import com.xtra.api.service.admin.EpisodeService;
 import com.xtra.api.util.OptionalBooleanBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Validated
 public class LineSeriesService extends CrudService<Series, Long, SeriesRepository> {
     private final LineSeriesMapper seriesMapper;
+    private final EpisodeService episodeService;
     private final QSeries series = QSeries.series;
     private final QCategoryVod categoryVod = QCategoryVod.categoryVod;
 
-    public LineSeriesService(SeriesRepository repository, LineSeriesMapper seriesMapper) {
+    public LineSeriesService(SeriesRepository repository, LineSeriesMapper seriesMapper, EpisodeService episodeService) {
         super(repository, "Series");
         this.seriesMapper = seriesMapper;
+        this.episodeService = episodeService;
     }
 
     public Page<SeriesPlayListView> getSeriesPlaylist(int pageNo, String search, String sortBy, Long categoryId) {
@@ -39,6 +46,14 @@ public class LineSeriesService extends CrudService<Series, Long, SeriesRepositor
 
     public SeriesPlayView getSeries(Long id) {
         return seriesMapper.convertToPlayView(findByIdOrFail(id));
+    }
+
+    public EpisodePlayView getEpisode(Long id) {
+        return seriesMapper.convertToEpisodePlayView(this.episodeService.findByIdOrFail(id));
+    }
+
+    public List<SeriesPlayListView> getLast10SeriesPlaylist() {
+        return repository.findTop10ByOrderByCreatedDateDesc().stream().map(seriesMapper::convertToPlaylist).collect(Collectors.toList());
     }
 
     @Override

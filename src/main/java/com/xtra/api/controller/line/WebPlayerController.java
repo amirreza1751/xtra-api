@@ -1,8 +1,10 @@
 package com.xtra.api.controller.line;
 
 import com.xtra.api.projection.line.channel.ChannelPlayListView;
+import com.xtra.api.projection.line.channel.ChannelPlayView;
 import com.xtra.api.projection.line.movie.MoviePlayListView;
 import com.xtra.api.projection.line.movie.MoviePlayView;
+import com.xtra.api.projection.line.series.EpisodePlayView;
 import com.xtra.api.projection.line.series.SeriesPlayListView;
 import com.xtra.api.projection.line.series.SeriesPlayView;
 import com.xtra.api.service.line.LineChannelService;
@@ -12,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("webplayer")
@@ -34,6 +38,11 @@ public class WebPlayerController {
         return ResponseEntity.ok(lineMovieService.getMoviesPlaylist(pageNo, search, sortBy, categoryId));
     }
 
+    @GetMapping("/movies/last10")
+    public ResponseEntity<List<MoviePlayListView>> getLast10MoviesPlaylist() {
+        return ResponseEntity.ok(lineMovieService.getLast10MoviesPlaylist());
+    }
+
     @GetMapping("/movies/{id}")
     public ResponseEntity<MoviePlayView> getMovie(@PathVariable Long id) {
         return ResponseEntity.ok(lineMovieService.getMovie(id));
@@ -46,6 +55,17 @@ public class WebPlayerController {
         return ResponseEntity.ok(lineChannelService.getChannelPlaylist(pageNo, search, sortBy, categoryId));
     }
 
+    @GetMapping("/channels/{id}")
+    public ResponseEntity<ChannelPlayView> getChannel(@PathVariable Long id) {
+        return ResponseEntity.ok(lineChannelService.getChannel(id));
+    }
+
+
+    @GetMapping("/channels/hot10")
+    public ResponseEntity<List<ChannelPlayListView>> getHot10ChannelsPlaylist() {
+        return ResponseEntity.ok(lineChannelService.getHot10ChannelsPlaylist());
+    }
+
     @GetMapping("/series")
     public ResponseEntity<Page<SeriesPlayListView>> getSeriesPlaylist(
             @RequestParam(defaultValue = "0") int pageNo, @RequestParam(required = false) String search,
@@ -53,9 +73,19 @@ public class WebPlayerController {
         return ResponseEntity.ok(lineSeriesService.getSeriesPlaylist(pageNo, search, sortBy, categoryId));
     }
 
+    @GetMapping("/series/last10")
+    public ResponseEntity<List<SeriesPlayListView>> getLast10SeriesPlaylist() {
+        return ResponseEntity.ok(lineSeriesService.getLast10SeriesPlaylist());
+    }
+
     @GetMapping("/series/{id}")
     public ResponseEntity<SeriesPlayView> getSeries(@PathVariable Long id) {
         return ResponseEntity.ok(lineSeriesService.getSeries(id));
+    }
+
+    @GetMapping("/episode/{id}")
+    public ResponseEntity<EpisodePlayView> getEpisode(@PathVariable Long id) {
+        return ResponseEntity.ok(lineSeriesService.getEpisode(id));
     }
 
 }
