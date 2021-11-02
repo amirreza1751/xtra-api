@@ -23,12 +23,10 @@ public abstract class LineMovieMapper {
     private String serverPort;
 
     @Mapping(source = "info", target = ".")
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "categories", ignore = true)
     public abstract MoviePlayListView convertToPlayListView(Movie movie);
 
     @Mapping(source = "info", target = ".")
-    @Mapping(target = "id", ignore = true)
     public abstract MoviePlayView convertToPlayView(Movie movie);
 
     @AfterMapping

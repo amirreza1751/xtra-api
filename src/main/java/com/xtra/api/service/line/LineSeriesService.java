@@ -48,8 +48,12 @@ public class LineSeriesService extends CrudService<Series, Long, SeriesRepositor
         return seriesMapper.convertToPlayView(findByIdOrFail(id));
     }
 
-    public EpisodePlayView getEpisode(Long id) {
+    public EpisodePlayView getEpisodeById(Long id) {
         return seriesMapper.convertToEpisodePlayView(this.episodeService.findByIdOrFail(id));
+    }
+
+    public EpisodePlayView getEpisode(Long id, int season_number, int episode_number) {
+        return seriesMapper.convertToEpisodePlayView(this.episodeService.findBySeriesIdSeasonNumberEpisodeNumber(id, season_number, episode_number));
     }
 
     public List<SeriesPlayListView> getLast10SeriesPlaylist() {

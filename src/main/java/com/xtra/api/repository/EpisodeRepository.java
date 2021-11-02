@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface EpisodeRepository extends JpaRepository<Episode, Long> {
 
     Page<Episode> findAllByEpisodeNameContains(String name, Pageable pageable);
+
+    Episode findBySeason_SeriesIdAndSeason_SeasonNumberAndEpisodeNumber(Long id, int season_number, int episode_number);
 }

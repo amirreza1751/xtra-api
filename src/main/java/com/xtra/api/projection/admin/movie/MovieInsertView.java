@@ -7,6 +7,7 @@ import com.xtra.api.projection.admin.video.AudioDetails;
 import com.xtra.api.projection.admin.video.SubtitleDetails;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
 

@@ -1,5 +1,7 @@
 package com.xtra.api.controller.line;
 
+import com.xtra.api.model.MediaType;
+import com.xtra.api.projection.line.CategoryView;
 import com.xtra.api.projection.line.channel.ChannelPlayListView;
 import com.xtra.api.projection.line.channel.ChannelPlayView;
 import com.xtra.api.projection.line.movie.MoviePlayListView;
@@ -7,6 +9,7 @@ import com.xtra.api.projection.line.movie.MoviePlayView;
 import com.xtra.api.projection.line.series.EpisodePlayView;
 import com.xtra.api.projection.line.series.SeriesPlayListView;
 import com.xtra.api.projection.line.series.SeriesPlayView;
+import com.xtra.api.service.line.LineCategoriesService;
 import com.xtra.api.service.line.LineChannelService;
 import com.xtra.api.service.line.LineMovieService;
 import com.xtra.api.service.line.LineSeriesService;
@@ -24,11 +27,13 @@ public class WebPlayerController {
     private final LineMovieService lineMovieService;
     private final LineChannelService lineChannelService;
     private final LineSeriesService lineSeriesService;
+    private final LineCategoriesService lineCategoriesService;
 
-    public WebPlayerController(LineMovieService lineMovieService, LineChannelService lineChannelService, LineSeriesService lineSeriesService) {
+    public WebPlayerController(LineMovieService lineMovieService, LineChannelService lineChannelService, LineSeriesService lineSeriesService, LineCategoriesService lineCategoriesService) {
         this.lineMovieService = lineMovieService;
         this.lineChannelService = lineChannelService;
         this.lineSeriesService = lineSeriesService;
+        this.lineCategoriesService = lineCategoriesService;
     }
 
     @GetMapping("/movies")
@@ -84,8 +89,18 @@ public class WebPlayerController {
     }
 
     @GetMapping("/episode/{id}")
-    public ResponseEntity<EpisodePlayView> getEpisode(@PathVariable Long id) {
-        return ResponseEntity.ok(lineSeriesService.getEpisode(id));
+    public ResponseEntity<EpisodePlayView> getEpisodeById(@PathVariable Long id) {
+        return ResponseEntity.ok(lineSeriesService.getEpisodeById(id));
+    }
+
+    @GetMapping("/series/{serie_id}/season/{season_number}/episode/{episode_number}")
+    public ResponseEntity<EpisodePlayView> getEpisode(@PathVariable Long serie_id, @PathVariable int season_number, @PathVariable int episode_number) {
+        return ResponseEntity.ok(lineSeriesService.getEpisode(serie_id, season_number, episode_number));
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<CategoryView>> getCategories(@RequestParam MediaType type) {
+        return ResponseEntity.ok(lineCategoriesService.getCategories(type));
     }
 
 }
