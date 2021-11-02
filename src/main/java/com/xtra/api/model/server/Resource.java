@@ -1,5 +1,6 @@
 package com.xtra.api.model.server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -32,6 +33,7 @@ public class Resource {
     private Long upTime;
 
     @OneToOne(mappedBy = "resource")
+    @JsonIgnore
     private Server server;
 
 }

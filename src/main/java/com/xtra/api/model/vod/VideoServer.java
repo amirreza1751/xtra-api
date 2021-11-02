@@ -1,5 +1,6 @@
 package com.xtra.api.model.vod;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xtra.api.model.server.Server;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,10 +22,12 @@ public class VideoServer {
 
     @ManyToOne
     @MapsId("videoId")
+    @JsonIgnore
     Video video;
 
     @ManyToOne
     @MapsId("serverId")
+    @JsonIgnore
     Server server;
 
     @NotNull

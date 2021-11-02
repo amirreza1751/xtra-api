@@ -1,5 +1,6 @@
 package com.xtra.api.model.server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xtra.api.model.stream.StreamServer;
 import com.xtra.api.model.vod.VideoServer;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class Server {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "server", cascade = CascadeType.MERGE)
     @ToString.Exclude
+    @JsonIgnore
     private List<StreamServer> streamServers;
 
     @OneToOne(cascade = CascadeType.MERGE)
@@ -35,5 +37,6 @@ public class Server {
     @OneToMany( mappedBy = "server", cascade = CascadeType.MERGE, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     @ToString.Exclude
+    @JsonIgnore
     private List<VideoServer> videoServers;
 }
