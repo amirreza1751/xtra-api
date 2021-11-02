@@ -176,4 +176,8 @@ public class EpisodeService extends CrudService<Episode, Long, EpisodeRepository
         encodeRequest.setTargetVideoCodec(VideoCodec.H264);
         return encodeRequest;
     }
+
+    public Episode findBySeriesIdSeasonNumberEpisodeNumber(Long id, int season_number, int episode_number) {
+        return repository.findBySeason_SeriesIdAndSeason_SeasonNumberAndEpisodeNumber(id, season_number, episode_number);
+    }
 }

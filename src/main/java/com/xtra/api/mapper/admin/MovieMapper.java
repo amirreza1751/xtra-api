@@ -61,10 +61,10 @@ public abstract class MovieMapper extends VideoMapper {
         var video = movie.getVideo();
         if (video != null) {
             video.getSourceAudios().clear();
-            video.getSourceAudios().addAll(insertView.getSourceAudios().stream().map(this::toAudio).collect(Collectors.toList()));
+            video.getSourceAudios().addAll(emptyIfNull(insertView.getSourceAudios()).stream().map(this::toAudio).collect(Collectors.toList()));
 
             video.getSourceSubtitles().clear();
-            video.getSourceSubtitles().addAll(insertView.getSourceSubtitles().stream().map(this::toSubtitle).collect(Collectors.toList()));
+            video.getSourceSubtitles().addAll(emptyIfNull(insertView.getSourceSubtitles()).stream().map(this::toSubtitle).collect(Collectors.toList()));
 
             var serverId = insertView.getSourceServer();
             var server = serverRepository.findById(serverId).orElseThrow(() -> new EntityNotFoundException("Server", serverId.toString()));
