@@ -1,7 +1,6 @@
 package com.xtra.api.repository;
 
 import com.xtra.api.model.server.Resource;
-import com.xtra.api.projection.admin.analytics.ConnectionsCountResult;
 import com.xtra.api.projection.admin.analytics.NetworkBytesSum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

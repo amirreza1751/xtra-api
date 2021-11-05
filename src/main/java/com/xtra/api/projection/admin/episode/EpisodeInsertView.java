@@ -1,6 +1,6 @@
 package com.xtra.api.projection.admin.episode;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.projection.admin.season.SeasonInsertView;
 import com.xtra.api.projection.admin.video.AudioDetails;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class EpisodeInsertView {
     @NotNull(message = "Episode number can not be empty")
     @Positive(message = "Episode number should be a positive number")

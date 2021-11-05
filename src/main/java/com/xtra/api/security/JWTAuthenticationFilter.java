@@ -29,7 +29,8 @@ import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
-import static com.xtra.api.security.SecurityConstants.*;
+import static com.xtra.api.security.SecurityConstants.EXPIRATION_TIME;
+import static com.xtra.api.security.SecurityConstants.SECRET;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;

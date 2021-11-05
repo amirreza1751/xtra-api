@@ -2,9 +2,7 @@ package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.SettingMapper;
 import com.xtra.api.model.Setting;
-import com.xtra.api.model.event.SettingChangedEvent;
 import com.xtra.api.model.exception.EntityNotFoundException;
-import com.xtra.api.model.setting.SettingType;
 import com.xtra.api.projection.admin.SettingView;
 import com.xtra.api.repository.SettingRepository;
 import com.xtra.api.service.CrudService;
@@ -17,7 +15,6 @@ import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class SettingService extends CrudService<Setting, String, SettingRepository> {

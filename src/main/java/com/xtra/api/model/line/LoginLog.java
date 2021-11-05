@@ -1,11 +1,12 @@
 package com.xtra.api.model.line;
 
-import com.xtra.api.model.user.User;
 import com.xtra.api.model.user.UserType;
 import lombok.Data;
 
-import javax.persistence.*;
-import java.time.Duration;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Entity

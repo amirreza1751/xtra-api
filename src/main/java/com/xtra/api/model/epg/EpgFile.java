@@ -1,6 +1,6 @@
 package com.xtra.api.model.epg;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Entity
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class EpgFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,8 +1,8 @@
 package com.xtra.api.mapper.line;
 
-import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.download_list.DownloadList;
 import com.xtra.api.model.download_list.DownloadListCollection;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.line.Line;
 import com.xtra.api.projection.line.LineSecurityView;
 import com.xtra.api.projection.line.line.LineInsertView;

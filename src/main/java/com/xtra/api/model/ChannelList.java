@@ -1,6 +1,6 @@
 package com.xtra.api.model;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.projection.admin.channel.ChannelStart;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @AllArgsConstructor
 public class ChannelList {
 

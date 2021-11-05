@@ -1,14 +1,15 @@
 package com.xtra.api.projection.admin.user.reseller;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.Data;
 import com.neovisionaries.i18n.CountryCode;
+import lombok.Data;
+
 import java.util.List;
 
 
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ResellerSignUpView {
     protected String username;
     protected String password;

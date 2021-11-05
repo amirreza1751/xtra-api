@@ -1,10 +1,10 @@
 package com.xtra.api.model.user;
 
+import com.neovisionaries.i18n.CountryCode;
 import com.xtra.api.model.download_list.DownloadList;
 import com.xtra.api.model.line.Line;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import com.neovisionaries.i18n.CountryCode;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;

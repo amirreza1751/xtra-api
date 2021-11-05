@@ -1,6 +1,6 @@
 package com.xtra.api.projection.admin.package_;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.stream.StreamProtocol;
 import com.xtra.api.projection.admin.downloadlist.DlCollectionView;
@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PackageView {
     private Long id;
     private String name;

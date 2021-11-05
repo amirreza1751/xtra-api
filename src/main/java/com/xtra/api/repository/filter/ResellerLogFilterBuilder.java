@@ -1,7 +1,6 @@
 package com.xtra.api.repository.filter;
 
 import com.querydsl.core.types.Predicate;
-import com.xtra.api.model.line.QLoginLog;
 import com.xtra.api.model.user.QResellerLog;
 import com.xtra.api.util.OptionalBooleanBuilder;
 

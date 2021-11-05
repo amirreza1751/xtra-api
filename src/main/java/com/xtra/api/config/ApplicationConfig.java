@@ -1,7 +1,7 @@
 package com.xtra.api.config;
 
 import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -31,7 +31,7 @@ public class ApplicationConfig {
     @Bean
     public Jackson2ObjectMapperBuilder jacksonBuilder() {
         Jackson2ObjectMapperBuilder b = new Jackson2ObjectMapperBuilder();
-        return b.propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+        return b.propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
                 .featuresToEnable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
     }
 

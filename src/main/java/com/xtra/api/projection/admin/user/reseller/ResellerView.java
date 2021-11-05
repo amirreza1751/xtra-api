@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)

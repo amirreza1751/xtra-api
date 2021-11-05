@@ -1,6 +1,6 @@
 package com.xtra.api.projection.admin.movie;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.vod.Resolution;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.Set;
 
 
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class MovieBatchUpdateView {
     private Set<Long> movies;
     private Set<Long> targetServers;

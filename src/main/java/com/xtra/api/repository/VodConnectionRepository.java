@@ -1,7 +1,6 @@
 package com.xtra.api.repository;
 
 
-import com.xtra.api.model.line.Connection;
 import com.xtra.api.model.line.VodConnection;
 import com.xtra.api.model.user.Reseller;
 import com.xtra.api.projection.admin.connection.VodConnectionResult;

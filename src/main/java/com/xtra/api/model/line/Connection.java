@@ -1,8 +1,7 @@
 package com.xtra.api.model.line;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.line.Line;
 import com.xtra.api.model.server.Server;
 import com.xtra.api.model.stream.Stream;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @ToString(exclude = {"line", "stream", "server"})
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Table(
         uniqueConstraints =
         @UniqueConstraint(columnNames = {"line_id", "stream_id", "server_id", "user_ip"})

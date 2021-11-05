@@ -1,7 +1,6 @@
 package com.xtra.api.service.system;
 
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
@@ -18,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,10 +24,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.awt.image.BufferedImage;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 @EnableScheduling
@@ -67,14 +63,10 @@ public class UserAuthService {
     }
 
     public static String getGoogleAuthenticatorBarCode(String secretKey, String account, String issuer) {
-        try {
-            return "otpauth://totp/"
-                    + URLEncoder.encode(issuer + ":" + account, "UTF-8").replace("+", "%20")
-                    + "?secret=" + URLEncoder.encode(secretKey, "UTF-8").replace("+", "%20")
-                    + "&issuer=" + URLEncoder.encode(issuer, "UTF-8").replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
+        return "otpauth://totp/"
+                + URLEncoder.encode(issuer + ":" + account, StandardCharsets.UTF_8).replace("+", "%20")
+                + "?secret=" + URLEncoder.encode(secretKey, StandardCharsets.UTF_8).replace("+", "%20")
+                + "&issuer=" + URLEncoder.encode(issuer, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
     public static BufferedImage createQRCode(String barCodeData, int height, int width)

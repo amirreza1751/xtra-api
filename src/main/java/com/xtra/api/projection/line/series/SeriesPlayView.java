@@ -1,8 +1,7 @@
 package com.xtra.api.projection.line.series;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.xtra.api.model.vod.Season;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SeriesPlayView {
     private Long id;
     private String name;

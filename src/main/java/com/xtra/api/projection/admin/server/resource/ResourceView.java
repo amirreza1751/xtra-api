@@ -2,8 +2,6 @@ package com.xtra.api.projection.admin.server.resource;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class ResourceView {
 

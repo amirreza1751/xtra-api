@@ -2,7 +2,6 @@ package com.xtra.api.projection.admin.log;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.xtra.api.model.line.LoginLogStatus;
-import com.xtra.api.model.stream.StreamProtocol;
 import com.xtra.api.model.user.UserType;
 import lombok.Data;
 

@@ -1,7 +1,10 @@
 package com.xtra.api.service.admin;
 
 import com.xtra.api.mapper.admin.LogMapper;
-import com.xtra.api.model.line.*;
+import com.xtra.api.model.line.Connection;
+import com.xtra.api.model.line.LoginLog;
+import com.xtra.api.model.line.QActivityLog;
+import com.xtra.api.model.line.QLoginLog;
 import com.xtra.api.model.stream.StreamProtocol;
 import com.xtra.api.model.user.*;
 import com.xtra.api.projection.admin.log.ActivityLogView;

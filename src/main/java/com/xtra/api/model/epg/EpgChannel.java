@@ -1,9 +1,11 @@
 package com.xtra.api.model.epg;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.stream.Stream;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -11,14 +13,13 @@ import java.util.Set;
 
 @Entity
 @Data
-@ToString(exclude = {"epgFile"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @Table(
         uniqueConstraints =
-        @UniqueConstraint(columnNames = {"name", "language","epg_file_id"})
+        @UniqueConstraint(columnNames = {"name", "language", "epg_file_id"})
 )
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class EpgChannel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

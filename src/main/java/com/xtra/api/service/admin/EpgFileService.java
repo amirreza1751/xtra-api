@@ -130,7 +130,7 @@ public class EpgFileService extends CrudService<EpgFile, Long, EpgFileRepository
                 String title;
                 if (programObject.get("title") instanceof JSONArray)
                     title = ((JSONArray) programObject.get("title")).get(0).toString();
-                else{
+                else {
                     System.out.println(programObject.getJSONObject("title").toString());
                     title = programObject.getJSONObject("title").get("content").toString();
                 }

@@ -1,11 +1,12 @@
 package com.xtra.api.model.user;
 
-import com.xtra.api.model.line.Line;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.Nullable;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Data

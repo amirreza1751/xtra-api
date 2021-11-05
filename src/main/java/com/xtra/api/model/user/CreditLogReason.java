@@ -1,6 +1,5 @@
 package com.xtra.api.model.user;
 
-import lombok.Data;
 import lombok.Getter;
 
 @Getter

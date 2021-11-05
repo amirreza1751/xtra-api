@@ -1,9 +1,9 @@
 package com.xtra.api.mapper.admin;
 
-import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.download_list.DownloadList;
-import com.xtra.api.model.user.Reseller;
+import com.xtra.api.model.exception.EntityNotFoundException;
 import com.xtra.api.model.role.Role;
+import com.xtra.api.model.user.Reseller;
 import com.xtra.api.projection.admin.user.UserSimpleView;
 import com.xtra.api.projection.admin.user.reseller.ResellerInsertView;
 import com.xtra.api.projection.admin.user.reseller.ResellerListView;

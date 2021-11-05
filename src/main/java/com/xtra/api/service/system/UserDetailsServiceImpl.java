@@ -1,6 +1,5 @@
 package com.xtra.api.service.system;
 
-import com.xtra.api.model.role.PermissionRole;
 import com.xtra.api.model.role.Role;
 import com.xtra.api.model.user.UserType;
 import com.xtra.api.repository.PermissionRepository;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;

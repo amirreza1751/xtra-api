@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.xtra.api.model.stream.StreamProtocol;
 import lombok.Data;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Data

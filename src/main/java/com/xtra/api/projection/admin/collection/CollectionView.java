@@ -1,6 +1,6 @@
 package com.xtra.api.projection.admin.collection;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.projection.admin.MediaPair;
 import lombok.Data;
@@ -8,7 +8,7 @@ import lombok.Data;
 import java.util.Set;
 
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CollectionView {
     private Long id;
     private String name;

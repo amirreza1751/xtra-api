@@ -1,6 +1,5 @@
 package com.xtra.api.projection.line.series;
 
-import com.xtra.api.model.vod.Episode;
 import lombok.Data;
 
 import java.time.LocalDate;

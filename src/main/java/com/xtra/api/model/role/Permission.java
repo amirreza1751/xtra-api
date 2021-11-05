@@ -1,6 +1,6 @@
 package com.xtra.api.model.role;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,7 +17,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Permission {
     @EmbeddedId
     private PermissionId id;

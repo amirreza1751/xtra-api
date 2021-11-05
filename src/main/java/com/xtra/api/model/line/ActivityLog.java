@@ -1,11 +1,12 @@
 package com.xtra.api.model.line;
 
-import com.xtra.api.model.server.Server;
-import com.xtra.api.model.stream.Stream;
 import com.xtra.api.model.stream.StreamProtocol;
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
