@@ -6,6 +6,7 @@ import com.xtra.api.model.server.Server;
 import com.xtra.api.model.vod.Video;
 import com.xtra.api.projection.admin.video.EncodeRequest;
 import com.xtra.api.projection.admin.video.EncodeResponse;
+import com.xtra.api.projection.admin.video.VideoView;
 import com.xtra.api.repository.VideoRepository;
 import com.xtra.api.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +45,8 @@ public class VideoService extends CrudService<Video, Long, VideoRepository> {
         return updateOrFail(id, video);
     }
 
-    public Video getByToken(String vodToken) {
-        return repository.findByToken(vodToken).orElse(null);
+    public VideoView getByToken(String vodToken) {
+        return mapper.toVideoView(repository.findByToken(vodToken).orElse(null));
     }
 
     public String playVideo(String video_token, String line_token, HttpServletRequest request) {
