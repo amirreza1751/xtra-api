@@ -33,6 +33,8 @@ public abstract class LineMovieMapper {
     public void assignCategories(final Movie movie, @MappingTarget MoviePlayListView moviePlayView) {
         moviePlayView.setCategories(emptyIfNull(movie.getCategories())
                 .stream().map(categoryStream -> categoryStream.getCategory().getId()).collect(Collectors.toSet()));
+
+        moviePlayView.setId(movie.getId());
     }
 
     @AfterMapping
@@ -41,5 +43,7 @@ public abstract class LineMovieMapper {
         var line = getCurrentLine();
         var video = movie.getVideo();
         moviePlayView.setLink("http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken());
+
+        moviePlayView.setId(movie.getId());
     }
 }
