@@ -16,7 +16,7 @@ public class MovieListView {
     private String name;
     private int duration;
     private String link;
-    private EncodeStatus encodeStatus;
     private List<ServerEncodeStatus> servers;
     private List<VideoInfoView> targetVideos;
+    private VideoInfoView sourceVideoInfo;
 }

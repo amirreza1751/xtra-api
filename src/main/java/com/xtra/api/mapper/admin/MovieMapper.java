@@ -115,6 +115,7 @@ public abstract class MovieMapper extends VideoMapper {
     @Mapping(target = "categories", ignore = true)
     @Mapping(target = "sourceLocation", source = "video.sourceLocation")
     @Mapping(target = "sourceServer", source = "video.sourceServer.id")
+    @Mapping(target = "sourceVideoInfo", source = "video.sourceVideoInfo")
     public abstract MovieView convertToView(Movie movie);
 
     @AfterMapping
@@ -141,6 +142,7 @@ public abstract class MovieMapper extends VideoMapper {
             var video = movie.getVideo();
             movieListView.setServers(video.getVideoServers().stream().map(videoServer -> new ServerEncodeStatus(videoServer.getServer().getName(), videoServer.getEncodeStatus())).collect(Collectors.toList()));
             movieListView.setTargetVideos(video.getTargetVideosInfos().stream().map(this::toVideoInfoView).collect(Collectors.toList()));
+            movieListView.setSourceVideoInfo(this.toVideoInfoView(video.getSourceVideoInfo()));
             var system_line = lineRepository.findByUsername("system_line");
             String link = system_line.map(line -> "http://" + serverAddress + ":" + serverPort + "/api/play/video/" + line.getLineToken() + "/" + video.getToken()).orElse("");
             movieListView.setLink(link);
