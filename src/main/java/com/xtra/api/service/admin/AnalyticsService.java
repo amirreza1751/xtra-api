@@ -6,6 +6,7 @@ import com.xtra.api.model.line.Line;
 import com.xtra.api.model.role.Role;
 import com.xtra.api.model.stream.StreamStatus;
 import com.xtra.api.model.user.Reseller;
+import com.xtra.api.model.user.User;
 import com.xtra.api.model.user.UserType;
 import com.xtra.api.projection.admin.analytics.AnalyticsData;
 import com.xtra.api.projection.admin.analytics.LineAnalytics;
@@ -50,8 +51,8 @@ public class AnalyticsService {
     }
 
     public Object getData() {
-        Role currentRole = UserAuthService.getCurrentUser().getRole();
-        if (currentRole.getType().equals(UserType.ADMIN) || currentRole.getType().equals(UserType.SUPER_ADMIN)){
+        User currentUser = UserAuthService.getCurrentUser();
+        if (currentUser.getUserType().equals(UserType.ADMIN) || currentUser.getUserType().equals(UserType.SUPER_ADMIN)){
             AnalyticsData data = new AnalyticsData();
             data.setResellerCount(resellerRepository.count());
             data.setPendingResellerCount(resellerRepository.countByIsVerifiedFalse());
@@ -63,7 +64,7 @@ public class AnalyticsService {
             data.setTotalOutput(resourceRepository.networksBytesSum().getNetworkBytesSent());
             data.setServerSummaryList(serverRepository.getServerSummaryList());
             return data;
-        } else if (currentRole.getType().equals(UserType.RESELLER)){
+        } else if (currentUser.getUserType().equals(UserType.RESELLER)){
             Reseller reseller = UserAuthService.getCurrentReseller();
             LocalDateTime dateTime = LocalDateTime.now();
             LocalDateTime nextWeek = dateTime.with(TemporalAdjusters.next(LocalDateTime.now().getDayOfWeek()));

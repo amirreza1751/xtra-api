@@ -2,6 +2,7 @@ package com.xtra.api.controller.system;
 
 import com.xtra.api.model.vod.Video;
 import com.xtra.api.projection.admin.video.EncodeResponse;
+import com.xtra.api.projection.admin.video.VideoView;
 import com.xtra.api.service.admin.VideoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class SystemVideoController {
     }
 
     @GetMapping("{video_token}")
-    public ResponseEntity<Video> getVideoByToken(@PathVariable("video_token") String videoToken) {
+    public ResponseEntity<VideoView> getVideoByToken(@PathVariable("video_token") String videoToken) {
         return ResponseEntity.ok(videoService.getByToken(videoToken));
     }
 
