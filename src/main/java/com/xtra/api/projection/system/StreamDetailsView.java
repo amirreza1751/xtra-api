@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.xtra.api.model.stream.StreamStatus;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class StreamDetailsView {
@@ -18,4 +20,5 @@ public class StreamDetailsView {
     private String frameRate;
     private String bitrate;
     private StreamStatus streamStatus;
+    private LocalDateTime lastUpdated;
 }

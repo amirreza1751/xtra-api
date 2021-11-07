@@ -56,7 +56,7 @@ public class StreamService extends CrudService<Stream, Long, StreamRepository> {
                         streamServer.setStreamDetails(details);
                     else{
                         copyProperties(details, streamServer.getStreamDetails(), "id");
-                        if (streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.OFFLINE) && streamServer.getLastStarted() != null && streamServer.getLastStarted().isBefore(LocalDateTime.now().minusSeconds(10L))){
+                        if (details.getStreamStatus().equals(StreamStatus.OFFLINE) && streamServer.getLastStarted() != null && streamServer.getLastStarted().isBefore(LocalDateTime.now().minusSeconds(10L))){
                             channelService.startStreamOnServers((Channel) streamServer.getStream(), Set.of(streamServer.getServer().getId()));
                         }
                     }
