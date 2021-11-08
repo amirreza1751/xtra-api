@@ -18,6 +18,6 @@ public interface StreamServerRepository extends JpaRepository<StreamServer, Stre
 
     List<StreamServer> findAllByServerId(long serverId);
 
-    List<StreamServer> findAllByStreamDetailsUpdatedBefore(LocalDateTime time);
+    List<StreamServer> findAllByStreamDetailsLastUpdatedBefore(LocalDateTime time);
     long countByStreamDetails_StreamStatusIs(StreamStatus streamStatus);
 }
