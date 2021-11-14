@@ -25,8 +25,8 @@ public class PlayController {
     //Play a Channel
     @GetMapping("channel/{line_token}/{stream_token}")
     public void playChannel(@PathVariable String stream_token, @PathVariable String line_token, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String channelLink = channelService.playChannel(stream_token, line_token, request);
-        response.sendRedirect(channelLink);
+         channelService.playChannel(stream_token, line_token, request, response);
+//        response.sendRedirect(channelLink);
     }
 
     //Play a Video

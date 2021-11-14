@@ -19,8 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.xtra.api.util.Utilities.generateRandomString;
@@ -39,6 +45,7 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
     private final ServerRepository serverRepository;
     private final ConnectionRepository connectionRepository;
     private final QChannel channel = QChannel.channel;
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
 
 
@@ -201,27 +208,36 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
         //@todo update servers list
     }
 
-    public String playChannel(String stream_token, String line_token, HttpServletRequest request) {
+    public void playChannel(String stream_token, String line_token, HttpServletRequest request, HttpServletResponse response) {
         Channel channel = repository.findByStreamToken(stream_token).orElseThrow();
         ArrayList<Server> servers = loadBalancingService.findAvailableServers(channel);
         Server server = loadBalancingService.findLeastConnServer(servers);
-
         /*This code below checks that if the requested stream
         is on-demand and offline at the same time, a start request will be sent to the related server.*/
         var streamServer = server.getStreamServers().stream().filter(item -> item.getStream().getStreamToken().equals(stream_token)).findFirst();
-        streamServer.ifPresent(item -> {
-            if (checkOnDemandStatus(item)) {
+        if(streamServer.isPresent()) {
+            if (checkOnDemandStatus(streamServer.get())) {
                 serverService.sendStartRequest(server, channelMapper.convertToChannelStart(channel, streamServer.get().getSelectedSource()));
+                while (streamServer.get().getStreamDetails().getStreamStatus().equals(StreamStatus.OFFLINE)){
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(1000L);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println(streamServer.get().getStreamDetails().getStreamStatus());
+
+                    streamServer = serverService.findByIdOrFail(server.getId()).getStreamServers().stream().filter(item -> item.getStream().getStreamToken().equals(stream_token)).findFirst();
+                }
+                System.out.println(streamServer.get().getStreamDetails().getStreamStatus());
             }
-        });
-        return "http://" + server.getIp() + ":" + server.getCorePort() + "/live/" + line_token + "/" + stream_token + "/m3u8";
+        }
+//        return "http://" + server.getIp() + ":" + server.getCorePort() + "/live/" + line_token + "/" + stream_token + "/m3u8";
     }
 
     public boolean checkOnDemandStatus(StreamServer streamServer) {
+        System.out.println("fuuuuck" + streamServer.getStreamDetails().getStreamStatus());
         if (streamServer.getStreamDetails() != null) {
-            return streamServer.isOnDemand() &&
-                    streamServer.getStreamDetails().getStreamStatus() == null ||
-                    !streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE);
+            return streamServer.isOnDemand() && streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.OFFLINE);
         } else return streamServer.isOnDemand();
     }
 
@@ -298,6 +314,7 @@ public class ChannelService extends StreamBaseService<Channel, ChannelRepository
     public void checkOnDemandConnections(List<Long> streamIds, Server server) {
         int connections;
         for (StreamServer streamServer : server.getStreamServers()) {
+            System.out.println(streamServer.getStream().getId() + " " + streamServer.getStreamDetails().getStreamStatus());
             connections = connectionRepository.countAllByServerIdAndStreamId(server.getId(), streamServer.getStream().getId());
             if (streamServer.getStreamDetails() != null) {
                 if (streamServer.isOnDemand() && connections == 0 && streamServer.getStreamDetails().getStreamStatus().equals(StreamStatus.ONLINE)) {
